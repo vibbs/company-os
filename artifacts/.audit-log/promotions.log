@@ -1,0 +1,5 @@
+[2026-02-23T13:18:26Z] artifacts/prds/PRD-TEST-001.md: draft → review
+[2026-02-23T13:18:26Z] artifacts/prds/PRD-TEST-001.md: review → approved
+[2026-02-23T13:18:40Z] LINK: PRD-TEST-001 → RFC-TEST-001 (artifacts/prds/PRD-TEST-001.md → artifacts/rfcs/RFC-TEST-001.md)
+[2026-02-23T13:19:16Z] artifacts/rfcs/RFC-TEST-001.md: draft → review
+[2026-02-23T13:19:16Z] artifacts/rfcs/RFC-TEST-001.md: review → approved

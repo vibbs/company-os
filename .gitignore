@@ -1,0 +1,34 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Dependencies (if project adds them later)
+node_modules/
+__pycache__/
+*.pyc
+vendor/
+
+# Build output
+dist/
+build/
+.next/
+out/
+
+# Logs (but keep artifacts/.audit-log/ which is intentional)
+*.log
+!artifacts/.audit-log/**

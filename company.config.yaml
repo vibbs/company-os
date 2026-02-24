@@ -1,0 +1,61 @@
+# ============================================================================
+# Company OS Configuration
+# ============================================================================
+# This is the central configuration file for your Company OS instance.
+# Every agent, skill, and tool reads from this file to adapt behavior
+# to your specific company, tech stack, and conventions.
+#
+# Instructions:
+#   1. Fill in every field relevant to your project
+#   2. Leave fields blank ("") if not yet decided — agents will prompt you
+#   3. See SETUP_COMPANY_OS.md for detailed guidance on each section
+# ============================================================================
+
+company:
+  name: ""                    # Your company or project name
+  product: ""                 # Product name
+  description: ""             # One-line product description
+  domain: ""                  # Primary domain (e.g., acme.com)
+  stage: ""                   # idea | mvp | growth | scale
+
+tech_stack:
+  language: ""                # TypeScript | Python | Go | Rust | Java
+  framework: ""               # Next.js | FastAPI | Gin | Actix | Spring Boot
+  runtime: ""                 # Node.js 20 | Python 3.12 | Go 1.22
+  database: ""                # PostgreSQL | MySQL | MongoDB | SQLite
+  orm: ""                     # Prisma | Drizzle | SQLAlchemy | GORM | none
+  cache: ""                   # Redis | Memcached | none
+  queue: ""                   # BullMQ | Celery | SQS | none
+  search: ""                  # Elasticsearch | Meilisearch | Typesense | none
+  hosting: ""                 # Vercel | AWS | GCP | Fly.io | Railway
+  ci: ""                      # GitHub Actions | GitLab CI | CircleCI
+
+api:
+  style: ""                   # REST | GraphQL | gRPC | tRPC
+  spec_format: ""             # OpenAPI 3.1 | GraphQL SDL | Protobuf
+  error_format: ""            # RFC7807 | custom (place spec in standards/api/)
+  versioning: ""              # url-path (/v1/) | header | query-param | none
+  auth: ""                    # JWT | API Keys | OAuth2 | session | Clerk | Auth.js
+  pagination: ""              # cursor | offset | none
+  rate_limiting: ""           # token-bucket | sliding-window | none
+
+conventions:
+  branching: ""               # trunk-based | gitflow | github-flow
+  commit_style: ""            # conventional | gitmoji | freeform
+  test_framework: ""          # Vitest | Jest | pytest | go test | cargo test
+  linter: ""                  # ESLint | Biome | Ruff | golangci-lint
+  formatter: ""               # Prettier | Biome | Black | gofmt
+  monorepo: false             # true | false
+  monorepo_tool: ""           # Turborepo | Nx | pnpm workspaces | none
+
+architecture:
+  multi_tenant: false         # true | false
+  tenant_isolation: ""        # RLS | schema-per-tenant | database-per-tenant | none
+  deployment_model: ""        # serverless | containers | VMs | edge
+
+observability:
+  logging: ""                 # structured-json | plaintext
+  log_provider: ""            # Axiom | Datadog | CloudWatch | stdout
+  metrics: ""                 # OpenTelemetry | Prometheus | Datadog | none
+  tracing: ""                 # OpenTelemetry | Jaeger | Datadog | none
+  error_tracking: ""          # Sentry | Bugsnag | none
