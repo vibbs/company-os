@@ -25,9 +25,10 @@ Translates high-level product requirements (PRD) or technical designs (RFC) into
 6. Write acceptance criteria for each task, derived from the PRD requirements.
 7. Identify tasks that can be parallelized across team members.
 8. Flag any tasks that require spikes or unknowns to be resolved first.
-9. Arrange tasks in a recommended execution order (topological sort by dependencies).
-10. Save the task list to `artifacts/engineering/`.
-11. Validate the artifact using `./tools/artifact/validate.sh`.
+9. For tasks introducing new dependencies, add "Fetch current docs via Context7 (`resolve-library-id` → `query-docs`)" as a pre-implementation step to ensure up-to-date API usage.
+10. Arrange tasks in a recommended execution order (topological sort by dependencies).
+11. Save the task list to `artifacts/engineering/`.
+12. Validate the artifact using `./tools/artifact/validate.sh`.
 
 ## Quality Checklist
 - [ ] Every PRD requirement maps to at least one implementation task

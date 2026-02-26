@@ -132,6 +132,17 @@ Always read `company.config.yaml` before making technical recommendations. If th
 - **Never leave uncommitted work** at the end of a task — if the user asked you to build something, commit the result
 - **Branch strategy**: read `conventions.branching` from config. Default to feature branches off main unless told otherwise
 
+### 9. Library Documentation (Context7)
+- **Before using any library or framework API**, fetch current documentation via Context7:
+  1. Call `resolve-library-id` with the library name to get the Context7 ID
+  2. Call `query-docs` with the ID and your specific question
+- This applies to: architecture decisions, API design, implementation, and dependency upgrades
+- Never assume training data is current — always verify against live docs for:
+  - Installation and setup patterns
+  - API signatures and configuration options
+  - Breaking changes between versions
+- If Context7 is unavailable, note it explicitly and flag which APIs may need verification
+
 ## Task Management
 
 1. **Plan First**: Write plan to `tasks/todo.md` with checkable items

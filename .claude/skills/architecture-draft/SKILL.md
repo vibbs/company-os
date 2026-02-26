@@ -51,6 +51,8 @@ Evaluate whether the configured tech stack is well-suited for this feature:
 
 **If the stack is suboptimal**: Document the concern explicitly in the RFC's "Alternatives Considered" section. Recommend an alternative with tradeoffs. But respect the user's final decision.
 
+**Library documentation**: Before committing to any library or framework in the design, fetch its current documentation via Context7 (`resolve-library-id` → `query-docs`). Verify the APIs and patterns you plan to use actually exist in the current version. This prevents designing around deprecated or non-existent features.
+
 ### Step 3: Define System Boundaries
 
 Draw the boundary between what's new, what's extended, and what's external.
