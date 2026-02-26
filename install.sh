@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
 # ============================================================================
-# Company OS — Installer
+# Company OS — Installer (Smart Merge)
 # ============================================================================
 # Downloads and installs Company OS overlay files into any project.
-# This is the first step — run /setup in Claude Code afterward to configure.
+# Smart-merges with existing Claude Code setups — preserves user permissions,
+# custom agents/skills, and project-specific CLAUDE.md content.
 #
 # Usage:
 #   curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash
 #   curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --force
 #
 # Flags:
-#   --force    Overwrite existing Company OS files (default: skip existing)
+#   --force    Update existing Company OS files (default: skip existing)
 #   --branch   Use a specific branch (default: main)
 #   --help     Show this help message
 # ============================================================================
@@ -31,7 +32,7 @@ while [[ $# -gt 0 ]]; do
       echo "Usage: curl -fsSL https://raw.githubusercontent.com/$REPO/main/install.sh | bash"
       echo ""
       echo "Flags:"
-      echo "  --force    Overwrite existing Company OS files"
+      echo "  --force    Update existing Company OS files (preserves user config)"
       echo "  --branch   Use a specific branch (default: main)"
       exit 0
       ;;
@@ -52,6 +53,13 @@ else
   GREEN='' YELLOW='' RED='' BLUE='' BOLD='' DIM='' NC=''
 fi
 
+# --- Counters ---
+CREATED=0
+ADDED=0
+SKIPPED=0
+UPDATED=0
+MERGED=0
+
 # --- Header ---
 echo ""
 echo -e "${BOLD}  Company OS — Installer${NC}"
@@ -69,6 +77,24 @@ if ! command -v tar &>/dev/null; then
   exit 1
 fi
 
+# --- Detect existing setup ---
+HAS_CLAUDE_DIR=false
+HAS_SETTINGS=false
+HAS_CLAUDE_MD=false
+HAS_TOOLS=false
+HAS_CONFIG=false
+
+[ -d ".claude" ] && HAS_CLAUDE_DIR=true
+[ -f ".claude/settings.json" ] && HAS_SETTINGS=true
+[ -f "CLAUDE.md" ] && HAS_CLAUDE_MD=true
+[ -d "tools" ] && HAS_TOOLS=true
+[ -f "company.config.yaml" ] && HAS_CONFIG=true
+
+if [ "$HAS_CLAUDE_DIR" = true ] || [ "$HAS_CLAUDE_MD" = true ]; then
+  echo -e "  ${BLUE}Detected existing Claude Code setup${NC} — will smart-merge"
+  echo ""
+fi
+
 # --- Download ---
 TMPDIR=$(mktemp -d)
 trap "rm -rf $TMPDIR" EXIT
@@ -82,7 +108,6 @@ else
   wget -qO- "$ARCHIVE_URL" | tar -xz -C "$TMPDIR"
 fi
 
-# The extracted directory name depends on the branch
 SRC="$TMPDIR/company-os-$BRANCH"
 
 if [ ! -d "$SRC" ]; then
@@ -93,41 +118,270 @@ fi
 echo -e "  ${GREEN}Downloaded${NC}"
 echo ""
 
-# --- Install overlay files ---
-COPIED=0
-SKIPPED=0
-UPDATED=0
+# ============================================================================
+# Smart Merge Functions
+# ============================================================================
 
-copy_item() {
-  local src="$1" dst="$2" label="$3"
+# merge_directory: Copies items from src_dir into dst_dir individually.
+# New items are always added. Existing items are skipped (or replaced with --force).
+# Usage: merge_directory <src_dir> <dst_dir> <label>
+merge_directory() {
+  local src_dir="$1" dst_dir="$2" label="$3"
+  local new_count=0 existing_count=0
 
-  if [ -e "$dst" ]; then
-    if [ "$FORCE" = true ]; then
-      rm -rf "$dst"
-      cp -r "$src" "$dst"
-      echo -e "  ${YELLOW}Updated${NC}  $label"
-      UPDATED=$((UPDATED + 1))
+  if [ ! -d "$src_dir" ]; then
+    return
+  fi
+
+  mkdir -p "$dst_dir"
+
+  for item in "$src_dir"/*; do
+    [ -e "$item" ] || continue  # skip if glob matched nothing
+    local name
+    name=$(basename "$item")
+
+    if [ -e "$dst_dir/$name" ]; then
+      if [ "$FORCE" = true ]; then
+        rm -rf "$dst_dir/$name"
+        cp -r "$item" "$dst_dir/$name"
+        UPDATED=$((UPDATED + 1))
+      else
+        existing_count=$((existing_count + 1))
+        SKIPPED=$((SKIPPED + 1))
+      fi
     else
-      SKIPPED=$((SKIPPED + 1))
+      cp -r "$item" "$dst_dir/$name"
+      new_count=$((new_count + 1))
+      ADDED=$((ADDED + 1))
     fi
+  done
+
+  # Report
+  if [ "$FORCE" = true ] && [ "$existing_count" -eq 0 ] && [ "$new_count" -gt 0 ]; then
+    echo -e "  ${GREEN}Created${NC}  $label ($new_count items)"
+  elif [ "$new_count" -gt 0 ] && [ "$existing_count" -gt 0 ]; then
+    echo -e "  ${GREEN}Added${NC}    $label ($new_count new, $existing_count existing preserved)"
+  elif [ "$new_count" -gt 0 ]; then
+    echo -e "  ${GREEN}Created${NC}  $label ($new_count items)"
+  elif [ "$FORCE" = true ]; then
+    echo -e "  ${YELLOW}Updated${NC}  $label"
   else
-    mkdir -p "$(dirname "$dst")"
-    cp -r "$src" "$dst"
-    echo -e "  ${GREEN}Created${NC}  $label"
-    COPIED=$((COPIED + 1))
+    echo -e "  ${DIM}Exists${NC}   $label ($existing_count items preserved)"
   fi
 }
+
+# merge_settings_json: Merges Company OS permissions and hooks into existing settings.json.
+# Never replaces — always merges, even with --force. Uses python3 for JSON handling.
+# Usage: merge_settings_json <src_file> <dst_file>
+merge_settings_json() {
+  local src_file="$1" dst_file="$2"
+
+  if [ ! -f "$dst_file" ]; then
+    # No existing settings — just copy
+    mkdir -p "$(dirname "$dst_file")"
+    cp "$src_file" "$dst_file"
+    echo -e "  ${GREEN}Created${NC}  .claude/settings.json"
+    CREATED=$((CREATED + 1))
+    return
+  fi
+
+  # Existing settings — merge
+  if ! command -v python3 &>/dev/null; then
+    echo -e "  ${YELLOW}Warning${NC}  .claude/settings.json — python3 not found, skipping merge"
+    echo -e "           ${DIM}Install python3 to enable automatic permission merging${NC}"
+    SKIPPED=$((SKIPPED + 1))
+    return
+  fi
+
+  # Use python3 to merge JSON arrays (permissions) and add hooks
+  local result
+  result=$(MERGE_SRC="$src_file" MERGE_DST="$dst_file" python3 << 'PYEOF'
+import json
+import os
+
+src_path = os.environ["MERGE_SRC"]
+dst_path = os.environ["MERGE_DST"]
+
+try:
+    with open(src_path) as f:
+        src = json.load(f)
+    with open(dst_path) as f:
+        dst = json.load(f)
+except Exception as e:
+    print(f"ERROR:{e}")
+    exit(1)
+
+# Track counts
+added_allow = 0
+added_deny = 0
+preserved_allow = 0
+preserved_deny = 0
+
+# Merge permissions.allow
+dst_allow = dst.get("permissions", {}).get("allow", [])
+preserved_allow = len(dst_allow)
+dst_allow_set = set(dst_allow)
+for rule in src.get("permissions", {}).get("allow", []):
+    if rule not in dst_allow_set:
+        dst_allow.append(rule)
+        added_allow += 1
+
+# Merge permissions.deny
+dst_deny = dst.get("permissions", {}).get("deny", [])
+preserved_deny = len(dst_deny)
+dst_deny_set = set(dst_deny)
+for rule in src.get("permissions", {}).get("deny", []):
+    if rule not in dst_deny_set:
+        dst_deny.append(rule)
+        added_deny += 1
+
+# Ensure permissions structure
+if "permissions" not in dst:
+    dst["permissions"] = {}
+dst["permissions"]["allow"] = dst_allow
+dst["permissions"]["deny"] = dst_deny
+
+# Add hooks if user doesn't have any
+if "hooks" not in dst and "hooks" in src:
+    dst["hooks"] = src["hooks"]
+    hooks_added = True
+else:
+    hooks_added = False
+
+# Write merged result
+with open(dst_path, "w") as f:
+    json.dump(dst, f, indent=2)
+    f.write("\n")
+
+# Report
+total_added = added_allow + added_deny
+total_preserved = preserved_allow + preserved_deny
+hooks_msg = ", hooks added" if hooks_added else ""
+print(f"added {total_added} rules, preserved {total_preserved} custom{hooks_msg}")
+PYEOF
+  ) || true
+
+  if [ -n "$result" ]; then
+    echo -e "  ${GREEN}Merged${NC}   .claude/settings.json ($result)"
+    MERGED=$((MERGED + 1))
+  else
+    echo -e "  ${YELLOW}Warning${NC}  .claude/settings.json — merge failed, existing file preserved"
+    SKIPPED=$((SKIPPED + 1))
+  fi
+}
+
+# merge_claude_md: Appends Company OS section to existing CLAUDE.md.
+# Detects the "## Company OS Overview" marker to avoid double-appending.
+# Usage: merge_claude_md <src_file> <dst_file>
+merge_claude_md() {
+  local src_file="$1" dst_file="$2"
+
+  if [ ! -f "$dst_file" ]; then
+    # No existing CLAUDE.md — just copy
+    cp "$src_file" "$dst_file"
+    echo -e "  ${GREEN}Created${NC}  CLAUDE.md"
+    CREATED=$((CREATED + 1))
+    return
+  fi
+
+  # Check if Company OS section already exists
+  if grep -q "## Company OS Overview" "$dst_file" 2>/dev/null; then
+    if [ "$FORCE" = true ]; then
+      # Extract user content (everything before Company OS section) and replace Company OS part
+      local marker_line
+      marker_line=$(grep -n "## Company OS Overview" "$dst_file" | head -1 | cut -d: -f1)
+
+      # Find the separator line (---) just before the marker, if any
+      local start_line=$marker_line
+      if [ "$marker_line" -gt 1 ]; then
+        local prev_line=$((marker_line - 1))
+        local prev_content
+        prev_content=$(sed -n "${prev_line}p" "$dst_file")
+        if [ "$prev_content" = "---" ]; then
+          start_line=$prev_line
+        fi
+        # Check one more line back for blank line before ---
+        if [ "$start_line" -gt 1 ]; then
+          local prev2=$((start_line - 1))
+          local prev2_content
+          prev2_content=$(sed -n "${prev2}p" "$dst_file")
+          if [ -z "$prev2_content" ]; then
+            start_line=$prev2
+          fi
+        fi
+      fi
+
+      # Keep user content, replace Company OS section
+      local user_content
+      user_content=$(head -n "$((start_line - 1))" "$dst_file")
+
+      # Extract Company OS section from source (everything from ## Company OS Overview onward)
+      local cos_section
+      cos_section=$(sed -n '/## Company OS Overview/,$p' "$src_file")
+
+      printf '%s\n\n---\n\n%s\n' "$user_content" "$cos_section" > "$dst_file"
+      echo -e "  ${YELLOW}Updated${NC}  CLAUDE.md (Company OS section refreshed, user content preserved)"
+      UPDATED=$((UPDATED + 1))
+    else
+      echo -e "  ${DIM}Exists${NC}   CLAUDE.md (Company OS section already present)"
+      SKIPPED=$((SKIPPED + 1))
+    fi
+    return
+  fi
+
+  # No Company OS section found — append it
+  local cos_section
+  cos_section=$(sed -n '/## Company OS Overview/,$p' "$src_file")
+
+  if [ -n "$cos_section" ]; then
+    printf '\n\n---\n\n%s\n' "$cos_section" >> "$dst_file"
+    echo -e "  ${GREEN}Appended${NC} CLAUDE.md (Company OS section added to existing)"
+    MERGED=$((MERGED + 1))
+  else
+    # Fallback: append entire source file content
+    printf '\n\n---\n\n' >> "$dst_file"
+    cat "$src_file" >> "$dst_file"
+    echo -e "  ${GREEN}Appended${NC} CLAUDE.md (Company OS content added)"
+    MERGED=$((MERGED + 1))
+  fi
+}
+
+# ============================================================================
+# Install
+# ============================================================================
 
 echo -e "  ${BOLD}Installing overlay files...${NC}"
 echo ""
 
-# Core overlay — these ARE Company OS
-copy_item "$SRC/.claude"              ".claude"              ".claude/ (agents, skills, hooks, settings)"
-copy_item "$SRC/tools"                "tools"                "tools/ (enforcement scripts)"
-copy_item "$SRC/company.config.yaml"  "company.config.yaml"  "company.config.yaml (central config)"
-copy_item "$SRC/CLAUDE.md"            "CLAUDE.md"            "CLAUDE.md (agent instructions)"
+# --- .claude/ (per-component smart merge) ---
+mkdir -p .claude
+merge_directory "$SRC/.claude/agents"  ".claude/agents"  ".claude/agents/"
+merge_directory "$SRC/.claude/skills"  ".claude/skills"  ".claude/skills/"
+merge_directory "$SRC/.claude/hooks"   ".claude/hooks"   ".claude/hooks/"
+merge_settings_json "$SRC/.claude/settings.json" ".claude/settings.json"
 
-# Scaffold directories — create if missing, never overwrite
+# --- tools/ (per-subdirectory smart merge) ---
+mkdir -p tools
+for tool_dir in "$SRC"/tools/*/; do
+  [ -d "$tool_dir" ] || continue
+  local_name=$(basename "$tool_dir")
+  merge_directory "$tool_dir" "tools/$local_name" "tools/$local_name/"
+done
+
+# --- CLAUDE.md (smart append) ---
+merge_claude_md "$SRC/CLAUDE.md" "CLAUDE.md"
+
+# --- company.config.yaml (always protected) ---
+if [ ! -f "company.config.yaml" ]; then
+  cp "$SRC/company.config.yaml" "company.config.yaml"
+  echo -e "  ${GREEN}Created${NC}  company.config.yaml"
+  CREATED=$((CREATED + 1))
+else
+  echo -e "  ${DIM}Kept${NC}     company.config.yaml (existing config preserved)"
+  SKIPPED=$((SKIPPED + 1))
+fi
+
+# --- Scaffold directories (create if missing, never overwrite) ---
 for dir in \
   artifacts/prds artifacts/rfcs artifacts/test-plans artifacts/qa-reports \
   artifacts/launch-briefs artifacts/security-reviews artifacts/decision-memos \
@@ -138,7 +392,6 @@ for dir in \
   imports tasks; do
   if [ ! -d "$dir" ]; then
     mkdir -p "$dir"
-    # Add .gitkeep to empty directories
     if [ -z "$(ls -A "$dir" 2>/dev/null)" ]; then
       touch "$dir/.gitkeep"
     fi
@@ -156,9 +409,16 @@ fi
 # Make all tool scripts executable
 find tools/ -name "*.sh" -type f -exec chmod +x {} \; 2>/dev/null || true
 
+# --- Summary ---
 echo ""
 echo -e "  ${DIM}─────────────────────────────────────${NC}"
-echo -e "  ${GREEN}Done!${NC} Created $COPIED, updated $UPDATED, skipped $SKIPPED existing."
+TOTAL=$((CREATED + ADDED + UPDATED + MERGED))
+if [ "$TOTAL" -eq 0 ] && [ "$SKIPPED" -gt 0 ]; then
+  echo -e "  ${GREEN}Done!${NC} Already installed — $SKIPPED items unchanged."
+  echo -e "  ${DIM}Use --force to update Company OS files${NC}"
+else
+  echo -e "  ${GREEN}Done!${NC} Created $CREATED, added $ADDED, merged $MERGED, updated $UPDATED, skipped $SKIPPED."
+fi
 echo ""
 
 # --- Next steps ---
