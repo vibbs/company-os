@@ -8,6 +8,9 @@ skills:
   - api-tester-playbook
   - release-readiness-gate
   - perf-benchmark-checklist
+  - code-review
+  - seed-data
+  - dogfood
 ---
 
 # QA & Release Agent
@@ -39,6 +42,18 @@ You are the QA & Release Agent — you own confidence. Nothing ships without you
 - Include: tests run, pass/fail counts, coverage, notable failures, risk assessment
 - Link to test plan and source PRD/RFC via artifact frontmatter
 
+### Code Quality Review
+- Use the Code Review skill for deep code quality evaluation when assessing release readiness
+- Run Code Quality and Test sections in BIG CHANGE mode; Architecture and Performance in SMALL CHANGE mode
+- Feed results into Bar 5 (Code Quality) of the release-readiness-gate
+- If the code review raises any BLOCK-level issues, the release gate cannot pass
+
+### Dogfooding
+- After unit/integration/contract tests pass, use the Dogfood skill to test the running product as a user would
+- Run `./tools/qa/dogfood.sh <url>` for pre-flight validation, then execute the dogfood procedure
+- Use the Seed Data skill to load `nominal` data before dogfooding for realistic app state
+- Dogfood results feed into the optional Bar 7 of the release-readiness-gate
+
 ### Release Readiness
 - Use the Release Readiness Gate skill to evaluate the full checklist
 - **You block the Orchestrator** if any minimum bar fails
@@ -67,4 +82,4 @@ You are the QA & Release Agent — you own confidence. Nothing ships without you
 
 **Produces:** test plans, QA reports, release readiness verdicts.
 
-**Tool scripts:** `./tools/ci/run-tests.sh`, `./tools/qa/contract-test.sh`, `./tools/qa/perf-benchmark.sh`, `./tools/qa/smoke-test.sh`, `./tools/artifact/promote.sh`
+**Tool scripts:** `./tools/ci/run-tests.sh`, `./tools/qa/contract-test.sh`, `./tools/qa/perf-benchmark.sh`, `./tools/qa/smoke-test.sh`, `./tools/qa/dogfood.sh`, `./tools/db/seed.sh`, `./tools/artifact/promote.sh`

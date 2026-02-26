@@ -5,13 +5,57 @@
 # Gates: prd-to-rfc, rfc-to-impl, impl-to-qa, release
 # Inputs: gate name + artifact path or ID to check against
 # Outputs: exit 0 if gate passes, exit 1 with specific failures
+#
+# Stage-aware behavior (reads company.config.yaml):
+#   idea  — all gates advisory (warnings only, never block)
+#   mvp   — prd-to-rfc and rfc-to-impl enforced; impl-to-qa and release advisory
+#   growth — all gates enforced (default)
+#   scale  — all gates enforced
 set -euo pipefail
 
 GATE_NAME="${1:-}"
 ARTIFACT_REF="${2:-}"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-ARTIFACTS_DIR="$SCRIPT_DIR/../../artifacts"
+PROJECT_ROOT="$SCRIPT_DIR/../.."
+ARTIFACTS_DIR="$PROJECT_ROOT/artifacts"
+
+# --- Stage-aware behavior ---
+# Read company stage from config. Default to "growth" (full enforcement).
+COMPANY_STAGE="growth"
+CONFIG_FILE="$PROJECT_ROOT/company.config.yaml"
+if [[ -f "$CONFIG_FILE" ]]; then
+  STAGE_VALUE=$(grep "^  stage:" "$CONFIG_FILE" | sed 's/.*stage: *//' | tr -d '"' | tr -d "'" | sed 's/ *#.*//' || true)
+  if [[ -n "$STAGE_VALUE" ]]; then
+    COMPANY_STAGE="$STAGE_VALUE"
+  fi
+fi
+
+# Determine if the current gate is advisory (warning-only) for this stage
+is_gate_advisory() {
+  local GATE="$1"
+  case "$COMPANY_STAGE" in
+    idea)
+      # All gates are advisory in idea stage
+      return 0
+      ;;
+    mvp)
+      # Only prd-to-rfc and rfc-to-impl are enforced; others are advisory
+      case "$GATE" in
+        prd-to-rfc|rfc-to-impl) return 1 ;;
+        *) return 0 ;;
+      esac
+      ;;
+    growth|scale|"")
+      # All gates enforced
+      return 1
+      ;;
+    *)
+      # Unknown stage — enforce by default
+      return 1
+      ;;
+  esac
+}
 
 if [[ -z "$GATE_NAME" ]]; then
   echo "ERROR: No gate name provided"
@@ -22,6 +66,12 @@ if [[ -z "$GATE_NAME" ]]; then
   echo "  rfc-to-impl   — RFC must be approved, parent PRD approved"
   echo "  impl-to-qa    — RFC approved, implementation exists"
   echo "  release        — All required artifacts exist and approved"
+  echo ""
+  echo "Stage-aware behavior (reads company.config.yaml stage field):"
+  echo "  idea   — all gates advisory (warnings only)"
+  echo "  mvp    — prd-to-rfc and rfc-to-impl enforced; others advisory"
+  echo "  growth — all gates enforced (default)"
+  echo "  scale  — all gates enforced"
   exit 1
 fi
 
@@ -279,6 +329,10 @@ esac
 echo ""
 echo "=== Gate Check: $GATE_NAME ==="
 
+if [[ "$COMPANY_STAGE" != "growth" && "$COMPANY_STAGE" != "scale" && -n "$COMPANY_STAGE" ]]; then
+  echo "  📋 Stage: $COMPANY_STAGE"
+fi
+
 if [[ ${#PASSES[@]} -gt 0 ]]; then
   for pass in "${PASSES[@]}"; do
     echo "  ✅ $pass"
@@ -286,12 +340,23 @@ if [[ ${#PASSES[@]} -gt 0 ]]; then
 fi
 
 if [[ ${#FAILURES[@]} -gt 0 ]]; then
-  for fail in "${FAILURES[@]}"; do
-    echo "  ❌ $fail"
-  done
-  echo ""
-  echo "❌ GATE FAILED: $GATE_NAME — ${#FAILURES[@]} issue(s) must be resolved"
-  exit 1
+  if is_gate_advisory "$GATE_NAME"; then
+    # Advisory mode — report as warnings, exit 0
+    for fail in "${FAILURES[@]}"; do
+      echo "  ⚠️  $fail"
+    done
+    echo ""
+    echo "⚠️  GATE ADVISORY: $GATE_NAME — ${#FAILURES[@]} issue(s) noted (stage: $COMPANY_STAGE, not blocking)"
+    exit 0
+  else
+    # Enforced mode — report as failures, exit 1
+    for fail in "${FAILURES[@]}"; do
+      echo "  ❌ $fail"
+    done
+    echo ""
+    echo "❌ GATE FAILED: $GATE_NAME — ${#FAILURES[@]} issue(s) must be resolved"
+    exit 1
+  fi
 else
   echo ""
   echo "✅ GATE PASSED: $GATE_NAME"

@@ -5,6 +5,8 @@ tools: Read, Grep, Glob, Bash, Write, Edit, Task
 model: inherit
 skills:
   - workflow-router
+  - ship
+  - status
   - decision-memo-writer
   - release-readiness-gate
   - ingest

@@ -98,7 +98,7 @@ else
   TYPE=""
   if echo "$FRONTMATTER" | grep -q "^type:"; then
     TYPE=$(extract_field "$ARTIFACT_PATH" "type")
-    VALID_TYPES=("prd" "rfc" "test-plan" "qa-report" "launch-brief" "security-review" "decision-memo")
+    VALID_TYPES=("prd" "rfc" "test-plan" "qa-report" "launch-brief" "security-review" "decision-memo" "test-data")
     FOUND=false
     for vt in "${VALID_TYPES[@]}"; do
       if [[ "$TYPE" == "$vt" ]]; then
@@ -107,7 +107,7 @@ else
       fi
     done
     if [[ "$FOUND" == "false" ]]; then
-      ERRORS+=("Invalid type: '$TYPE' (expected: prd, rfc, test-plan, qa-report, launch-brief, security-review, decision-memo)")
+      ERRORS+=("Invalid type: '$TYPE' (expected: prd, rfc, test-plan, qa-report, launch-brief, security-review, decision-memo, test-data)")
     fi
   fi
 
