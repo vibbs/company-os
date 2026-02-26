@@ -31,7 +31,7 @@ cd my-app
 
 | Item | Purpose |
 |------|---------|
-| `.claude/agents/` | 6 specialized AI agents |
+| `.claude/agents/` | 9 specialized AI agents (6 top-level + 3 engineering sub-agents) |
 | `.claude/skills/` | 44 procedural skills with templates and checklists |
 | `.claude/hooks/` | Automatic artifact validation hooks |
 | `tools/` | 23 enforcement scripts (validation, gates, lifecycle) |
@@ -182,15 +182,18 @@ The `models` section controls which Claude model tier each agent uses:
 
 ```yaml
 models:
-  orchestrator: "opus"        # Routing, gating, release approval
-  engineering: "opus"         # Architecture, API design, implementation
-  product: "sonnet"           # PRDs, discovery, prioritization
-  qa_release: "sonnet"        # Test plans, quality gates, release readiness
-  ops_risk: "sonnet"          # Security, compliance, legal, finance
-  growth: "sonnet"            # Launch assets, SEO, activation
+  orchestrator: "opus"          # Routing, gating, release approval
+  engineering: "opus"           # Staff Engineer — architecture, routing, code review
+  engineering_backend: "sonnet" # Backend sub-agent — API, data model, jobs
+  engineering_frontend: "sonnet" # Frontend sub-agent — UI, instrumentation, docs
+  engineering_devops: "sonnet"  # DevOps sub-agent — deployment, observability, flags
+  product: "sonnet"             # PRDs, discovery, prioritization
+  qa_release: "sonnet"          # Test plans, quality gates, release readiness
+  ops_risk: "sonnet"            # Security, compliance, legal, finance
+  growth: "sonnet"              # Launch assets, SEO, activation
 ```
 
-Options per agent: `opus` | `sonnet` | `haiku`. The default "cost-optimized" preset keeps Opus for Orchestrator and Engineering (which need the strongest reasoning) and Sonnet for the remaining agents (which follow structured templates). This saves ~30-35% on agent token costs compared to running all agents on Opus.
+Options per agent: `opus` | `sonnet` | `haiku`. The default "cost-optimized" preset keeps Opus for Orchestrator and Engineering Staff Engineer (which need the strongest reasoning) and Sonnet for all other agents including Engineering sub-agents (which follow structured templates and focused implementation). This saves ~30-35% on agent token costs compared to running all agents on Opus.
 
 The `/setup` wizard offers model presets during configuration. You can also change these values directly in `company.config.yaml` and the corresponding `.claude/agents/*.md` frontmatter `model:` field at any time.
 
@@ -223,7 +226,10 @@ Agents are Claude Code subagents that make decisions and delegate work.
 |-------|------|---------------|
 | **Orchestrator** | `orchestrator.md` | Routes tasks, enforces gates, approves releases |
 | **Product** | `product.md` | Discovery, PRDs, prioritization, scope control |
-| **Engineering** | `engineering.md` | Architecture, API design, implementation |
+| **Engineering** | `engineering.md` | Staff Engineer — architecture, decomposition, delegation, code review |
+| **Engineering: Backend** | `engineering-backend.md` | Sub-agent — API endpoints, data models, business logic, background jobs |
+| **Engineering: Frontend** | `engineering-frontend.md` | Sub-agent — UI components, responsive design, instrumentation, user docs |
+| **Engineering: DevOps** | `engineering-devops.md` | Sub-agent — deployment pipelines, observability, feature flags, CI/CD |
 | **QA & Release** | `qa-release.md` | Test plans, quality gates, release readiness |
 | **Growth** | `growth.md` | Launch strategy, SEO, activation, content |
 | **Ops & Risk** | `ops-risk.md` | Security, compliance, legal, finance |
@@ -664,10 +670,13 @@ company-os/
 ├── setup.sh                    # Bash setup fallback (scaffolds dirs + template config)
 ├── company.config.yaml         # Your company configuration (stays at root)
 ├── .claude/
-│   ├── agents/                 # 6 agent definitions (Claude Code subagents)
+│   ├── agents/                 # 9 agent definitions (6 top-level + 3 engineering sub-agents)
 │   │   ├── orchestrator.md
 │   │   ├── product.md
-│   │   ├── engineering.md
+│   │   ├── engineering.md          # Staff Engineer (orchestrator for sub-agents)
+│   │   ├── engineering-backend.md  # Backend sub-agent
+│   │   ├── engineering-frontend.md # Frontend sub-agent
+│   │   ├── engineering-devops.md   # DevOps sub-agent
 │   │   ├── qa-release.md
 │   │   ├── growth.md
 │   │   └── ops-risk.md

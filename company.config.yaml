@@ -93,7 +93,10 @@ models:
   # Opus = strongest reasoning (architecture, routing). Sonnet = fast + capable (templates, checklists).
   # Presets: cost-optimized (default below) | all-opus | all-sonnet | custom
   orchestrator: "opus"        # Routing, gating, release approval — needs strongest reasoning
-  engineering: "opus"         # Architecture, API design, implementation — high technical depth
+  engineering: "opus"         # Staff Engineer — architecture, routing, code review, conflict resolution
+  engineering_backend: "sonnet"  # Backend sub-agent — API, data model, jobs, multi-tenancy
+  engineering_frontend: "sonnet" # Frontend sub-agent — UI, instrumentation, docs, mobile
+  engineering_devops: "sonnet"   # DevOps sub-agent — deployment, observability, feature flags
   product: "sonnet"           # PRDs, discovery, prioritization — structured, template-driven
   qa_release: "sonnet"        # Test plans, quality gates, release readiness — systematic evaluation
   ops_risk: "sonnet"          # Security, compliance, legal, finance — domain-specific but structured

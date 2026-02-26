@@ -10,7 +10,7 @@ description: Resolves disagreements between agents using structured tradeoff ana
 - **Category**: Orchestration
 - **Inputs**: conflicting proposals, agent positions, project constraints
 - **Outputs**: resolution record with tradeoff matrix → artifacts/decision-memos/
-- **Used by**: Orchestrator Agent
+- **Used by**: Orchestrator Agent, Engineering Agent
 - **Tool scripts**: ./tools/artifact/validate.sh
 
 ## Purpose
