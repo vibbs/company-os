@@ -85,6 +85,15 @@ Each bar is pass/fail. ALL must pass for release approval.
 - [ ] Error handling doesn't leak internal details
 - [ ] Performance baselines met (if applicable)
 - [ ] Rollback strategy documented in RFC
+- [ ] Deployment strategy exists in `standards/ops/deployment-strategy.md` (or feature-level deployment plan in RFC)
+- [ ] Pre-deploy checks pass (`./tools/deploy/pre-deploy.sh`)
+- [ ] Incident runbook exists in `standards/ops/incident-runbook.md` (at least for production-stage products)
+
+#### Bar 7: Dogfood Report (Optional — Non-Blocking)
+- [ ] Dogfood report exists in `artifacts/qa-reports/` (if dogfooding was performed)
+- [ ] No CRITICAL severity issues in dogfood report
+- [ ] All P0 user journeys passed (or failures are tracked with remediation plan)
+- Note: This bar is informational by default. It reports whether dogfooding was run and what was found, but does not block release unless explicitly configured (`qa.dogfood_blocking: true` in `company.config.yaml`).
 
 ### Step 3: Calculate Overall Verdict
 
@@ -100,6 +109,7 @@ Each bar is pass/fail. ALL must pass for release approval.
 | Testing | PASS / FAIL |
 | Code Quality | PASS / FAIL |
 | Operational Readiness | PASS / FAIL |
+| Dogfood (optional) | PASS / FAIL / SKIPPED |
 
 ### Overall: APPROVED FOR RELEASE / NOT READY
 
