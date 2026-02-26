@@ -115,6 +115,23 @@ Always read `company.config.yaml` before making technical recommendations. If th
 - Zero context switching required from the user
 - Go fix failing CI tests without being told how
 
+### 8. Git Discipline
+- **Commit early, commit often** — make logical, atomic commits as you complete each meaningful unit of work
+- **Read `conventions.commit_style`** from `company.config.yaml` before your first commit:
+  - `conventional`: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`, `test:` prefixes
+  - `gitmoji`: emoji-prefixed commits
+  - `freeform`: no enforced format, but keep messages clear and descriptive
+- **One concern per commit** — don't mix unrelated changes. A bug fix, a new feature, and a refactor are three separate commits
+- **Commit message format**: first line is a concise summary (≤72 chars), blank line, then body explaining *why* not *what*
+- **Commit boundaries during feature development**:
+  - After scaffolding / boilerplate setup
+  - After each logical component or module is complete
+  - After tests pass for a unit of work
+  - After documentation updates
+  - Before and after risky refactors
+- **Never leave uncommitted work** at the end of a task — if the user asked you to build something, commit the result
+- **Branch strategy**: read `conventions.branching` from config. Default to feature branches off main unless told otherwise
+
 ## Task Management
 
 1. **Plan First**: Write plan to `tasks/todo.md` with checkable items
