@@ -1,49 +1,111 @@
 # Setup Guide — AI Agentic Company OS
 
-This guide walks you through configuring your Company OS instance after forking the template. You can follow these steps yourself or ask Claude Code to do it for you — the system is designed so agents can execute every step.
+This guide walks you through installing and configuring Company OS. Two phases: **install** (get the files) then **configure** (customize for your project).
 
 ---
 
-## Quick Start
+## Phase 1: Install
 
-Company OS is an **overlay** — it lives alongside your code and never touches your source files. It works with new projects, existing repos, and mono repos.
+Company OS is an **overlay** — it adds its own files alongside your code and never touches your source.
 
-### Path A — Claude Code (Recommended)
+### Existing Project (recommended)
 
 ```bash
-cd my-project    # new or existing repo
+cd my-project
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash
+```
+
+This downloads the Company OS overlay files (`.claude/`, `tools/`, `company.config.yaml`, `CLAUDE.md`) and scaffolds working directories. Your existing code is untouched.
+
+### New Project (GitHub template)
+
+```bash
+# GitHub CLI
+gh repo create my-app --template vibbs/company-os --clone
+cd my-app
+
+# Or click "Use this template" on the GitHub repo page
+```
+
+### What Gets Installed
+
+| Item | Purpose |
+|------|---------|
+| `.claude/agents/` | 6 specialized AI agents |
+| `.claude/skills/` | 44 procedural skills with templates and checklists |
+| `.claude/hooks/` | Automatic artifact validation hooks |
+| `tools/` | 23 enforcement scripts (validation, gates, lifecycle) |
+| `company.config.yaml` | Central config file (empty template — you fill it in Phase 2) |
+| `CLAUDE.md` | Agent instructions (auto-loaded every session) |
+| `artifacts/`, `standards/`, `tasks/`, `imports/` | Working directories |
+
+### Mono/Multi Repo
+
+- **Mono repo**: Install at the repo root. `company.config.yaml` describes the shared stack. Agents work across all packages.
+- **Multi repo**: Each repo gets its own Company OS install with independent config and artifacts.
+
+---
+
+## Phase 2: Configure
+
+Open Claude Code and run the setup wizard:
+
+```bash
 claude
 > /setup
 ```
 
-The `/setup` wizard will:
-- Walk you through company profile and tech stack (with presets for common stacks)
-- Fill in `company.config.yaml`
-- Generate `.claude/settings.json` with permissions tailored to your tech stack
-- Scaffold any missing directories
-- Run health checks
+The wizard fills in `company.config.yaml`, generates `.claude/settings.json` with permissions for your tech stack, and verifies everything works.
 
-### Path B — Script Fallback
+### Three ways to configure — pick your speed:
 
-```bash
-cd my-project
-bash setup.sh          # scaffolds directories + creates template config
-claude
-> /setup               # customize interactively
+**Interactive** — guided step-by-step (best for first-timers):
+```
+> /setup
 ```
 
-### Path C — GitHub Template (Greenfield Only)
+**Express** — paste a config block (best for power users):
+```
+> /setup
 
-1. Click "Use this template" on the [GitHub repo](https://github.com/vibbs/company-os)
-2. Clone your new repo
-3. Open Claude Code, run `/setup`
+## Company
+- Name: Acme Corp
+- Product: InvoiceFlow
+- Description: B2B SaaS invoicing for small businesses
+- Domain: invoiceflow.com
+- Stage: mvp
 
-### Existing Codebase Support
+## Tech Stack
+- Preset: nextjs
+- Cache: Redis
+- Queue: BullMQ
 
-Company OS works on existing repos. It only creates its own files (`.claude/`, `tools/`, `artifacts/`, `standards/`, `tasks/`, `imports/`, `company.config.yaml`) and never modifies your source code.
+## Architecture
+- Multi-tenant: true
+- Tenant Isolation: RLS
+- Deployment: serverless
 
-- **Mono repo**: Run `/setup` at the repo root. Agents work across all packages.
-- **Multi repo**: Each repo gets its own Company OS instance with independent artifacts.
+## Platforms
+- Targets: [web, mobile-web]
+
+## Analytics
+- Provider: PostHog
+
+## Email
+- Provider: Resend
+
+## Options
+- Clean Up Templates: yes
+```
+
+**Auto-extract** — paste a URL or unstructured text (fastest):
+```
+> /setup https://yourproduct.com
+```
+
+Or paste a pitch deck summary, product brief, or Notion dump alongside `/setup` — the wizard extracts what it can and only asks about what it couldn't determine.
+
+See the full express mode template in `.claude/skills/setup/SKILL.md`.
 
 **Or configure manually** — the sections below walk through each step.
 
