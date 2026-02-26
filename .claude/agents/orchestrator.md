@@ -2,7 +2,7 @@
 name: orchestrator
 description: Routes tasks, enforces stage gates, arbitrates conflicts, approves releases. Use proactively for any multi-step objective or when coordinating work across multiple agents.
 tools: Read, Grep, Glob, Bash, Write, Edit, Task
-model: inherit
+model: opus
 skills:
   - workflow-router
   - ship

@@ -87,3 +87,14 @@ email:
   provider: ""                # Resend | Sendgrid | Postmark | SES | none
   from_address: ""            # noreply@yourdomain.com
   template_engine: ""         # react-email | mjml | handlebars | jinja | plain-html
+
+models:
+  # Which Claude model each agent uses. Options: opus | sonnet | haiku
+  # Opus = strongest reasoning (architecture, routing). Sonnet = fast + capable (templates, checklists).
+  # Presets: cost-optimized (default below) | all-opus | all-sonnet | custom
+  orchestrator: "opus"        # Routing, gating, release approval — needs strongest reasoning
+  engineering: "opus"         # Architecture, API design, implementation — high technical depth
+  product: "sonnet"           # PRDs, discovery, prioritization — structured, template-driven
+  qa_release: "sonnet"        # Test plans, quality gates, release readiness — systematic evaluation
+  ops_risk: "sonnet"          # Security, compliance, legal, finance — domain-specific but structured
+  growth: "sonnet"            # Launch assets, SEO, activation — creative but bounded by templates

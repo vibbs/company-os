@@ -2,7 +2,7 @@
 name: ops-risk
 description: Manages security baseline, privacy/compliance, finance sanity, and legal drafts. Use for security reviews, compliance checks, cost analysis, or legal document preparation.
 tools: Read, Grep, Glob, Bash, Write
-model: inherit
+model: sonnet
 skills:
   - threat-modeling
   - privacy-data-handling

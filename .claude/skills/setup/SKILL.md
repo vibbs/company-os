@@ -357,6 +357,33 @@ i18n (only prompt if user indicates international audience):
 - `email.from_address` — auto-suggest: noreply@{company.domain}
 - `email.template_engine` — react-email (for TypeScript/Next.js) | mjml (for any) | handlebars (for Node.js) | jinja (for Python) | plain-html (default: infer from tech stack)
 
+### Step 5.6: Model Preferences
+
+Ask: "Which model tier should each agent use? This controls cost vs. capability."
+
+Offer presets first:
+
+| Preset | Orchestrator | Engineering | Product | QA | Ops & Risk | Growth |
+|--------|-------------|-------------|---------|-----|-----------|--------|
+| **Cost-Optimized** (Recommended) | opus | opus | sonnet | sonnet | sonnet | sonnet |
+| **All Opus** | opus | opus | opus | opus | opus | opus |
+| **All Sonnet** | sonnet | sonnet | sonnet | sonnet | sonnet | sonnet |
+| **Custom** | — | — | — | — | — | — |
+
+**Default**: Cost-Optimized — keeps Opus for Orchestrator (routing/gating) and Engineering (architecture/implementation), uses Sonnet for structured/template-driven agents.
+
+If user selects Custom, walk through each agent:
+- `models.orchestrator` — opus (recommended) | sonnet | haiku
+- `models.engineering` — opus (recommended) | sonnet
+- `models.product` — sonnet (recommended) | opus
+- `models.qa_release` — sonnet (recommended) | opus
+- `models.ops_risk` — sonnet (recommended) | opus
+- `models.growth` — sonnet (recommended) | opus | haiku
+
+After selection, update both:
+1. `company.config.yaml` `models:` section with the chosen values
+2. Each `.claude/agents/*.md` frontmatter `model:` field to match
+
 ### Step 6: Write `company.config.yaml`
 
 Write the complete config file with all gathered values. Preserve the comment structure from the template. Leave uncollected optional fields as `""`.

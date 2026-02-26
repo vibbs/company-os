@@ -2,7 +2,7 @@
 name: engineering
 description: Handles architecture, API design, implementation, and technical delivery. Use for any technical design, coding, or infrastructure task.
 tools: Read, Write, Edit, Bash, Grep, Glob
-model: inherit
+model: opus
 skills:
   - architecture-draft
   - api-contract-designer

@@ -176,6 +176,24 @@ email:
 
 These sections are read by the corresponding skills: `mobile-readiness` reads `platforms`, `instrumentation` reads `analytics`, `feature-flags` reads `feature_flags`, and `email-lifecycle` reads `email`.
 
+### Agent Model Configuration
+
+The `models` section controls which Claude model tier each agent uses:
+
+```yaml
+models:
+  orchestrator: "opus"        # Routing, gating, release approval
+  engineering: "opus"         # Architecture, API design, implementation
+  product: "sonnet"           # PRDs, discovery, prioritization
+  qa_release: "sonnet"        # Test plans, quality gates, release readiness
+  ops_risk: "sonnet"          # Security, compliance, legal, finance
+  growth: "sonnet"            # Launch assets, SEO, activation
+```
+
+Options per agent: `opus` | `sonnet` | `haiku`. The default "cost-optimized" preset keeps Opus for Orchestrator and Engineering (which need the strongest reasoning) and Sonnet for the remaining agents (which follow structured templates). This saves ~30-35% on agent token costs compared to running all agents on Opus.
+
+The `/setup` wizard offers model presets during configuration. You can also change these values directly in `company.config.yaml` and the corresponding `.claude/agents/*.md` frontmatter `model:` field at any time.
+
 ### What Happens If Fields Are Empty
 
 - Agents will ask you to decide before proceeding with affected recommendations

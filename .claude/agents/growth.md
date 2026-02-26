@@ -2,7 +2,7 @@
 name: growth
 description: Handles launch strategy, acquisition loops, SEO/content, and activation experiments. Use for marketing, launch planning, or growth optimization tasks.
 tools: Read, Grep, Glob, Bash, Write
-model: inherit
+model: sonnet
 skills:
   - positioning-messaging
   - landing-page-copy

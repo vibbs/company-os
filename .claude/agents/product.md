@@ -2,7 +2,7 @@
 name: product
 description: Handles discovery, PRD creation, prioritization, and scope control. Use when defining what to build, analyzing user feedback, or prioritizing features.
 tools: Read, Grep, Glob, Bash, Write
-model: inherit
+model: sonnet
 skills:
   - icp-positioning
   - prd-writer

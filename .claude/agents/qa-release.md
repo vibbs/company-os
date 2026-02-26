@@ -2,7 +2,7 @@
 name: qa-release
 description: Manages quality gates, test planning, regression confidence, and release readiness. Use when testing, creating test plans, or evaluating release readiness.
 tools: Read, Grep, Glob, Bash
-model: inherit
+model: sonnet
 skills:
   - test-plan-generator
   - api-tester-playbook
