@@ -2,9 +2,20 @@
 
 An AI-powered operating system for building SaaS products with Claude Code. Company OS gives your AI assistant a complete team of specialized agents, structured workflows, and quality gates — taking you from idea to shipped product with full audit trails.
 
+## Prerequisites
+
+- **Git** — Company OS uses git for artifact audit trails. Initialize a repo before installing:
+  ```bash
+  git init  # if you don't already have one
+  ```
+- **Claude Code** — Install from [claude.ai/code](https://claude.ai/code) (required to run agents and skills)
+- **python3** (optional) — Used by the installer to smart-merge `.claude/settings.json` when overlaying onto existing Claude Code setups. Available by default on macOS and most Linux distros.
+
+---
+
 ## Install
 
-Company OS is an **overlay** — it adds its own files alongside your code and never touches your source. Works with new projects, existing repos, and mono repos.
+Company OS is an **overlay** — it adds its own files alongside your code and never touches your source. Works with new projects, existing repos, and mono repos. If you already have Claude Code configured (`.claude/settings.json`, custom agents), the installer smart-merges — your existing permissions, agents, and skills are preserved.
 
 ### Existing Project (one command)
 
@@ -72,6 +83,33 @@ Then build your first feature:
 │  that validate, promote, link, gate.         │
 └─────────────────────────────────────────────┘
 ```
+
+### Multi-Agent Orchestration
+
+Company OS agents are **Claude Code subagents** — each one is a specialized AI with its own system prompt, skills, and tools. When you give an objective, the Orchestrator spawns the right agent for each stage:
+
+```
+You: "Build Stripe billing for Acme"
+ │
+ ├─→ Orchestrator reads objective, spawns Product Agent
+ │     └─→ Product Agent writes PRD using prd-writer skill
+ │
+ ├─→ Orchestrator checks prd-to-rfc gate, spawns Engineering Agent
+ │     └─→ Engineering Agent writes RFC + API contract
+ │
+ ├─→ Orchestrator spawns Ops & Risk Agent (in parallel with Engineering)
+ │     └─→ Ops & Risk runs threat model on the RFC
+ │
+ ├─→ Engineering Agent implements code, runs tests
+ │
+ ├─→ Orchestrator checks impl-to-qa gate, spawns QA Agent
+ │     └─→ QA Agent writes test plan, runs validation
+ │
+ └─→ Orchestrator checks release gate, spawns Growth Agent
+       └─→ Growth Agent writes launch brief
+```
+
+Each agent only sees the skills relevant to its role. The Orchestrator never writes code — it only routes, delegates, and enforces gates. Artifacts produced by one agent become inputs to the next, creating a full audit trail from idea to shipped product.
 
 ### Ship Flow
 
@@ -205,7 +243,7 @@ To update Company OS to the latest version in an existing project:
 curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --force
 ```
 
-The `--force` flag overwrites existing Company OS files while preserving your `company.config.yaml` configuration.
+The `--force` flag updates Company OS agents, skills, and tools while preserving your `company.config.yaml`, custom permissions in `settings.json`, and any project-specific content in `CLAUDE.md`.
 
 ---
 
