@@ -11,12 +11,12 @@ Claude Code is powerful, but out of the box it's a blank canvas. You prompt, it 
 Company OS adds structure:
 
 - **6 specialized agents** that know their domain (product, engineering, QA, growth, ops, orchestration)
-- **31 skills** with procedures, templates, and checklists agents follow
-- **20+ tool scripts** that enforce rules deterministically (artifact validation, stage gates, lifecycle management)
+- **44 skills** with procedures, templates, and checklists agents follow
+- **23 tool scripts** that enforce rules deterministically (artifact validation, stage gates, lifecycle management)
 - **Artifact lineage** tracking every decision from PRD to release with parent/child relationships
 - **Stage gates** that block progression until prerequisites are met
 
-The overhead? **~1,400 extra tokens per session** for the system prompt. That's it. See [TOKEN_COSTS.md](TOKEN_COSTS.md) for the full breakdown.
+The overhead? **~1,900 extra tokens per session** for the system prompt. That's it. See [TOKEN_COSTS.md](TOKEN_COSTS.md) for the full breakdown.
 
 ---
 
@@ -119,16 +119,16 @@ Gates are enforced by `tools/artifact/check-gate.sh` — you can't skip stages.
 | **Growth** | Launch strategy, SEO, activation, content |
 | **Ops & Risk** | Security, compliance, legal, finance |
 
-### Skills (31)
+### Skills (44)
 
 | Category | Skills |
 |----------|--------|
-| Orchestration | workflow-router, decision-memo-writer, conflict-resolver, ingest, system-maintenance, artifact-import, setup |
-| Product | icp-positioning, prd-writer, sprint-prioritizer, feedback-synthesizer |
-| Engineering | architecture-draft, api-contract-designer, background-jobs, multi-tenancy, implementation-decomposer, observability-baseline |
-| QA / Release | test-plan-generator, api-tester-playbook, release-readiness-gate, perf-benchmark-checklist |
-| Growth | positioning-messaging, landing-page-copy, seo-topic-map, channel-playbook, activation-onboarding |
-| Risk / Legal / Finance | threat-modeling, privacy-data-handling, compliance-readiness, pricing-unit-economics, tos-privacy-drafting |
+| Orchestration | workflow-router, ship, status, decision-memo-writer, conflict-resolver, ingest, system-maintenance, artifact-import, setup |
+| Product | icp-positioning, prd-writer, sprint-prioritizer, feedback-synthesizer, discovery-validation |
+| Engineering | architecture-draft, api-contract-designer, background-jobs, multi-tenancy, implementation-decomposer, observability-baseline, code-review, seed-data, deployment-strategy, instrumentation, feature-flags, user-docs, mobile-readiness |
+| QA / Release | test-plan-generator, api-tester-playbook, release-readiness-gate, perf-benchmark-checklist, seed-data, code-review, dogfood |
+| Growth | positioning-messaging, landing-page-copy, seo-topic-map, channel-playbook, activation-onboarding, email-lifecycle |
+| Risk / Legal / Finance | threat-modeling, privacy-data-handling, compliance-readiness, pricing-unit-economics, tos-privacy-drafting, incident-response |
 
 ### Enforcement Tools
 
@@ -138,6 +138,8 @@ Gates are enforced by `tools/artifact/check-gate.sh` — you can't skip stages.
 | `promote.sh` | Enforces lifecycle ordering (draft → review → approved), checks prerequisites before approval |
 | `link.sh` | Links parent/child artifacts — edits both files, validates, logs to audit trail |
 | `check-gate.sh` | Stage gate checks with specific preconditions per gate |
+| `status-check.sh` | Quick health checks for production services (ops) |
+| `pre-deploy.sh` | Validates deployment readiness before every deploy |
 
 ---
 
@@ -147,9 +149,9 @@ Company OS adds minimal overhead to your Claude Code usage:
 
 | What | Additional Tokens |
 |------|------------------|
-| Per session (CLAUDE.md auto-loaded) | ~1,400 |
-| Per agent spawn (skills preloaded) | ~3,000-6,000 |
-| Full feature (idea → shipped) | ~150,000-200,000 total |
+| Per session (CLAUDE.md auto-loaded) | ~1,900 |
+| Per agent spawn (skills preloaded) | ~3,000-16,000 |
+| Full feature (idea → shipped) | ~160,000-220,000 total |
 
 See [TOKEN_COSTS.md](TOKEN_COSTS.md) for detailed per-agent breakdowns and cost reduction strategies.
 
@@ -193,6 +195,8 @@ Design decisions are documented in `artifacts/decision-memos/`:
 
 | Command | What It Does |
 |---------|-------------|
+| `/ship` | Kick off the full ship flow — PRD, RFC, implementation, QA, release with gate checks |
+| `/status` | Project health dashboard — artifact counts, statuses, broken links, gate readiness |
 | `/setup` | Interactive setup wizard — configures config, permissions, and directories |
 | `/artifact-import` | Imports existing PRDs, RFCs, specs from external sources |
 | `/ingest` | Syncs new standards/artifacts into skills and agents |

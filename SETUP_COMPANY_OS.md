@@ -87,6 +87,33 @@ conventions:
   commit_style: "conventional"  # Guides commit message format
 ```
 
+### Additional Config Sections (fill as needed)
+
+```yaml
+platforms:
+  targets: [web, mobile-web]    # web | mobile-web | ios | android
+  responsive: true              # Enable mobile-readiness checks
+  pwa: false                    # Progressive Web App support
+
+analytics:
+  provider: "PostHog"           # Analytics provider (PostHog, Mixpanel, Amplitude, etc.)
+  events_style: "noun_verb"     # Event naming convention
+  consent_required: true        # Whether consent is needed before tracking
+
+feature_flags:
+  provider: "LaunchDarkly"      # Feature flag provider (LaunchDarkly, Flagsmith, custom, etc.)
+  discovery_levels: [core, foundations, power, expert]  # Progressive discovery tiers
+  default_rollout: "percentage" # percentage | user-segment | environment
+
+email:
+  provider: "Resend"            # Email service provider (Resend, SendGrid, Postmark, etc.)
+  transactional: true           # Transactional emails (receipts, password resets)
+  marketing: false              # Marketing/lifecycle email campaigns
+  templates_dir: "standards/email/"  # Where email templates live
+```
+
+These sections are read by the corresponding skills: `mobile-readiness` reads `platforms`, `instrumentation` reads `analytics`, `feature-flags` reads `feature_flags`, and `email-lifecycle` reads `email`.
+
 ### What Happens If Fields Are Empty
 
 - Agents will ask you to decide before proceeding with affected recommendations
@@ -130,11 +157,11 @@ Skills are directory-based knowledge documents. Each contains a `SKILL.md` entry
 | Category | Skills (directory names) |
 |----------|------------------------|
 | Orchestration | `workflow-router`, `decision-memo-writer`, `conflict-resolver`, `ingest`, `system-maintenance`, `artifact-import`, `setup` |
-| Product | `icp-positioning`, `prd-writer`, `sprint-prioritizer`, `feedback-synthesizer` |
-| Engineering | `architecture-draft`, `api-contract-designer`, `background-jobs`, `multi-tenancy`, `implementation-decomposer`, `observability-baseline` |
-| QA / Release | `test-plan-generator`, `api-tester-playbook`, `release-readiness-gate`, `perf-benchmark-checklist` |
-| Growth | `positioning-messaging`, `landing-page-copy`, `seo-topic-map`, `channel-playbook`, `activation-onboarding` |
-| Risk / Legal / Finance | `threat-modeling`, `privacy-data-handling`, `compliance-readiness`, `pricing-unit-economics`, `tos-privacy-drafting` |
+| Product | `icp-positioning`, `prd-writer`, `sprint-prioritizer`, `feedback-synthesizer`, `discovery-validation` |
+| Engineering | `architecture-draft`, `api-contract-designer`, `background-jobs`, `multi-tenancy`, `implementation-decomposer`, `observability-baseline`, `code-review`, `seed-data`, `deployment-strategy`, `instrumentation`, `feature-flags`, `user-docs`, `mobile-readiness` |
+| QA / Release | `test-plan-generator`, `api-tester-playbook`, `release-readiness-gate`, `perf-benchmark-checklist`, `seed-data`, `code-review`, `dogfood` |
+| Growth | `positioning-messaging`, `landing-page-copy`, `seo-topic-map`, `channel-playbook`, `activation-onboarding`, `email-lifecycle` |
+| Risk / Legal / Finance | `threat-modeling`, `privacy-data-handling`, `compliance-readiness`, `pricing-unit-economics`, `tos-privacy-drafting`, `incident-response` |
 
 **Customizing**: Edit any skill's `SKILL.md` to match your processes. Frontmatter uses official Claude Code fields (`name`, `description`, `allowed-tools`, etc.). Supporting files (templates, references) live alongside `SKILL.md`.
 
@@ -147,10 +174,12 @@ Shell scripts that agents execute via Bash. They perform deterministic actions.
 | Artifact Management | `tools/artifact/` | validate, promote, link, check-gate |
 | Skill Registry | `tools/registry/` | search-skill, health-check, detect-changes |
 | CI / Engineering | `tools/ci/` | run-tests, lint-format, openapi-lint |
-| Database | `tools/db/` | migration-check |
-| QA | `tools/qa/` | contract-test, perf-benchmark, smoke-test |
+| Database | `tools/db/` | migration-check, seed |
+| QA | `tools/qa/` | contract-test, perf-benchmark, smoke-test, dogfood |
 | Security | `tools/security/` | dependency-scan, secrets-scan, sast |
 | Analytics | `tools/analytics/` | query-metrics, publish-content |
+| Ops | `tools/ops/` | status-check |
+| Deploy | `tools/deploy/` | pre-deploy |
 
 **Customizing**: Tools read from `company.config.yaml` to auto-detect your stack. Some tools are stubs (analytics, content publishing) — replace them with calls to your actual providers.
 
@@ -192,6 +221,36 @@ Drop your existing company standards into `standards/`. Then run `/ingest` to sy
 - Component library documentation or Figma links
 
 When brand standards are present, agents reference them for visual requirements and content tone.
+
+### `standards/ops/`
+- Operational runbooks and playbooks
+- Incident response procedures and severity definitions
+- SLO/SLA definitions and escalation policies
+- On-call rotation and communication templates
+
+### `standards/analytics/`
+- Event taxonomy and naming conventions
+- Tracking plans (which events, which properties)
+- Dashboard specifications and KPI definitions
+- Consent and privacy requirements for analytics
+
+### `standards/docs/`
+- Documentation style guides
+- API documentation templates
+- End-user documentation conventions
+- Changelog and release notes formats
+
+### `standards/email/`
+- Email template designs and guidelines
+- Lifecycle sequence definitions (onboarding, re-engagement, etc.)
+- Deliverability best practices
+- Transactional vs marketing email rules
+
+### `standards/engineering/`
+- Engineering principles and philosophy
+- Architecture decision records (ADRs)
+- Code ownership and review policies
+- Deployment and release procedures
 
 ### After Placing Standards: Run Ingest
 
@@ -326,7 +385,7 @@ Every agent-produced document is an **artifact** with YAML frontmatter:
 ```yaml
 ---
 id: PRD-001               # Unique identifier
-type: prd                  # prd | rfc | test-plan | qa-report | launch-brief | security-review | decision-memo
+type: prd                  # prd | rfc | test-plan | qa-report | launch-brief | security-review | decision-memo | test-data
 title: "Feature Name"
 status: draft              # draft → review → approved → archived
 created: 2026-02-23
@@ -380,7 +439,7 @@ All promotions and linkages are logged in `artifacts/.audit-log/promotions.log`.
 
 ### Adding a New Skill
 
-**Ask an agent**: "Create a new skill called `code-review` that handles pull request reviews"
+**Ask an agent**: "Create a new skill called `my-custom-skill` that handles [your use case]"
 
 Or manually:
 
@@ -487,7 +546,7 @@ company-os/
 │   │   ├── qa-release.md
 │   │   ├── growth.md
 │   │   └── ops-risk.md
-│   └── skills/                 # 31 skill directories (SKILL.md + supporting files)
+│   └── skills/                 # 44 skill directories (SKILL.md + supporting files)
 │       ├── workflow-router/
 │       │   └── SKILL.md
 │       ├── prd-writer/
@@ -507,22 +566,53 @@ company-os/
 │       │   └── SKILL.md
 │       ├── setup/
 │       │   └── SKILL.md
-│       └── ... (22 more skill directories)
+│       ├── seed-data/
+│       │   └── SKILL.md
+│       ├── dogfood/
+│       │   └── SKILL.md
+│       ├── code-review/
+│       │   ├── SKILL.md
+│       │   └── review-report-template.md
+│       ├── discovery-validation/
+│       │   └── SKILL.md
+│       ├── deployment-strategy/
+│       │   └── SKILL.md
+│       ├── instrumentation/
+│       │   └── SKILL.md
+│       ├── feature-flags/
+│       │   └── SKILL.md
+│       ├── user-docs/
+│       │   └── SKILL.md
+│       ├── mobile-readiness/
+│       │   └── SKILL.md
+│       ├── incident-response/
+│       │   └── SKILL.md
+│       ├── email-lifecycle/
+│       │   └── SKILL.md
+│       └── ... (19 more skill directories)
 ├── imports/                    # Staging area for importing external documents
 │   └── .gitkeep
 ├── tools/                      # Shell scripts agents execute via Bash
 │   ├── artifact/               # validate, promote, link, check-gate
 │   ├── registry/               # search-skill, health-check, detect-changes
 │   ├── ci/                     # run-tests, lint-format, openapi-lint
-│   ├── db/                     # migration-check
-│   ├── qa/                     # contract-test, perf-benchmark, smoke-test
+│   ├── db/                     # migration-check, seed
+│   ├── qa/                     # contract-test, perf-benchmark, smoke-test, dogfood
 │   ├── security/               # dependency-scan, secrets-scan, sast
-│   └── analytics/              # query-metrics, publish-content
+│   ├── analytics/              # query-metrics, publish-content
+│   ├── ops/                    # status-check
+│   └── deploy/                 # pre-deploy
 ├── standards/                  # Your company standards (drop files here, then /ingest)
 │   ├── api/                    # API specs and style guides
 │   ├── brand/                  # Brand guidelines, design tokens, Figma links
 │   ├── coding/                 # Code conventions and style guides
 │   ├── compliance/             # Compliance requirements
+│   ├── ops/                    # Operational runbooks, incident procedures, SLOs
+│   ├── analytics/              # Event taxonomy, tracking plans, dashboard specs
+│   ├── docs/                   # Documentation standards, style guides, templates
+│   ├── email/                  # Email templates, lifecycle sequences, deliverability rules
+│   ├── engineering/            # Engineering principles, architecture decision records
+│   ├── engineering-preferences.md  # Team engineering philosophy (used by code-review skill)
 │   └── templates/              # Custom artifact templates
 ├── artifacts/                  # Agent-produced outputs with lineage tracking
 │   ├── prds/
@@ -532,6 +622,7 @@ company-os/
 │   ├── launch-briefs/
 │   ├── security-reviews/
 │   ├── decision-memos/
+│   ├── test-data/
 │   └── .audit-log/            # Promotion and linkage audit trail
 └── tasks/                      # Session task management
     ├── todo.md                 # Current task tracking

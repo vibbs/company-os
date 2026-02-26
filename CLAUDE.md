@@ -25,6 +25,8 @@ This is an **AI Agentic Company OS** — a template project system for building 
 If artifacts already exist outside Company OS (Google Docs, Notion, local files), run `/artifact-import` to bring them in before starting the ship flow. The import skill classifies documents, adds frontmatter, and links related artifacts so stage gates work from that point forward. Imported artifacts enter at `review` status.
 
 ### Canonical Ship Flow
+Run `/ship` to kick off the full pipeline. It reads your tech stack from `company.config.yaml`, builds an execution plan, and pauses at each gate for your review.
+
 1. **Orchestrator** routes objective → asks Product Agent for PRD
 2. **Product Agent** produces PRD → `artifacts/prds/`
 3. **Engineering Agent** produces RFC/API contract → `artifacts/rfcs/`
@@ -53,7 +55,12 @@ Every artifact has YAML frontmatter with: `id`, `type`, `status` (draft/review/a
 - `./tools/artifact/validate.sh` — checks frontmatter + verifies parent/depends_on/children references exist
 - `./tools/artifact/link.sh` — links parent↔child artifacts (edits both files)
 - `./tools/artifact/promote.sh` — status transitions with ordering enforcement (draft→review→approved)
-- `./tools/artifact/check-gate.sh` — stage gate checks (prd-to-rfc, rfc-to-impl, impl-to-qa, release)
+- `./tools/artifact/check-gate.sh` — stage gate checks (prd-to-rfc, rfc-to-impl, impl-to-qa, release). **Stage-aware**: reads `company.stage` from config — `idea` stage makes all gates advisory (warnings only), `mvp` enforces core gates only, `growth`/`scale` enforces all.
+
+### Hooks
+Two command-type hooks run automatically (zero token cost):
+- **Pre-promote validation**: Auto-runs `validate.sh` before `promote.sh` — blocks promotion of invalid artifacts
+- **Post-write frontmatter check**: Warns when files written to `artifacts/` lack YAML frontmatter
 
 ### Ingest Command
 After placing new files in `standards/` or `artifacts/`, run `/ingest` to detect changes and update relevant skills/agents.

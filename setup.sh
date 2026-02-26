@@ -38,7 +38,7 @@ if [[ "${1:-}" == "--cleanup" ]]; then
   echo "Removing template documentation files (not needed for daily operation)..."
   echo ""
   REMOVED=0
-  for f in TOKEN_COSTS.md FAQ.md SETUP_COMPANY_OS.md; do
+  for f in TOKEN_COSTS.md FAQ.md SETUP_COMPANY_OS.md artifacts/prds/PRD-EXAMPLE-001-notifications.md artifacts/rfcs/RFC-EXAMPLE-001-notification-system.md standards/api/example-api-conventions.md standards/coding/example-coding-standards.md; do
     if [ -f "$f" ]; then
       rm "$f"
       echo -e "  ${RED}Removed${NC}  $f"
@@ -102,6 +102,11 @@ create_dir "standards/coding"
 create_dir "standards/compliance"
 create_dir "standards/templates"
 create_dir "standards/brand"
+create_dir "standards/ops"
+create_dir "standards/analytics"
+create_dir "standards/docs"
+create_dir "standards/email"
+create_dir "standards/engineering"
 
 # Other directories
 create_dir "imports"
@@ -113,7 +118,7 @@ echo ""
 echo "Creating template files..."
 
 # .gitkeep files for empty directories
-for dir in standards/api standards/coding standards/compliance standards/templates standards/brand imports; do
+for dir in standards/api standards/coding standards/compliance standards/templates standards/brand standards/ops standards/analytics standards/docs standards/email standards/engineering imports; do
   if [ ! -f "$dir/.gitkeep" ] && [ -z "$(ls -A "$dir" 2>/dev/null)" ]; then
     touch "$dir/.gitkeep"
   fi
@@ -199,6 +204,27 @@ i18n:
   supported_locales: []       # list of locales, e.g. [en-US, fr-FR, de-DE]
   strategy: ""                # key-based | gettext | ICU — how strings are managed
   fallback: ""                # default-locale | key | empty — behavior when translation missing
+
+platforms:
+  targets: []                 # [web, mobile-web, ios, android]
+  mobile_framework: []        # [react-native, expo, flutter, capacitor] — array, supports multiple
+  responsive: true            # true | false — enforce responsive web design
+  pwa: false                  # true | false — Progressive Web App support
+
+analytics:
+  provider: ""                # Mixpanel | Amplitude | Pendo | PostHog | none
+  event_prefix: ""            # app-name prefix for events (e.g., "myapp")
+  tracker_attribute: ""       # data-track-id | data-analytics | custom — HTML attribute name for UI tracking
+
+feature_flags:
+  provider: ""                # LaunchDarkly | Flagsmith | Unleash | custom | config-file
+  strategy: ""                # progressive-discovery | release-only | full (= all flag types: release + experiment + ops + discovery)
+  cleanup_sla_days: 14        # max days a release flag stays after full rollout
+
+email:
+  provider: ""                # Resend | Sendgrid | Postmark | SES | none
+  from_address: ""            # noreply@yourdomain.com
+  template_engine: ""         # react-email | mjml | handlebars | jinja | plain-html
 YAML
   echo -e "  ${GREEN}Created${NC}  company.config.yaml"
   CREATED=$((CREATED + 1))
@@ -247,6 +273,8 @@ if [ ! -f ".claude/settings.json" ]; then
       "Bash(git show *)",
       "Bash(git rev-parse *)",
       "Bash(gh *)",
+      "Bash(git push *)",
+      "Bash(git push)",
       "Bash(npm *)",
       "Bash(npx *)",
       "Bash(yarn *)",

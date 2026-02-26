@@ -2,6 +2,7 @@
 name: setup
 description: Interactive setup wizard for Company OS. Configures company.config.yaml, generates .claude/settings.json with tech-stack-specific permissions, and scaffolds directories. Use when initializing Company OS on a new or existing project.
 user-invokable: true
+argument-hint: "[preset: nextjs, fastapi, express, django, go, rails, custom]"
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 ---
 
@@ -111,6 +112,40 @@ i18n (only prompt if user indicates international audience):
 - `i18n.enabled` — true | false (default: false)
 - If true: `i18n.default_locale`, `i18n.supported_locales`, `i18n.strategy` (key-based | gettext | ICU), `i18n.fallback`
 
+### Step 5.5: Platforms, Analytics, Feature Flags & Email
+
+**Platforms** — ask about target platforms:
+- `platforms.targets` — [web, mobile-web, ios, android] (default: [web] for web frameworks, [web, mobile-web] for Next.js/Nuxt)
+- `platforms.mobile_framework` — [react-native, expo, flutter, capacitor] (only if ios or android in targets; array, supports multiple)
+- `platforms.responsive` — true | false (default: true for any web target)
+- `platforms.pwa` — true | false (default: false)
+
+**Preset platform defaults:**
+
+| Preset | targets | responsive | mobile_framework |
+|--------|---------|------------|-----------------|
+| Next.js + Vercel | [web, mobile-web] | true | [] |
+| FastAPI + AWS | [web] | true | [] |
+| Express + Railway | [web] | true | [] |
+| Django + AWS | [web] | true | [] |
+| Go + Fly.io | [web] | true | [] |
+| Rails + Heroku | [web] | true | [] |
+
+**Analytics** — ask if the product needs analytics (recommended for all products beyond `idea` stage):
+- `analytics.provider` — Mixpanel | Amplitude | Pendo | PostHog | none (default: none for `idea`, PostHog for `mvp`+)
+- `analytics.event_prefix` — auto-suggest from `company.product` (lowercase, hyphenated)
+- `analytics.tracker_attribute` — data-track-id (default) | data-analytics | custom
+
+**Feature Flags** — ask about rollout strategy:
+- `feature_flags.provider` — LaunchDarkly | Flagsmith | Unleash | custom | config-file (default: config-file for early stage)
+- `feature_flags.strategy` — progressive-discovery | release-only | full (default: release-only for `idea`/`mvp`, full for `growth`/`scale`)
+- `feature_flags.cleanup_sla_days` — number of days (default: 14)
+
+**Email** — ask if the product sends emails (skip for pure API products):
+- `email.provider` — Resend | Sendgrid | Postmark | SES | none (default: none)
+- `email.from_address` — auto-suggest: noreply@{company.domain}
+- `email.template_engine` — react-email (for TypeScript/Next.js) | mjml (for any) | handlebars (for Node.js) | jinja (for Python) | plain-html (default: infer from tech stack)
+
 ### Step 6: Write `company.config.yaml`
 
 Write the complete config file with all gathered values. Preserve the comment structure from the template. Leave uncollected optional fields as `""`.
@@ -140,6 +175,7 @@ Write the complete config file with all gathered values. Preserve the comment st
 "Bash(git switch *)", "Bash(git fetch *)", "Bash(git pull *)",
 "Bash(git merge *)", "Bash(git stash *)", "Bash(git remote *)",
 "Bash(git tag *)", "Bash(git show *)", "Bash(git rev-parse *)",
+"Bash(git push *)", "Bash(git push)",
 "Bash(gh *)"
 ```
 
@@ -184,7 +220,16 @@ artifacts/launch-briefs/
 artifacts/security-reviews/
 artifacts/decision-memos/
 artifacts/.audit-log/
-standards/ (with .gitkeep if empty)
+standards/api/
+standards/coding/
+standards/compliance/
+standards/templates/
+standards/brand/
+standards/ops/
+standards/analytics/
+standards/docs/
+standards/email/
+standards/engineering/
 imports/ (with .gitkeep if empty)
 tasks/ (with todo.md and lessons.md if missing)
 ```
@@ -218,9 +263,13 @@ Ask: "Would you like to clean up template documentation files? These explain Com
 | `FAQ.md` | Company OS capability FAQ | **Remove** (reference only) |
 | `SETUP_COMPANY_OS.md` | Setup guide for template | **Remove** after setup complete |
 | `setup.sh` | One-time scaffolding script | **Remove** after first run |
+| `artifacts/prds/PRD-EXAMPLE-001-notifications.md` | Example PRD artifact | **Remove** after reviewing |
+| `artifacts/rfcs/RFC-EXAMPLE-001-notification-system.md` | Example RFC artifact | **Remove** after reviewing |
+| `standards/api/example-api-conventions.md` | Example API standards | **Remove** after reviewing |
+| `standards/coding/example-coding-standards.md` | Example coding standards | **Remove** after reviewing |
 
 If user confirms:
-1. Delete `TOKEN_COSTS.md`, `FAQ.md`, `SETUP_COMPANY_OS.md`, `setup.sh`
+1. Delete `TOKEN_COSTS.md`, `FAQ.md`, `SETUP_COMPANY_OS.md`, `setup.sh`, example artifacts, and example standards
 2. Replace `README.md` with a minimal project README:
    ```
    # {company.product}

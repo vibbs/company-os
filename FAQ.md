@@ -155,13 +155,14 @@ This is one of the system's core strengths. Multiple enforcement layers prevent 
 - Each test has specific pass/fail criteria (not vague)
 - Test coverage matrix links ACs to test types (unit, integration, E2E)
 
-**Release readiness gate** — 6 minimum bars, ALL must pass:
+**Release readiness gate** — 6 required bars (ALL must pass) + 1 optional bar:
 1. PRD completeness (approved, testable ACs, measurable metrics)
 2. Technical design (RFC approved, API contract exists, migrations documented)
 3. Security & risk (threat model exists, no unresolved CRITICAL/HIGH findings)
 4. Testing (test plan linked to ACs, unit/integration/contract tests pass)
 5. Code quality (lint passes, no untracked TODOs)
 6. Operational readiness (logging covers key ops, errors don't leak internals)
+7. Dogfood report (optional, non-blocking — reports whether autonomous dogfooding was run and issues found)
 
 **Definition of Done** — explicit checklist in the release readiness gate:
 1. PRD approved, 2. RFC approved, 3. Security reviewed, 4. Tests pass, 5. Code quality verified, 6. Operationally ready, 7. Artifacts linked, 8. Human review complete
@@ -171,6 +172,8 @@ This is one of the system's core strengths. Multiple enforcement layers prevent 
 ### Known limitation
 
 Edge case coverage in test plans is recommended but not mechanically enforced — `check-gate.sh` cannot verify that a test plan is comprehensive enough. The test plan generator's quality checklist says "edge cases and error paths are covered" but this relies on the agent doing thorough work. The human review at the `review` stage is where you catch gaps.
+
+Two additional capabilities help close this gap: the `seed-data` skill generates structured test data for all scenarios (including edge-cases and error-states), and the `dogfood` skill autonomously exercises the running product as a real user would — catching integration failures, broken flows, and UX issues that unit tests miss.
 
 ---
 
@@ -257,6 +260,128 @@ At each step, the gate blocks progression until prerequisites are met. No human 
 ### Known limitation
 
 Communication is artifact-mediated and sequential, not real-time. If the Engineering Agent discovers during implementation that an RFC assumption was wrong, it produces an updated RFC (or decision memo), and the Orchestrator re-routes. This is by design — artifact-based communication creates an audit trail. There is no "agent chat" or real-time negotiation.
+
+---
+
+## 8. How does Company OS handle production incidents?
+
+**Coverage: Covered**
+
+### What Company OS does today
+
+The `incident-response` skill (used by the Ops & Risk Agent) provides a structured incident management framework:
+
+- **Severity classification** — 4-level system (SEV1-Critical through SEV4-Low) with clear criteria for each level, including response time expectations and escalation triggers
+- **Triage procedures** — structured first-responder checklist: assess impact, identify affected systems, establish communication channel, assign incident commander
+- **Runbook generation** — produces service-specific runbooks with diagnostic commands, common failure modes, and resolution steps
+- **Rollback checklists** — step-by-step rollback procedures with verification gates at each step
+- **Communication templates** — pre-written templates for status page updates, stakeholder notifications, and customer communications at each severity level
+- **Post-mortems** — uses the 5 Whys framework to identify root causes, with sections for timeline reconstruction, contributing factors, corrective actions, and follow-up tracking
+
+The `tools/ops/status-check.sh` tool provides quick health checks that can be run during incidents to assess service status.
+
+### What you need to bring
+
+- Your service topology and dependency map (place in `standards/ops/`)
+- Your on-call rotation and escalation contacts
+- Your status page provider (Statuspage, Betteruptime, etc.)
+- Service-specific diagnostic commands and log locations
+
+### Recommended workflow
+
+1. Place your operational standards in `standards/ops/` and run `/ingest`
+2. When an incident occurs, the Ops & Risk Agent generates a runbook tailored to the affected service
+3. During resolution, use `status-check.sh` for quick health verification
+4. After resolution, the agent produces a post-mortem using the 5 Whys framework
+5. Corrective actions feed back into RFCs and PRDs for the next ship cycle
+
+---
+
+## 9. How are features safely rolled out?
+
+**Coverage: Covered**
+
+### What Company OS does today
+
+Two skills work together to ensure safe, progressive feature rollouts:
+
+**Feature flags skill** (`feature-flags`) defines a progressive discovery pattern with 4 levels:
+- **Core** — essential features available to all users immediately
+- **Foundations** — unlocked after initial onboarding/setup is complete
+- **Power** — unlocked as users demonstrate proficiency with the product
+- **Expert** — advanced features gated behind explicit opt-in or usage thresholds
+
+Features are gated behind flags that control visibility and access. The skill covers flag naming conventions, lifecycle management (creation through retirement), and audience targeting strategies.
+
+**Deployment strategy skill** (`deployment-strategy`) handles the release mechanics:
+- **Environment ladder** — defines progression from local to staging to production with promotion criteria at each step
+- **Rollout strategies** — percentage-based rollouts, canary deployments, blue-green deployments, and ring-based rollouts depending on risk level
+- **Rollback procedures** — automated and manual rollback triggers with verification steps
+
+The `tools/deploy/pre-deploy.sh` tool validates deployment readiness before every deployment — checking that tests pass, migrations are safe, feature flags are configured, and the target environment is healthy.
+
+The `feature_flags` section in `company.config.yaml` lets you configure your flag provider, discovery levels, and default rollout strategy.
+
+### What you need to bring
+
+- Your feature flag provider credentials and setup (LaunchDarkly, Flagsmith, or custom)
+- Your environment definitions and access controls
+- Your deployment pipeline configuration (CI/CD system)
+
+### Recommended workflow
+
+1. Configure `feature_flags` and deployment settings in `company.config.yaml`
+2. When the Engineering Agent creates an RFC, it includes a feature flag strategy section
+3. During implementation, flags are created following the naming conventions from the skill
+4. Before deployment, `pre-deploy.sh` validates readiness
+5. Rollout follows the deployment strategy: canary first, then percentage ramp, then full release
+6. Flags are retired after the feature is stable and fully rolled out
+
+---
+
+## 10. How does Company OS support mobile development?
+
+**Coverage: Partial (comprehensive guidance, but not a native build system)**
+
+### What Company OS does today
+
+The `mobile-readiness` skill covers two paths:
+
+**Responsive web** (when `platforms.responsive: true` in config):
+- Breakpoint definitions and media query conventions
+- Touch target sizing (minimum 44x44px) and gesture handling
+- Mobile-first CSS architecture patterns
+- Performance budgets for mobile networks (target LCP, bundle size limits)
+- Viewport and safe area handling
+
+**React Native / Expo** (when `platforms.targets` includes `ios` or `android`):
+- Project structure conventions for shared and platform-specific code
+- Navigation patterns (stack, tab, drawer) with deep linking
+- Native module integration guidelines
+- App store requirements checklist (screenshots, metadata, review guidelines)
+- OTA update strategy (Expo Updates, CodePush)
+
+The `platforms` section in `company.config.yaml` lets you specify your targets (`[web, mobile-web, ios, android]`). When responsive is enabled, code reviews automatically check mobile compatibility — the `code-review` skill flags missing breakpoints, non-responsive layouts, and accessibility issues on touch devices.
+
+### What you need to bring
+
+- Your device/browser support matrix (place in `standards/engineering/`)
+- Your responsive breakpoint values (if different from defaults)
+- For native: your Expo/React Native project configuration
+- App store developer accounts and signing certificates (for iOS/Android)
+
+### Recommended workflow
+
+1. Configure the `platforms` section in `company.config.yaml` during `/setup`
+2. PRDs will capture platform-specific requirements when multiple targets are configured
+3. RFCs address responsive/native concerns in the Platform Strategy cross-cutting section
+4. Code reviews flag mobile compatibility issues automatically
+5. QA test plans include device-specific test scenarios
+6. For native apps, the deployment strategy includes app store submission checklists
+
+### Known limitation
+
+Company OS does not replace your native build toolchain (Xcode, Android Studio, Expo EAS). It provides architectural guidance, review checklists, and process structure — but the actual build, signing, and store submission are handled by your CI/CD pipeline and native tools.
 
 ---
 
