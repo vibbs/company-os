@@ -56,6 +56,11 @@ tags: []
 |------|-----------|--------|------------|
 | ... | ... | ... | ... |
 
+## i18n Requirements (if applicable)
+- **Target locales**: [list or "not applicable"]
+- **Translatable content**: [strings, emails, notifications, etc.]
+- **Locale detection**: [browser, user preference, IP, or N/A]
+
 ## Context & References
 - [Link to user feedback, competitor analysis, mockups, etc.]
 ```

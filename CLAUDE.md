@@ -21,6 +21,9 @@ This is an **AI Agentic Company OS** — a template project system for building 
 - Tools never contain reasoning
 - **Artifacts are the handshake** between all components
 
+### Importing Existing Work
+If artifacts already exist outside Company OS (Google Docs, Notion, local files), run `/artifact-import` to bring them in before starting the ship flow. The import skill classifies documents, adds frontmatter, and links related artifacts so stage gates work from that point forward. Imported artifacts enter at `review` status.
+
 ### Canonical Ship Flow
 1. **Orchestrator** routes objective → asks Product Agent for PRD
 2. **Product Agent** produces PRD → `artifacts/prds/`
@@ -31,9 +34,14 @@ This is an **AI Agentic Company OS** — a template project system for building 
 7. **Growth Agent** produces launch assets → `artifacts/launch-briefs/`
 8. **Orchestrator** checks all gates → approves release
 
+### First-Time Setup
+For new projects or existing repos, run `/setup` to configure Company OS interactively. The wizard fills in `company.config.yaml`, generates `.claude/settings.json` with tech-stack-specific permissions, and scaffolds directories. Alternatively, run `bash setup.sh` for a non-interactive scaffold.
+
 ### Key Files
 - `company.config.yaml` — company-specific tech stack, API standards, conventions. **Read this first in every session.**
-- `standards/` — user-provided reference docs (API specs, style guides, compliance)
+- `setup.sh` — bash setup fallback for scaffolding directories and template config
+- `imports/` — **transient** staging for `/artifact-import` (files are classified, moved to `artifacts/`, then deleted)
+- `standards/` — **permanent** reference docs agents read continuously (stays in place after `/ingest`)
 - `artifacts/` — agent-produced outputs with YAML frontmatter and lineage tracking
 - `tasks/todo.md` — current session task tracking
 - `tasks/lessons.md` — accumulated corrections and patterns

@@ -139,3 +139,16 @@ All bars still apply, plus: flag is configured, kill switch works, monitoring co
 - [ ] Verdict is binary (approved or not — no "mostly ready")
 - [ ] Report stored with proper artifact frontmatter
 - [ ] Artifact lineage links are complete
+
+## Definition of Done
+
+A feature is "done" when ALL are true:
+
+1. **PRD approved** — problem validated, acceptance criteria testable, scope bounded
+2. **RFC approved** — technical design covers every AC, migration safe
+3. **Security reviewed** — threat model exists, no unresolved CRITICAL/HIGH findings
+4. **Tests pass** — test plan covers ACs, unit/integration/contract tests green
+5. **Code quality verified** — lint passes, no untracked TODOs in new code
+6. **Operationally ready** — logging covers key operations, errors don't leak internals
+7. **Artifacts linked** — lineage complete (parent/children/depends_on resolve)
+8. **Human review complete** — all artifacts promoted to `approved` through review lifecycle

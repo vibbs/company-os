@@ -11,7 +11,7 @@ Claude Code is powerful, but out of the box it's a blank canvas. You prompt, it 
 Company OS adds structure:
 
 - **6 specialized agents** that know their domain (product, engineering, QA, growth, ops, orchestration)
-- **29 skills** with procedures, templates, and checklists agents follow
+- **31 skills** with procedures, templates, and checklists agents follow
 - **20+ tool scripts** that enforce rules deterministically (artifact validation, stage gates, lifecycle management)
 - **Artifact lineage** tracking every decision from PRD to release with parent/child relationships
 - **Stage gates** that block progression until prerequisites are met
@@ -22,20 +22,30 @@ The overhead? **~1,400 extra tokens per session** for the system prompt. That's 
 
 ## Quick Start
 
+Company OS is an **overlay** — it works with new projects, existing repos, and mono repos. It never touches your source code.
+
+### Option A — Claude Code (Recommended)
+
 ```bash
-# 1. Fork or clone
-git clone <your-fork-url> my-product
-cd my-product
-
-# 2. Open Claude Code
+cd my-project    # new or existing repo
 claude
-
-# 3. Tell it what you're building
+> /setup
 ```
 
-> "Set up Company OS for Acme Corp. We're building a B2B invoicing tool using Next.js, PostgreSQL, and Prisma. We use REST APIs with JWT auth."
+The `/setup` wizard walks you through tech stack selection (with presets), fills in `company.config.yaml`, generates `.claude/settings.json` with permissions for your stack, and scaffolds directories.
 
-The Orchestrator agent fills in `company.config.yaml`, tells you what standards docs to provide, and you're ready to ship features.
+### Option B — Script + Claude Code
+
+```bash
+cd my-project
+bash setup.sh    # scaffolds directories + template config
+claude
+> /setup         # customize interactively
+```
+
+### Option C — GitHub Template
+
+Click "Use this template" on GitHub, clone, then run `/setup`.
 
 See [SETUP_COMPANY_OS.md](SETUP_COMPANY_OS.md) for the full configuration walkthrough.
 
@@ -109,11 +119,11 @@ Gates are enforced by `tools/artifact/check-gate.sh` — you can't skip stages.
 | **Growth** | Launch strategy, SEO, activation, content |
 | **Ops & Risk** | Security, compliance, legal, finance |
 
-### Skills (29)
+### Skills (31)
 
 | Category | Skills |
 |----------|--------|
-| Orchestration | workflow-router, decision-memo-writer, conflict-resolver, ingest, system-maintenance |
+| Orchestration | workflow-router, decision-memo-writer, conflict-resolver, ingest, system-maintenance, artifact-import, setup |
 | Product | icp-positioning, prd-writer, sprint-prioritizer, feedback-synthesizer |
 | Engineering | architecture-draft, api-contract-designer, background-jobs, multi-tenancy, implementation-decomposer, observability-baseline |
 | QA / Release | test-plan-generator, api-tester-playbook, release-readiness-gate, perf-benchmark-checklist |
@@ -161,12 +171,15 @@ Full customization guide: [SETUP_COMPANY_OS.md](SETUP_COMPANY_OS.md)
 
 ## Content Model
 
-The repo uses four distinct content categories:
+Company OS works as an overlay on any repo. For **mono repos**, it sits at the root and agents work across all packages. For **multi repos**, each repo gets its own instance.
+
+The repo uses five distinct content categories:
 
 | Category | Location | Author | Purpose |
 |----------|----------|--------|---------|
 | Configuration | `company.config.yaml` | User | Tech stack, API standards, conventions |
-| Standards | `standards/` | User | Reference docs (API specs, style guides, compliance) |
+| Imports | `imports/` | User | **Transient** staging — files are classified, moved to `artifacts/`, then deleted via `/artifact-import` |
+| Standards | `standards/` | User | **Permanent** reference docs agents read continuously (API specs, style guides, brand, compliance) |
 | Session Work | `tasks/` | Agent | Ephemeral task tracking + accumulated learning |
 | Deliverables | `artifacts/` | Agent | Lifecycle-managed outputs (PRDs, RFCs, QA reports) with full audit trail |
 
@@ -180,10 +193,18 @@ Design decisions are documented in `artifacts/decision-memos/`:
 
 | Command | What It Does |
 |---------|-------------|
+| `/setup` | Interactive setup wizard — configures config, permissions, and directories |
+| `/artifact-import` | Imports existing PRDs, RFCs, specs from external sources |
 | `/ingest` | Syncs new standards/artifacts into skills and agents |
 | `/system-maintenance` | Audits all documentation after structural changes |
 | `./tools/registry/health-check.sh` | Validates all skills have correct format |
 | `./tools/artifact/check-gate.sh release <prd>` | Checks if a feature is ready to ship |
+
+---
+
+## FAQ
+
+Honest answers about i18n, design systems, AI content quality, observability, proof of work, and agent coordination. See [FAQ.md](FAQ.md).
 
 ---
 

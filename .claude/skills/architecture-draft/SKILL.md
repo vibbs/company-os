@@ -89,6 +89,7 @@ Define business logic, transaction boundaries, error handling, side effects, and
 | **Observability** | [describe or reference observability-baseline skill] |
 | **Caching** | [describe strategy, invalidation] |
 | **Rate limiting** | [describe if applicable] |
+| **i18n** | [string management, locale detection, fallback — or "N/A" if not enabled] |
 
 ### Step 8: Assemble the RFC
 
@@ -112,6 +113,10 @@ Use the template in [rfc-template.md](rfc-template.md).
 2. Store in `artifacts/rfcs/`
 3. Notify Orchestrator — RFC ready for Ops & Risk review and QA test planning
 4. After approval, proceed with implementation (implementation-decomposer)
+
+## Import Variant
+
+If an RFC or architecture document already exists outside Company OS, use `/artifact-import` instead of creating from scratch. The import skill classifies the document, applies the RFC template structure, generates frontmatter, and links it to its parent PRD if one exists. After import, review against this skill's quality checklist and ensure tech stack fitness is evaluated.
 
 ## Quality Checklist
 

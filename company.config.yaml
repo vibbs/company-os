@@ -59,3 +59,10 @@ observability:
   metrics: ""                 # OpenTelemetry | Prometheus | Datadog | none
   tracing: ""                 # OpenTelemetry | Jaeger | Datadog | none
   error_tracking: ""          # Sentry | Bugsnag | none
+
+i18n:
+  enabled: false              # true | false — set to true if product supports multiple locales
+  default_locale: ""          # en-US | en-GB | fr-FR | etc.
+  supported_locales: []       # list of locales, e.g. [en-US, fr-FR, de-DE]
+  strategy: ""                # key-based | gettext | ICU — how strings are managed
+  fallback: ""                # default-locale | key | empty — behavior when translation missing

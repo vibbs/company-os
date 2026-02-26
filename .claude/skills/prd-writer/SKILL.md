@@ -78,6 +78,7 @@ Explicitly state what's IN and OUT. Scope boundaries prevent creep. Be aggressiv
 - **Business dependencies**: Pricing decisions, legal approval, partnerships
 - **Risks**: What could go wrong, likelihood, mitigation
 - **Tech stack fit**: Does this work well with the configured stack in `company.config.yaml`? Flag concerns.
+- **i18n scope**: If `i18n.enabled` is true in `company.config.yaml`, capture target locales, translatable content types, and locale detection approach
 
 ### Step 6: Assemble the PRD
 
@@ -94,6 +95,7 @@ Before marking the PRD as ready for review:
 - [ ] Open questions have owners and deadlines
 - [ ] Dependencies are identified
 - [ ] Tech stack compatibility considered (checked company.config.yaml)
+- [ ] i18n scope captured (if enabled in config)
 - [ ] Run `./tools/artifact/validate.sh` on the artifact
 
 ### Step 8: Handoff
@@ -102,6 +104,10 @@ Before marking the PRD as ready for review:
 2. Store in `artifacts/prds/`
 3. Notify Orchestrator that PRD is ready for Engineering to consume
 4. Engineering Agent will use this PRD as input for architecture-draft
+
+## Import Variant
+
+If a PRD already exists outside Company OS (Google Docs, Notion, Confluence), use `/artifact-import` instead of creating from scratch. The import skill classifies the document, applies the PRD template structure, generates frontmatter, and places it in `artifacts/prds/`. After import, review the artifact against this skill's quality checklist and fill in any sections marked `<!-- TODO -->`.
 
 ## Anti-Patterns to Avoid
 

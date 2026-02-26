@@ -26,6 +26,10 @@ Given any objective, determine the sequence of artifacts, stages, and agents req
 
 ## Routing Procedure
 
+### Step 0: Check Configuration
+
+Before routing any objective, verify `company.config.yaml` exists and has non-empty values for at least `company.name` and `tech_stack.language`. If the config is missing or all fields are empty, route to `/setup` first — agents need a configured tech stack to make good decisions.
+
 ### Step 1: Classify the Objective
 
 Determine the type of work:
@@ -48,6 +52,7 @@ Inventory what artifacts already exist for this objective:
 2. Check artifacts/rfcs/ — does an RFC exist?
 3. Check artifacts/test-plans/ — does a test plan exist?
 4. Check artifacts/qa-reports/ — has QA been done?
+5. If the user mentions existing artifacts outside the system (Google Docs, Notion, Confluence, local files), route to `/artifact-import` before building the execution plan. Imported artifacts enter at `review` status and can be promoted to `approved` to unblock downstream stages.
 5. Check artifacts/security-reviews/ — has risk been assessed?
 6. Check artifacts/launch-briefs/ — are launch assets ready?
 ```

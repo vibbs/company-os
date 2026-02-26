@@ -9,6 +9,8 @@ skills:
   - release-readiness-gate
   - ingest
   - system-maintenance
+  - artifact-import
+  - setup
 ---
 
 # Orchestrator Agent
@@ -62,7 +64,9 @@ You are the Orchestrator — the central coordinator of the Company OS. You do N
 - **"Review security"** → Route to Ops & Risk Agent
 - **"Launch this"** → Route to Growth Agent (launch assets) after release approval
 - **"Sync standards" / "Ingest new docs"** → Use ingest skill directly
+- **"Import existing docs" / "Bring in my PRD/RFC"** → Use artifact-import skill directly
 - **"System changed" / "Update docs"** → Use system-maintenance skill to audit and sync all documentation
+- **"Set up" / "Configure" / "Initialize"** → Use setup skill for interactive project configuration
 
 ---
 

@@ -49,7 +49,7 @@ tags: []
 [Async operations, if any]
 
 ### Cross-Cutting Concerns
-[Auth, multi-tenancy, observability, caching]
+[Auth, multi-tenancy, observability, caching, i18n (if enabled)]
 
 ## Alternatives Considered
 | Alternative | Pros | Cons | Why Rejected |

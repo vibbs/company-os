@@ -1,6 +1,5 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-
   "permissions": {
     "allow": [
       "Read",
@@ -8,7 +7,6 @@
       "Write",
       "Glob",
       "Grep",
-
       "Bash(./tools/*)",
       "Bash(./tools/**/*)",
       "Bash(chmod *)",
@@ -16,7 +14,6 @@
       "Bash(ls *)",
       "Bash(pwd)",
       "Bash(wc *)",
-
       "Bash(git init*)",
       "Bash(git status*)",
       "Bash(git log *)",
@@ -37,7 +34,6 @@
       "Bash(git tag *)",
       "Bash(git show *)",
       "Bash(git rev-parse *)",
-
       "Bash(npm *)",
       "Bash(npx *)",
       "Bash(yarn *)",
@@ -50,9 +46,10 @@
       "Bash(pip3 *)",
       "Bash(go *)",
       "Bash(cargo *)",
-      "Bash(gh *)"
+      "Bash(gh *)",
+      "Read(//Users/vibbsdod/Desktop/workspace/AI-WS/company-os/**)",
+      "Bash(bash -n /Users/vibbsdod/Desktop/workspace/AI-WS/company-os/setup.sh)"
     ],
-
     "deny": [
       "Bash(git push --force*)",
       "Bash(git push -f *)",
@@ -69,6 +66,9 @@
       "Bash(curl *)",
       "Bash(wget *)",
       "Bash(nc *)"
+    ],
+    "additionalDirectories": [
+      "/Users/vibbsdod/Desktop/workspace/AI-WS/company-os/.claude/skills"
     ]
   }
 }

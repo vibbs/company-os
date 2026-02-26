@@ -6,26 +6,46 @@ This guide walks you through configuring your Company OS instance after forking 
 
 ## Quick Start
 
+Company OS is an **overlay** — it lives alongside your code and never touches your source files. It works with new projects, existing repos, and mono repos.
+
+### Path A — Claude Code (Recommended)
+
 ```bash
-# 1. Fork or clone this template
-git clone <your-fork-url> my-product
-cd my-product
-
-# 2. Open Claude Code
+cd my-project    # new or existing repo
 claude
-
-# 3. Tell the agent what your company builds:
-#    "Set up Company OS for [company name]. We're building [product description]
-#     using [tech stack]. Fill in company.config.yaml and help me place my
-#     existing standards documents."
-#
-# The Orchestrator will:
-#   - Fill in company.config.yaml based on your description
-#   - Guide you on what standards docs to provide
-#   - Run /ingest after you place them to sync the system
+> /setup
 ```
 
-**Or do it manually** — the sections below walk through each step.
+The `/setup` wizard will:
+- Walk you through company profile and tech stack (with presets for common stacks)
+- Fill in `company.config.yaml`
+- Generate `.claude/settings.json` with permissions tailored to your tech stack
+- Scaffold any missing directories
+- Run health checks
+
+### Path B — Script Fallback
+
+```bash
+cd my-project
+bash setup.sh          # scaffolds directories + creates template config
+claude
+> /setup               # customize interactively
+```
+
+### Path C — GitHub Template (Greenfield Only)
+
+1. Click "Use this template" on the [GitHub repo](https://github.com/vibbs/company-os)
+2. Clone your new repo
+3. Open Claude Code, run `/setup`
+
+### Existing Codebase Support
+
+Company OS works on existing repos. It only creates its own files (`.claude/`, `tools/`, `artifacts/`, `standards/`, `tasks/`, `imports/`, `company.config.yaml`) and never modifies your source code.
+
+- **Mono repo**: Run `/setup` at the repo root. Agents work across all packages.
+- **Multi repo**: Each repo gets its own Company OS instance with independent artifacts.
+
+**Or configure manually** — the sections below walk through each step.
 
 ---
 
@@ -109,7 +129,7 @@ Skills are directory-based knowledge documents. Each contains a `SKILL.md` entry
 
 | Category | Skills (directory names) |
 |----------|------------------------|
-| Orchestration | `workflow-router`, `decision-memo-writer`, `conflict-resolver`, `ingest`, `system-maintenance` |
+| Orchestration | `workflow-router`, `decision-memo-writer`, `conflict-resolver`, `ingest`, `system-maintenance`, `artifact-import`, `setup` |
 | Product | `icp-positioning`, `prd-writer`, `sprint-prioritizer`, `feedback-synthesizer` |
 | Engineering | `architecture-draft`, `api-contract-designer`, `background-jobs`, `multi-tenancy`, `implementation-decomposer`, `observability-baseline` |
 | QA / Release | `test-plan-generator`, `api-tester-playbook`, `release-readiness-gate`, `perf-benchmark-checklist` |
@@ -165,6 +185,14 @@ Drop your existing company standards into `standards/`. Then run `/ingest` to sy
 - Document templates
 - PR templates, issue templates
 
+### `standards/brand/`
+- Brand guidelines and style guide
+- Design tokens (colors, typography, spacing)
+- Logo usage rules and asset references
+- Component library documentation or Figma links
+
+When brand standards are present, agents reference them for visual requirements and content tone.
+
 ### After Placing Standards: Run Ingest
 
 The `/ingest` command detects new files and recommends updates to skills and agents:
@@ -184,7 +212,48 @@ This is how your company-specific standards become embedded in the skill procedu
 
 ---
 
-## 4. The Canonical Ship Flow
+## 4. Importing Existing Work
+
+> **`imports/` vs `standards/` — what goes where?**
+> - **`standards/`** is for **permanent reference docs** (API specs, style guides, brand guidelines). Files stay there and agents read them continuously. Use `/ingest` after adding.
+> - **`imports/`** is a **transient staging area** for existing artifacts (PRDs, RFCs, test plans) you want to bring into the lifecycle system. Files are classified, given frontmatter, moved to `artifacts/`, then deleted from `imports/`. Use `/artifact-import` to process.
+
+If you already have PRDs, architecture docs, API specs, test plans, or other artifacts from Google Docs, Notion, Confluence, or local files, you can import them into Company OS to use the stage gates, enforcement tools, and agent workflows.
+
+### Quick Import
+
+1. Export your documents as Markdown or HTML
+2. Place them in the `imports/` directory
+3. Run `/artifact-import`
+
+**Ask an agent**: "I've placed my existing PRD and architecture doc in imports/. Import them into the system."
+
+The import skill will:
+- Classify each document by type (PRD, RFC, test plan, etc.)
+- Generate proper frontmatter with unique IDs
+- Restructure content to match Company OS templates (best-effort)
+- Detect relationships between imported documents and link them
+- Move processed files to the correct `artifacts/` subdirectory
+- Run validation on each artifact
+
+### Inline Import
+
+You can also paste document content directly:
+> "Import this as a PRD: [paste content]"
+
+### Imported Artifact Status
+
+Imported artifacts start at `review` status (not `draft`) because they already exist as complete documents. Review them against Company OS standards, then promote to `approved` when satisfied. Promote parent artifacts first (PRD before RFC).
+
+### After Import
+
+- Stage gates are active immediately -- run `check-gate.sh` to see what's needed
+- The Orchestrator can route from imported artifacts forward (e.g., imported PRD -> generate RFC)
+- Run `/ingest` after import if the new artifacts should update skill procedures
+
+---
+
+## 5. The Canonical Ship Flow
 
 Every feature follows this flow. Agents and tools enforce it — you can't skip stages.
 
@@ -250,7 +319,7 @@ The Orchestrator will not approve a release unless all gates pass:
 
 ---
 
-## 5. Artifacts and Lineage
+## 6. Artifacts and Lineage
 
 Every agent-produced document is an **artifact** with YAML frontmatter:
 
@@ -307,7 +376,7 @@ All promotions and linkages are logged in `artifacts/.audit-log/promotions.log`.
 
 ---
 
-## 6. Customization Guide
+## 7. Customization Guide
 
 ### Adding a New Skill
 
@@ -366,14 +435,19 @@ Or manually:
 
 ---
 
-## 7. Common Agent Workflows
+## 8. Common Agent Workflows
 
 These are things you can ask Claude Code to do. The agents handle the rest.
 
 ### Setting up a new project
-> "Set up Company OS for Acme Corp. We're building a B2B SaaS invoicing tool using Next.js, PostgreSQL, and Prisma. We use REST APIs with JWT auth."
+> Run `/setup` — or say: "Set up Company OS for Acme Corp. We're building a B2B SaaS invoicing tool using Next.js, PostgreSQL, and Prisma."
 
-The agent fills in `company.config.yaml`, verifies the config, and tells you what standards to provide.
+The setup wizard walks you through tech stack selection (with presets), fills in `company.config.yaml`, generates `.claude/settings.json` with permissions for your stack, and scaffolds all directories.
+
+### Importing existing artifacts
+> "I have our PRD and architecture doc from Notion. I've exported them to imports/. Bring them into the system."
+
+Runs `/artifact-import` -> classifies documents -> adds frontmatter -> links related artifacts -> validates. Imported artifacts start at `review` status.
 
 ### Ingesting new standards
 > "I've added our API specification to standards/api/. Sync the system."
@@ -397,12 +471,13 @@ Runs `detect-changes.sh` → shows all artifacts with their types and statuses.
 
 ---
 
-## 8. Directory Reference
+## 9. Directory Reference
 
 ```
 company-os/
 ├── CLAUDE.md                   # Master prompt for Claude Code sessions
 ├── SETUP_COMPANY_OS.md         # This file
+├── setup.sh                    # Bash setup fallback (scaffolds dirs + template config)
 ├── company.config.yaml         # Your company configuration (stays at root)
 ├── .claude/
 │   ├── agents/                 # 6 agent definitions (Claude Code subagents)
@@ -412,7 +487,7 @@ company-os/
 │   │   ├── qa-release.md
 │   │   ├── growth.md
 │   │   └── ops-risk.md
-│   └── skills/                 # 29 skill directories (SKILL.md + supporting files)
+│   └── skills/                 # 31 skill directories (SKILL.md + supporting files)
 │       ├── workflow-router/
 │       │   └── SKILL.md
 │       ├── prd-writer/
@@ -428,7 +503,13 @@ company-os/
 │       │   └── SKILL.md
 │       ├── ingest/
 │       │   └── SKILL.md
+│       ├── artifact-import/
+│       │   └── SKILL.md
+│       ├── setup/
+│       │   └── SKILL.md
 │       └── ... (22 more skill directories)
+├── imports/                    # Staging area for importing external documents
+│   └── .gitkeep
 ├── tools/                      # Shell scripts agents execute via Bash
 │   ├── artifact/               # validate, promote, link, check-gate
 │   ├── registry/               # search-skill, health-check, detect-changes
@@ -439,6 +520,7 @@ company-os/
 │   └── analytics/              # query-metrics, publish-content
 ├── standards/                  # Your company standards (drop files here, then /ingest)
 │   ├── api/                    # API specs and style guides
+│   ├── brand/                  # Brand guidelines, design tokens, Figma links
 │   ├── coding/                 # Code conventions and style guides
 │   ├── compliance/             # Compliance requirements
 │   └── templates/              # Custom artifact templates
