@@ -1,14 +1,19 @@
 ---
 name: setup
-description: Interactive setup wizard for Company OS. Configures company.config.yaml, generates .claude/settings.json with tech-stack-specific permissions, and scaffolds directories. Use when initializing Company OS on a new or existing project.
+description: Interactive setup wizard for Company OS. Configures company.config.yaml, generates .claude/settings.json with tech-stack-specific permissions, and scaffolds directories. Supports three modes — interactive wizard, express config block, or auto-extract from a URL/unstructured text.
 user-invokable: true
-argument-hint: "[preset: nextjs, fastapi, express, django, go, rails, custom]"
-allowed-tools: Read, Grep, Glob, Bash, Write, Edit
+argument-hint: "[preset | config block | URL | unstructured description]"
 ---
 
 # Setup Wizard
 
 Interactive setup skill for Company OS. Works on both new (greenfield) and existing projects. Company OS is an **overlay** — it adds its own files alongside your code and never touches your source.
+
+## Modes
+
+- **Interactive** (`/setup` or `/setup nextjs`) — step-by-step guided wizard with smart defaults
+- **Express** (`/setup` + config block) — paste a pre-filled config block, wizard parses and applies it in one shot
+- **Auto-Extract** (`/setup` + URL or unstructured text) — wizard fetches/reads the content, extracts company profile, infers tech stack, and presents a pre-filled config for confirmation
 
 ## Deployment Models
 
@@ -17,7 +22,213 @@ Interactive setup skill for Company OS. Works on both new (greenfield) and exist
 - **Mono repo**: Run `/setup` at the repo root. `company.config.yaml` describes the shared stack. Agents work across all packages.
 - **Multi repo**: Each repo gets its own Company OS instance with independent artifacts and config.
 
-## Procedure
+## Express Mode
+
+If the user provides a config block alongside `/setup`, skip interactive questions and parse the block directly. Any field not provided uses preset defaults (if a preset is specified) or is left empty.
+
+### Express Mode Template
+
+Users can copy this template, fill in their values, and paste it with `/setup`:
+
+````markdown
+## Company
+- Name:
+- Product:
+- Description:
+- Domain:
+- Stage: idea | mvp | growth | scale
+
+## Tech Stack
+- Preset: nextjs | fastapi | express | django | go | rails | custom
+- Cache: Redis | Memcached | none
+- Queue: BullMQ | Celery | SQS | none
+- Search: Elasticsearch | Meilisearch | Typesense | none
+
+## Overrides (only if different from preset defaults)
+- API Auth: JWT | API Keys | OAuth2 | session | Clerk | Auth.js
+- API Versioning: url-path | header | query-param | none
+- API Pagination: cursor | offset | none
+- Rate Limiting: token-bucket | sliding-window | none
+- Test Framework: Vitest | Jest | pytest | go test | cargo test
+- Linter: ESLint | Biome | Ruff | golangci-lint
+- Formatter: Prettier | Biome | Black | gofmt
+- Branching: trunk-based | gitflow | github-flow
+- Commit Style: conventional | gitmoji | freeform
+- Monorepo: true | false
+- Monorepo Tool: Turborepo | Nx | pnpm workspaces | none
+
+## Architecture
+- Multi-tenant: true | false
+- Tenant Isolation: RLS | schema-per-tenant | database-per-tenant | none
+- Deployment: serverless | containers | VMs | edge
+
+## Observability
+- Logging: structured-json | plaintext
+- Error Tracking: Sentry | Bugsnag | none
+
+## i18n
+- Enabled: true | false
+- Default Locale: en-US
+- Supported Locales: [en-US, hi-IN, fr-FR]
+- Strategy: key-based | gettext | ICU
+
+## Platforms
+- Targets: [web, mobile-web, ios, android]
+- Mobile Framework: [react-native, expo, flutter, capacitor]
+- PWA: true | false
+
+## Analytics
+- Provider: Mixpanel | Amplitude | Pendo | PostHog | none
+- Event Prefix: my-app
+
+## Feature Flags
+- Provider: LaunchDarkly | Flagsmith | Unleash | custom | config-file
+- Strategy: progressive-discovery | release-only | full
+
+## Email
+- Provider: Resend | Sendgrid | Postmark | SES | none
+- From: noreply@yourdomain.com
+- Template Engine: react-email | mjml | handlebars | jinja | plain-html
+
+## Options
+- Skill Categories: all | -growth | -legal
+- Clean Up Templates: yes | no
+````
+
+### Express Mode Procedure
+
+1. **Parse** the config block — extract all key-value pairs by section header
+2. **Apply preset** — if `Preset` is specified, fill in all preset defaults first
+3. **Override** — apply any explicit values from the block on top of preset defaults
+4. **Smart defaults** — fill remaining gaps with stage-appropriate defaults:
+   - `observability.logging` → `structured-json`
+   - `observability.error_tracking` → `Sentry`
+   - `analytics.provider` → `none` for idea, `PostHog` for mvp+
+   - `feature_flags.provider` → `config-file` for idea/mvp
+   - `feature_flags.strategy` → `release-only` for idea/mvp, `full` for growth/scale
+   - `analytics.event_prefix` → lowercase hyphenated product name
+   - `email.from_address` → `noreply@{domain}`
+   - `email.template_engine` → infer from tech stack (react-email for TS, jinja for Python, etc.)
+   - `platforms.targets` → `[web, mobile-web]` for Next.js, `[web]` for others
+   - `platforms.responsive` → `true`
+5. **Display summary** — show the full resolved config as a table for user confirmation
+6. **On confirmation** — proceed directly to Step 6 (Write config), Step 7 (Settings), Step 8 (Scaffold), then handle Options (skill categories, template cleanup), then Step 11 (Verify)
+
+If the user says "looks good" or confirms, apply everything. If they want changes, apply those changes and re-confirm.
+
+---
+
+## Auto-Extract Mode
+
+If the user provides a URL or pastes unstructured text (pitch deck content, about page copy, investor memo, product brief, Notion dump, etc.), the wizard extracts as much as it can automatically.
+
+### Detecting Auto-Extract Mode
+
+The input is Auto-Extract if ANY of these are true:
+- Contains a URL (starts with `http://` or `https://`)
+- Contains prose paragraphs (not structured `- Key: Value` pairs)
+- Contains a mix of freeform text and partial config values
+- Reads like marketing copy, pitch content, or a product description
+
+### Auto-Extract Procedure
+
+1. **Fetch/Read the content**:
+   - If URL provided → use `WebFetch` to retrieve and extract page content
+   - If text pasted → use the text directly
+   - If multiple URLs → fetch all and combine
+
+2. **Extract company profile** — look for:
+   - Company name (from logo, header, footer, "About" section, legal text)
+   - Product name (from headline, hero section, title tag)
+   - Description (from meta description, hero subtitle, "What we do" section)
+   - Domain (from the URL itself or contact information)
+   - Stage — infer from signals:
+     - "coming soon", "waitlist", "beta" → `idea` or `mvp`
+     - "trusted by X customers", pricing page, case studies → `growth`
+     - Enterprise features, SOC2 badges, large customer logos → `scale`
+
+3. **Infer tech stack** — look for signals in the content AND in the codebase:
+   - Check the repo for `package.json`, `requirements.txt`, `go.mod`, `Cargo.toml`, `Gemfile`, `pom.xml`
+   - From website: check meta tags, response headers (`x-powered-by`, `server`), script sources, framework fingerprints
+   - From text: mentions of specific technologies ("built with React", "powered by Django", "Node.js backend")
+   - If no tech signals found → ask the user to pick a preset
+
+4. **Infer product characteristics** — look for:
+   - Multi-tenant signals: "teams", "organizations", "workspaces", "per-seat pricing"
+   - i18n signals: multiple language options, locale switcher, "available in X countries"
+   - Mobile signals: "mobile app", app store links, "responsive", QR codes
+   - B2B vs B2C: pricing model, target audience language
+   - Auth signals: "Sign in with Google", "SSO", "enterprise login"
+
+5. **Build a pre-filled config** — map extracted data to Company OS config fields:
+   - Fill everything that was confidently extracted
+   - Mark uncertain fields with `(inferred)` annotation
+   - Leave truly unknown fields empty
+
+6. **Present for confirmation** — show the extracted config as a summary table:
+   ```
+   ## Auto-Extracted Configuration
+
+   Source: https://neevak.com + codebase analysis
+
+   ### Company Profile
+   | Field | Extracted Value | Confidence |
+   |-------|----------------|------------|
+   | Name | Univas Collective | high — from footer |
+   | Product | Neevak | high — from title |
+   | Description | School fee management... | high — from hero |
+   | Domain | neevak.com | high — from URL |
+   | Stage | mvp | medium — no pricing page yet |
+
+   ### Tech Stack
+   | Field | Extracted Value | Confidence |
+   |-------|----------------|------------|
+   | Preset | nextjs | high — package.json found |
+   | ... | ... | ... |
+
+   Fields I couldn't determine: [list]
+
+   Does this look right? I'll ask about the missing fields.
+   ```
+
+7. **Fill gaps** — for fields that couldn't be extracted:
+   - If a preset was determined, apply preset defaults
+   - For remaining unknowns, ask the user (interactive-style) only for those specific fields
+   - Apply smart defaults for everything else
+
+8. **On confirmation** — proceed to Step 6 (Write config) through Step 11 (Verify), same as Express mode
+
+### Example Usage
+
+**URL mode:**
+```
+/setup https://neevak.com
+```
+
+**Text dump mode:**
+```
+/setup
+
+We're Univas Collective, building Neevak — a school fee management
+platform for Indian K-12 schools. Schools currently use Excel, cash
+counters, and WhatsApp to manage crores in fee collection. We're
+replacing that with a proper infrastructure layer.
+
+We're using Next.js with TypeScript, PostgreSQL, and deploying on
+Vercel. Each school is a tenant with RLS isolation. We need mobile
+support — parents will use Android primarily. We're at MVP stage,
+about to onboard our first 10 pilot schools.
+
+Tech: Next.js 14, Prisma, PostgreSQL, Redis for caching, BullMQ for
+background jobs (receipt generation, payment reminders). Auth via
+Clerk. We'll need WhatsApp integration for notifications.
+```
+
+The wizard would extract all of that into a pre-filled config, infer the preset (Next.js + Vercel), set multi-tenant with RLS, platforms targeting web + mobile-web + android, and present the full config for one-click confirmation.
+
+---
+
+## Interactive Mode Procedure
 
 ### Step 1: Detect Environment
 

@@ -499,9 +499,54 @@ Or manually:
 These are things you can ask Claude Code to do. The agents handle the rest.
 
 ### Setting up a new project
-> Run `/setup` — or say: "Set up Company OS for Acme Corp. We're building a B2B SaaS invoicing tool using Next.js, PostgreSQL, and Prisma."
 
-The setup wizard walks you through tech stack selection (with presets), fills in `company.config.yaml`, generates `.claude/settings.json` with permissions for your stack, and scaffolds all directories.
+**Interactive mode** — step-by-step guided wizard:
+> Run `/setup` — the wizard asks questions one section at a time with smart defaults.
+
+**Express mode** — paste everything at once:
+> Run `/setup` with a config block — no round-trips. Example:
+
+```
+/setup
+
+## Company
+- Name: Acme Corp
+- Product: InvoiceFlow
+- Description: B2B SaaS invoicing for small businesses
+- Domain: invoiceflow.com
+- Stage: mvp
+
+## Tech Stack
+- Preset: nextjs
+- Cache: Redis
+- Queue: BullMQ
+
+## Architecture
+- Multi-tenant: true
+- Tenant Isolation: RLS
+- Deployment: serverless
+
+## Platforms
+- Targets: [web, mobile-web]
+
+## Analytics
+- Provider: PostHog
+
+## Email
+- Provider: Resend
+
+## Options
+- Clean Up Templates: yes
+```
+
+The wizard parses your block, applies preset defaults for anything not specified, shows a summary for confirmation, then configures everything in one shot.
+
+**Auto-extract mode** — just give it a URL or dump unstructured text:
+> `/setup https://yourproduct.com` — fetches the site, extracts company name, product description, infers stage, detects tech stack from the codebase, and presents a pre-filled config for confirmation.
+
+You can also paste a pitch deck summary, product brief, investor memo, or Notion dump alongside `/setup` — the wizard extracts what it can and only asks about what it couldn't determine.
+
+See the full template and all three modes in `.claude/skills/setup/SKILL.md`.
 
 ### Importing existing artifacts
 > "I have our PRD and architecture doc from Notion. I've exported them to imports/. Bring them into the system."
