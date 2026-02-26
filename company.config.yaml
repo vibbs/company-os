@@ -16,7 +16,7 @@ company:
   product: ""                 # Product name
   description: ""             # One-line product description
   domain: ""                  # Primary domain (e.g., acme.com)
-  stage: ""                   # idea | mvp | growth | scale
+  stage: ""                    # idea | mvp | growth | scale
 
 tech_stack:
   language: ""                # TypeScript | Python | Go | Rust | Java
@@ -66,3 +66,24 @@ i18n:
   supported_locales: []       # list of locales, e.g. [en-US, fr-FR, de-DE]
   strategy: ""                # key-based | gettext | ICU — how strings are managed
   fallback: ""                # default-locale | key | empty — behavior when translation missing
+
+platforms:
+  targets: []                 # [web, mobile-web, ios, android]
+  mobile_framework: []        # [react-native, expo, flutter, capacitor] — array, supports multiple
+  responsive: true            # true | false — enforce responsive web design
+  pwa: false                  # true | false — Progressive Web App support
+
+analytics:
+  provider: ""                # Mixpanel | Amplitude | Pendo | PostHog | none
+  event_prefix: ""            # app-name prefix for events (e.g., "myapp")
+  tracker_attribute: ""       # data-track-id | data-analytics | custom — HTML attribute name for UI tracking
+
+feature_flags:
+  provider: ""                # LaunchDarkly | Flagsmith | Unleash | custom | config-file
+  strategy: ""                # progressive-discovery | release-only | full (= all flag types: release + experiment + ops + discovery)
+  cleanup_sla_days: 14        # max days a release flag stays after full rollout
+
+email:
+  provider: ""                # Resend | Sendgrid | Postmark | SES | none
+  from_address: ""            # noreply@yourdomain.com
+  template_engine: ""         # react-email | mjml | handlebars | jinja | plain-html

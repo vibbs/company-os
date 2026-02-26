@@ -29,6 +29,21 @@ Designs the onboarding experience that guides new users to their "aha moment" as
 10. Save the activation playbook to `artifacts/growth/`.
 11. Validate the artifact using `./tools/artifact/validate.sh`.
 
+## Progressive Discovery Integration
+
+When the `feature_flags.strategy` in `company.config.yaml` includes progressive discovery (`progressive-discovery` or `full`), coordinate with the Feature Flags skill:
+
+- **Map aha moments to discovery levels**: The aha moment from Step 1 should be the trigger that unlocks Level 1 (Foundations) features
+- **Align activation experiments with feature reveals**: A/B tests can test different discovery level thresholds
+- **Time-to-value acceleration**: Onboarding interventions should guide users toward the triggers that unlock the next discovery level
+- **Feature reveal coordination**: When a user unlocks a new discovery level, trigger the corresponding guided tour (from the User Docs skill)
+
+Discovery levels (from feature-flags skill):
+- **Level 0 (Core)**: Always visible — essential product value
+- **Level 1 (Foundations)**: Unlocked after aha moment / core flow completion
+- **Level 2 (Power)**: Unlocked after proficiency demonstrated
+- **Level 3 (Expert)**: Unlocked on request or sustained engagement
+
 ## Quality Checklist
 - [ ] "Aha moment" is data-backed or has a clear hypothesis
 - [ ] Current onboarding flow is mapped end-to-end

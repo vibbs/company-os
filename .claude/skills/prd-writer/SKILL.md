@@ -72,6 +72,29 @@ AC-[number]: [Given/When/Then or imperative statement]
 
 Explicitly state what's IN and OUT. Scope boundaries prevent creep. Be aggressive about "out of scope."
 
+### Step 4.5: Discovery Validation (Novel Features Only)
+
+If the objective was classified as a NOVEL concept by the Discovery Validation skill (not a common pattern like auth, CRUD, notifications), include a "Discovery Validation" section in the PRD:
+
+- **Classification**: NOVEL — reason for classification
+- **Lean Canvas summary**: Problem, UVP, Key Metrics, Unfair Advantage
+- **Competitive landscape**: 3-5 alternatives, gap analysis
+- **Riskiest assumption**: the one thing that, if wrong, kills this idea
+- **Validation status**: Proceed / Validate first / Reconsider
+- **Recommendation**: next steps based on validation
+
+If the objective is a COMMON PATTERN, note: "Discovery skipped — standard pattern" and proceed.
+
+### Step 4.6: Measurement Plan
+
+For each success metric defined in Step 2, map it to a concrete analytics event:
+
+| Success Metric | Event Name | Event Properties | Dashboard |
+|---------------|------------|------------------|-----------|
+| [metric] | [object.action per event taxonomy] | [key properties] | [chart type, alert threshold] |
+
+This section feeds directly into the instrumentation skill during implementation. Every success metric must have a corresponding event; if a metric can't be measured via an event, reconsider the metric.
+
 ### Step 5: Consider Dependencies and Risks
 
 - **Technical dependencies**: APIs, services, data that must exist
@@ -125,4 +148,6 @@ If a PRD already exists outside Company OS (Google Docs, Notion, Confluence), us
 - [ ] Scope is bounded with explicit cuts
 - [ ] Dependencies and risks documented
 - [ ] Artifact frontmatter is complete and valid
+- [ ] Discovery validation included (if novel feature)
+- [ ] Measurement plan maps every success metric to an analytics event
 - [ ] Ready for Engineering handoff

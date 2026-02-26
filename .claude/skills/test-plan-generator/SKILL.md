@@ -29,6 +29,28 @@ Transforms PRD acceptance criteria into a structured test plan covering function
 10. Save the test plan to `artifacts/qa/`.
 11. Validate the artifact using `./tools/artifact/validate.sh`.
 
+## Mobile Test Scenarios
+
+If `platforms.targets` in `company.config.yaml` includes mobile targets, add the following test categories:
+
+### Responsive Web (when `platforms.responsive: true`)
+- **Viewport testing**: Verify layouts at mobile (320px, 375px), tablet (768px), and desktop (1024px, 1440px) breakpoints
+- **Touch interaction**: All interactive elements meet 44x44px minimum touch target
+- **Orientation**: Layouts work in both portrait and landscape
+- **Soft keyboard**: Forms remain accessible when virtual keyboard is open
+- **Scroll behavior**: No horizontal scroll on mobile viewports
+
+### Native Mobile (when `platforms.targets` includes `ios` or `android`)
+- **Platform-specific**: iOS safe area insets, Android back button behavior
+- **Offline behavior**: Feature degrades gracefully without network
+- **Performance**: Screen transitions < 300ms, list scrolling at 60fps
+- **Deep linking**: Feature is reachable via deep link if applicable
+
+### PWA (when `platforms.pwa: true`)
+- **Offline**: Service worker caches required assets
+- **Install prompt**: App is installable and works standalone
+- **Background sync**: Pending actions sync when connection restored
+
 ## Quality Checklist
 - [ ] Every acceptance criterion has at least one test scenario
 - [ ] Edge cases and error paths are covered
@@ -37,4 +59,5 @@ Transforms PRD acceptance criteria into a structured test plan covering function
 - [ ] High-risk areas have deeper coverage
 - [ ] Pass/fail criteria are unambiguous
 - [ ] Dependencies and fixtures are listed
+- [ ] Mobile test scenarios included (if platform targets are configured)
 - [ ] Artifact passes validation

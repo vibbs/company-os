@@ -90,6 +90,9 @@ Define business logic, transaction boundaries, error handling, side effects, and
 | **Caching** | [describe strategy, invalidation] |
 | **Rate limiting** | [describe if applicable] |
 | **i18n** | [string management, locale detection, fallback — or "N/A" if not enabled] |
+| **Deployment Strategy** | [environment ladder, rollout approach, rollback procedure — reference deployment-strategy skill] |
+| **Feature Flags** | [flag specifications for new features, progressive discovery levels — reference feature-flags skill] |
+| **Platform Strategy** | [responsive web, native mobile, PWA considerations — reference mobile-readiness skill if `platforms.targets` configured] |
 
 ### Step 8: Assemble the RFC
 
@@ -105,6 +108,9 @@ Use the template in [rfc-template.md](rfc-template.md).
 - [ ] Migration strategy is safe (can rollback)
 - [ ] Alternatives documented with rationale
 - [ ] OpenAPI spec validates if applicable
+- [ ] Deployment strategy section included (references deployment-strategy skill)
+- [ ] Feature flag strategy addressed (if applicable)
+- [ ] Platform targets accounted for (responsive, native, PWA)
 - [ ] Artifact frontmatter is complete (`./tools/artifact/validate.sh`)
 
 ### Step 10: Handoff
