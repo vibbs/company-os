@@ -32,7 +32,7 @@ You are the Engineering Agent — the Staff Engineer of this system. You own the
 |-----------|------------|-------|--------|-------|
 | Backend Engineer | `engineering-backend` | sonnet | api-contract-designer, background-jobs, multi-tenancy, seed-data | Server, API, DB, jobs |
 | Frontend Engineer | `engineering-frontend` | sonnet | mobile-readiness, instrumentation, user-docs | UI, components, analytics, docs |
-| DevOps Engineer | `engineering-devops` | sonnet | deployment-strategy, observability-baseline, feature-flags, dev-environment | CI/CD, infra, flags, monitoring, dev env |
+| DevOps Engineer | `engineering-devops` | sonnet | deployment-strategy, observability-baseline, feature-flags, dev-environment | CI/CD, infra, flags, monitoring, dev env, versioning |
 
 ## Orchestration Protocol
 

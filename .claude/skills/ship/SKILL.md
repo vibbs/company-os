@@ -167,17 +167,29 @@ Before approving release, run the full tool chain:
 1. `./tools/ci/run-tests.sh` -- uses `conventions.test_framework` from config
 2. `./tools/ci/lint-format.sh` -- uses `conventions.linter` and `conventions.formatter` from config
 3. `./tools/security/dependency-scan.sh` -- scans for known vulnerabilities
-4. `./tools/deploy/pre-deploy.sh` -- validates deployment readiness (git state, env vars, migrations)
+4. `./tools/deploy/pre-deploy.sh` -- validates deployment readiness (git state, env vars, migrations, version)
 5. `./tools/artifact/check-gate.sh release <prd-file>` -- verifies all artifacts exist and are approved
+6. **Version bump** -- determine and apply the app version bump:
+   a. Read the current app version (auto-detect from `package.json`, `pyproject.toml`, or `VERSION` file)
+   b. Determine bump type from shipped artifacts:
+      - PRD describes a bug fix or performance improvement → **PATCH**
+      - PRD describes a new feature or enhancement → **MINOR**
+      - RFC explicitly flags breaking API changes or migration requirements → **MAJOR**
+   c. Read `company.stage` — if `idea` or `mvp`, cap version at v0.x.x (MAJOR becomes MINOR per standard v0 semver). If `growth`/`scale` and version is still 0.x.x, recommend transitioning to v1.0.0
+   d. Present recommendation to the user: "[current] → [proposed] ([reason])"
+   e. On user approval: run `./tools/versioning/version-bump.sh <type>`
+   f. If user wants a different bump type, accept their override
+   g. Commit the version bump (version file + CHANGELOG.md + .previous-version)
 
 **Recommended**: If an incident runbook exists at `standards/ops/incident-runbook.md`, verify it covers the deployment rollback procedure for this feature.
 
-Report results for each tool. All four checks must pass for release approval. If any check fails, report the failure details and work with the user to resolve before retrying.
+Report results for each tool. All checks must pass for release approval. If any check fails, report the failure details and work with the user to resolve before retrying.
 
 ### Step 7: Release Summary
 
 Present a final summary:
 
+- **Version** -- previous version → new version (git tag: v[new])
 - **Artifacts produced** -- list all artifacts with IDs, types, and statuses
 - **Gates passed** -- list each gate transition and its result
 - **Tool chain results** -- tests, lint, security scan outcomes

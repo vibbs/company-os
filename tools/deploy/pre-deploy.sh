@@ -37,6 +37,7 @@ Checks performed:
   5. No secrets in codebase: scan for common secret patterns
   6. Migrations reviewed: check for pending migrations
   7. Environment variables: compare .env.example with current env
+  8. Version management: app version exists, valid semver, bumped since last release
 
 Exit Codes:
   0  All checks passed
@@ -89,7 +90,7 @@ echo "Config: ${CONFIG_FILE}"
 echo ""
 
 # ─── Check 1: Git status — no uncommitted changes ──────────────────────────────
-echo -e "${BOLD}[1/7] Git Status${RESET}"
+echo -e "${BOLD}[1/8] Git Status${RESET}"
 if ! command -v git &> /dev/null; then
   report_warn "git not found, skipping git checks"
 elif [[ ! -d ".git" ]]; then
@@ -110,7 +111,7 @@ fi
 echo ""
 
 # ─── Check 2: Branch check — on expected deploy branch ─────────────────────────
-echo -e "${BOLD}[2/7] Branch Check${RESET}"
+echo -e "${BOLD}[2/8] Branch Check${RESET}"
 if command -v git &> /dev/null && [[ -d ".git" ]]; then
   CURRENT_BRANCH=$(git branch --show-current 2>/dev/null) || true
 
@@ -135,7 +136,7 @@ fi
 echo ""
 
 # ─── Check 3: Tests pass ───────────────────────────────────────────────────────
-echo -e "${BOLD}[3/7] Tests${RESET}"
+echo -e "${BOLD}[3/8] Tests${RESET}"
 TEST_CMD=""
 
 # Determine test command from configured framework or auto-detect
@@ -175,7 +176,7 @@ fi
 echo ""
 
 # ─── Check 4: Lint passes ──────────────────────────────────────────────────────
-echo -e "${BOLD}[4/7] Lint${RESET}"
+echo -e "${BOLD}[4/8] Lint${RESET}"
 LINT_CMD=""
 
 # Determine lint command from configured linter or auto-detect
@@ -217,7 +218,7 @@ echo ""
 # ─── Check 5: No secrets in codebase ───────────────────────────────────────────
 # Scans source code for common secret patterns. Excludes env files, lock files,
 # node_modules, and this script itself to reduce false positives.
-echo -e "${BOLD}[5/7] Secret Scan${RESET}"
+echo -e "${BOLD}[5/8] Secret Scan${RESET}"
 SECRET_PATTERNS='(API_KEY|SECRET_KEY|PRIVATE_KEY|ACCESS_TOKEN|api_key|secret_key|private_key|access_token)\s*=\s*["\x27][A-Za-z0-9+/=_-]{8,}'
 
 # Build a list of files to scan (exclude common non-source paths)
@@ -253,7 +254,7 @@ echo ""
 
 # ─── Check 6: Migrations reviewed ──────────────────────────────────────────────
 # Checks if there are pending database migrations that have not been applied.
-echo -e "${BOLD}[6/7] Migration Check${RESET}"
+echo -e "${BOLD}[6/8] Migration Check${RESET}"
 HAS_MIGRATIONS=false
 
 case "${ORM,,}" in
@@ -308,7 +309,7 @@ echo ""
 
 # ─── Check 7: Environment variables ────────────────────────────────────────────
 # Compares .env.example with currently set environment variables to find gaps.
-echo -e "${BOLD}[7/7] Environment Variables${RESET}"
+echo -e "${BOLD}[7/8] Environment Variables${RESET}"
 if [[ -f ".env.example" ]]; then
   MISSING_VARS=()
 
@@ -345,6 +346,51 @@ if [[ -f ".env.example" ]]; then
   fi
 else
   report_warn "No .env.example file found — cannot verify environment variables"
+fi
+echo ""
+
+# ─── Check 8: Version management ─────────────────────────────────────────────
+echo -e "${BOLD}[8/8] Version Management${RESET}"
+
+APP_VERSION=""
+APP_VERSION_SRC=""
+
+# Detect app version file (package.json > pyproject.toml > VERSION)
+if [[ -f "package.json" ]]; then
+  APP_VERSION=$(grep '"version"' package.json | head -1 | sed 's/.*"version": *"\([^"]*\)".*/\1/' || true)
+  APP_VERSION_SRC="package.json"
+elif [[ -f "pyproject.toml" ]]; then
+  APP_VERSION=$(grep '^version = ' pyproject.toml | head -1 | sed 's/version = "\([^"]*\)".*/\1/' || true)
+  APP_VERSION_SRC="pyproject.toml"
+elif [[ -f "VERSION" ]]; then
+  # Skip if this is Company OS's VERSION file
+  VER_CONTENT=$(head -1 VERSION | tr -d '[:space:]')
+  COS_CONTENT=""
+  if [[ -f ".company-os-version" ]]; then
+    COS_CONTENT=$(head -1 .company-os-version | tr -d '[:space:]')
+  fi
+  if [[ "$VER_CONTENT" != "$COS_CONTENT" ]]; then
+    APP_VERSION="$VER_CONTENT"
+    APP_VERSION_SRC="VERSION"
+  fi
+fi
+
+if [[ -z "$APP_VERSION" ]]; then
+  report_warn "No app version file found (package.json, pyproject.toml, or VERSION)"
+elif ! [[ "$APP_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+  report_fail "App version '${APP_VERSION}' in ${APP_VERSION_SRC} is not valid semver"
+else
+  report_pass "App version: ${APP_VERSION} (${APP_VERSION_SRC})"
+
+  # Check if version has been bumped since last release
+  if [[ -f ".previous-version" ]]; then
+    PREV_APP_VERSION=$(head -1 .previous-version | tr -d '[:space:]')
+    if [[ "$APP_VERSION" == "$PREV_APP_VERSION" ]]; then
+      report_warn "Version unchanged since last release (${PREV_APP_VERSION}) — consider bumping"
+    else
+      report_pass "Version bumped: ${PREV_APP_VERSION} → ${APP_VERSION}"
+    fi
+  fi
 fi
 echo ""
 

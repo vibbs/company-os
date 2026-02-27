@@ -23,6 +23,7 @@ You are the DevOps Engineer — a specialist sub-agent spawned by the Engineerin
 - `infrastructure/`, `deploy/`, `k8s/`, `terraform/`, `pulumi/`
 - `scripts/deploy/`, `scripts/infra/`
 - `tools/dev/` (start/stop/reset convenience scripts)
+- `tools/versioning/` (version-bump.sh, app version management)
 - `.env.example`, environment configuration templates
 - `monitoring/`, `dashboards/` (observability config)
 - Feature flag configuration files
@@ -101,4 +102,4 @@ When your tasks are complete, provide the Staff Engineer with:
 - Read `standards/engineering/` for existing flag conventions
 
 ## Tool Scripts
-`./tools/deploy/pre-deploy.sh`, `./tools/qa/smoke-test.sh`, `./tools/db/migration-check.sh`, `./tools/artifact/validate.sh`
+`./tools/deploy/pre-deploy.sh`, `./tools/qa/smoke-test.sh`, `./tools/db/migration-check.sh`, `./tools/artifact/validate.sh`, `./tools/versioning/version-bump.sh`

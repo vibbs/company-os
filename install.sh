@@ -787,14 +787,16 @@ else
   SKIPPED=$((SKIPPED + 1))
 fi
 
-# --- Copy top-level docs (VERSION, CHANGELOG.md, etc.) ---
-for doc_file in VERSION CHANGELOG.md; do
-  if [ -f "$SRC/$doc_file" ]; then
-    if [ "$DRY_RUN" = false ]; then
-      cp "$SRC/$doc_file" "$doc_file"
-    fi
+# --- Version stamp (Company OS version only — NOT app version files) ---
+# Company OS tracks its installed version via .company-os-version (not VERSION or CHANGELOG.md).
+# VERSION and CHANGELOG.md are intentionally NOT copied to user projects — they would conflict
+# with the user's own app version and changelog files. Users read the Company OS changelog
+# via /upgrade-company-os or GitHub.
+if [ -f "$SRC/VERSION" ]; then
+  if [ "$DRY_RUN" = false ]; then
+    cp "$SRC/VERSION" ".company-os-version"
   fi
-done
+fi
 
 # --- Scaffold directories (create if missing, never overwrite) ---
 if [ "$DRY_RUN" = false ]; then

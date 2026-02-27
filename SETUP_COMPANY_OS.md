@@ -34,7 +34,7 @@ cd my-app
 | `.claude/agents/` | 9 specialized AI agents (6 top-level + 3 engineering sub-agents) |
 | `.claude/skills/` | 46 procedural skills with templates and checklists |
 | `.claude/hooks/` | Automatic artifact validation hooks |
-| `tools/` | 23 enforcement scripts (validation, gates, lifecycle) |
+| `tools/` | 24 enforcement scripts (validation, gates, lifecycle, versioning) |
 | `company.config.yaml` | Central config file (empty template — you fill it in Phase 2) |
 | `CLAUDE.md` | Agent instructions (auto-loaded every session) |
 | `artifacts/`, `standards/`, `tasks/`, `imports/` | Working directories |
@@ -219,6 +219,26 @@ personas:
 - Purely cosmetic — zero impact on routing, gating, or functionality
 - Names surface in agent self-references, delegation messages, status output, and ship flow progress
 
+### App Versioning (Automatic)
+
+Company OS automatically manages your app's version through the ship flow:
+
+- **Version detection**: Auto-detects from `package.json`, `pyproject.toml`, or `VERSION` file
+- **Stage-aware versioning**: `idea`/`mvp` stages stay at v0.x.x (pre-stable). v1.0.0 comes when you move to `growth`/`scale` stage
+- **Ship flow integration**: When you ship a feature, the system determines bump type (PATCH for fixes, MINOR for features, MAJOR for breaking changes) and prompts for confirmation
+- **Changelog management**: Your app gets its own `CHANGELOG.md` (separate from Company OS). Entries are drafted during ship and version-stamped at release
+- **Git tagging**: Each release creates a `v{version}` git tag
+- **Validation**: Release gate and pre-deploy checks enforce version bumps before shipping
+
+The `/setup` wizard initializes versioning automatically (Step 8b). You can also bump manually:
+
+```bash
+./tools/versioning/version-bump.sh minor          # bump minor version
+./tools/versioning/version-bump.sh patch --dry-run  # preview a patch bump
+```
+
+**Note**: Company OS's own `VERSION` and `CHANGELOG.md` are never copied to your project. Company OS version tracking uses `.company-os-version` only.
+
 ### What Happens If Fields Are Empty
 
 - Agents will ask you to decide before proceeding with affected recommendations
@@ -288,6 +308,7 @@ Shell scripts that agents execute via Bash. They perform deterministic actions.
 | Analytics | `tools/analytics/` | query-metrics, publish-content |
 | Ops | `tools/ops/` | status-check |
 | Deploy | `tools/deploy/` | pre-deploy |
+| Versioning | `tools/versioning/` | version-bump |
 
 **Customizing**: Tools read from `company.config.yaml` to auto-detect your stack. Some tools are stubs (analytics, content publishing) — replace them with calls to your actual providers.
 

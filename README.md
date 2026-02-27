@@ -171,7 +171,7 @@ Run `/ship` to kick off the full pipeline. Gates are enforced by `tools/artifact
 | Growth | positioning-messaging, landing-page-copy, seo-topic-map, channel-playbook, activation-onboarding, email-lifecycle |
 | Risk / Legal | threat-modeling, privacy-data-handling, compliance-readiness, pricing-unit-economics, tos-privacy-drafting, incident-response |
 
-### 23 Tool Scripts
+### 24 Tool Scripts
 
 | Tool | Purpose |
 |------|---------|
@@ -179,8 +179,9 @@ Run `/ship` to kick off the full pipeline. Gates are enforced by `tools/artifact
 | `promote.sh` | Enforces lifecycle ordering (draft → review → approved) |
 | `link.sh` | Links parent/child artifacts bidirectionally |
 | `check-gate.sh` | Stage gate checks (prd-to-rfc, rfc-to-impl, impl-to-qa, release) |
+| `version-bump.sh` | Stage-aware app version bumping with changelog + git tags |
 | `status-check.sh` | HTTP health checks for production services |
-| `pre-deploy.sh` | Pre-deployment validation gate |
+| `pre-deploy.sh` | Pre-deployment validation gate (8 checks incl. version) |
 | `health-check.sh` | Validates all skills are discoverable |
 
 ---

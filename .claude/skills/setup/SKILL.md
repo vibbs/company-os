@@ -474,6 +474,42 @@ tasks/ (with todo.md and lessons.md if missing)
 
 Do NOT create directories that are part of Company OS source (`.claude/`, `tools/`) — these should already exist from the template.
 
+### Step 8b: Initialize App Versioning
+
+Set up version tracking for the user's application. This is separate from Company OS versioning — this tracks the user's product version.
+
+1. **Detect existing version file**:
+   - If `package.json` exists and has a `"version"` field → use it (don't overwrite)
+   - If `pyproject.toml` exists and has a `version` field → use it
+   - If a `VERSION` file exists (and is not the Company OS version — check against `.company-os-version`) → use it
+   - If none found → create `VERSION` file with the appropriate initial version
+
+2. **Set initial version based on stage**:
+   - If `company.stage` is `idea` or `mvp` (or empty): version starts at `0.1.0`
+   - If `company.stage` is `growth` or `scale`: version starts at `1.0.0`
+   - If an existing version file was detected, keep its current value
+
+3. **Create app CHANGELOG.md** (only if no CHANGELOG.md exists):
+   ```markdown
+   # Changelog
+
+   All notable changes to this project are documented in this file.
+   Format based on [Keep a Changelog](https://keepachangelog.com/).
+
+   ## [Unreleased]
+
+   ## [0.1.0] - {today's date}
+   ### Added
+   - Initial release
+   ```
+   Use the initial version from step 2 in the heading (0.1.0 or 1.0.0).
+
+4. **Create `.previous-version`** with `0.0.0` (baseline for first bump detection)
+
+5. **Add `.previous-version` to `.gitignore`** if not already present (internal tracking file, not user-facing)
+
+6. **Report**: "App versioning initialized at v{version}. The ship flow will auto-bump versions on each release."
+
 ### Step 9: Skill Category Selection (Optional)
 
 Ask: "Which skill categories do you need? All are included by default."

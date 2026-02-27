@@ -13,6 +13,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
+### Added
+- **App Versioning System** — Stage-aware semantic versioning for user apps. Ship flow auto-determines bump type (MAJOR/MINOR/PATCH) from PRD and RFC context. New `tools/versioning/version-bump.sh` tool script detects version file (package.json, pyproject.toml, or VERSION), applies stage rules (idea/mvp stay at v0.x.x, growth/scale use v1.x.x+), updates CHANGELOG.md, and creates git tags
+- **Version validation in release gate** — `check-gate.sh release` now validates app version exists, follows semver, and was bumped since last release
+- **Version check in pre-deploy** — `pre-deploy.sh` adds Check 8 (Version Management) validating version file and bump status
+- **Release Versioning bar** — Release-readiness-gate adds Bar 7 checking version file, semver format, bump status, changelog entry, and stage-appropriate version range
+- **Setup version initialization** — `/setup` Step 8b initializes app version file (0.1.0 for idea/mvp, 1.0.0 for growth/scale) and creates app CHANGELOG.md
+
+### Changed
+- `install.sh` no longer copies `VERSION` or `CHANGELOG.md` to user projects — prevents conflicts with app version files. Company OS version tracking uses `.company-os-version` only
+- Tool count: 23 → 24 (added version-bump.sh)
+- Pre-deploy checks: 7 → 8 (added version management)
+- Release-readiness bars: 7 → 8 (added Release Versioning, renumbered Dogfood to Bar 8)
+- DevOps sub-agent: owns `tools/versioning/` directory
+- Ship skill Step 6: includes version bump determination and execution
+- Ship skill Step 7: includes version transition in release summary
+- User-docs skill: changelog entries require version stamps, coordinate with version-bump.sh
+
 ## [1.1.0] - 2026-02-27
 
 ### Added

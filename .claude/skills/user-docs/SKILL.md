@@ -54,9 +54,12 @@ Produce `standards/docs/documentation-strategy.md` with the following structure:
 
 #### Changelog Management
 
-- Each entry includes: version, date, summary of changes (user-facing language)
-- Sourced from artifact history and commit messages, translated into user-facing language
-- Categorized as: Added, Changed, Fixed, Removed
+- Every entry MUST include a version number from the app's version file and a date
+- Format: `## [x.y.z] - YYYY-MM-DD` (Keep a Changelog format)
+- Version number must match the app version in `package.json`, `pyproject.toml`, or `VERSION`
+- The `./tools/versioning/version-bump.sh` script handles moving `[Unreleased]` items under the versioned heading — coordinate with it
+- Sourced from PRD acceptance criteria, RFC changes, and artifact history — translated into user-facing language
+- Categorized as: Added, Changed, Fixed, Removed, Security
 - Written for users, not developers -- explain the benefit, not the implementation
 
 #### API Documentation
@@ -172,19 +175,23 @@ tour:
 
 #### 4c. Changelog Entry Draft
 
-Produce a user-facing changelog entry:
+Produce a user-facing changelog entry under the `## [Unreleased]` section in `CHANGELOG.md`. The version-bump tool (`./tools/versioning/version-bump.sh`) will stamp it with a version number at release time.
 
 ```markdown
-### [Feature Name]
-**Added** - [Date]
+## [Unreleased]
+### Added
+- [One-sentence description of what users can now do]
 
-[One-sentence description of what users can now do.]
+### Changed
+- [Enhancement to existing feature — explain the user benefit]
 
-[Optional: one sentence on how to access or enable the feature.]
+### Fixed
+- [Bug fix — explain what was broken and what works now]
 ```
 
 - Write for users, not developers ("You can now export reports as PDF" not "Added PDF export endpoint")
-- Categorize as Added, Changed, Fixed, or Removed
+- Categorize as Added, Changed, Fixed, Removed, or Security
+- The ship flow's release step will move these entries under a versioned heading (e.g., `## [0.3.0] - 2026-02-27`)
 
 #### 4d. API Documentation Updates
 

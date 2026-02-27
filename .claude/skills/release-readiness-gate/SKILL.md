@@ -89,7 +89,15 @@ Each bar is pass/fail. ALL must pass for release approval.
 - [ ] Pre-deploy checks pass (`./tools/deploy/pre-deploy.sh`)
 - [ ] Incident runbook exists in `standards/ops/incident-runbook.md` (at least for production-stage products)
 
-#### Bar 7: Dogfood Report (Optional — Non-Blocking)
+#### Bar 7: Release Versioning
+- [ ] App version file exists (`package.json`, `pyproject.toml`, or `VERSION`)
+- [ ] Version follows semantic versioning (MAJOR.MINOR.PATCH)
+- [ ] Version has been bumped since last release (compare against `.previous-version`)
+- [ ] `CHANGELOG.md` has an entry for the new version with date
+- [ ] Version is stage-appropriate: v0.x.x for `idea`/`mvp`, v1.x.x+ for `growth`/`scale`
+- Stage-aware: advisory in `idea` stage, enforced in `mvp`+. Run `./tools/versioning/version-bump.sh --dry-run` to preview.
+
+#### Bar 8: Dogfood Report (Optional — Non-Blocking)
 - [ ] Dogfood report exists in `artifacts/qa-reports/` (if dogfooding was performed)
 - [ ] No CRITICAL severity issues in dogfood report
 - [ ] All P0 user journeys passed (or failures are tracked with remediation plan)
@@ -109,6 +117,7 @@ Each bar is pass/fail. ALL must pass for release approval.
 | Testing | PASS / FAIL |
 | Code Quality | PASS / FAIL |
 | Operational Readiness | PASS / FAIL |
+| Release Versioning | PASS / FAIL |
 | Dogfood (optional) | PASS / FAIL / SKIPPED |
 
 ### Overall: APPROVED FOR RELEASE / NOT READY
