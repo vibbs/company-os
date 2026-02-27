@@ -14,14 +14,20 @@ resolve_app_url() {
   local ROOT="${1:-.}"
   local PORT=""
 
-  # 1. Try .env
+  # 1. Try .env (prefer PORT for fullstack, then API_PORT for backend-only)
   if [[ -f "$ROOT/.env" ]]; then
-    PORT=$(grep -E '^(API_)?PORT=' "$ROOT/.env" | head -1 | sed 's/.*=//' | sed 's/ *#.*//' | tr -d '"' | tr -d "'" | tr -d '[:space:]' || true)
+    PORT=$(grep -E '^PORT=' "$ROOT/.env" | head -1 | sed 's/.*=//' | sed 's/ *#.*//' | tr -d '"' | tr -d "'" | tr -d '[:space:]' || true)
+    if [[ -z "$PORT" ]]; then
+      PORT=$(grep -E '^API_PORT=' "$ROOT/.env" | head -1 | sed 's/.*=//' | sed 's/ *#.*//' | tr -d '"' | tr -d "'" | tr -d '[:space:]' || true)
+    fi
   fi
 
   # 2. Try .env.example
   if [[ -z "$PORT" && -f "$ROOT/.env.example" ]]; then
-    PORT=$(grep -E '^(API_)?PORT=' "$ROOT/.env.example" | head -1 | sed 's/.*=//' | sed 's/ *#.*//' | tr -d '"' | tr -d "'" | tr -d '[:space:]' || true)
+    PORT=$(grep -E '^PORT=' "$ROOT/.env.example" | head -1 | sed 's/.*=//' | sed 's/ *#.*//' | tr -d '"' | tr -d "'" | tr -d '[:space:]' || true)
+    if [[ -z "$PORT" ]]; then
+      PORT=$(grep -E '^API_PORT=' "$ROOT/.env.example" | head -1 | sed 's/.*=//' | sed 's/ *#.*//' | tr -d '"' | tr -d "'" | tr -d '[:space:]' || true)
+    fi
   fi
 
   # 3. Fall back to framework default

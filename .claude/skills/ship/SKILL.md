@@ -164,7 +164,7 @@ If no `.env` or `.env.example` exists, look up `tech_stack.framework` in the fra
 
 Build the URL for each detected service: `http://localhost:{port}`
 
-**3. Present the "Start & Seed" guide
+**3. Present the "Start & Seed" guide**
 
 Display this to the developer (adapt based on detected services):
 

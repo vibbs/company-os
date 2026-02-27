@@ -48,14 +48,20 @@ resolve_app_url() {
   local ROOT="${1:-.}"
   local PORT=""
 
-  # 1. Try .env
+  # 1. Try .env (prefer PORT for fullstack, then API_PORT for backend-only)
   if [[ -f "$ROOT/.env" ]]; then
-    PORT=$(grep -E '^(API_)?PORT=' "$ROOT/.env" | head -1 | sed 's/.*=//' | sed 's/ *#.*//' | tr -d '"' | tr -d "'" | tr -d '[:space:]' || true)
+    PORT=$(grep -E '^PORT=' "$ROOT/.env" | head -1 | sed 's/.*=//' | sed 's/ *#.*//' | tr -d '"' | tr -d "'" | tr -d '[:space:]' || true)
+    if [[ -z "$PORT" ]]; then
+      PORT=$(grep -E '^API_PORT=' "$ROOT/.env" | head -1 | sed 's/.*=//' | sed 's/ *#.*//' | tr -d '"' | tr -d "'" | tr -d '[:space:]' || true)
+    fi
   fi
 
   # 2. Try .env.example
   if [[ -z "$PORT" && -f "$ROOT/.env.example" ]]; then
-    PORT=$(grep -E '^(API_)?PORT=' "$ROOT/.env.example" | head -1 | sed 's/.*=//' | sed 's/ *#.*//' | tr -d '"' | tr -d "'" | tr -d '[:space:]' || true)
+    PORT=$(grep -E '^PORT=' "$ROOT/.env.example" | head -1 | sed 's/.*=//' | sed 's/ *#.*//' | tr -d '"' | tr -d "'" | tr -d '[:space:]' || true)
+    if [[ -z "$PORT" ]]; then
+      PORT=$(grep -E '^API_PORT=' "$ROOT/.env.example" | head -1 | sed 's/.*=//' | sed 's/ *#.*//' | tr -d '"' | tr -d "'" | tr -d '[:space:]' || true)
+    fi
   fi
 
   # 3. Fall back to framework default
@@ -168,9 +174,14 @@ echo ""
 echo "Checking seed data..."
 SEEDS_DIR="$PROJECT_ROOT/seeds"
 if [[ -d "$SEEDS_DIR" ]]; then
-  SCENARIO_COUNT=$(ls -1 "$SEEDS_DIR/scenarios/" 2>/dev/null | wc -l | tr -d ' ')
-  echo "OK: seeds/ directory exists ($SCENARIO_COUNT scenario files found)"
-  echo "Recommendation: Run './tools/db/seed.sh nominal' before dogfooding for realistic data"
+  if [[ -d "$SEEDS_DIR/scenarios" ]]; then
+    SCENARIO_COUNT=$(ls -1 "$SEEDS_DIR/scenarios/" 2>/dev/null | wc -l | tr -d ' ')
+    echo "OK: seeds/scenarios/ exists ($SCENARIO_COUNT scenario files found)"
+    echo "Recommendation: Run './tools/db/seed.sh nominal' before dogfooding for realistic data"
+  else
+    echo "WARNING: seeds/ exists but seeds/scenarios/ not found"
+    echo "Recommendation: Run '/seed-data' to generate seed scenarios, then './tools/db/seed.sh nominal'"
+  fi
 else
   echo "WARNING: No seeds/ directory found"
   echo "Recommendation: Run '/seed-data' to generate seed data, then seed with './tools/db/seed.sh nominal'"
