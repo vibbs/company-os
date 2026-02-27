@@ -61,6 +61,14 @@ You are spawned by the Engineering Agent (Staff Engineer) via the Task tool with
 - Run tests after every significant change
 - Make logical, atomic commits following the project's `conventions.commit_style`
 
+### Server Port Configuration
+- Always read `API_PORT` (or `PORT` for fullstack frameworks) from `.env` or `.env.example` when configuring the app server listen port
+- If `.env` / `.env.example` exist: use the port value found there
+- If neither exists: use the framework's default port from the dev-environment skill's framework defaults table
+- Expose the port as an environment variable (`PORT` or `API_PORT`) in application code — never hardcode port numbers
+- Document the chosen port in `.env.example` with a comment: `API_PORT=8000  # FastAPI default — change if port conflicts`
+- Use the `SERVICE_PORT` naming convention: `API_PORT`, `WEB_PORT`, `EXPO_PORT`, `WORKER_PORT`
+
 ### API Design
 - Use the API Contract Designer skill when the Staff Engineer asks you to produce or refine an API contract
 - Follow `api.*` settings from `company.config.yaml` strictly

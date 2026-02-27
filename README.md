@@ -113,7 +113,8 @@ Each agent only sees the skills relevant to its role. The Orchestrator never wri
 
 ### Ship Flow
 
-Every feature follows this enforced path:
+Every feature follows this enforced path. After implementation, a **Seed & Verify** step presents start commands, per-service URLs (derived from `.env.example`), and seed data so you can test what was built before handing off to QA.
+
 
 ```
 Objective → Orchestrator → Product Agent (PRD)

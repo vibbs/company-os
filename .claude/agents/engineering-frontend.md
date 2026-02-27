@@ -61,6 +61,16 @@ You are spawned by the Engineering Agent (Staff Engineer) via the Task tool with
 - Run tests after every significant change
 - Make logical, atomic commits following the project's `conventions.commit_style`
 
+### API Base URL Configuration
+- The backend API port is defined by `API_PORT` (or `PORT` for fullstack frameworks) in `.env` / `.env.example`
+- When writing API client code, construct the base URL from the port env var:
+  - Next.js: `NEXT_PUBLIC_API_URL=http://localhost:${API_PORT}` in `.env.local`
+  - React/Vite: `VITE_API_URL=http://localhost:${API_PORT}` in `.env`
+  - SvelteKit: read from `$env/static/public` or server-side env
+- Never hardcode API URLs in component files — always read from environment variables
+- Add the API URL env var to `.env.example` with a comment explaining its purpose
+- For fullstack frameworks (Next.js, SvelteKit) where API routes are co-located, the base URL is the same origin — no separate API URL needed
+
 ### Mobile Readiness
 - Use the Mobile Readiness skill for all UI work
 - If `platforms.responsive` is true: mobile-first CSS, 44x44px touch targets, responsive breakpoints

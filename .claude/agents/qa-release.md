@@ -54,6 +54,22 @@ You are the QA & Release Agent — you own confidence. Nothing ships without you
 - Use the Seed Data skill to load `nominal` data before dogfooding for realistic app state
 - Dogfood results feed into the optional Bar 7 of the release-readiness-gate
 
+### URL Resolution for Testing Tools
+When a URL is not provided explicitly for testing tools, derive it automatically:
+
+1. Check `.env` for `API_PORT` or `PORT` — use the first match
+2. If `.env` doesn't exist, check `.env.example` for the same variables
+3. If neither exists, look up `tech_stack.framework` in the dev-environment skill's framework defaults table
+4. Construct the URL: `http://localhost:{resolved_port}`
+5. For health checks, use the framework's default `health_path` from the same table
+
+Pass the resolved URL to:
+- `./tools/qa/dogfood.sh <url>` — dogfood pre-flight
+- `./tools/qa/smoke-test.sh <url>` — smoke tests
+- `./tools/qa/contract-test.sh <spec> <url>` — contract tests
+
+Always log the resolved URL so the developer can verify it's correct.
+
 ### Release Readiness
 - Use the Release Readiness Gate skill to evaluate the full checklist
 - **You block the Orchestrator** if any minimum bar fails

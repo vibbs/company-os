@@ -75,6 +75,46 @@ Before generating, use Context7 to verify current best-practice Docker images fo
 | `Meilisearch` | `meilisearch` | `getmeili/meilisearch:latest` | 7700 |
 | `Typesense` | `typesense` | `typesense/typesense:27.1` | 8108 |
 
+### Step 3.5: Detect Services and Resolve App Ports
+
+In addition to infrastructure services, detect what application services the project will run. Read from `company.config.yaml`:
+
+- `tech_stack.framework` — determines the primary server type
+- `platforms.targets` — if includes `web` and framework is backend-only, a separate web frontend exists
+- `platforms.mobile_framework` — if includes `expo` or `react-native`, a mobile dev server exists
+- `tech_stack.queue` — if not empty/none, a worker process likely exists
+
+**Framework Defaults Table** — use this to derive port, start command, and health path for each framework:
+
+| Framework | Type | Default Port | Start Command | Health Path |
+|-----------|------|-------------|---------------|-------------|
+| Next.js | fullstack | 3000 | `npm run dev` | `/api/health` |
+| SvelteKit | fullstack | 5173 | `npm run dev` | `/` |
+| NestJS | backend | 3000 | `npm run start:dev` | `/health` |
+| Express | backend | 3000 | `npm run dev` | `/health` |
+| FastAPI | backend | 8000 | `uvicorn main:app --reload` | `/health` |
+| Django | backend | 8000 | `python manage.py runserver` | `/health` |
+| Flask | backend | 5000 | `flask run --reload` | `/health` |
+| Gin | backend | 8080 | `go run main.go` | `/health` |
+| Rails | backend | 3000 | `bin/rails server` | `/up` |
+| Spring Boot | backend | 8080 | `./mvnw spring-boot:run` | `/actuator/health` |
+| Laravel | backend | 8000 | `php artisan serve` | `/health` |
+| React (Vite) | frontend | 5173 | `npm run dev` | `/` |
+
+**Service detection rules:**
+
+| Config Signals | Service | Port Variable | Default |
+|---------------|---------|--------------|---------|
+| Framework is fullstack (Next.js, SvelteKit) | Combined web+API | `PORT` | From table above |
+| Framework is backend-only | API server | `API_PORT` | From table above |
+| `platforms.targets` includes `web` AND framework is backend-only | Web frontend | `WEB_PORT` | 5173 |
+| `platforms.mobile_framework` includes `expo` or `react-native` | Mobile dev server | `EXPO_PORT` | 8081 |
+| `tech_stack.queue` is not empty/none | Worker process | `WORKER_PORT` | 9000 |
+
+If `platforms.targets` is empty but framework is fullstack, assume web is included (no separate `WEB_PORT`).
+
+If the framework is not in the table, default to port 3000, `npm run dev`, `/health` and flag it to the user.
+
 ### Step 4: Generate Files
 
 Determine the environment from the argument (default: `dev`).
@@ -108,9 +148,18 @@ volumes:
 
 #### `.env.example`
 
-Template with all required environment variables:
+Template with all required environment variables. Include **app service ports** (from Step 3.5) before infrastructure vars:
 
 ```bash
+# --- App Ports (from Step 3.5 service detection) ---
+# Naming convention: SERVICE_PORT (e.g., API_PORT, WEB_PORT, EXPO_PORT)
+# For fullstack frameworks (Next.js, SvelteKit), use PORT instead
+API_PORT=8000          # FastAPI default — change if port conflicts
+WEB_PORT=3000          # React/Vite frontend
+# EXPO_PORT=8081       # Uncomment if mobile dev server needed
+# WORKER_PORT=9000     # Uncomment if background workers used
+
+# --- Infrastructure ---
 # Database
 DB_HOST=localhost
 DB_PORT=5432
@@ -124,6 +173,8 @@ REDIS_URL=redis://localhost:6379
 # Queue (if configured)
 # ...
 ```
+
+Only include the port variables for services detected in Step 3.5. Comment out ports for services not configured. Always add a comment noting the framework default and that it can be changed if there are port conflicts.
 
 #### `tools/dev/start.sh`
 
@@ -185,26 +236,31 @@ If validation fails, fix the issue and re-validate. If Docker is not installed, 
 
 ### Step 7: Summary
 
-Present what was generated:
+Present what was generated, including both infrastructure services and app service start commands:
 
 ```
 ## Dev Environment Generated
 
 Files created:
-  infra/docker-compose.dev.yml    — [N] services configured
-  .env.example                    — environment variables template
-  tools/dev/start.sh              — start all services
-  tools/dev/stop.sh               — stop all services
+  infra/docker-compose.dev.yml    — [N] infrastructure services configured
+  .env.example                    — environment variables (app ports + infra)
+  tools/dev/start.sh              — start infrastructure services
+  tools/dev/stop.sh               — stop infrastructure services
   tools/dev/reset.sh              — reset to clean state
 
-Services:
+Infrastructure services:
   postgres    — localhost:5432 (user: postgres, db: myapp_dev)
   redis       — localhost:6379
 
+App services (from Step 3.5):
+  API server  — http://localhost:{API_PORT}  → {start_command}
+  Web frontend— http://localhost:{WEB_PORT}  → {start_command}
+  (list each detected service with its port and start command)
+
 Quick start:
   cp .env.example .env            # create your local env file
-  bash tools/dev/start.sh         # start services
-  bash tools/dev/reset.sh         # reset to clean state
+  bash tools/dev/start.sh         # start infrastructure
+  {start_command}                 # start your app
 ```
 
 ## Subcommand: reset

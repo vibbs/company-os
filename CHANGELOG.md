@@ -13,6 +13,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-02-27
+
+### Added
+- **Ship flow Step 5.8: Seed & Verify** — after implementation, presents start commands, per-service URLs, seed data commands, and key acceptance criteria as manual test flows. Reads ports from `.env`/`.env.example`
+- **Framework Defaults Table** in dev-environment skill — 12 frameworks mapped to type, default port, start command, health path. Drives `.env.example` port generation and tool URL fallbacks
+- **Multi-service port convention** — `SERVICE_PORT` pattern in `.env.example` (`API_PORT`, `WEB_PORT`, `EXPO_PORT`, `WORKER_PORT`). Service list derived from `tech_stack.framework` + `platforms.targets`
+- **`seeds/` directory scaffolding** — created by `/setup` and `setup.sh` with `.gitkeep`
+- **`artifacts/test-data/` scaffolding** — created by `/setup` and `setup.sh`
+- **Seed scenarios in test plan generator** — Step 4.5 maps test types to seed scenarios with Test Data Requirements table
+- **Seed data in perf benchmarks** — requires `high-volume` scenario before benchmarks
+- **Advisory seed catalog check** in `impl-to-qa` gate — warns when no seed catalog found (never blocks)
+- **Seed data required in dogfood** — promoted from "strongly recommended" to prerequisite failure
+
+### Changed
+- `contract-test.sh` reads port from `.env` → `.env.example` → framework defaults (was hardcoded `localhost:3000`)
+- `dogfood.sh` falls back to env-derived URL when no URL argument provided
+- `smoke-test.sh` falls back to env-derived URL when no URL argument provided
+- `dev-environment` skill generates `SERVICE_PORT` vars in `.env.example` based on detected services
+- Setup Next Steps expanded: dependency install, `/dev-environment`, seed data generation
+- 4 agent files updated with port convention rules (backend, frontend, devops, qa-release)
+
 ## [1.2.0] - 2026-02-27
 
 ### Added

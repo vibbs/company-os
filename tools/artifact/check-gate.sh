@@ -126,6 +126,7 @@ find_related_by_type() {
 
 FAILURES=()
 PASSES=()
+ADVISORY_WARNINGS=()
 
 case "$GATE_NAME" in
 
@@ -229,13 +230,15 @@ case "$GATE_NAME" in
         FAILURES+=("RFC status is '$RFC_STATUS' (must be 'approved')")
       fi
 
+      # Extract parent PRD ID (used by both test plan and seed catalog checks)
+      PARENT_ID=$(extract_field "$RFC_FILE" "parent")
+
       # Check test plan exists for this feature
       TEST_PLAN=$(find_related_by_type "$RFC_ID" "test-plan")
       if [[ -n "$TEST_PLAN" ]]; then
         PASSES+=("Test plan exists: $TEST_PLAN")
       else
         # Also check via PRD parent
-        PARENT_ID=$(extract_field "$RFC_FILE" "parent")
         if [[ -n "$PARENT_ID" && "$PARENT_ID" != "null" ]]; then
           TEST_PLAN=$(find_related_by_type "$PARENT_ID" "test-plan")
         fi
@@ -244,6 +247,19 @@ case "$GATE_NAME" in
         else
           FAILURES+=("No test plan found related to this RFC or its parent PRD")
         fi
+      fi
+
+      # Advisory: check for seed data catalog (never blocks, just informs)
+      SEED_CATALOG=""
+      SEED_CATALOG=$(find_related_by_type "$RFC_ID" "test-data")
+      if [[ -z "$SEED_CATALOG" && -n "$PARENT_ID" && "$PARENT_ID" != "null" ]]; then
+        SEED_CATALOG=$(find_related_by_type "$PARENT_ID" "test-data")
+      fi
+      if [[ -n "$SEED_CATALOG" ]]; then
+        CATALOG_ID=$(extract_field "$SEED_CATALOG" "id")
+        PASSES+=("Seed data catalog exists: ${CATALOG_ID:-$SEED_CATALOG}")
+      else
+        ADVISORY_WARNINGS+=("No seed data catalog found — consider running /seed-data before QA")
       fi
     fi
     ;;
@@ -377,6 +393,13 @@ fi
 if [[ ${#PASSES[@]} -gt 0 ]]; then
   for pass in "${PASSES[@]}"; do
     echo "  ✅ $pass"
+  done
+fi
+
+# Print advisory warnings (informational, never block)
+if [[ ${#ADVISORY_WARNINGS[@]} -gt 0 ]]; then
+  for warn in "${ADVISORY_WARNINGS[@]}"; do
+    echo "  ℹ️  $warn"
   done
 fi
 

@@ -140,7 +140,70 @@ After implementation is complete, delegate to the Engineering Agent with the Use
 
 This step runs after implementation but before dogfooding/QA, so tours and docs can be validated during testing.
 
-### Step 5.5: Dogfooding (Optional)
+### Step 5.8: Seed & Verify
+
+After implementation completes and `impl-to-qa` gate passes, help the developer test what was built before handing off to QA:
+
+**1. Detect new domain entities**
+
+Scan the implementation diff (against the base branch) for new or modified schema files, migration files, model definitions, or entity classes. Look for patterns like: `prisma/schema.prisma`, `migrations/*.sql`, `**/models.py`, `**/model.go`, `**/schema.ts`, `**/entities/*.ts`.
+
+- If new entities found → check for a seed data catalog artifact in `artifacts/test-data/` linked to this PRD or RFC.
+- If no seed catalog exists → delegate to the Backend Engineer to run `/seed-data` with the PRD ID. Wait for seed files to be generated in `seeds/` before continuing.
+- If no new entities → skip to step 3 (still present the start & seed guide).
+
+**2. Resolve service URLs**
+
+Read `.env` (or `.env.example` if `.env` does not exist) for service port variables:
+- `PORT` — for fullstack frameworks (Next.js, SvelteKit) running a single process
+- `API_PORT` — for backend-only frameworks (FastAPI, Express, Django, Gin, etc.)
+- `WEB_PORT` — for separate web frontends
+- `EXPO_PORT` — for mobile dev servers
+
+If no `.env` or `.env.example` exists, look up `tech_stack.framework` in the framework defaults table (dev-environment skill) to determine the default port and start command.
+
+Build the URL for each detected service: `http://localhost:{port}`
+
+**3. Present the "Start & Seed" guide
+
+Display this to the developer (adapt based on detected services):
+
+```
+## Ready to verify? Start your app and load test data.
+
+1. Start infrastructure (if not running):
+   bash tools/dev/start.sh
+
+2. Start your services:
+   {start_command_1}  → http://localhost:{port_1}
+   {start_command_2}  → http://localhost:{port_2}
+   (one line per detected service)
+
+3. Verify health:
+   curl http://localhost:{port}{health_path}
+   Expected: HTTP 200
+
+4. Load seed data:
+   ./tools/db/seed.sh nominal
+
+5. Your app is running at:
+   {list each service URL}
+
+Key test flows (from PRD acceptance criteria):
+  - {AC-001 from the PRD}
+  - {AC-002}
+  - {AC-003}
+  (list up to 5 acceptance criteria as manual test scenarios)
+```
+
+**4. Wait for user confirmation**
+
+Ask: "Is your app running and verified? Type 'yes' to proceed to QA, or 'skip' to continue without manual verification."
+
+- On **yes**: proceed to Step 5.9 (Dogfooding) or Step 6 (QA/Release Gate)
+- On **skip**: note in the QA handoff that manual verification was skipped
+
+### Step 5.9: Dogfooding (Optional)
 
 After implementation and test execution, optionally dogfood the running product:
 

@@ -470,6 +470,8 @@ standards/email/
 standards/engineering/
 imports/ (with .gitkeep if empty)
 tasks/ (with todo.md and lessons.md if missing)
+seeds/ (with .gitkeep)
+artifacts/test-data/ (with .gitkeep)
 ```
 
 Do NOT create directories that are part of Company OS source (`.claude/`, `tools/`) — these should already exist from the template.
@@ -585,10 +587,12 @@ Files that are **always kept** (operationally required):
 - {N} directories created, {M} already existed
 
 ### Next Steps
-1. Place any reference docs in `standards/` and run `/ingest`
-2. Import existing PRDs/RFCs with `/artifact-import`
-3. Ask the Orchestrator to build your first feature:
-   "Build [feature] for [product]"
+1. **Install dependencies** — run `npm install`, `pip install -r requirements.txt`, `go mod download`, or the equivalent for your tech stack
+2. **Set up dev infrastructure** — run `/dev-environment` to generate Docker Compose files, `.env.example`, and dev scripts. Then: `cp .env.example .env && bash tools/dev/start.sh`
+3. **Place reference docs** in `standards/` and run `/ingest` to sync agents
+4. **Import existing artifacts** — if you have PRDs, RFCs, or specs elsewhere, run `/artifact-import` to bring them in
+5. **Generate seed data** — after your first ship cycle creates domain entities, run `/seed-data` to generate test data for all scenarios
+6. **Build your first feature** — ask the Orchestrator: "Build [feature] for [product]"
 ```
 
 ## Edge Cases

@@ -239,6 +239,44 @@ The `/setup` wizard initializes versioning automatically (Step 8b). You can also
 
 **Note**: Company OS's own `VERSION` and `CHANGELOG.md` are never copied to your project. Company OS version tracking uses `.company-os-version` only.
 
+### Local Development Environment
+
+After configuring `company.config.yaml`, set up your local development environment:
+
+1. **Install dependencies** for your framework:
+   ```bash
+   npm install          # Node.js (Next.js, Express, NestJS, etc.)
+   pip install -r requirements.txt   # Python (FastAPI, Django, Flask)
+   go mod download      # Go (Gin)
+   bundle install       # Ruby (Rails)
+   ```
+
+2. **Generate infrastructure** (Docker Compose, dev scripts, `.env.example`):
+   ```
+   /dev-environment
+   ```
+   This reads your `tech_stack` config and generates `infra/docker-compose.dev.yml`, convenience scripts, and a `.env.example` with port variables for each detected service.
+
+3. **Port convention** — ports live in `.env.example` (not in `company.config.yaml`):
+   ```bash
+   # --- App Ports (derived from tech stack config) ---
+   API_PORT=8000          # FastAPI default
+   WEB_PORT=3000          # React/Vite frontend
+   # EXPO_PORT=8081       # Uncomment for mobile dev server
+   # WORKER_PORT=9000     # Uncomment for background workers
+   ```
+   - For fullstack frameworks (Next.js, SvelteKit): single `PORT` variable
+   - For backend-only + separate frontend: `API_PORT` + `WEB_PORT`
+   - QA tools (`smoke-test.sh`, `contract-test.sh`, `dogfood.sh`) auto-resolve URLs from `.env` → `.env.example` → framework defaults
+
+4. **Start and verify**:
+   ```bash
+   cp .env.example .env            # Create local env file, adjust ports if needed
+   bash tools/dev/start.sh         # Start infrastructure (database, cache, etc.)
+   npm run dev                     # Start your app (command depends on framework)
+   curl http://localhost:3000/health   # Verify health endpoint
+   ```
+
 ### What Happens If Fields Are Empty
 
 - Agents will ask you to decide before proceeding with affected recommendations

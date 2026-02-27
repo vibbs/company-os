@@ -32,7 +32,7 @@ Autonomously exercise the product the way real users do. Instead of checking art
 ## Prerequisites
 
 1. **The app must be running** at an accessible URL (localhost, staging, or production)
-2. **Seed data should be loaded** — run `/seed-data` with `nominal` scenario first for realistic state (strongly recommended)
+2. **Seed data must be loaded** — run `./tools/db/seed.sh nominal` before dogfooding. If the `seeds/` directory does not exist, run `/seed-data` first to generate seed files. Dogfooding against an empty database produces unreliable results and should be treated as a prerequisite failure.
 3. **For web apps**: `agent-browser` skill must be available (for browser automation)
 4. **For API-only products**: `curl` must be available (always present)
 
@@ -83,7 +83,11 @@ Before executing journeys:
 
 1. Run `./tools/qa/dogfood.sh <url>` to verify the app is reachable
 2. Check for required authentication (if the app requires login, define auth credentials or tokens)
-3. Verify seed data is loaded (check for expected data at a known endpoint or page)
+3. **Verify seed data is loaded**:
+   - Run `./tools/db/seed.sh --list` to confirm seed files exist
+   - If `seeds/` directory is missing: **STOP** — run `/seed-data` first, then retry dogfooding
+   - Check a known endpoint or page for expected data (e.g., list endpoint returns records)
+   - If seed data is absent or `seeds/` is missing: report as **PREFLIGHT FAILURE** — do not proceed with dogfooding
 4. Create output directory for screenshots and report
 
 ### Step 4: Execute Journeys (Web App Mode)

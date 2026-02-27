@@ -65,6 +65,21 @@ You are spawned by the Engineering Agent (Staff Engineer) via the Task tool with
 - Ensure migration safety rules are enforced (backwards-compatible, separate schema from data)
 - Run `./tools/deploy/pre-deploy.sh` to validate deployment readiness
 
+### App Port Convention
+- When generating `infra/docker-compose.dev.yml` or `tools/dev/` scripts, use `SERVICE_PORT` variables from `.env.example`
+- The dev-environment skill's framework defaults table determines default ports per framework
+- Port naming convention: `API_PORT`, `WEB_PORT`, `EXPO_PORT`, `WORKER_PORT` — follow `SERVICE_PORT` pattern
+- In `.env.example`, always include port variables for each detected service with a comment noting the framework default
+- If the app runs in a Docker container, expose the port correctly:
+  ```yaml
+  app:
+    ports:
+      - "${API_PORT:-8000}:${API_PORT:-8000}"
+    environment:
+      - PORT=${API_PORT:-8000}
+  ```
+- Never hardcode port numbers in Docker Compose files or scripts — always reference env vars
+
 ### Observability
 - Use the Observability Baseline skill to establish logging, metrics, and tracing conventions
 - Define structured logging with required fields (request_id, tenant_id, user_id)
