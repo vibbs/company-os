@@ -796,16 +796,19 @@ else
   SKIPPED=$((SKIPPED + 1))
 fi
 
-# --- Version stamp (Company OS version only — NOT app version files) ---
-# Company OS tracks its installed version via .company-os/version (not VERSION or CHANGELOG.md).
-# VERSION and CHANGELOG.md are intentionally NOT copied to user projects — they would conflict
-# with the user's own app version and changelog files. Users read the Company OS changelog
-# via /upgrade-company-os or GitHub.
-if [ -f "$SRC/VERSION" ]; then
-  if [ "$DRY_RUN" = false ]; then
-    mkdir -p .company-os
-    cp "$SRC/VERSION" ".company-os/version"
-  fi
+# --- Copy .company-os/docs/ from template (reference docs for users) ---
+# These are Company OS documentation files (CHANGELOG, SETUP, FAQ, etc.).
+# VERSION is NOT copied — it would conflict with the user's app version file.
+if [ -d "$SRC/.company-os/docs" ] && [ "$DRY_RUN" = false ]; then
+  mkdir -p .company-os/docs
+  for doc_file in "$SRC"/.company-os/docs/*; do
+    [ -e "$doc_file" ] || continue
+    doc_name=$(basename "$doc_file")
+    # Only copy if missing (don't overwrite user's edits or cleanup deletions)
+    if [ ! -f ".company-os/docs/$doc_name" ]; then
+      cp "$doc_file" ".company-os/docs/$doc_name"
+    fi
+  done
 fi
 
 # --- Scaffold directories (create if missing, never overwrite) ---
@@ -847,7 +850,10 @@ if [ "$DRY_RUN" = false ]; then
     for migration_file in "$MIGRATION_TEMPLATE"/*; do
       [ -e "$migration_file" ] || continue
       mig_name=$(basename "$migration_file")
-      cp "$migration_file" ".company-os/migrations/$mig_name"
+      # Only copy if missing (don't overwrite user-patched migrations)
+      if [ ! -f ".company-os/migrations/$mig_name" ]; then
+        cp "$migration_file" ".company-os/migrations/$mig_name"
+      fi
     done
   fi
 
