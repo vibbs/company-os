@@ -134,6 +134,7 @@ Always read `company.config.yaml` before making technical recommendations. If th
   - Before and after risky refactors
 - **Never leave uncommitted work** at the end of a task — if the user asked you to build something, commit the result
 - **Branch strategy**: read `conventions.branching` from config. Default to feature branches off main unless told otherwise
+- **Version bump before push** (Company OS repo only): Before pushing to remote, always check if `VERSION` and `CHANGELOG.md` reflect the changes being pushed. If new features were added → MINOR bump. If only bug fixes → PATCH bump. If breaking changes → MAJOR bump. Move the `[Unreleased]` section in CHANGELOG.md to a versioned heading with today's date. Never push unversioned feature work.
 
 ### 9. Library Documentation (Context7)
 - **Before using any library or framework API**, fetch current documentation via Context7:
