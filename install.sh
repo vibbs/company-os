@@ -162,23 +162,30 @@ file_hash() {
 # Read a file's hash from the manifest. Returns empty string if not found.
 manifest_hash() {
   local file="$1"
-  if [ -f ".company-os-manifest" ]; then
-    grep "  $file$" ".company-os-manifest" 2>/dev/null | awk '{print $1}' || true
+  local manifest_file=""
+  if [ -f ".company-os/manifest" ]; then
+    manifest_file=".company-os/manifest"
+  elif [ -f ".company-os-manifest" ]; then
+    manifest_file=".company-os-manifest"
+  fi
+  if [ -n "$manifest_file" ]; then
+    grep "  $file$" "$manifest_file" 2>/dev/null | awk '{print $1}' || true
   fi
 }
 
 # Generate manifest of all template files after installation
 generate_manifest() {
   local version="$1"
-  echo "# Company OS v$version manifest" > .company-os-manifest
-  echo "# Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> .company-os-manifest
+  mkdir -p .company-os
+  echo "# Company OS v$version manifest" > .company-os/manifest
+  echo "# Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> .company-os/manifest
 
   # Hash all template-owned files
   for dir in .claude/agents .claude/skills .claude/hooks tools; do
     if [ -d "$dir" ]; then
       while IFS= read -r file; do
         hash=$(file_hash "$file")
-        echo "$hash  $file" >> .company-os-manifest
+        echo "$hash  $file" >> .company-os/manifest
       done < <(find "$dir" -type f 2>/dev/null | sort)
     fi
   done
@@ -230,7 +237,7 @@ extract_changelog() {
 
 create_backup() {
   local version="$1"
-  local backup_dir=".company-os-backup/$(date +%Y%m%d-%H%M%S)-v${version}"
+  local backup_dir=".company-os/backup/$(date +%Y%m%d-%H%M%S)-v${version}"
   mkdir -p "$backup_dir"
 
   for dir in .claude/agents .claude/skills .claude/hooks tools; do
@@ -266,7 +273,9 @@ fi
 
 # --- Read local version ---
 LOCAL_VERSION="unknown"
-if [ -f ".company-os-version" ]; then
+if [ -f ".company-os/version" ]; then
+  LOCAL_VERSION=$(cat .company-os/version | tr -d '[:space:]')
+elif [ -f ".company-os-version" ]; then
   LOCAL_VERSION=$(cat .company-os-version | tr -d '[:space:]')
 fi
 
@@ -450,7 +459,7 @@ merge_directory() {
 
     if [ -e "$dst_dir/$name" ]; then
       # --- Manifest-based three-way merge ---
-      if [ -f ".company-os-manifest" ]; then
+      if [ -f ".company-os/manifest" ] || [ -f ".company-os-manifest" ]; then
         # Determine if user modified the existing file(s)
         local has_user_mods=false
         if [ -d "$dst_dir/$name" ]; then
@@ -474,13 +483,13 @@ merge_directory() {
           if [ "$FORCE" = true ]; then
             if [ "$DRY_RUN" = false ]; then
               # Save conflict copies
-              mkdir -p ".company-os-conflicts"
+              mkdir -p ".company-os/conflicts"
               if [ -d "$dst_dir/$name" ]; then
-                cp -r "$dst_dir/$name" ".company-os-conflicts/${name}.user"
-                cp -r "$item" ".company-os-conflicts/${name}.new"
+                cp -r "$dst_dir/$name" ".company-os/conflicts/${name}.user"
+                cp -r "$item" ".company-os/conflicts/${name}.new"
               else
-                cp "$dst_dir/$name" ".company-os-conflicts/${name}.user"
-                cp "$item" ".company-os-conflicts/${name}.new"
+                cp "$dst_dir/$name" ".company-os/conflicts/${name}.user"
+                cp "$item" ".company-os/conflicts/${name}.new"
               fi
               rm -rf "$dst_dir/$name"
               cp -r "$item" "$dst_dir/$name"
@@ -526,7 +535,7 @@ merge_directory() {
 
   # Report
   if [ "$conflict_count" -gt 0 ]; then
-    echo -e "  ${RED}Conflict${NC} $label ($conflict_count conflicts — see .company-os-conflicts/)"
+    echo -e "  ${RED}Conflict${NC} $label ($conflict_count conflicts — see .company-os/conflicts/)"
   elif [ "$auto_updated" -gt 0 ] && [ "$new_count" -gt 0 ]; then
     echo -e "  ${GREEN}Updated${NC}  $label ($new_count new, $auto_updated auto-updated)"
   elif [ "$auto_updated" -gt 0 ]; then
@@ -788,13 +797,14 @@ else
 fi
 
 # --- Version stamp (Company OS version only — NOT app version files) ---
-# Company OS tracks its installed version via .company-os-version (not VERSION or CHANGELOG.md).
+# Company OS tracks its installed version via .company-os/version (not VERSION or CHANGELOG.md).
 # VERSION and CHANGELOG.md are intentionally NOT copied to user projects — they would conflict
 # with the user's own app version and changelog files. Users read the Company OS changelog
 # via /upgrade-company-os or GitHub.
 if [ -f "$SRC/VERSION" ]; then
   if [ "$DRY_RUN" = false ]; then
-    cp "$SRC/VERSION" ".company-os-version"
+    mkdir -p .company-os
+    cp "$SRC/VERSION" ".company-os/version"
   fi
 fi
 
@@ -807,7 +817,7 @@ if [ "$DRY_RUN" = false ]; then
     standards/api standards/coding standards/compliance standards/templates \
     standards/brand standards/ops standards/analytics standards/docs \
     standards/email standards/engineering \
-    imports tasks migrations \
+    imports tasks .company-os/migrations \
     seeds artifacts/test-data; do
     if [ ! -d "$dir" ]; then
       mkdir -p "$dir"
@@ -825,12 +835,19 @@ if [ "$DRY_RUN" = false ]; then
     echo -e "# Lessons\n\nAccumulated corrections and patterns from agent interactions." > "tasks/lessons.md"
   fi
 
-  # Copy migrations from template if they exist
-  if [ -d "$SRC/migrations" ]; then
-    for migration_file in "$SRC"/migrations/*; do
+  # Copy migrations from template (check new path first, fall back to old)
+  MIGRATION_TEMPLATE=""
+  if [ -d "$SRC/.company-os/migrations" ]; then
+    MIGRATION_TEMPLATE="$SRC/.company-os/migrations"
+  elif [ -d "$SRC/migrations" ]; then
+    MIGRATION_TEMPLATE="$SRC/migrations"
+  fi
+  if [ -n "$MIGRATION_TEMPLATE" ]; then
+    mkdir -p ".company-os/migrations"
+    for migration_file in "$MIGRATION_TEMPLATE"/*; do
       [ -e "$migration_file" ] || continue
       mig_name=$(basename "$migration_file")
-      cp "$migration_file" "migrations/$mig_name"
+      cp "$migration_file" ".company-os/migrations/$mig_name"
     done
   fi
 
@@ -841,9 +858,15 @@ fi
 # ============================================================================
 # Run Migrations (after file updates, before summary)
 # ============================================================================
-if [ "$DRY_RUN" = false ] && [ -d "$SRC/migrations" ] && [ "$LOCAL_VERSION" != "unknown" ]; then
+MIGRATION_RUN_SRC=""
+if [ -d "$SRC/.company-os/migrations" ]; then
+  MIGRATION_RUN_SRC="$SRC/.company-os/migrations"
+elif [ -d "$SRC/migrations" ]; then
+  MIGRATION_RUN_SRC="$SRC/migrations"
+fi
+if [ "$DRY_RUN" = false ] && [ -n "$MIGRATION_RUN_SRC" ] && [ "$LOCAL_VERSION" != "unknown" ]; then
   migration_ran=false
-  for migration in "$SRC"/migrations/v*.sh; do
+  for migration in "$MIGRATION_RUN_SRC"/v*.sh; do
     [ -f "$migration" ] || continue
     MIGRATION_VERSION=$(basename "$migration" .sh | sed 's/^v//')
 
@@ -867,7 +890,8 @@ fi
 # Version Stamp + Manifest
 # ============================================================================
 if [ "$DRY_RUN" = false ] && [ "$INCOMING_VERSION" != "unknown" ]; then
-  echo "$INCOMING_VERSION" > .company-os-version
+  mkdir -p .company-os
+  echo "$INCOMING_VERSION" > .company-os/version
   generate_manifest "$INCOMING_VERSION"
 fi
 
@@ -884,7 +908,7 @@ if [ "$DRY_RUN" = true ]; then
   fi
   if [ "$CONFLICTS" -gt 0 ]; then
     echo -e "  ${YELLOW}Warning:${NC} $CONFLICTS file(s) modified by you AND changed in template."
-    echo -e "  ${DIM}These will be saved to .company-os-conflicts/ on upgrade.${NC}"
+    echo -e "  ${DIM}These will be saved to .company-os/conflicts/ on upgrade.${NC}"
   fi
   echo ""
   echo -e "  ${DIM}Run without --dry-run to apply these changes.${NC}"
@@ -902,12 +926,12 @@ else
   fi
   if [ "$CONFLICTS" -gt 0 ]; then
     echo ""
-    echo -e "  ${YELLOW}$CONFLICTS conflict(s) detected${NC} — your modified versions saved to .company-os-conflicts/"
+    echo -e "  ${YELLOW}$CONFLICTS conflict(s) detected${NC} — your modified versions saved to .company-os/conflicts/"
     echo -e "  ${DIM}Review the conflicts and merge manually.${NC}"
   fi
   if [ "$INCOMING_VERSION" != "unknown" ]; then
     echo ""
-    echo -e "  ${DIM}Stamped${NC}  .company-os-version → $INCOMING_VERSION"
+    echo -e "  ${DIM}Stamped${NC}  .company-os/version → $INCOMING_VERSION"
   fi
 fi
 echo ""
@@ -934,16 +958,45 @@ if [ "$LOCAL_VERSION" = "unknown" ] && [ "$DRY_RUN" = false ]; then
   # --- Git hint ---
   if [ -d ".git" ]; then
     echo -e "  ${DIM}Tip: Commit the Company OS files before running /setup${NC}"
-    echo -e "  ${DIM}$ git add .claude tools company.config.yaml CLAUDE.md && git commit -m \"Add Company OS\"${NC}"
+    echo -e "  ${DIM}$ git add .claude tools .company-os company.config.yaml CLAUDE.md && git commit -m \"Add Company OS\"${NC}"
   else
     echo -e "  ${YELLOW}Note:${NC} No git repo detected. Run ${DIM}git init${NC} first — Company OS uses git for audit trails."
   fi
   echo ""
 fi
 
-# --- Upgrade hint (on subsequent installs) ---
+# --- Upgrade next steps (on subsequent installs) ---
 if [ "$LOCAL_VERSION" != "unknown" ] && [ "$DRY_RUN" = false ]; then
-  echo -e "  ${DIM}To check for future updates: add --check flag${NC}"
-  echo -e "  ${DIM}To preview before upgrading: add --dry-run --force flags${NC}"
+  TOTAL_CHANGES=$((CREATED + ADDED + UPDATED + MERGED))
+  if [ "$TOTAL_CHANGES" -gt 0 ] || [ "$CONFLICTS" -gt 0 ]; then
+    echo -e "  ${BOLD}Next steps:${NC}"
+    echo ""
+    STEP=1
+
+    # If conflicts exist, that's the top priority
+    if [ "$CONFLICTS" -gt 0 ]; then
+      echo -e "    ${BLUE}${STEP}.${NC} Review conflicts in ${BOLD}.company-os/conflicts/${NC}:"
+      echo -e "       ${DIM}Each conflict has a .user (your version) and .new (template version)${NC}"
+      echo -e "       ${DIM}Merge the changes you want to keep, then delete the conflict files.${NC}"
+      STEP=$((STEP + 1))
+      echo ""
+    fi
+
+    # Verify
+    echo -e "    ${BLUE}${STEP}.${NC} Verify everything works:"
+    echo -e "       ${DIM}> /status${NC}"
+    STEP=$((STEP + 1))
+    echo ""
+
+    # Commit the upgrade
+    if [ -d ".git" ]; then
+      echo -e "    ${BLUE}${STEP}.${NC} Commit the upgrade:"
+      echo -e "       ${DIM}$ git add .claude tools .company-os CLAUDE.md && git commit -m \"chore: upgrade Company OS ${LOCAL_VERSION} → ${INCOMING_VERSION}\"${NC}"
+      STEP=$((STEP + 1))
+      echo ""
+    fi
+  fi
+
+  echo -e "  ${DIM}Future: /upgrade-company-os check | preview | apply | rollback${NC}"
   echo ""
 fi

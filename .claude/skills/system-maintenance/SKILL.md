@@ -47,9 +47,9 @@ Read `CLAUDE.md` and verify:
 
 Report discrepancies with specific line numbers.
 
-### Step 3: Audit SETUP_COMPANY_OS.md
+### Step 3: Audit .company-os/docs/SETUP.md
 
-Read `SETUP_COMPANY_OS.md` and verify:
+Read `.company-os/docs/SETUP.md` and verify:
 - **Skills table**: Does each category row list all skills that actually exist in that category?
 - **Tools table**: Does each category row list all tools that actually exist?
 - **Stage gate table**: Does it match the gates in `check-gate.sh`?
@@ -83,7 +83,7 @@ Present a summary:
 ```
 SYSTEM MAINTENANCE REPORT
 =========================
-Skills:  [actual count] found, [documented count] in SETUP_COMPANY_OS.md
+Skills:  [actual count] found, [documented count] in .company-os/docs/SETUP.md
 Agents:  [actual count] found
 Tools:   [actual count] found
 

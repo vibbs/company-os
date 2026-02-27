@@ -13,6 +13,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-02-27
+
+### Added
+- **`.company-os/` directory consolidation** — All Company OS system files moved under `.company-os/`:
+  - `.company-os/version` (was `.company-os-version`)
+  - `.company-os/manifest` (was `.company-os-manifest`)
+  - `.company-os/migrations/` (was `migrations/` — frees the name for app database migrations)
+  - `.company-os/backup/` (was `.company-os-backup/`)
+  - `.company-os/conflicts/` (was `.company-os-conflicts/`)
+  - `.company-os/docs/` (template-only: CHANGELOG, SETUP, FAQ, TOKEN_COSTS, ROADMAP)
+- **Read deny rule** for `.company-os/**` in settings.json — agents cannot read internal system files
+- **Contextual post-upgrade output** — upgrade summary now shows conflict resolution steps, verification command, and a ready-to-run commit command
+
+### Changed
+- `install.sh` reads/writes all system files to `.company-os/` paths (backward-compatible with old paths during transition)
+- Tool scripts (`pre-deploy.sh`, `version-bump.sh`, `check-gate.sh`) check `.company-os/version` first, fall back to `.company-os-version`
+- `setup.sh --cleanup` handles both old and new doc paths
+- `.gitignore` updated: `.company-os/backup/` and `.company-os/conflicts/` replace old entries
+- Upgrade skill documentation updated with new path references
+
+### Migration
+- Automatic: v1.4.0 migration script moves all old-path files to `.company-os/` during upgrade
+- No user action needed — backward-compatible readers handle both paths during transition
+
 ## [1.3.0] - 2026-02-27
 
 ### Added

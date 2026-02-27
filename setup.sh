@@ -38,7 +38,7 @@ if [[ "${1:-}" == "--cleanup" ]]; then
   echo "Removing template documentation files (not needed for daily operation)..."
   echo ""
   REMOVED=0
-  for f in TOKEN_COSTS.md FAQ.md SETUP_COMPANY_OS.md artifacts/prds/PRD-EXAMPLE-001-notifications.md artifacts/rfcs/RFC-EXAMPLE-001-notification-system.md standards/api/example-api-conventions.md standards/coding/example-coding-standards.md; do
+  for f in .company-os/docs/TOKEN_COSTS.md .company-os/docs/FAQ.md .company-os/docs/SETUP.md .company-os/docs/CHANGELOG.md .company-os/docs/ROADMAP.md TOKEN_COSTS.md FAQ.md SETUP_COMPANY_OS.md artifacts/prds/PRD-EXAMPLE-001-notifications.md artifacts/rfcs/RFC-EXAMPLE-001-notification-system.md standards/api/example-api-conventions.md standards/coding/example-coding-standards.md; do
     if [ -f "$f" ]; then
       rm "$f"
       echo -e "  ${RED}Removed${NC}  $f"
@@ -300,7 +300,8 @@ if [ ! -f ".claude/settings.json" ]; then
       "Bash(sudo *)",
       "Bash(curl *)",
       "Bash(wget *)",
-      "Bash(nc *)"
+      "Bash(nc *)",
+      "Read(./.company-os/**)"
     ]
   }
 }

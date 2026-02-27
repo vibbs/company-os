@@ -237,7 +237,7 @@ The `/setup` wizard initializes versioning automatically (Step 8b). You can also
 ./tools/versioning/version-bump.sh patch --dry-run  # preview a patch bump
 ```
 
-**Note**: Company OS's own `VERSION` and `CHANGELOG.md` are never copied to your project. Company OS version tracking uses `.company-os-version` only.
+**Note**: Company OS's own `VERSION` and `CHANGELOG.md` are never copied to your project. Company OS version tracking uses `.company-os/version` only.
 
 ### Local Development Environment
 

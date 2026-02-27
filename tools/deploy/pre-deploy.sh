@@ -366,7 +366,9 @@ elif [[ -f "VERSION" ]]; then
   # Skip if this is Company OS's VERSION file
   VER_CONTENT=$(head -1 VERSION | tr -d '[:space:]')
   COS_CONTENT=""
-  if [[ -f ".company-os-version" ]]; then
+  if [[ -f ".company-os/version" ]]; then
+    COS_CONTENT=$(head -1 .company-os/version | tr -d '[:space:]')
+  elif [[ -f ".company-os-version" ]]; then
     COS_CONTENT=$(head -1 .company-os-version | tr -d '[:space:]')
   fi
   if [[ "$VER_CONTENT" != "$COS_CONTENT" ]]; then

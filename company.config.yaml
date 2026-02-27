@@ -8,7 +8,7 @@
 # Instructions:
 #   1. Fill in every field relevant to your project
 #   2. Leave fields blank ("") if not yet decided — agents will prompt you
-#   3. See SETUP_COMPANY_OS.md for detailed guidance on each section
+#   3. See .company-os/docs/SETUP.md for detailed guidance on each section
 # ============================================================================
 
 company:

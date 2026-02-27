@@ -104,9 +104,15 @@ detect_version_file() {
     local ver
     ver=$(head -1 VERSION | tr -d '[:space:]')
     # Skip if this is the Company OS template version
-    if [[ -f ".company-os-version" ]]; then
+    local cos_ver_file=""
+    if [[ -f ".company-os/version" ]]; then
+      cos_ver_file=".company-os/version"
+    elif [[ -f ".company-os-version" ]]; then
+      cos_ver_file=".company-os-version"
+    fi
+    if [[ -n "$cos_ver_file" ]]; then
       local cos_ver
-      cos_ver=$(head -1 .company-os-version | tr -d '[:space:]')
+      cos_ver=$(head -1 "$cos_ver_file" | tr -d '[:space:]')
       if [[ "$ver" == "$cos_ver" ]]; then
         # This is Company OS's VERSION file, not the app's
         return 1

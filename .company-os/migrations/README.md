@@ -8,9 +8,7 @@ Migration scripts run automatically during Company OS upgrades when the user's i
 v<MAJOR>.<MINOR>.<PATCH>.sh
 ```
 
-Examples: `v2.0.0.sh`, `v3.0.0.sh`
-
-Migration scripts are only needed for **breaking changes** (MAJOR version bumps). Minor and patch releases should not require migrations.
+Examples: `v1.4.0.sh`, `v2.0.0.sh`
 
 ## Script Requirements
 
@@ -47,9 +45,9 @@ echo "  Done."
 
 The installer (`install.sh`) runs migrations automatically:
 
-1. Reads the user's installed version from `.company-os-version`
-2. Scans `migrations/v*.sh` for versions newer than the installed version
+1. Reads the user's installed version from `.company-os/version`
+2. Scans `.company-os/migrations/v*.sh` for versions newer than the installed version
 3. Runs each applicable migration in version order
 4. If any migration fails, the upgrade halts (files already updated are safe; the user can fix and re-run)
 
-Migrations run **after** template files are updated but **before** the version stamp is written. This means if a migration fails, `.company-os-version` still shows the old version and the migration will re-run on the next upgrade attempt.
+Migrations run **after** template files are updated but **before** the version stamp is written. This means if a migration fails, `.company-os/version` still shows the old version and the migration will re-run on the next upgrade attempt.

@@ -185,7 +185,7 @@ Run `/ship` to kick off the full pipeline. Gates are enforced by `tools/artifact
 | `dogfood.sh` | Dogfood pre-flight validation and seed data checks |
 | `pre-deploy.sh` | Pre-deployment validation gate (8 checks incl. version) |
 
-See [SETUP_COMPANY_OS.md](SETUP_COMPANY_OS.md) for the full list across all 9 tool categories.
+See [SETUP.md](.company-os/docs/SETUP.md) for the full list across all 9 tool categories.
 
 ---
 
@@ -226,7 +226,7 @@ Company OS adds minimal overhead to Claude Code usage:
 | Per agent spawn (skills preloaded) | ~3,000–16,000 |
 | Full feature (idea → shipped) | ~160,000–220,000 total |
 
-See [TOKEN_COSTS.md](TOKEN_COSTS.md) for detailed breakdowns.
+See [TOKEN_COSTS.md](.company-os/docs/TOKEN_COSTS.md) for detailed breakdowns.
 
 ---
 
@@ -240,13 +240,13 @@ See [TOKEN_COSTS.md](TOKEN_COSTS.md) for detailed breakdowns.
 
 After structural changes, run `/system-maintenance` to keep documentation in sync.
 
-Full reference: [SETUP_COMPANY_OS.md](SETUP_COMPANY_OS.md) | [FAQ](FAQ.md) | [Roadmap](ROADMAP.md)
+Full reference: [SETUP](.company-os/docs/SETUP.md) | [FAQ](.company-os/docs/FAQ.md) | [Roadmap](.company-os/docs/ROADMAP.md)
 
 ---
 
 ## Updating
 
-Company OS uses semantic versioning. Check your installed version in `.company-os-version`.
+Company OS uses semantic versioning. Check your installed version in `.company-os/version`.
 
 ### Quick Upgrade
 
@@ -289,9 +289,9 @@ curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | 
 The installer uses a manifest to track which template files you've modified. On upgrade:
 - **Unmodified files** are auto-updated (safe)
 - **Your customizations** are preserved
-- **Conflicts** (you modified + template changed) are saved to `.company-os-conflicts/` for manual resolution
+- **Conflicts** (you modified + template changed) are saved to `.company-os/conflicts/` for manual resolution
 
-Major version upgrades automatically create a backup in `.company-os-backup/`.
+Major version upgrades automatically create a backup in `.company-os/backup/`.
 
 ---
 

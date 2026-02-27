@@ -342,10 +342,12 @@ case "$GATE_NAME" in
         VERSION_VAL=$(grep '^version = ' pyproject.toml | head -1 | sed 's/version = "\([^"]*\)".*/\1/' || true)
         VERSION_SRC="pyproject.toml"
       elif [[ -f "VERSION" ]]; then
-        # Skip if this is Company OS's VERSION (matches .company-os-version)
+        # Skip if this is Company OS's VERSION (matches .company-os/version)
         APP_VER_CHECK=$(head -1 VERSION | tr -d '[:space:]')
         COS_VER_CHECK=""
-        if [[ -f ".company-os-version" ]]; then
+        if [[ -f ".company-os/version" ]]; then
+          COS_VER_CHECK=$(head -1 .company-os/version | tr -d '[:space:]')
+        elif [[ -f ".company-os-version" ]]; then
           COS_VER_CHECK=$(head -1 .company-os-version | tr -d '[:space:]')
         fi
         if [[ "$APP_VER_CHECK" != "$COS_VER_CHECK" ]]; then

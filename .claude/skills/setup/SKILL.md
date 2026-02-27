@@ -483,7 +483,7 @@ Set up version tracking for the user's application. This is separate from Compan
 1. **Detect existing version file**:
    - If `package.json` exists and has a `"version"` field → use it (don't overwrite)
    - If `pyproject.toml` exists and has a `version` field → use it
-   - If a `VERSION` file exists (and is not the Company OS version — check against `.company-os-version`) → use it
+   - If a `VERSION` file exists (and is not the Company OS version — check against `.company-os/version`) → use it
    - If none found → create `VERSION` file with the appropriate initial version
 
 2. **Set initial version based on stage**:
@@ -535,9 +535,9 @@ Ask: "Would you like to clean up template documentation files? These explain Com
 | File | Purpose | Recommendation |
 |------|---------|----------------|
 | `README.md` | Describes Company OS template | **Replace** with a project-specific README |
-| `TOKEN_COSTS.md` | Token cost reference for adopters | **Remove** (reference only) |
-| `FAQ.md` | Company OS capability FAQ | **Remove** (reference only) |
-| `SETUP_COMPANY_OS.md` | Setup guide for template | **Remove** after setup complete |
+| `.company-os/docs/TOKEN_COSTS.md` | Token cost reference for adopters | **Remove** (reference only) |
+| `.company-os/docs/FAQ.md` | Company OS capability FAQ | **Remove** (reference only) |
+| `.company-os/docs/SETUP.md` | Setup guide for template | **Remove** after setup complete |
 | `setup.sh` | One-time scaffolding script | **Remove** after first run |
 | `artifacts/prds/PRD-EXAMPLE-001-notifications.md` | Example PRD artifact | **Remove** after reviewing |
 | `artifacts/rfcs/RFC-EXAMPLE-001-notification-system.md` | Example RFC artifact | **Remove** after reviewing |
@@ -545,7 +545,7 @@ Ask: "Would you like to clean up template documentation files? These explain Com
 | `standards/coding/example-coding-standards.md` | Example coding standards | **Remove** after reviewing |
 
 If user confirms:
-1. Delete `TOKEN_COSTS.md`, `FAQ.md`, `SETUP_COMPANY_OS.md`, `setup.sh`, example artifacts, and example standards
+1. Delete `.company-os/docs/TOKEN_COSTS.md`, `.company-os/docs/FAQ.md`, `.company-os/docs/SETUP.md`, `setup.sh`, example artifacts, and example standards
 2. Replace `README.md` with a minimal project README:
    ```
    # {company.product}
