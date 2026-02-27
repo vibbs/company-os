@@ -69,9 +69,9 @@ resolve_app_url() {
     local CONFIG="$ROOT/company.config.yaml"
     local FRAMEWORK=""
     if [[ -f "$CONFIG" ]]; then
-      FRAMEWORK=$(grep "^  framework:" "$CONFIG" 2>/dev/null | sed 's/.*framework: *//' | tr -d '"' | tr -d "'" | sed 's/ *#.*//' || true)
+      FRAMEWORK=$(grep "^  framework:" "$CONFIG" 2>/dev/null | sed 's/.*framework: *//' | tr -d '"' | tr -d "'" | sed 's/ *#.*//' | tr '[:upper:]' '[:lower:]' || true)
     fi
-    case "${FRAMEWORK,,}" in
+    case "$FRAMEWORK" in
       *next*|*nest*|*express*|*rails*) PORT="3000" ;;
       *fastapi*|*django*|*laravel*) PORT="8000" ;;
       *flask*) PORT="5000" ;;
@@ -126,6 +126,7 @@ extract_config() {
 }
 
 FRAMEWORK=$(extract_config "framework")
+FRAMEWORK=$(echo "$FRAMEWORK" | tr '[:upper:]' '[:lower:]')
 PRODUCT_TYPE="unknown"
 
 if [[ "$API_ONLY" == "true" ]]; then
@@ -134,7 +135,7 @@ else
   # Check response content type
   CONTENT_TYPE=$(curl -s -o /dev/null -w "%{content_type}" --connect-timeout 10 --max-time 30 "$URL" 2>/dev/null || echo "")
 
-  case "${FRAMEWORK,,}" in
+  case "$FRAMEWORK" in
     *next*|*react*|*vue*|*nuxt*|*svelte*|*angular*|*astro*|*remix*|*django*|*rails*)
       PRODUCT_TYPE="web-app"
       ;;

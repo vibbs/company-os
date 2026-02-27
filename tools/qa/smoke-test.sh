@@ -35,9 +35,9 @@ resolve_app_url() {
     local CONFIG="$ROOT/company.config.yaml"
     local FRAMEWORK=""
     if [[ -f "$CONFIG" ]]; then
-      FRAMEWORK=$(grep "^  framework:" "$CONFIG" 2>/dev/null | sed 's/.*framework: *//' | tr -d '"' | tr -d "'" | sed 's/ *#.*//' || true)
+      FRAMEWORK=$(grep "^  framework:" "$CONFIG" 2>/dev/null | sed 's/.*framework: *//' | tr -d '"' | tr -d "'" | sed 's/ *#.*//' | tr '[:upper:]' '[:lower:]' || true)
     fi
-    case "${FRAMEWORK,,}" in
+    case "$FRAMEWORK" in
       *next*|*nest*|*express*|*rails*) PORT="3000" ;;
       *fastapi*|*django*|*laravel*) PORT="8000" ;;
       *flask*) PORT="5000" ;;
