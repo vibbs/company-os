@@ -13,6 +13,7 @@ skills:
   - system-maintenance
   - artifact-import
   - setup
+  - upgrade-company-os
 ---
 
 # Orchestrator Agent
@@ -69,6 +70,7 @@ You are the Orchestrator — the central coordinator of the Company OS. You do N
 - **"Import existing docs" / "Bring in my PRD/RFC"** → Use artifact-import skill directly
 - **"System changed" / "Update docs"** → Use system-maintenance skill to audit and sync all documentation
 - **"Set up" / "Configure" / "Initialize"** → Use setup skill for interactive project configuration
+- **"Upgrade" / "Update Company OS" / "Check for updates"** → Use upgrade-company-os skill
 
 ---
 

@@ -157,11 +157,11 @@ Run `/ship` to kick off the full pipeline. Gates are enforced by `tools/artifact
 | **Growth** | Launch strategy, SEO, activation, email lifecycle |
 | **Ops & Risk** | Security, compliance, incidents, legal, finance |
 
-### 44 Skills
+### 45 Skills
 
 | Category | Skills |
 |----------|--------|
-| Orchestration | workflow-router, ship, status, decision-memo-writer, conflict-resolver, ingest, system-maintenance, artifact-import, setup |
+| Orchestration | workflow-router, ship, status, decision-memo-writer, conflict-resolver, ingest, system-maintenance, artifact-import, setup, upgrade-company-os |
 | Product | icp-positioning, prd-writer, sprint-prioritizer, feedback-synthesizer, discovery-validation |
 | Engineering | architecture-draft, api-contract-designer, background-jobs, multi-tenancy, implementation-decomposer, observability-baseline, code-review, seed-data, deployment-strategy, instrumentation, feature-flags, user-docs, mobile-readiness |
 | QA / Release | test-plan-generator, api-tester-playbook, release-readiness-gate, perf-benchmark-checklist, dogfood |
@@ -192,6 +192,7 @@ Run `/ship` to kick off the full pipeline. Gates are enforced by `tools/artifact
 | `/artifact-import` | Import existing PRDs, RFCs, specs from external sources |
 | `/ingest` | Sync new standards/artifacts into the system |
 | `/system-maintenance` | Audit and fix documentation after structural changes |
+| `/upgrade-company-os` | Check for updates, preview changes, upgrade, or rollback |
 
 ---
 
@@ -237,13 +238,52 @@ Full reference: [SETUP_COMPANY_OS.md](SETUP_COMPANY_OS.md) | [FAQ](FAQ.md) | [Ro
 
 ## Updating
 
-To update Company OS to the latest version in an existing project:
+Company OS uses semantic versioning. Check your installed version in `.company-os-version`.
+
+### Quick Upgrade
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --force
 ```
 
 The `--force` flag updates Company OS agents, skills, and tools while preserving your `company.config.yaml`, custom permissions in `settings.json`, and any project-specific content in `CLAUDE.md`.
+
+### Upgrade Options
+
+```bash
+# Check if an update is available
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --check
+
+# Preview what would change (no modifications)
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --dry-run --force
+
+# Upgrade with backup
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --force --backup
+
+# Install a specific version
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --version 1.2.0 --force
+
+# View changelog since your version
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --changelog
+```
+
+### From Inside Claude Code
+
+```
+> /upgrade-company-os            # check for updates
+> /upgrade-company-os preview    # preview changes
+> /upgrade-company-os apply      # run the upgrade
+> /upgrade-company-os rollback   # restore from backup
+```
+
+### Conflict Detection
+
+The installer uses a manifest to track which template files you've modified. On upgrade:
+- **Unmodified files** are auto-updated (safe)
+- **Your customizations** are preserved
+- **Conflicts** (you modified + template changed) are saved to `.company-os-conflicts/` for manual resolution
+
+Major version upgrades automatically create a backup in `.company-os-backup/`.
 
 ---
 

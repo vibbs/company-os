@@ -32,7 +32,7 @@ cd my-app
 | Item | Purpose |
 |------|---------|
 | `.claude/agents/` | 9 specialized AI agents (6 top-level + 3 engineering sub-agents) |
-| `.claude/skills/` | 44 procedural skills with templates and checklists |
+| `.claude/skills/` | 45 procedural skills with templates and checklists |
 | `.claude/hooks/` | Automatic artifact validation hooks |
 | `tools/` | 23 enforcement scripts (validation, gates, lifecycle) |
 | `company.config.yaml` | Central config file (empty template — you fill it in Phase 2) |
@@ -242,7 +242,7 @@ Skills are directory-based knowledge documents. Each contains a `SKILL.md` entry
 
 | Category | Skills (directory names) |
 |----------|------------------------|
-| Orchestration | `workflow-router`, `decision-memo-writer`, `conflict-resolver`, `ingest`, `system-maintenance`, `artifact-import`, `setup` |
+| Orchestration | `workflow-router`, `decision-memo-writer`, `conflict-resolver`, `ingest`, `system-maintenance`, `artifact-import`, `setup`, `upgrade-company-os` |
 | Product | `icp-positioning`, `prd-writer`, `sprint-prioritizer`, `feedback-synthesizer`, `discovery-validation` |
 | Engineering | `architecture-draft`, `api-contract-designer`, `background-jobs`, `multi-tenancy`, `implementation-decomposer`, `observability-baseline`, `code-review`, `seed-data`, `deployment-strategy`, `instrumentation`, `feature-flags`, `user-docs`, `mobile-readiness` |
 | QA / Release | `test-plan-generator`, `api-tester-playbook`, `release-readiness-gate`, `perf-benchmark-checklist`, `seed-data`, `code-review`, `dogfood` |
@@ -680,7 +680,7 @@ company-os/
 │   │   ├── qa-release.md
 │   │   ├── growth.md
 │   │   └── ops-risk.md
-│   └── skills/                 # 44 skill directories (SKILL.md + supporting files)
+│   └── skills/                 # 45 skill directories (SKILL.md + supporting files)
 │       ├── workflow-router/
 │       │   └── SKILL.md
 │       ├── prd-writer/

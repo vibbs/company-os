@@ -39,6 +39,9 @@ Run `/ship` to kick off the full pipeline. It reads your tech stack from `compan
 ### First-Time Setup
 For new projects or existing repos, run `/setup` to configure Company OS interactively. The wizard fills in `company.config.yaml`, generates `.claude/settings.json` with tech-stack-specific permissions, and scaffolds directories. Alternatively, run `bash setup.sh` for a non-interactive scaffold.
 
+### Upgrading
+Run `/upgrade-company-os` to check for updates, preview changes, upgrade, or rollback. The installer uses semantic versioning and manifest-based conflict detection to safely update template files without losing user customizations. See `CHANGELOG.md` for release notes.
+
 ### Key Files
 - `company.config.yaml` — company-specific tech stack, API standards, conventions. **Read this first in every session.**
 - `setup.sh` — bash setup fallback for scaffolding directories and template config
