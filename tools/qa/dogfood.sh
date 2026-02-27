@@ -94,6 +94,7 @@ echo ""
 # --- Step 1: Validate URL is reachable ---
 echo "Checking URL reachability..."
 HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --connect-timeout 10 --max-time 30 "$URL" 2>/dev/null || echo "000")
+HTTP_STATUS="${HTTP_STATUS:-000}"
 
 if [[ "$HTTP_STATUS" == "000" ]]; then
   echo "ERROR: Cannot reach $URL (connection failed or timed out)"
@@ -127,11 +128,11 @@ else
   # Check response content type
   CONTENT_TYPE=$(curl -s -o /dev/null -w "%{content_type}" --connect-timeout 10 --max-time 30 "$URL" 2>/dev/null || echo "")
 
-  case "$FRAMEWORK" in
-    next|nextjs|react|vue|nuxt|svelte|sveltekit|angular|astro|remix|django|rails)
+  case "${FRAMEWORK,,}" in
+    *next*|*react*|*vue*|*nuxt*|*svelte*|*angular*|*astro*|*remix*|*django*|*rails*)
       PRODUCT_TYPE="web-app"
       ;;
-    express|fastapi|flask|gin|echo|hono|koa|fastify)
+    *express*|*fastapi*|*flask*|*gin*|*echo*|*hono*|*koa*|*fastify*)
       PRODUCT_TYPE="api-only"
       ;;
     *)

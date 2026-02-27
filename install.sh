@@ -807,7 +807,8 @@ if [ "$DRY_RUN" = false ]; then
     standards/api standards/coding standards/compliance standards/templates \
     standards/brand standards/ops standards/analytics standards/docs \
     standards/email standards/engineering \
-    imports tasks migrations; do
+    imports tasks migrations \
+    seeds artifacts/test-data; do
     if [ ! -d "$dir" ]; then
       mkdir -p "$dir"
       if [ -z "$(ls -A "$dir" 2>/dev/null)" ]; then
