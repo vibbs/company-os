@@ -146,24 +146,27 @@ Run `/ship` to kick off the full pipeline. Gates are enforced by `tools/artifact
 
 ## What's Included
 
-### 6 Agents
+### 9 Agents (6 top-level + 3 engineering sub-agents)
 
 | Agent | Role |
 |-------|------|
 | **Orchestrator** | Routes tasks, enforces gates, approves releases |
 | **Product** | Discovery, PRDs, prioritization, scope control |
-| **Engineering** | Architecture, API design, implementation, deployment |
+| **Engineering** | Staff Engineer — architecture, decomposition, delegation, code review |
+| **Engineering: Backend** | Sub-agent — API endpoints, data models, business logic, background jobs |
+| **Engineering: Frontend** | Sub-agent — UI components, responsive design, instrumentation, user docs |
+| **Engineering: DevOps** | Sub-agent — deployment, observability, feature flags, dev environment |
 | **QA & Release** | Test plans, quality gates, release readiness |
 | **Growth** | Launch strategy, SEO, activation, email lifecycle |
 | **Ops & Risk** | Security, compliance, incidents, legal, finance |
 
-### 45 Skills
+### 46 Skills
 
 | Category | Skills |
 |----------|--------|
 | Orchestration | workflow-router, ship, status, decision-memo-writer, conflict-resolver, ingest, system-maintenance, artifact-import, setup, upgrade-company-os |
 | Product | icp-positioning, prd-writer, sprint-prioritizer, feedback-synthesizer, discovery-validation |
-| Engineering | architecture-draft, api-contract-designer, background-jobs, multi-tenancy, implementation-decomposer, observability-baseline, code-review, seed-data, deployment-strategy, instrumentation, feature-flags, user-docs, mobile-readiness |
+| Engineering | architecture-draft, api-contract-designer, background-jobs, multi-tenancy, implementation-decomposer, observability-baseline, code-review, seed-data, deployment-strategy, instrumentation, feature-flags, user-docs, mobile-readiness, dev-environment |
 | QA / Release | test-plan-generator, api-tester-playbook, release-readiness-gate, perf-benchmark-checklist, dogfood |
 | Growth | positioning-messaging, landing-page-copy, seo-topic-map, channel-playbook, activation-onboarding, email-lifecycle |
 | Risk / Legal | threat-modeling, privacy-data-handling, compliance-readiness, pricing-unit-economics, tos-privacy-drafting, incident-response |
@@ -192,6 +195,7 @@ Run `/ship` to kick off the full pipeline. Gates are enforced by `tools/artifact
 | `/artifact-import` | Import existing PRDs, RFCs, specs from external sources |
 | `/ingest` | Sync new standards/artifacts into the system |
 | `/system-maintenance` | Audit and fix documentation after structural changes |
+| `/dev-environment` | Generate Docker Compose + dev scripts from tech stack config |
 | `/upgrade-company-os` | Check for updates, preview changes, upgrade, or rollback |
 
 ---

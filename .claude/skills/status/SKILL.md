@@ -29,7 +29,11 @@ Show a project health dashboard at a glance: how many artifacts exist, their sta
 
 ## Procedure
 
-### Step 1: Scan Artifact Directories
+### Step 1: Load Configuration
+
+Read `company.config.yaml` and extract `personas.*` values. When referencing agents in recommendations or gate readiness output, use persona names if configured (e.g., "Morgan (Engineering) should review the RFC" instead of "Engineering Agent should review the RFC").
+
+### Step 1.5: Scan Artifact Directories
 
 Scan all 7 artifact directories:
 - `artifacts/prds/`

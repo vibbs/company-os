@@ -37,6 +37,7 @@ Read `company.config.yaml` and extract:
 - `api.*` -- style, spec_format, error_format, auth, pagination
 - `architecture.*` -- multi_tenant, tenant_isolation, deployment_model
 - `observability.*` -- logging, metrics, tracing, error_tracking
+- `personas.*` -- custom agent names (if configured, use them in delegation messages)
 
 If the config is empty or missing, redirect to `/setup` before proceeding.
 
@@ -106,7 +107,7 @@ Wait for user approval before proceeding.
 
 For each stage in the execution plan:
 
-**a. Delegate** to the assigned agent with full tech stack context from Step 1. Pass all relevant configuration values so the agent can make informed decisions.
+**a. Delegate** to the assigned agent with full tech stack context from Step 1. Pass all relevant configuration values so the agent can make informed decisions. If `personas.*` are configured, use persona names when announcing delegation (e.g., "Handing off to Morgan (Engineering) for RFC..." instead of "Handing off to Engineering Agent for RFC...").
 
 **b. Validate the artifact** when the agent produces output:
   - Run `./tools/artifact/validate.sh <artifact>` to verify frontmatter is correct
@@ -181,6 +182,43 @@ Present a final summary:
 - **Gates passed** -- list each gate transition and its result
 - **Tool chain results** -- tests, lint, security scan outcomes
 - **Recommended next actions** -- deploy, announce, monitor, or any follow-up items
+
+### Step 8: What's Next
+
+After the release summary, surface actionable suggestions for what to build next. This step is **informational only** — no artifacts, no gates, no blocking.
+
+**Sources to scan** (in this order of priority):
+
+1. The PRD's `## Out of Scope` section — features explicitly deferred during planning
+2. RFC's `## Future Considerations` / `## Tech Debt` sections — technical follow-ups noted during architecture
+3. Decision memos in `artifacts/decision-memos/` linked to this feature — deferred alternatives and open questions
+4. `TODO` and `FIXME` comments added during implementation — grep the codebase for recent additions related to this feature
+5. `tasks/lessons.md` — patterns that suggest systemic improvements
+
+**Output format** (conversational, not an artifact):
+
+```
+## What's Next?
+
+Based on what we just shipped, here are natural next moves:
+
+1. **[Title]** — [one-liner description]
+   _Source: PRD out-of-scope_
+
+2. **[Title]** — [one-liner description]
+   _Source: RFC tech debt_
+
+3. **[Title]** — [one-liner description]
+   _Source: TODO in src/auth/handler.ts:42_
+
+Pick one and say "build that" to kick off a new cycle.
+```
+
+**Rules**:
+- Maximum 5 suggestions, minimum 1
+- Rank by: direct user value > tech debt reduction > nice-to-haves
+- If no sources yield suggestions: "No obvious next steps found. Check your roadmap or run `/status` to see what's in progress."
+- This output is ephemeral — it lives only in the conversation, not as an artifact
 
 ## Parallel Work Optimization
 

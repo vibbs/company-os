@@ -101,3 +101,18 @@ models:
   qa_release: "sonnet"        # Test plans, quality gates, release readiness — systematic evaluation
   ops_risk: "sonnet"          # Security, compliance, legal, finance — domain-specific but structured
   growth: "sonnet"            # Launch assets, SEO, activation — creative but bounded by templates
+
+personas:
+  # Optional custom names for agents. Adds personality to multi-agent conversations.
+  # Leave blank ("") to use default functional names (e.g., "Product Agent").
+  # Names always display alongside role: "Jordan (Product Agent)"
+  orchestrator: ""            # default: "Orchestrator"
+  product: ""                 # default: "Product Agent"
+  engineering: ""             # default: "Engineering Agent"
+  engineering_backend: ""     # default: "Backend Engineer"
+  engineering_frontend: ""    # default: "Frontend Engineer"
+  engineering_devops: ""      # default: "DevOps Engineer"
+  qa_release: ""              # default: "QA & Release Agent"
+  growth: ""                  # default: "Growth Agent"
+  ops_risk: ""                # default: "Ops & Risk Agent"
+  # Suggested names (gender-neutral): Alex, Jordan, Morgan, Quinn, Riley, Sage, Casey, Drew, Avery

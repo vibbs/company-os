@@ -32,7 +32,7 @@ cd my-app
 | Item | Purpose |
 |------|---------|
 | `.claude/agents/` | 9 specialized AI agents (6 top-level + 3 engineering sub-agents) |
-| `.claude/skills/` | 45 procedural skills with templates and checklists |
+| `.claude/skills/` | 46 procedural skills with templates and checklists |
 | `.claude/hooks/` | Automatic artifact validation hooks |
 | `tools/` | 23 enforcement scripts (validation, gates, lifecycle) |
 | `company.config.yaml` | Central config file (empty template — you fill it in Phase 2) |
@@ -197,6 +197,28 @@ Options per agent: `opus` | `sonnet` | `haiku`. The default "cost-optimized" pre
 
 The `/setup` wizard offers model presets during configuration. You can also change these values directly in `company.config.yaml` and the corresponding `.claude/agents/*.md` frontmatter `model:` field at any time.
 
+### Agent Personas (Optional)
+
+The `personas` section lets you give agents custom names for more personality in multi-agent conversations:
+
+```yaml
+personas:
+  orchestrator: "Alex"            # default: "Orchestrator"
+  product: "Jordan"               # default: "Product Agent"
+  engineering: "Morgan"           # default: "Engineering Agent"
+  engineering_backend: "Casey"    # default: "Backend Engineer"
+  engineering_frontend: "Drew"    # default: "Frontend Engineer"
+  engineering_devops: "Avery"     # default: "DevOps Engineer"
+  qa_release: "Quinn"             # default: "QA & Release Agent"
+  growth: "Riley"                 # default: "Growth Agent"
+  ops_risk: "Sage"                # default: "Ops & Risk Agent"
+```
+
+- Leave values blank (`""`) to use default functional names
+- Persona names always display alongside the role: "Morgan (Engineering)"
+- Purely cosmetic — zero impact on routing, gating, or functionality
+- Names surface in agent self-references, delegation messages, status output, and ship flow progress
+
 ### What Happens If Fields Are Empty
 
 - Agents will ask you to decide before proceeding with affected recommendations
@@ -242,9 +264,9 @@ Skills are directory-based knowledge documents. Each contains a `SKILL.md` entry
 
 | Category | Skills (directory names) |
 |----------|------------------------|
-| Orchestration | `workflow-router`, `decision-memo-writer`, `conflict-resolver`, `ingest`, `system-maintenance`, `artifact-import`, `setup`, `upgrade-company-os` |
+| Orchestration | `workflow-router`, `ship`, `status`, `decision-memo-writer`, `conflict-resolver`, `ingest`, `system-maintenance`, `artifact-import`, `setup`, `upgrade-company-os` |
 | Product | `icp-positioning`, `prd-writer`, `sprint-prioritizer`, `feedback-synthesizer`, `discovery-validation` |
-| Engineering | `architecture-draft`, `api-contract-designer`, `background-jobs`, `multi-tenancy`, `implementation-decomposer`, `observability-baseline`, `code-review`, `seed-data`, `deployment-strategy`, `instrumentation`, `feature-flags`, `user-docs`, `mobile-readiness` |
+| Engineering | `architecture-draft`, `api-contract-designer`, `background-jobs`, `multi-tenancy`, `implementation-decomposer`, `observability-baseline`, `code-review`, `seed-data`, `deployment-strategy`, `instrumentation`, `feature-flags`, `user-docs`, `mobile-readiness`, `dev-environment` |
 | QA / Release | `test-plan-generator`, `api-tester-playbook`, `release-readiness-gate`, `perf-benchmark-checklist`, `seed-data`, `code-review`, `dogfood` |
 | Growth | `positioning-messaging`, `landing-page-copy`, `seo-topic-map`, `channel-playbook`, `activation-onboarding`, `email-lifecycle` |
 | Risk / Legal / Finance | `threat-modeling`, `privacy-data-handling`, `compliance-readiness`, `pricing-unit-economics`, `tos-privacy-drafting`, `incident-response` |
@@ -680,7 +702,7 @@ company-os/
 │   │   ├── qa-release.md
 │   │   ├── growth.md
 │   │   └── ops-risk.md
-│   └── skills/                 # 45 skill directories (SKILL.md + supporting files)
+│   └── skills/                 # 46 skill directories (SKILL.md + supporting files)
 │       ├── workflow-router/
 │       │   └── SKILL.md
 │       ├── prd-writer/
