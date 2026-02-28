@@ -818,7 +818,7 @@ if [ "$DRY_RUN" = false ]; then
     artifacts/launch-briefs artifacts/security-reviews artifacts/decision-memos \
     artifacts/.audit-log \
     standards/api standards/coding standards/compliance standards/templates \
-    standards/brand standards/ops standards/analytics standards/docs \
+    standards/brand standards/brand/archetypes standards/ops standards/analytics standards/docs \
     standards/email standards/engineering \
     imports tasks .company-os/migrations \
     seeds artifacts/test-data; do

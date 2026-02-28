@@ -13,6 +13,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-02-28
+
+### Added
+- **Design Archetype System** — 6 design archetypes (Linear, Attio, Notion, Figma, Things 3, Framer) with comprehensive visual tokens, UX patterns, and ASCII wireframe previews in `standards/brand/archetypes/`
+- **Universal UX Baseline** (`standards/brand/ux-baseline.md`) — Non-negotiable UX patterns every product must implement: empty states, loading skeletons, error handling, form validation, keyboard navigation, accessible contrast, responsive behavior
+- **Design System skill** (`/design-system`) — User-invokable skill that runs archetype selection wizard on first use, generates project-specific design tokens, reviews code for design consistency violations
+- **Setup wizard Step 5.7: Design & Brand** — 3-question matchmaking flow (product type, user priority, density) that scores and recommends archetypes with trait-led presentation and ASCII previews for users who may not know the reference products
+- **Release gate Bar 9: Design Quality** — Checks UX baseline compliance, design token usage, responsive behavior, touch targets. Advisory in idea/mvp stages, enforced in growth/scale.
+- **Config section**: `design:` in company.config.yaml — archetype, dark_mode, density, overrides
+
+### Changed
+- **Frontend Agent**: Now loads design context (archetype + UX baseline) before building any UI component. Design-system added as 4th skill (was 3 skills).
+- **Engineering Agent**: Phase 6 (Self-Review) now includes design consistency check — verifies archetype token usage, UX baseline compliance
+- **Dogfood skill**: Design inconsistencies (missing empty states, hardcoded colors, spinner instead of skeleton) elevated from LOW to MEDIUM severity
+- **install.sh**: Scaffolds `standards/brand/archetypes/` directory on fresh install
+
+
 ## [1.4.0] - 2026-02-27
 
 ### Added
