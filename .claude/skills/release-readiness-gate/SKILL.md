@@ -103,6 +103,18 @@ Each bar is pass/fail. ALL must pass for release approval.
 - [ ] All P0 user journeys passed (or failures are tracked with remediation plan)
 - Note: This bar is informational by default. It reports whether dogfooding was run and what was found, but does not block release unless explicitly configured (`qa.dogfood_blocking: true` in `company.config.yaml`).
 
+#### Bar 9: Design Quality (Advisory in idea/mvp — Enforced in growth/scale)
+- [ ] Design archetype is configured in `company.config.yaml` (`design.archetype` is not empty)
+- [ ] UX baseline patterns are implemented for all user-facing views:
+  - Empty states have icon + headline + description + CTA (never blank containers)
+  - Loading states use skeleton screens matching content layout (not centered spinners)
+  - Error states are inline for form fields, toast for action failures, full page for route errors
+  - Form validation is inline on blur (not submit-and-scroll)
+- [ ] No hardcoded color hex values in component files (colors should reference design tokens/theme)
+- [ ] Responsive behavior verified: sidebar collapses, tables scroll, no horizontal overflow at 320px
+- [ ] Touch targets minimum 44x44px on all interactive elements
+- Stage-aware: **advisory** in `idea` and `mvp` stages (reported but does not block). **Enforced** in `growth` and `scale` stages. To override for a specific release, add `design_gate_override: true` to the PRD frontmatter.
+
 ### Step 3: Calculate Overall Verdict
 
 ```markdown
@@ -119,6 +131,7 @@ Each bar is pass/fail. ALL must pass for release approval.
 | Operational Readiness | PASS / FAIL |
 | Release Versioning | PASS / FAIL |
 | Dogfood (optional) | PASS / FAIL / SKIPPED |
+| Design Quality | PASS / FAIL / ADVISORY |
 
 ### Overall: APPROVED FOR RELEASE / NOT READY
 

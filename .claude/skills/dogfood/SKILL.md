@@ -135,8 +135,8 @@ For every issue discovered during execution, classify by severity:
 |----------|----------|---------|
 | **Critical** | Core flow is completely broken, data loss, security vulnerability | Login fails, payment processes twice, XSS in user input |
 | **High** | Major feature doesn't work, significant UX problem | Form submission fails silently, page crashes on valid input |
-| **Medium** | Feature partially works, minor UX issue, non-critical error | Console warning, slow load time (>3s), layout broken on edge case |
-| **Low** | Cosmetic issue, minor inconsistency, improvement opportunity | Typo in error message, missing loading spinner, inconsistent spacing |
+| **Medium** | Feature partially works, minor UX issue, non-critical error, design inconsistency | Console warning, slow load time (>3s), layout broken on edge case, colors don't match design tokens, missing empty state, spinner instead of skeleton, hardcoded spacing |
+| **Low** | Minor cosmetic issue, trivial improvement opportunity | Typo in error message, slightly different icon weight, minor alignment offset |
 
 ### Step 7: Produce Dogfood Report
 
