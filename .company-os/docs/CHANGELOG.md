@@ -13,6 +13,45 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-02-28
+
+### Added
+- **AI Engineering skill** (`ai-engineering`) — LLM integration patterns, RAG architecture, prompt engineering, vector DB selection, AI cost optimization, and ethical AI checklist. New `ai:` config section and `standards/engineering/ai-patterns.md` reference doc
+- **Experiment Framework skill** (`experiment-framework`) — Statistically rigorous A/B experiment design with sample size calculation, guardrail metrics, experiment state machine, and results analysis. New `experiments:` config section and `tools/qa/experiment-report.sh`
+- **UX Research skill** (`ux-research`) — Lean user research with method selection, guerrilla interview scripts, usability testing protocols, journey mapping, persona development, and heuristic evaluation
+- **Market Intelligence skill** (`market-intelligence`) — Competitive landscape scans, technology radar (ADOPT/TRIAL/ASSESS/HOLD), trend timing framework, and app store intelligence
+- **Content Engine skill** (`content-engine`) — Multi-format content production, editorial calendars, content multiplication workflows, and performance tracking. New `standards/growth/content-strategy.md` and `standards/growth/platform-playbooks.md`
+- **Test Intelligence skill** (`test-intelligence`) — Flaky test detection, coverage scoring, test pyramid balance, mutation testing guidance. New `tools/qa/test-health.sh`
+- **Resilience Testing skill** (`resilience-testing`) — Failure mode catalogs, circuit breaker testing, latency injection, blast radius analysis. New `tools/qa/resilience-test.sh`
+- **Support Operations skill** (`support-operations`) — FAQ generation, SLA tiers, escalation paths, de-escalation scripts, support-to-product feedback pipeline. New `support:` config section, `standards/ops/support-runbook.md`, `tools/ops/support-faq-check.sh`
+- **Rapid Prototype skill** (`/prototype`) — Time-boxed MVP prototyping (4h/1d/3d sprints) for proof-of-concept and investor demos. Skips RFC, security review, and full QA
+- **Release gate Bar 10: AI Safety** — Prompt injection protection, output filtering, cost guardrails, bias assessment. Triggers only when `ai.llm_provider` is set. Advisory in idea/mvp, enforced in growth/scale
+- **Ship flow Step 5.95: Experiment Review** — Verifies experiment specs for features behind experiment flags (advisory, does not block)
+- **Workflow Router: Prototype/Demo** — New classification type for time-boxed PoCs, routes to rapid-prototype skill
+- **Brand Guidelines standard** (`standards/brand/brand-guidelines.md`) — Brand identity reference doc
+- **Investor Reporting template** (`standards/ops/investor-reporting-template.md`) — Monthly investor update template
+
+### Changed
+- **Product Agent**: 5 → 7 skills (added ux-research, market-intelligence). New responsibilities for user research and market monitoring
+- **Engineering Agent (Staff)**: 5 → 6 skills (added ai-engineering). Phase 1 architecture now includes AI/ML evaluation. Removed design-system from staff scope (frontend sub-agent only)
+- **QA & Release Agent**: 7 → 9 skills (added experiment-framework, test-intelligence). New responsibilities for experimentation and test health
+- **Engineering DevOps**: 4 → 5 skills (added resilience-testing). Stage-aware resilience verification before production launch
+- **Growth Agent**: 6 → 7 skills (added content-engine). Content production as a formal responsibility
+- **Ops & Risk Agent**: 6 → 7 skills (added support-operations). Customer support as 5th responsibility
+- **Orchestrator**: 10 → 11 skills (added rapid-prototype). New delegation pattern for prototype/demo/PoC work
+- **Pricing & Unit Economics**: Extended with MRR/ARR tracking, financial forecasting, runway monitoring, budget allocation, and investor reporting
+- **Channel Playbook**: Platform deep-dives for Twitter/X, LinkedIn, Reddit, TikTok, Instagram, Product Hunt, Hacker News
+- **Positioning & Messaging**: Brand identity section with voice matrix, personality traits, cross-platform harmonization
+- **SEO Topic Map**: Pillar content strategy with content multiplication plans
+- **Landing Page Copy**: Visual content guidance (hero specs, data visualization, presentation frameworks)
+- **Design System**: Delight patterns — celebration moments, micro-interactions, easter eggs, shareable moments, sound design (mapped to archetype personality)
+- **Mobile Readiness**: App Store Optimization — keyword research, metadata optimization, screenshot strategy, review management, A/B testing
+- **Feature Flags**: Cross-reference to experiment-framework for experiment-type flags
+- Tool count: 24 → 28 (added test-health.sh, resilience-test.sh, experiment-report.sh, support-faq-check.sh)
+- Skill count: 47 → 56 (9 new skills)
+- Config sections: 14 → 17 (added ai, experiments, support)
+- Standards docs: ~15 → ~21 (6 new reference docs)
+
 ## [1.5.0] - 2026-02-28
 
 ### Added
