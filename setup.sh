@@ -228,6 +228,12 @@ email:
   provider: ""                # Resend | Sendgrid | Postmark | SES | none
   from_address: ""            # noreply@yourdomain.com
   template_engine: ""         # react-email | mjml | handlebars | jinja | plain-html
+
+design:
+  archetype: ""               # linear | attio | notion | figma | things3 | framer — run /design-system to choose
+  dark_mode: "auto"           # auto | light | dark | both — dark mode strategy
+  density: "comfortable"      # compact | comfortable | spacious — UI density preference
+  overrides: {}               # optional token overrides (e.g., { accent: "#FF6B00" })
 YAML
   echo -e "  ${GREEN}Created${NC}  company.config.yaml"
   CREATED=$((CREATED + 1))

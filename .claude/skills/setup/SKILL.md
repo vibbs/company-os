@@ -384,6 +384,51 @@ After selection, update both:
 1. `company.config.yaml` `models:` section with the chosen values
 2. Each `.claude/agents/*.md` frontmatter `model:` field to match
 
+### Step 5.7: Design & Brand
+
+Configure the product's design archetype — the visual and UX personality that drives all frontend implementation. This step uses the same procedure defined in the **design-system** skill (S-ENG-12). Refer to `.claude/skills/design-system/SKILL.md` Step 1 for the full wizard flow.
+
+**Summary of the flow:**
+
+1. Ask 3 product-context questions:
+   - **Product Type**: What are you building? (internal tool / CRM / knowledge base / collaborative workspace / consumer app / creative tool)
+   - **User Priority**: What matters most? (speed / record management / focused content / real-time collaboration / simplicity / visual impact)
+   - **Information Density**: How much should users see at once? (dense / moderate / minimal)
+
+2. Score each answer against 6 archetypes using the scoring matrix (see design-system skill for full table). Sum scores. Present top 2-3 recommendations.
+
+3. **Present recommendations with visual cues** — this is critical for users who don't know the reference products:
+   - Lead with the **vibe name** and **dimension bars** (density, warmth, sophistication, interaction)
+   - Show **ASCII wireframe preview** from the archetype file so users can *see* the feel
+   - Include **"Think: Product1, Product2"** as secondary reference hints
+   - Show **"Best for"** and **"Not ideal for"** lists
+
+4. User picks an archetype → write `design.archetype` to config.
+
+5. Ask two follow-up preferences:
+   - **Dark mode**: auto (follow system) | light | dark | both (user toggle)
+   - **Density**: compact | comfortable (default) | spacious
+
+6. Write all three values to `design:` section in config.
+
+**Express mode support** — add to the express mode template:
+```
+## Design
+- Archetype: linear | attio | notion | figma | things3 | framer
+- Dark Mode: auto | light | dark | both
+- Density: compact | comfortable | spacious
+```
+
+**Auto-extract heuristics** — when extracting from URL/text, use keyword matching:
+- "admin", "dashboard", "monitoring", "ops" → Linear
+- "CRM", "contacts", "records", "inventory", "school" → Attio
+- "docs", "wiki", "knowledge", "notes", "learning" → Notion
+- "collaboration", "real-time", "whiteboard", "canvas" → Figma
+- "personal", "simple", "consumer", "wellness", "journal" → Things 3
+- "marketing", "creative", "portfolio", "landing" → Framer
+
+**Skip condition**: If user already has `design.archetype` set and doesn't want to change it, skip this step.
+
 ### Step 6: Write `company.config.yaml`
 
 Write the complete config file with all gathered values. Preserve the comment structure from the template. Leave uncollected optional fields as `""`.
