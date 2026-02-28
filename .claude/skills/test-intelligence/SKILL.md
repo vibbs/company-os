@@ -1,7 +1,7 @@
 ---
 name: test-intelligence
 description: Analyzes test suite health including flaky test detection, coverage scoring, test pyramid balance, and mutation testing guidance. Use when assessing test quality or diagnosing test reliability issues.
-allowed-tools: Read, Grep, Glob, Bash
+allowed-tools: Read, Grep, Glob, Bash, Write
 ---
 
 # Test Intelligence

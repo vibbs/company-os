@@ -104,7 +104,7 @@ experiments:
 
 support:
   channels: []                # email, chat, self-serve
-  sla_tier: basic             # basic | standard | premium
+  sla_tier: ""                # basic | standard | premium (defaults to basic for idea/mvp)
   escalation_email: ""
 
 design:

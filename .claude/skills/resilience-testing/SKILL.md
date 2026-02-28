@@ -1,13 +1,13 @@
 ---
 name: resilience-testing
 description: Designs failure mode catalogs, circuit breaker tests, latency injection plans, and blast radius analysis for system resilience verification. Use when validating system behavior under failure conditions.
-allowed-tools: Read, Grep, Glob, Bash
+allowed-tools: Read, Grep, Glob, Bash, Write
 ---
 
 # Resilience Testing
 
 ## Reference
-- **ID**: S-DEV-05
+- **ID**: S-ENG-14
 - **Category**: Engineering / DevOps
 - **Inputs**: RFC/architecture docs, deployment topology, dependency map
 - **Outputs**: resilience test plan → `artifacts/test-plans/resilience-*.md`

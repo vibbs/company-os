@@ -103,7 +103,11 @@ if [[ -n "$PRD_PATH" ]]; then
 
   # Extract acceptance criteria
   CRITERIA=$(extract_criteria "$PRD_PATH")
-  CRITERIA_COUNT=$(echo "$CRITERIA" | grep -c '.' || true)
+  if [[ -z "$CRITERIA" ]]; then
+    CRITERIA_COUNT=0
+  else
+    CRITERIA_COUNT=$(echo "$CRITERIA" | grep -c '.' || true)
+  fi
 
   if [[ "$CRITERIA_COUNT" -eq 0 ]]; then
     echo -e "${YELLOW}Warning: No acceptance criteria found in PRD.${RESET}"
@@ -152,7 +156,11 @@ if [[ ! -d "$PRD_DIR" ]]; then
 fi
 
 PRD_FILES=$(find "$PRD_DIR" -name "*.md" -not -name ".gitkeep" 2>/dev/null | sort || true)
-PRD_COUNT=$(echo "$PRD_FILES" | grep -c '.' || true)
+if [[ -z "$PRD_FILES" ]]; then
+  PRD_COUNT=0
+else
+  PRD_COUNT=$(echo "$PRD_FILES" | grep -c '.' || true)
+fi
 
 if [[ "$PRD_COUNT" -eq 0 ]]; then
   echo -e "${YELLOW}No PRD files found in $PRD_DIR${RESET}"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Tool: T-QA-06 Resilience Test Runner
+# Tool: T-QA-07 Resilience Test Runner
 # Description: Runs basic resilience checks against a deployed environment
 # Usage: ./tools/qa/resilience-test.sh <url> [timeout_seconds]
 # Inputs: base URL (required), timeout in seconds (default: 5)
