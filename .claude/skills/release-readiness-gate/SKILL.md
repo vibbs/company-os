@@ -115,6 +115,15 @@ Each bar is pass/fail. ALL must pass for release approval.
 - [ ] Touch targets minimum 44x44px on all interactive elements
 - Stage-aware: **advisory** in `idea` and `mvp` stages (reported but does not block). **Enforced** in `growth` and `scale` stages. To override for a specific release, add `design_gate_override: true` to the PRD frontmatter.
 
+#### Bar 10: AI Safety (Conditional — Only when AI features are present)
+- [ ] Feature uses AI/LLM (check: `ai.llm_provider` is configured AND RFC mentions AI/LLM/RAG/prompt)
+- [ ] Prompt injection protection documented (input validation, output filtering)
+- [ ] Output guardrails specified (content filtering, response validation, fallback behavior)
+- [ ] Cost guardrails defined (token budget per request, monthly budget cap, rate limiting)
+- [ ] Bias/fairness assessment completed (or explicitly accepted as known risk with mitigation plan)
+- [ ] PII handling in prompts documented (no PII sent to external LLM, or explicit consent + DPA in place)
+- Stage-aware: **advisory** in `idea` and `mvp` stages. **Enforced** in `growth` and `scale` stages. Only triggers when `ai.llm_provider` is set and the RFC references AI/LLM components.
+
 ### Step 3: Calculate Overall Verdict
 
 ```markdown
@@ -132,6 +141,7 @@ Each bar is pass/fail. ALL must pass for release approval.
 | Release Versioning | PASS / FAIL |
 | Dogfood (optional) | PASS / FAIL / SKIPPED |
 | Design Quality | PASS / FAIL / ADVISORY |
+| AI Safety (conditional) | PASS / FAIL / ADVISORY / N/A |
 
 ### Overall: APPROVED FOR RELEASE / NOT READY
 

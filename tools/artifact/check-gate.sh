@@ -374,6 +374,48 @@ case "$GATE_NAME" in
       else
         FAILURES+=("No app version file found (expected package.json, pyproject.toml, or VERSION)")
       fi
+
+      # Note: Bars 6-9 (Operational Readiness, Release Versioning, Dogfood, Design Quality)
+      # are evaluated by the release-readiness-gate skill procedure, not this script.
+      # This script checks artifact existence and status; the skill evaluates qualitative bars.
+
+      # 10. AI Safety (conditional — only when ai.llm_provider is set and feature touches AI)
+      AI_PROVIDER=""
+      if [[ -f "$CONFIG_FILE" ]]; then
+        AI_PROVIDER=$(grep "^  llm_provider:" "$CONFIG_FILE" | sed 's/.*llm_provider: *//' | tr -d '"' | tr -d "'" | sed 's/ *#.*//' || true)
+      fi
+      if [[ -n "$AI_PROVIDER" && "$AI_PROVIDER" != "none" ]]; then
+        # Check if any RFC mentions AI/LLM/RAG/prompt
+        AI_RFC_FOUND=false
+        if [[ -n "$RFC_FILE" ]]; then
+          RFC_BODY=$(sed -n '/^---$/,/^---$/!p' "$RFC_FILE" 2>/dev/null || true)
+          if echo "$RFC_BODY" | grep -qi "LLM\|language model\|RAG\|retrieval.augmented\|prompt engineering\|vector database\|embedding\|AI architecture\|model serving"; then
+            AI_RFC_FOUND=true
+          fi
+        fi
+        if [[ "$AI_RFC_FOUND" == "true" ]]; then
+          # Check for AI safety artifacts or sections
+          AI_SAFETY_FOUND=false
+          if [[ -n "$RFC_FILE" ]]; then
+            if echo "$RFC_BODY" | grep -qi "prompt injection\|output filtering\|guardrail\|bias assessment\|cost guardrail\|AI safety\|ethical AI"; then
+              AI_SAFETY_FOUND=true
+            fi
+          fi
+          if [[ "$AI_SAFETY_FOUND" == "true" ]]; then
+            PASSES+=("AI safety: addressed in RFC")
+          else
+            # Stage-aware: advisory in idea/mvp, enforced in growth/scale
+            case "$COMPANY_STAGE" in
+              idea|mvp)
+                ADVISORY_WARNINGS+=("AI safety not addressed in RFC — consider prompt injection protection, output guardrails, cost limits, and bias assessment")
+                ;;
+              *)
+                FAILURES+=("AI safety not addressed in RFC — feature uses AI ($AI_PROVIDER) but no prompt injection protection, guardrails, or bias assessment documented")
+                ;;
+            esac
+          fi
+        fi
+      fi
     fi
     ;;
 

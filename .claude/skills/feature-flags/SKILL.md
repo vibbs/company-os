@@ -212,6 +212,7 @@ Final verification checklist:
 - **activation-onboarding** skill: Aha moment mapping feeds directly into progressive discovery Level 1 unlock triggers. When activation-onboarding defines the first-value action, use it as the Level 0 to Level 1 transition condition.
 - **instrumentation** skill: Event taxonomy for flag-related events (`feature_flag.evaluated`, `feature_flag.toggled`). Per-flag metrics should follow the instrumentation conventions and integrate into the analytics dashboard.
 - **code-review** skill: Flag debt detection during reviews. Flags past their cleanup SLA should be raised as code quality issues during the Code Quality section of reviews.
+- **experiment-framework** skill: For experiment-type flags, a corresponding experiment spec should exist with hypothesis, sample size calculation, and analysis plan. The feature-flags skill defines the flag; the experiment-framework skill ensures the experiment behind it is statistically sound.
 
 ## Quality Checklist
 

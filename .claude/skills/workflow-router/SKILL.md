@@ -42,6 +42,7 @@ Determine the type of work:
 | **Research/Spike** | Understanding before deciding | Research → Decision Memo |
 | **Launch** | Taking something live | QA gate → Growth assets → Release |
 | **Compliance** | Security/privacy/legal requirement | Risk review → Remediation → Verification |
+| **Prototype/Demo** | Time-boxed proof-of-concept or investor demo | Mini-PRD (3 AC max) → Build → Demo script (skip RFC/QA/Growth) |
 
 ### Step 2: Check Current State
 
@@ -53,8 +54,8 @@ Inventory what artifacts already exist for this objective:
 3. Check artifacts/test-plans/ — does a test plan exist?
 4. Check artifacts/qa-reports/ — has QA been done?
 5. If the user mentions existing artifacts outside the system (Google Docs, Notion, Confluence, local files), route to `/artifact-import` before building the execution plan. Imported artifacts enter at `review` status and can be promoted to `approved` to unblock downstream stages.
-5. Check artifacts/security-reviews/ — has risk been assessed?
-6. Check artifacts/launch-briefs/ — are launch assets ready?
+6. Check artifacts/security-reviews/ — has risk been assessed?
+7. Check artifacts/launch-briefs/ — are launch assets ready?
 ```
 
 Whatever is missing determines what still needs to happen.
@@ -140,6 +141,16 @@ Produce a structured execution plan:
 2. Orchestrator produces Decision Memo (decision-memo-writer)
 - Skip: everything else until decision is made
 
+### Prototype/Demo Flow (Time-Boxed)
+1. Product Agent produces a mini-PRD (3 acceptance criteria max, no success metrics required)
+2. Engineering Agent builds directly (no RFC, no API contract, no security review)
+3. Orchestrator produces demo script with talking points
+- Skip: RFC, threat model, test plan, QA report, launch brief, full release gate
+- Prototype rules: no tests required, hardcoded values acceptable, skip lint
+- Keywords that trigger this flow: "prototype", "demo", "proof of concept", "MVP test", "investor demo", "hackathon", "spike with code"
+- **Exit criteria**: Either the prototype proves/disproves the hypothesis, or graduate to full `/ship` flow
+- After prototype: run `/ship` to graduate the prototype to production quality (PRD gets expanded, RFC gets created, code gets refactored)
+
 ## Quality Checklist
 
 - [ ] Objective type correctly classified
@@ -149,3 +160,4 @@ Produce a structured execution plan:
 - [ ] Parallel work identified
 - [ ] Stage gates defined with specific criteria
 - [ ] Plan is actionable (next action is clear)
+- [ ] Prototype/Demo objectives correctly identified (not routed through full pipeline)

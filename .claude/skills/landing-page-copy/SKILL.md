@@ -30,6 +30,29 @@ Produces conversion-optimized landing page copy organized into standard sections
 11. Save the copy document to `artifacts/growth/`.
 12. Validate the artifact using `./tools/artifact/validate.sh`.
 
+## Visual Content Guidance
+
+When producing landing page copy, include guidance for visual elements that complement the text.
+
+### Hero Section Visuals
+- **Product screenshot**: Show the product in action (not a generic stock photo). Annotate key features.
+- **Video**: 30-60 second demo showing the core value proposition. Autoplay muted with play button.
+- **Animation**: Subtle motion showing the product's primary workflow (e.g., drag-and-drop, form submission, dashboard loading).
+- Choose ONE primary visual -- don't combine. Screenshot is safest, video converts highest, animation is most engaging.
+
+### Data Visualization
+When the landing page includes metrics, social proof, or comparisons:
+- **Comparison tables**: Feature comparison with competitors (checkmarks, not paragraphs). Keep to 5-7 rows.
+- **Metric callouts**: Large numbers (e.g., "50% faster", "10K+ users") with supporting context. Use 3 metrics max.
+- **Before/after**: Side-by-side showing the problem state vs. with-product state.
+- **Charts**: Only if data is compelling. Bar charts for comparisons, line charts for growth. Keep simple.
+
+### Presentation & Pitch Deck Guidance
+When landing page content is adapted for presentations:
+- **Slide framework**: Problem (1-2 slides) -> Solution (1-2 slides) -> Demo (2-3 slides) -> Social Proof (1 slide) -> CTA (1 slide)
+- **One idea per slide**: Don't crowd. Large text, minimal bullets.
+- **Visual consistency**: Use brand colors, consistent fonts, company logo on every slide.
+
 ## Quality Checklist
 - [ ] Single clear CTA is consistent throughout the page
 - [ ] Hero headline communicates the core value in under 10 words
@@ -38,4 +61,6 @@ Produces conversion-optimized landing page copy organized into standard sections
 - [ ] FAQ addresses real buyer objections
 - [ ] Copy reads at an 8th-grade level or below for clarity
 - [ ] SEO metadata is included
+- [ ] Hero visual recommendation included (screenshot, video, or animation)
+- [ ] Data visualization guidance provided for any metrics/social proof
 - [ ] Artifact passes validation
