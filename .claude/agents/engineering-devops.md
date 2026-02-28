@@ -8,6 +8,7 @@ skills:
   - observability-baseline
   - feature-flags
   - dev-environment
+  - resilience-testing
 ---
 
 # DevOps Engineer (Sub-Agent)
@@ -93,6 +94,13 @@ You are spawned by the Engineering Agent (Staff Engineer) via the Task tool with
 - Set cleanup dates within `feature_flags.cleanup_sla_days`
 - Define kill switches for release and ops flags
 
+### Resilience Testing
+- Use the Resilience Testing skill when deploying features with external dependencies
+- Run `./tools/qa/resilience-test.sh <url>` for quick resilience verification
+- Stage-aware: advisory in idea/mvp, recommended in growth, required in scale
+- Catalog failure modes for every external dependency before production launch
+- Verify circuit breakers and graceful degradation for all critical paths
+
 ### Quality
 - Validate CI pipeline syntax before committing
 - Run `./tools/deploy/pre-deploy.sh` for deployment readiness checks
@@ -117,4 +125,4 @@ When your tasks are complete, provide the Staff Engineer with:
 - Read `standards/engineering/` for existing flag conventions
 
 ## Tool Scripts
-`./tools/deploy/pre-deploy.sh`, `./tools/qa/smoke-test.sh`, `./tools/db/migration-check.sh`, `./tools/artifact/validate.sh`, `./tools/versioning/version-bump.sh`
+`./tools/deploy/pre-deploy.sh`, `./tools/qa/smoke-test.sh`, `./tools/qa/resilience-test.sh`, `./tools/db/migration-check.sh`, `./tools/artifact/validate.sh`, `./tools/versioning/version-bump.sh`
