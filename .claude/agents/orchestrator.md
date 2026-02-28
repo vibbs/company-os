@@ -14,6 +14,7 @@ skills:
   - artifact-import
   - setup
   - upgrade-company-os
+  - rapid-prototype
 ---
 
 # Orchestrator Agent
@@ -73,6 +74,7 @@ You are the Orchestrator — the central coordinator of the Company OS. You do N
 - **"System changed" / "Update docs"** → Use system-maintenance skill to audit and sync all documentation
 - **"Set up" / "Configure" / "Initialize"** → Use setup skill for interactive project configuration
 - **"Upgrade" / "Update Company OS" / "Check for updates"** → Use upgrade-company-os skill
+- **"Prototype" / "Demo" / "PoC" / "Prove this works"** → Use rapid-prototype skill directly (skip full ship flow)
 
 ---
 

@@ -88,6 +88,25 @@ email:
   from_address: ""            # noreply@yourdomain.com
   template_engine: ""         # react-email | mjml | handlebars | jinja | plain-html
 
+ai:
+  llm_provider: ""            # anthropic | openai | google | local | none
+  llm_model: ""               # claude-sonnet | gpt-4o | gemini-pro | llama3
+  embedding_provider: ""      # openai | cohere | local | none
+  vector_db: ""               # pinecone | weaviate | chroma | pgvector | none
+  guardrails: ""              # custom | guardrails-ai | nemo | none
+  cost_budget_monthly: ""     # Monthly AI API budget cap (USD)
+
+experiments:
+  enabled: false              # true | false — enable experiment framework
+  min_sample_size: 100        # minimum sample size per variant (safety floor)
+  default_significance: 0.95  # default statistical significance level (1 - α)
+  max_concurrent: 3           # maximum concurrent experiments (prevent interaction effects)
+
+support:
+  channels: []                # email, chat, self-serve
+  sla_tier: basic             # basic | standard | premium
+  escalation_email: ""
+
 design:
   archetype: ""               # linear | attio | notion | figma | things3 | framer — run /design-system to choose
   dark_mode: "auto"           # auto | light | dark | both — dark mode strategy

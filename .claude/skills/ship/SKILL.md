@@ -25,6 +25,8 @@ The primary entry point for the canonical ship flow. Takes an objective from ide
 - User wants to ship an improvement or enhancement
 - User wants the full orchestrated pipeline with quality gates
 
+**Alternative**: For time-boxed proofs-of-concept or investor demos, use `/prototype` instead. It skips RFC, security, QA, and growth stages for maximum speed.
+
 ## Procedure
 
 ### Step 1: Load Configuration
@@ -222,6 +224,27 @@ This step is recommended but not required. Skip it when:
 - The product is API-only and contract tests already cover the flows
 - No running environment is available
 - The user explicitly opts to skip dogfooding
+
+### Step 5.95: Experiment Review (Optional)
+
+If the feature is behind an experiment-type feature flag, verify experiment readiness:
+
+1. **Check for experiment flag** -- look in the RFC or feature flag specs for any flag classified as `experiment` type
+2. **If experiment flag exists**, check that an experiment spec exists in `artifacts/experiments/`:
+   - Hypothesis is documented
+   - Sample size is calculated (or justified as "traffic-limited")
+   - Primary metric is defined
+   - Guardrail metrics are defined (metrics that must NOT degrade)
+   - Experiment duration is estimated
+3. **If experiment spec is missing** -- surface a warning:
+   ```
+   Warning: Feature has an experiment flag but no experiment spec.
+   Consider creating one with the Experiment Framework skill before launch.
+   This is advisory -- it does not block release.
+   ```
+4. **If experiment spec exists** -- link it to the PRD and RFC via `./tools/artifact/link.sh`
+
+This step is advisory only -- it does not block the release gate. It surfaces awareness that experimentation infrastructure should be in place for features behind experiment flags.
 
 ### Step 6: Release Gate (Final Verification)
 
