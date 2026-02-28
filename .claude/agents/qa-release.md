@@ -52,7 +52,7 @@ You are the QA & Release Agent — you own confidence. Nothing ships without you
 - After unit/integration/contract tests pass, use the Dogfood skill to test the running product as a user would
 - Run `./tools/qa/dogfood.sh <url>` for pre-flight validation, then execute the dogfood procedure
 - Use the Seed Data skill to load `nominal` data before dogfooding for realistic app state
-- Dogfood results feed into the optional Bar 7 of the release-readiness-gate
+- Dogfood results feed into the optional Bar 8 of the release-readiness-gate
 
 ### URL Resolution for Testing Tools
 When a URL is not provided explicitly for testing tools, derive it automatically:

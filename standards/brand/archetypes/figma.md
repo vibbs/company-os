@@ -113,7 +113,7 @@ Think: Figma, Miro, Excalidraw, Pitch, Loom Studio, FigJam, Whimsical, Framer, P
 | `--letter-spacing-normal` | `0` | Body text |
 | Philosophy | Extremely compact chrome (11-12px) preserves canvas space. Panel content is 12-13px. Only modal/overlay text reaches 14px+. |  |
 
-### Spacing
+### Spacing Scale
 | Token | Value | Usage |
 |-------|-------|-------|
 | `--space-1` | `4px` | Inline gaps, icon-to-label in toolbar |

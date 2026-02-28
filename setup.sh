@@ -102,6 +102,7 @@ create_dir "standards/coding"
 create_dir "standards/compliance"
 create_dir "standards/templates"
 create_dir "standards/brand"
+create_dir "standards/brand/archetypes"
 create_dir "standards/ops"
 create_dir "standards/analytics"
 create_dir "standards/docs"
@@ -121,7 +122,7 @@ echo ""
 echo "Creating template files..."
 
 # .gitkeep files for empty directories
-for dir in standards/api standards/coding standards/compliance standards/templates standards/brand standards/ops standards/analytics standards/docs standards/email standards/engineering imports seeds artifacts/test-data; do
+for dir in standards/api standards/coding standards/compliance standards/templates standards/brand standards/brand/archetypes standards/ops standards/analytics standards/docs standards/email standards/engineering imports seeds artifacts/test-data; do
   if [ ! -f "$dir/.gitkeep" ] && [ -z "$(ls -A "$dir" 2>/dev/null)" ]; then
     touch "$dir/.gitkeep"
   fi

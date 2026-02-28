@@ -224,7 +224,7 @@ If `agent-browser` is not available:
 ## Integration Points
 
 - **seed-data**: Run `/seed-data nominal` before dogfooding to ensure realistic app state
-- **release-readiness-gate**: Bar 7 (optional) checks for dogfood report existence and severity counts
+- **release-readiness-gate**: Bar 8 (optional) checks for dogfood report existence and severity counts
 - **ship**: Optional dogfooding step between implementation and release gate
 - **test-plan-generator**: Dogfood journeys complement (not replace) the structured test plan
 

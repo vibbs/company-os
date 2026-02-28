@@ -114,7 +114,7 @@ Think: Framer, Squarespace, Webflow (publishing view), Readymag, Pitch, Canva
 | `--letter-spacing-snug` | `-0.01em` | Medium headings (24-32px) |
 | `--letter-spacing-normal` | `0` | Body text, UI copy |
 
-### Spacing
+### Spacing Scale
 | Token | Value | Usage |
 |-------|-------|-------|
 | `--space-1` | `8px` | Base unit — minimum gap between inline elements |

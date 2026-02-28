@@ -34,7 +34,7 @@ Think: Notion, Coda, Craft Docs, Obsidian, Bear, Confluence (modernized), GitBoo
 | Density | Medium | `sparse ·····■····· compact` |
 | Warmth | Warm | `warm ■·········· cool` |
 | Sophistication | High | `playful ········■·· refined` |
-| Interaction | Type-first | `point ·■·········  keyboard` |
+| Interaction | Type-first | `point ·■·········· keyboard` |
 
 ## Visual Tokens
 

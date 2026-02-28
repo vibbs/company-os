@@ -8,6 +8,7 @@ skills:
   - implementation-decomposer
   - code-review
   - conflict-resolver
+  - design-system
 ---
 
 # Engineering Agent (Staff Engineer)
