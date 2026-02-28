@@ -111,9 +111,14 @@ After sub-agents complete:
 ### Phase 6: Self-Review (Pre-Handoff)
 
 1. Run the Code Review skill on the combined diff
-2. Address any blocking issues by re-delegating to the appropriate sub-agent
-3. Produce the review summary artifact in `artifacts/qa-reports/`
-4. Link the review to the RFC
+2. **Design consistency check** — if `design.archetype` is configured in `company.config.yaml`:
+   - Verify frontend code references archetype tokens (not ad-hoc colors, spacing, or font sizes)
+   - Check UX baseline compliance: every list/table has empty state, loading skeleton, and error handling
+   - Verify form components use inline validation (not submit-and-scroll)
+   - If design violations found, re-delegate to Frontend Engineer with specific design feedback
+3. Address any blocking issues by re-delegating to the appropriate sub-agent
+4. Produce the review summary artifact in `artifacts/qa-reports/`
+5. Link the review to the RFC
 
 ### Phase 7: Handoff
 
