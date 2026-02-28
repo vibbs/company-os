@@ -282,6 +282,48 @@ Issues found: {count}
 - {file}:{line} — Spinner used for content loading, prefer skeleton screen
 ```
 
+### Step 5: Delight Patterns
+
+When building UI components, apply these delight patterns based on the configured archetype's personality. These patterns elevate the product from functional to memorable.
+
+#### Celebration Moments
+- **Milestone achievements**: subtle confetti, checkmark animation, or success illustration when users complete key actions (first project created, 100th entry, goal reached)
+- **Progressive discovery**: animate new feature reveals — slide in a tooltip, pulse a new menu item, fade in an achievement badge
+- **Streak recognition**: acknowledge consistent usage with visual feedback (3-day streak, weekly goal met)
+- Map celebrations to the archetype personality:
+  - Linear/Attio: minimal — brief checkmark animation, muted color flash
+  - Notion/Figma: moderate — icon animation, subtle particle effect
+  - Things3: warm — friendly illustration swap, gentle bounce
+  - Framer: expressive — full confetti, animated illustration, color burst
+
+#### Micro-Interactions
+- **Button feedback**: scale down 2% on press, spring back on release (not just color change)
+- **Toggle animations**: smooth slide with color transition (150-200ms ease-out)
+- **List reorder**: drag item lifts with shadow, other items slide smoothly to make room
+- **Form submission**: button transforms to loading state (width shrinks, spinner appears), then transforms to success state
+- **Hover previews**: cards lift with subtle shadow increase on hover (desktop only)
+- Tie interaction intensity to archetype:
+  - Compact archetypes (Linear, Attio): faster (100-150ms), subtler transforms
+  - Comfortable archetypes (Notion, Things3): medium (150-250ms), noticeable but calm
+  - Expressive archetypes (Figma, Framer): slower (200-350ms), more dramatic transforms
+
+#### Easter Eggs (Optional — growth/scale stages only)
+- Konami code or specific key sequence reveals a fun detail
+- Hidden interaction on a specific UI element (e.g., click logo 5 times)
+- Seasonal or event-based temporary delight (holiday theme, launch anniversary)
+- Stage-aware: **skip entirely** in `idea` and `mvp` stages — focus on core UX first
+
+#### Shareable Moments
+- **Screenshot-worthy states**: ensure key achievements render well when screenshotted (clean layout, readable text, product branding visible)
+- **OG meta tags**: for any shareable URL, include Open Graph title, description, and image so shared links preview well on social platforms
+- **Export-ready views**: charts, reports, and dashboards should have a "clean" mode that removes navigation chrome for screenshots/exports
+
+#### Sound Design (Optional)
+- Audio feedback for key actions: send, complete, error, notification
+- Always respect user preference: mute by default, opt-in via settings
+- Keep sounds under 500ms, subtle, and non-intrusive
+- Match sound personality to archetype (mechanical clicks for Linear, soft chimes for Things3)
+
 ## Auto-Extract Heuristics
 
 When the setup wizard runs in auto-extract mode (from URL or text), use these keywords to suggest an archetype:
@@ -315,3 +357,9 @@ For `/setup` express mode, add this section to the config block:
 - Dark Mode: auto | light | dark | both
 - Density: compact | comfortable | spacious
 ```
+
+## Quality Checklist
+
+- [ ] Celebration moments mapped to archetype personality
+- [ ] Micro-interactions specified for interactive elements (buttons, toggles, forms)
+- [ ] Shareable moments include OG meta tags and screenshot-worthy states

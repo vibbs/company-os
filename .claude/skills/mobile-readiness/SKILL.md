@@ -183,6 +183,50 @@ For each feature being built, answer:
 4. **Platform-specific UI**: are there iOS/Android differences in this feature's presentation?
 5. **Performance impact**: does this feature affect the mobile performance budget? (heavy images, large JS bundles, etc.)
 
+### Step 5.5: App Store Optimization (ASO)
+
+Only produce this section when `platforms.targets` includes "ios" or "android".
+
+#### Keyword Research
+- **Primary keyword**: the single most important term users search for your app category
+- **Long-tail keywords**: 5-10 specific phrases (lower competition, higher intent)
+- **Competitor keywords**: terms where top competitors rank
+- Research tools: App Store Connect search metrics, Google Play Console acquisition reports, third-party (Sensor Tower, App Annie, AppFollow)
+
+#### Metadata Optimization
+
+| Element | iOS Limit | Android Limit | Best Practice |
+|---------|-----------|---------------|---------------|
+| Title | 30 chars | 30 chars | Primary keyword + brand name |
+| Subtitle | 30 chars | 80 chars (short desc) | Secondary keyword + value prop |
+| Keyword field | 100 chars | N/A (use description) | Comma-separated, no spaces, no duplicates |
+| Description | 4000 chars | 4000 chars | First 3 lines visible without "more" — front-load benefits |
+
+- Title formula: `[Primary Keyword] - [Brand Name]` or `[Brand Name]: [Primary Keyword]`
+- Never stuff keywords — write for humans first, algorithms second
+- Update metadata quarterly based on search trend changes
+
+#### Screenshot Strategy
+- **First 3 screenshots are the conversion funnel** — they appear in search results
+  - Screenshot 1: Hero shot — the single most impressive feature or outcome
+  - Screenshot 2: Key differentiator — what makes this app different
+  - Screenshot 3: Social proof or secondary feature — builds confidence
+- Screenshots 4-8: additional features, settings, edge cases
+- Format: device frame + annotation text (benefit, not feature name)
+- A/B test screenshot order using App Store Connect experiments or Google Play experiments
+
+#### Review Management
+- **Response templates**: thank positive reviewers, acknowledge negative feedback with resolution
+- **Rating prompt timing**: after 3+ successful sessions AND a positive action (never on first launch, never after an error)
+- **Star rating monitoring**: track weekly average, investigate any drop >0.2 stars
+- **Feature request extraction**: tag reviews mentioning missing features → feed to feedback-synthesizer
+
+#### ASO A/B Testing
+- **iOS**: App Store Connect product page optimization (up to 3 treatments)
+- **Android**: Google Play Store listing experiments (up to 5 variants)
+- Test one element at a time: icon, screenshots, description, or title
+- Run for minimum 7 days, need 90% confidence before declaring winner
+
 ### Step 6: Verify
 
 - Responsive breakpoints cover all screen sizes (320px through 1440px+)
@@ -202,3 +246,7 @@ For each feature being built, answer:
 - [ ] If native mobile: project structure, navigation, platform considerations documented
 - [ ] If PWA: service worker, manifest, offline strategy documented
 - [ ] Per-feature template includes responsive, touch, offline, platform sections
+- [ ] If native mobile: ASO keyword research completed (primary + long-tail)
+- [ ] If native mobile: metadata optimized within character limits
+- [ ] If native mobile: first 3 screenshots form a conversion narrative
+- [ ] If native mobile: review management and rating prompt strategy defined
