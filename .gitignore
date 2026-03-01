@@ -5,6 +5,9 @@ Thumbs.db
 # Claude Code local settings
 .claude/settings.local.json
 
+# Agent memory — local scope fallback (for developers who want private memory)
+.claude/agent-memory-local/
+
 # Editor / IDE
 .vscode/
 .idea/
