@@ -54,6 +54,8 @@ Run `/upgrade-company-os` to check for updates, preview changes, upgrade, or rol
 - `.company-os/` — internal Company OS system files (version, manifest, migrations, backups)
 - `tasks/todo.md` — current session task tracking
 - `tasks/lessons.md` — accumulated corrections and patterns
+- `.claude/hooks/session-start.sh` — SessionStart context bootstrapping (company, stage, branch, recent lessons)
+- `.claude/agent-memory/` — persistent cross-session memory for Engineering, QA, and Product agents (project-scoped, version controlled)
 
 ### Artifact Lineage & Enforcement
 Every artifact has YAML frontmatter with: `id`, `type`, `status` (draft/review/approved/archived), `parent`, `children`, `depends_on`, `blocks`. Always maintain these links when creating or updating artifacts.
@@ -65,7 +67,8 @@ Every artifact has YAML frontmatter with: `id`, `type`, `status` (draft/review/a
 - `./tools/artifact/check-gate.sh` — stage gate checks (prd-to-rfc, rfc-to-impl, impl-to-qa, release). **Stage-aware**: reads `company.stage` from config — `idea` stage makes all gates advisory (warnings only), `mvp` enforces core gates only, `growth`/`scale` enforces all.
 
 ### Hooks
-Two command-type hooks run automatically (zero token cost):
+Three command-type hooks run automatically (zero token cost):
+- **SessionStart context**: Injects company name, stage, tech stack, branch, and recent lessons at session start
 - **Pre-promote validation**: Auto-runs `validate.sh` before `promote.sh` — blocks promotion of invalid artifacts
 - **Post-write frontmatter check**: Warns when files written to `artifacts/` lack YAML frontmatter
 
@@ -109,18 +112,18 @@ Always read `company.config.yaml` before making technical recommendations. If th
 - Skip this for simple, obvious fixes — don't over-engineer
 - Challenge your own work before presenting it
 
+### 6. Autonomous Bug Fixing
+- When given a bug report: just fix it. Don't ask for hand-holding
+- Point at logs, errors, failing tests — then resolve them
+- Zero context switching required from the user
+- Go fix failing CI tests without being told how
+
 ### 7. System Maintenance
 - After ANY change to the Company OS structure (skills, agents, tools, artifact types, stage gates):
   run the `system-maintenance` skill to audit and update all documentation
 - Trigger conditions: new/deleted/renamed skill, agent, or tool; modified validate.sh or check-gate.sh
 - Documentation files that must stay in sync: CLAUDE.md, .company-os/docs/SETUP.md, all agent .md files
 - This is not optional — stale docs cause cascading confusion for agents and users
-
-### 6. Autonomous Bug Fixing
-- When given a bug report: just fix it. Don't ask for hand-holding
-- Point at logs, errors, failing tests — then resolve them
-- Zero context switching required from the user
-- Go fix failing CI tests without being told how
 
 ### 8. Git Discipline
 - **Commit early, commit often** — make logical, atomic commits as you complete each meaningful unit of work
