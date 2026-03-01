@@ -2,7 +2,7 @@
 
 A living roadmap for Company OS capabilities. Organized by priority tier with estimated complexity. Each item describes what it would add to the solopreneur's "AI company" and why it matters.
 
-**Current state**: 44 skills, 6 agents, 23 tool scripts. Covers the full Build → Ship axis (idea → PRD → RFC → implementation → QA → release) plus operational maturity (incidents, deployment, instrumentation), growth infrastructure (feature flags, email lifecycle, analytics), and mobile readiness.
+**Current state**: 56 skills, 9 agents, 28 tool scripts. Covers the full Build → Ship axis (idea → PRD → RFC → implementation → QA → release) plus operational maturity (incidents, deployment, instrumentation), growth infrastructure (feature flags, email lifecycle, analytics), and mobile readiness.
 
 ---
 

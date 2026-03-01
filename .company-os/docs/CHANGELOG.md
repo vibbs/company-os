@@ -13,6 +13,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-03-01
+
+### Added
+- **SessionStart hook** (`.claude/hooks/session-start.sh`) — Injects company name, stage, tech stack, branch, and recent lessons at every session start. Guards unconfigured projects with "Run /setup" message. ~100-200 tokens per session (fixed ceiling)
+- **Persistent Agent Memory** — Engineering, QA & Release, and Product agents now have `memory: project` scope with seed MEMORY.md files at `.claude/agent-memory/<name>/MEMORY.md`. Project-scoped (version-controlled) so institutional knowledge ships with the repo
+- **Memory Management sections** in Engineering, QA, and Product agent files with agent-specific guidance and guardrails (150-line cap, 5 topic files max, update-after-work discipline)
+- **ROADMAP: Claude Code Platform Features** — Future adoption items: Modular Rules System (trigger: CLAUDE.md > 300 lines), Worktree Isolation for prototypes, Skill Model Selection for cost optimization (15-20% savings)
+
+### Changed
+- **CLAUDE.md** — Fixed rule numbering (sequential 1-9), updated Hooks section (2 → 3 hooks), added Key Files entries for SessionStart hook and agent memory
+- **ROADMAP** — Updated current state counts (44 → 56 skills, 6 → 9 agents, 23 → 28 tools)
+- **.gitignore** — Added `.claude/agent-memory-local/` for developers who prefer private (local-scope) memory
+- Hook count: 2 → 3 (added SessionStart)
+
+
 ## [1.6.0] - 2026-02-28
 
 ### Added
