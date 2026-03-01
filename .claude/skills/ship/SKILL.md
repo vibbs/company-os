@@ -281,6 +281,36 @@ Present a final summary:
 - **Tool chain results** -- tests, lint, security scan outcomes
 - **Recommended next actions** -- deploy, announce, monitor, or any follow-up items
 
+### Step 7.5: Token Cost Logging (Advisory)
+
+After the release summary, if `ai.cost_tracking_enabled` is true (or `ai.cost_budget_monthly` is set) in `company.config.yaml`, suggest logging the session cost:
+
+```
+## Log Session Cost?
+
+This ship flow built [PRD-ID] ([Feature Name]).
+Consider logging the token cost for COGS tracking:
+
+  ./tools/ops/token-ledger.sh log \
+    --feature [PRD-ID] \
+    --category ship-flow \
+    --model [primary-model-used] \
+    --input-tokens [N] \
+    --output-tokens [N] \
+    --agent [primary-agent] \
+    --notes "Ship flow for [feature name]"
+
+View feature cost history:
+  ./tools/ops/token-ledger.sh feature-cost [PRD-ID]
+```
+
+**Rules**:
+- This step is non-blocking and informational only
+- It does NOT pause or gate the flow
+- Auto-populate the `--feature` flag with the PRD ID from the ship flow
+- Skip this suggestion if `ai.cost_tracking_enabled` is explicitly `false`
+- If the user says "yes" or "log it", help them fill in the entry
+
 ### Step 8: What's Next
 
 After the release summary, surface actionable suggestions for what to build next. This step is **informational only** — no artifacts, no gates, no blocking.

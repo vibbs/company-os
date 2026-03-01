@@ -116,13 +116,17 @@ create_dir "tasks"
 create_dir "seeds"
 create_dir "artifacts/test-data"
 
+# COGS directories
+create_dir "cogs"
+create_dir "cogs/ai-ledger"
+
 echo ""
 
 # --- Create Template Files ---
 echo "Creating template files..."
 
 # .gitkeep files for empty directories
-for dir in standards/api standards/coding standards/compliance standards/templates standards/brand standards/brand/archetypes standards/ops standards/analytics standards/docs standards/email standards/engineering imports seeds artifacts/test-data; do
+for dir in standards/api standards/coding standards/compliance standards/templates standards/brand standards/brand/archetypes standards/ops standards/analytics standards/docs standards/email standards/engineering imports seeds artifacts/test-data cogs/ai-ledger; do
   if [ ! -f "$dir/.gitkeep" ] && [ -z "$(ls -A "$dir" 2>/dev/null)" ]; then
     touch "$dir/.gitkeep"
   fi
@@ -230,6 +234,16 @@ email:
   from_address: ""            # noreply@yourdomain.com
   template_engine: ""         # react-email | mjml | handlebars | jinja | plain-html
 
+ai:
+  llm_provider: ""            # anthropic | openai | google | local | none
+  llm_model: ""               # claude-sonnet | gpt-4o | gemini-pro | llama3
+  embedding_provider: ""      # openai | cohere | local | none
+  vector_db: ""               # pinecone | weaviate | chroma | pgvector | none
+  guardrails: ""              # custom | guardrails-ai | nemo | none
+  cost_budget_monthly: ""     # Monthly AI API budget cap (USD)
+  cost_tracking_enabled: true  # true | false — enable COGS token cost ledger
+  cost_alert_threshold_percent: 80  # Alert when spend exceeds this % of budget
+
 design:
   archetype: ""               # linear | attio | notion | figma | things3 | framer — run /design-system to choose
   dark_mode: "auto"           # auto | light | dark | both — dark mode strategy
@@ -307,8 +321,7 @@ if [ ! -f ".claude/settings.json" ]; then
       "Bash(sudo *)",
       "Bash(curl *)",
       "Bash(wget *)",
-      "Bash(nc *)",
-      "Read(./.company-os/**)"
+      "Bash(nc *)"
     ]
   }
 }

@@ -36,6 +36,11 @@ out/
 *.log
 !artifacts/.audit-log/**
 
+# COGS generated artifacts (regenerated from ledger source data)
+cogs/*/summary.md
+cogs/*/export.csv
+cogs/summary.md
+
 # Company OS upgrade artifacts
 .company-os/backup/
 .company-os/conflicts/

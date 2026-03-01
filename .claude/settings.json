@@ -71,8 +71,7 @@
       "Bash(sudo *)",
       "Bash(curl *)",
       "Bash(wget *)",
-      "Bash(nc *)",
-      "Read(./.company-os/**)"
+      "Bash(nc *)"
     ]
   },
   "hooks": {

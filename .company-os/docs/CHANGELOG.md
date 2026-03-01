@@ -13,6 +13,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-03-01
+
+### Added
+- **COGS Token Cost Ledger** — Track AI token costs as Cost of Goods Sold. New `cogs/ai-ledger/` directory with JSONL append-only ledger, git-trackable cost history, and per-feature cost attribution
+- **Token Ledger tool** (`tools/ops/token-ledger.sh`, T-OPS-03) — 5 subcommands: `log` (append entry with auto-cost calculation), `summary` (daily/weekly/monthly totals by category/model/agent), `feature-cost` (total cost to build a feature by PRD ID), `export` (JSONL→CSV), `budget` (spend vs budget with projected EOM)
+- **Token Cost Ledger skill** (`/token-cost`, S-OPS-08) — User-invokable with `log | report | budget-check | feature-cost` argument hints. Routes to tool, adds optimization suggestions and unit economics cross-references
+- **Token Cost Tracking standard** (`standards/ops/token-cost-tracking.md`) — Model cost rates (Claude, GPT, Gemini), cost categories, budget framework by stage, feature cost attribution rules, alert thresholds, optimization playbook, COGS expansion guide
+- **Ship flow Step 7.5: Token Cost Logging** — Advisory (non-blocking) step after release summary. Suggests logging session cost with auto-populated `--feature` flag from the ship flow's PRD ID
+- **Context Optimization section** in CLAUDE.md — Behavioral guidance to avoid reading `.company-os/`, `standards/brand/archetypes/`, and `cogs/*/entries.jsonl` during normal operations (loaded-on-demand by specific skills only)
+- **`ai.cost_tracking_enabled`** and **`ai.cost_alert_threshold_percent`** config fields under `ai:` section
+- `.gitignore` entries for COGS generated artifacts (`summary.md`, `export.csv` — regenerated from source data)
+
+### Changed
+- **Ops & Risk Agent**: 7 → 8 skills (added token-cost-ledger). New responsibility #6: Token Cost Tracking with behavioral rules for COGS monitoring, feature tagging, and budget alerts
+- **Orchestrator**: 11 → 12 skills (added token-cost-ledger). New delegation pattern for cost queries ("Token costs" / "AI spend" / "COGS")
+- **setup.sh** — Added `cogs/` and `cogs/ai-ledger/` directory scaffolding, `ai:` section to heredoc config template
+
+### Removed
+- **`Read(./.company-os/**)`** deny rule from both repo settings.json and setup.sh template — was breaking `/upgrade-company-os` which needs to read version, manifest, and changelog. Replaced with CLAUDE.md behavioral guidance (Context Optimization section)
+
 ## [1.7.0] - 2026-03-01
 
 ### Added

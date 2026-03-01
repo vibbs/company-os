@@ -95,6 +95,8 @@ ai:
   vector_db: ""               # pinecone | weaviate | chroma | pgvector | none
   guardrails: ""              # custom | guardrails-ai | nemo | none
   cost_budget_monthly: ""     # Monthly AI API budget cap (USD)
+  cost_tracking_enabled: true  # true | false — enable COGS token cost ledger
+  cost_alert_threshold_percent: 80  # Alert when spend exceeds this % of budget
 
 experiments:
   enabled: false              # true | false — enable experiment framework

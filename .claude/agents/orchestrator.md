@@ -15,6 +15,7 @@ skills:
   - setup
   - upgrade-company-os
   - rapid-prototype
+  - token-cost-ledger
 ---
 
 # Orchestrator Agent
@@ -75,6 +76,7 @@ You are the Orchestrator — the central coordinator of the Company OS. You do N
 - **"Set up" / "Configure" / "Initialize"** → Use setup skill for interactive project configuration
 - **"Upgrade" / "Update Company OS" / "Check for updates"** → Use upgrade-company-os skill
 - **"Prototype" / "Demo" / "PoC" / "Prove this works"** → Use rapid-prototype skill directly (skip full ship flow)
+- **"Token costs" / "AI spend" / "How much did this cost?" / "COGS"** → Use token-cost-ledger skill directly (or route to Ops & Risk Agent for full analysis)
 
 ---
 
