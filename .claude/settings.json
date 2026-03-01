@@ -51,7 +51,10 @@
       "Bash(git push)",
       "Bash(bash -n setup.sh)",
       "Skill(system-maintenance)",
-      "Skill(system-maintenance:*)"
+      "Skill(system-maintenance:*)",
+      "Read(//Users/vibbsdod/.claude/projects/**)",
+      "Bash(done)",
+      "Bash(.company-os/docs/ROADMAP.md:*)"
     ],
     "deny": [
       "Bash(git push --force*)",
@@ -73,6 +76,18 @@
     ]
   },
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-start.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Bash",
