@@ -214,4 +214,65 @@ To propose a new roadmap item, open an issue describing the gap, who it helps, a
 
 ---
 
-*Last updated: 2026-02-26*
+
+
+---
+
+## Claude Code Platform Features — Future Adoption
+
+Infrastructure improvements that leverage new Claude Code capabilities. These are not new skills — they enhance how existing agents and skills operate.
+
+### Modular Rules System (`.claude/rules/`)
+
+**Trigger**: When CLAUDE.md exceeds ~300 lines, extract path-scoped instructions into modular rule files.
+
+**What it adds**:
+- Path-scoped rule files that only load when Claude works on matching files (e.g., artifact rules only load when editing `artifacts/`)
+- Reduces per-agent context window usage by ~30-40% on path-specific content
+- Cleaner separation of concerns: shell script conventions, artifact rules, skill format rules each in their own file
+
+**Prerequisites before implementation**:
+- Update `install.sh` manifest generation to include `.claude/rules/`
+- Add `merge_directory` call for `.claude/rules/` in install/upgrade flow
+- Add `.claude/rules/` to backup and rollback procedures
+- Fix `merge_settings_json()` to merge per hook type (not all-or-nothing)
+- Create migration script for existing users
+- Update system-maintenance skill to audit rules files
+
+**Current CLAUDE.md**: 170 lines — not yet at the threshold.
+
+**Complexity**: Medium-High (infrastructure changes to install.sh, upgrade system, manifest)
+**Impact**: Token cost savings, cleaner context per agent invocation
+
+### Worktree Isolation for Prototypes
+
+**Problem**: The prototype/demo fast-path (via workflow-router) works in the main working tree. Throwaway prototypes pollute the git history if they're discarded.
+
+**What it adds**:
+- `isolation: worktree` parameter when spawning engineering sub-agents for prototype flow
+- Prototype code lives in a git worktree — automatically cleaned up if discarded
+- Graduating a prototype to `/ship` merges the worktree into the main branch
+- Clean separation between "exploring an idea" and "committed to building it"
+
+**Complexity**: Low — workflow-router change + Task tool parameter
+**Impact**: Cleaner git history, reduced cognitive load when prototyping
+**Dependencies**: Prototype/demo fast-path in workflow-router (exists)
+
+### Skill Model Selection for Cost Optimization
+
+**Problem**: All skills default to the agent's model (opus or sonnet). Lightweight template/checklist skills burn expensive tokens unnecessarily. Complex analysis skills could benefit from stronger models.
+
+**What it adds**:
+- `model:` field in skill frontmatter for per-skill model routing
+- Template/checklist skills (status, release-readiness-gate, experiment-report) → haiku (~75% cheaper)
+- Complex analysis skills (architecture-draft, ai-engineering, code-review) → opus (stronger reasoning)
+- Default remains sonnet for all other skills
+- Estimated savings: 15-20% on routine operations
+
+**Complexity**: Low — frontmatter field addition, no infrastructure changes
+**Impact**: Significant cost reduction, better quality for complex analysis
+**Prerequisites**: Establish cost baseline to measure actual savings
+
+---
+
+*Last updated: 2026-03-01*
