@@ -11,7 +11,43 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
-## [Unreleased]
+## [1.9.0] - 2026-03-02
+
+### Added
+- **Weekly Review skill** (`/weekly-review`, S-ORG-13) — Weekly operating rhythm summarizing what shipped, AI spend, support themes, security health, and next priorities
+- **Retrospective skill** (`/retrospective`, S-ORG-14) — Post-ship retrospective tracing artifact lineage, evaluating success metrics, and capturing structured lessons
+- **Product-Led Growth skill** (`/product-led-growth`, S-GRO-08) — Free tier design, viral loops, referral programs, and in-product growth moments
+- **Security Posture skill** (`/security-posture`, S-RISK-04) — Aggregated security health snapshot with tiered tool assessment and compliance gap tracking
+- **Customer Conversations skill** (`/customer-conversations`, S-PROD-08) — Pre-call briefings, post-call debriefs, and insight routing to ICP/PRD evidence
+- **Static Dashboard tool** (`tools/ops/dashboard.sh`, T-OPS-04) — Markdown/HTML output with Mermaid graph, gate readiness, and cost snapshot
+- **Security Posture Check tool** (`tools/security/posture-check.sh`, T-SEC-04) — Tiered security scan aggregation
+- **Growth Agent memory** (`.claude/agent-memory/growth/MEMORY.md`) — Persistent cross-session memory for Growth agent
+- **Inbound Loop SOP** (`standards/ops/inbound-loop-sop.md`) — Customer signal → feedback → sprint → ship pipeline
+- **Security Posture standard** (`standards/security/security-posture.md`) — Security posture assessment framework
+- **Self-Improvement Loop enhancements** — Broader lesson triggers (self-noticed friction, not just corrections), lessons hygiene with ~20 entry cap and Archive section
+
+### Changed
+- **Orchestrator**: 12 → 15 skills (added conflict-resolver, weekly-review, retrospective)
+- **Product Agent**: 7 → 8 skills (added customer-conversations)
+- **Growth Agent**: 7 → 8 skills (added product-led-growth), added `memory: project`
+- **Ops & Risk Agent**: 8 → 9 skills (added security-posture)
+- **QA & Release Agent**: Added Write tool
+- Skill count: 56 → 62
+- Tool count: 28 → 31
+
+### Fixed
+- 49 system gap findings fixed across agents, skills, tools, and documentation (see REVIEW-SYSTEM-GAPS-2026-03-02.md)
+- Missing `artifacts/product/`, `seeds/`, `standards/mobile/` directories created
+- 3 decision memo artifacts missing required `author` field
+- `pre-deploy.sh` Bash 4+ syntax (`${var,,}`) replaced with `tr` for macOS compat
+- `link.sh` silent no-op when `parent:` field absent from frontmatter
+- `post-write-artifact-check.sh` glob pattern now matches artifact subdirectories
+- `search-skill.sh` GNU `-printf` replaced with portable alternative
+- `jq` availability guard added to both PreToolUse and PostToolUse hooks
+- `health-check.sh` now validates agent files
+- `allowed-tools` removed from 31 skill frontmatters (invalid field for skills)
+- Ingest skill mapping expanded from 4 to 12 standards directories
+- CLAUDE.md, README.md, SETUP.md factual corrections
 
 ## [1.8.0] - 2026-03-01
 
