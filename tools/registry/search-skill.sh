@@ -52,7 +52,7 @@ for skill_dir in "$SKILLS_DIR"/*/; do
     echo "  Path: $SKILL_FILE"
 
     # List supporting files
-    SUPPORT_FILES=$(find "$skill_dir" -name "*.md" ! -name "SKILL.md" -printf "%f " 2>/dev/null || true)
+    SUPPORT_FILES=$(find "$skill_dir" -name "*.md" ! -name "SKILL.md" -exec basename {} \; 2>/dev/null | tr '\n' ' ' || true)
     [[ -n "$SUPPORT_FILES" ]] && echo "  Supporting files: $SUPPORT_FILES"
 
     FOUND=$((FOUND + 1))

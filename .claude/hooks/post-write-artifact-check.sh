@@ -11,6 +11,11 @@
 
 set -euo pipefail
 
+# Guard: require jq
+if ! command -v jq &>/dev/null; then
+  exit 0
+fi
+
 # Read the tool input from stdin
 INPUT=$(cat)
 
@@ -23,7 +28,7 @@ fi
 
 # Only check files in the artifacts/ directory
 case "$FILE_PATH" in
-  */artifacts/*.md|artifacts/*.md)
+  */artifacts/*.md|*/artifacts/**/*.md|artifacts/*.md|artifacts/**/*.md)
     ;;
   *)
     exit 0

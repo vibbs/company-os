@@ -11,6 +11,11 @@
 
 set -euo pipefail
 
+# Guard: require jq
+if ! command -v jq &>/dev/null; then
+  exit 0
+fi
+
 # Read the tool input from stdin
 INPUT=$(cat)
 COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty')

@@ -140,7 +140,8 @@ echo -e "${BOLD}[3/8] Tests${RESET}"
 TEST_CMD=""
 
 # Determine test command from configured framework or auto-detect
-case "${TEST_FRAMEWORK,,}" in
+TEST_FRAMEWORK_LOWER=$(echo "$TEST_FRAMEWORK" | tr '[:upper:]' '[:lower:]')
+case "$TEST_FRAMEWORK_LOWER" in
   vitest)       TEST_CMD="npx vitest run" ;;
   jest)         TEST_CMD="npx jest --passWithNoTests" ;;
   pytest)       TEST_CMD="python -m pytest" ;;
@@ -180,7 +181,8 @@ echo -e "${BOLD}[4/8] Lint${RESET}"
 LINT_CMD=""
 
 # Determine lint command from configured linter or auto-detect
-case "${LINTER,,}" in
+LINTER_LOWER=$(echo "$LINTER" | tr '[:upper:]' '[:lower:]')
+case "$LINTER_LOWER" in
   eslint)    LINT_CMD="npx eslint . --max-warnings=0" ;;
   biome)     LINT_CMD="npx biome check ." ;;
   prettier)  LINT_CMD="npx prettier --check ." ;;

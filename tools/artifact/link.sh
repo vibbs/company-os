@@ -61,8 +61,14 @@ echo "Linking: $PARENT_ID → $CHILD_ID"
 CURRENT_PARENT=$(extract_field "$CHILD_PATH" "parent")
 
 if [[ -z "$CURRENT_PARENT" || "$CURRENT_PARENT" == "null" ]]; then
-  # Set parent field
-  sed_inplace "s/^parent: .*/parent: $PARENT_ID/" "$CHILD_PATH"
+  # Set parent field — try sed first, insert if field is absent
+  if grep -q "^parent:" "$CHILD_PATH"; then
+    sed_inplace "s/^parent: .*/parent: $PARENT_ID/" "$CHILD_PATH"
+  else
+    # Insert parent field after the id field in frontmatter
+    sed_inplace "/^id: /a\\
+parent: $PARENT_ID" "$CHILD_PATH"
+  fi
   echo "  ✅ Set parent on child: $CHILD_ID → parent: $PARENT_ID"
 elif [[ "$CURRENT_PARENT" == "$PARENT_ID" ]]; then
   echo "  ℹ️  Child already has parent: $PARENT_ID (no change)"
