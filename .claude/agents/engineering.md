@@ -111,6 +111,21 @@ After sub-agents complete:
 5. **Verify all tests pass** — run `./tools/ci/run-tests.sh` on the combined output
 6. **Verify lint passes** — run `./tools/ci/lint-format.sh`
 
+### Sub-Agent Failure Handling
+- If a sub-agent reports it cannot complete: do NOT re-delegate blindly.
+  1. Identify root blocker (wrong contract, missing dependency, conflicting schema).
+  2. If fixable by another sub-agent: route the fix first, then re-delegate.
+  3. If requires RFC revision: surface to Orchestrator with specific change request.
+  4. After 2 failed re-delegations: stop, produce conflict report, surface to user.
+
+### Shared Types Protocol
+- `src/types/` and `src/shared/` directories are owned by the Staff Engineer (you).
+- Sub-agents propose types in their reports; Staff Engineer writes the final shared type files.
+- Sub-agents must never modify files in `src/types/` or `src/shared/` directly.
+
+### Monorepo Awareness
+If `conventions.monorepo` is true in `company.config.yaml`, read package structure (e.g., `packages/`, `apps/`) and adjust scope boundaries accordingly. Each sub-agent operates within their assigned package scope.
+
 ### Phase 6: Self-Review (Pre-Handoff)
 
 1. Run the Code Review skill on the combined diff

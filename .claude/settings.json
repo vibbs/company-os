@@ -51,10 +51,7 @@
       "Bash(git push)",
       "Bash(bash -n setup.sh)",
       "Skill(system-maintenance)",
-      "Skill(system-maintenance:*)",
-      "Read(//Users/vibbsdod/.claude/projects/**)",
-      "Bash(done)",
-      "Bash(.company-os/docs/ROADMAP.md:*)"
+      "Skill(system-maintenance:*)"
     ],
     "deny": [
       "Bash(git push --force*)",

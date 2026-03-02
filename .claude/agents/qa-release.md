@@ -1,7 +1,7 @@
 ---
 name: qa-release
 description: Manages quality gates, test planning, regression confidence, and release readiness. Use when testing, creating test plans, or evaluating release readiness.
-tools: Read, Grep, Glob, Bash
+tools: Read, Grep, Glob, Bash, Write
 model: sonnet
 memory: project
 skills:

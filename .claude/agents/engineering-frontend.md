@@ -101,6 +101,13 @@ You are spawned by the Engineering Agent (Staff Engineer) via the Task tool with
 - Target tour steps to `data-tour-step` attributes, never fragile CSS selectors
 - Tour specs should have 3-7 steps per tour
 
+### Internationalization (i18n)
+If `i18n.enabled` is true in `company.config.yaml`:
+- Apply locale patterns to all user-facing strings (use the configured i18n library)
+- Never hardcode user-visible text directly in components
+- Use translation keys that follow a `namespace.section.element` convention
+- Flag any hardcoded strings found during implementation for extraction
+
 ### Quality
 - Run `./tools/ci/run-tests.sh` before reporting completion
 - Run `./tools/ci/lint-format.sh` before reporting completion
