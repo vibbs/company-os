@@ -2,7 +2,7 @@
 
 A deterministic governance layer for AI-assisted SaaS delivery — built for Claude Code, with human-in-the-loop quality gates at every stage.
 
-`Claude Code specific` · `Human-in-the-loop` · `Document-first` · `v1.8.0`
+`Claude Code specific` · `Human-in-the-loop` · `Document-first` · `v1.9.0`
 
 You stay in control. The system proposes — PRDs, RFCs, threat models, QA reports, launch briefs — you review and approve before anything advances. Enforced by shell scripts, not prompts.
 
