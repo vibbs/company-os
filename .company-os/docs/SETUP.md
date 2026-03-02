@@ -32,9 +32,9 @@ cd my-app
 | Item | Purpose |
 |------|---------|
 | `.claude/agents/` | 9 specialized AI agents (6 top-level + 3 engineering sub-agents) |
-| `.claude/skills/` | 46 procedural skills with templates and checklists |
+| `.claude/skills/` | 62 procedural skills with templates and checklists |
 | `.claude/hooks/` | Automatic artifact validation hooks |
-| `tools/` | 24 enforcement scripts (validation, gates, lifecycle, versioning) |
+| `tools/` | 31 enforcement scripts (validation, gates, lifecycle, versioning) |
 | `company.config.yaml` | Central config file (empty template — you fill it in Phase 2) |
 | `CLAUDE.md` | Agent instructions (auto-loaded every session) |
 | `artifacts/`, `standards/`, `tasks/`, `imports/` | Working directories |
@@ -322,14 +322,17 @@ Skills are directory-based knowledge documents. Each contains a `SKILL.md` entry
 
 | Category | Skills (directory names) |
 |----------|------------------------|
-| Orchestration | `workflow-router`, `ship`, `status`, `decision-memo-writer`, `conflict-resolver`, `ingest`, `system-maintenance`, `artifact-import`, `setup`, `upgrade-company-os` |
-| Product | `icp-positioning`, `prd-writer`, `sprint-prioritizer`, `feedback-synthesizer`, `discovery-validation` |
-| Engineering | `architecture-draft`, `api-contract-designer`, `background-jobs`, `multi-tenancy`, `implementation-decomposer`, `observability-baseline`, `code-review`, `seed-data`, `deployment-strategy`, `instrumentation`, `feature-flags`, `user-docs`, `mobile-readiness`, `dev-environment` |
-| QA / Release | `test-plan-generator`, `api-tester-playbook`, `release-readiness-gate`, `perf-benchmark-checklist`, `seed-data`, `code-review`, `dogfood` |
-| Growth | `positioning-messaging`, `landing-page-copy`, `seo-topic-map`, `channel-playbook`, `activation-onboarding`, `email-lifecycle` |
-| Risk / Legal / Finance | `threat-modeling`, `privacy-data-handling`, `compliance-readiness`, `pricing-unit-economics`, `tos-privacy-drafting`, `incident-response` |
+| Orchestration | `workflow-router`, `ship`, `status`, `decision-memo-writer`, `conflict-resolver`, `ingest`, `system-maintenance`, `artifact-import`, `setup`, `upgrade-company-os`, `rapid-prototype`, `token-cost-ledger`, `weekly-review`, `retrospective` |
+| Product | `icp-positioning`, `prd-writer`, `sprint-prioritizer`, `feedback-synthesizer`, `discovery-validation`, `ux-research`, `market-intelligence`, `customer-conversations` |
+| Engineering (Staff) | `architecture-draft`, `implementation-decomposer`, `code-review`, `conflict-resolver`, `ai-engineering` |
+| Engineering: Backend | `api-contract-designer`, `background-jobs`, `multi-tenancy`, `seed-data` |
+| Engineering: Frontend | `design-system`, `mobile-readiness`, `instrumentation`, `user-docs` |
+| Engineering: DevOps | `deployment-strategy`, `observability-baseline`, `feature-flags`, `dev-environment`, `resilience-testing` |
+| QA / Release | `test-plan-generator`, `api-tester-playbook`, `release-readiness-gate`, `perf-benchmark-checklist`, `seed-data`, `code-review`, `dogfood`, `experiment-framework`, `test-intelligence` |
+| Growth | `positioning-messaging`, `landing-page-copy`, `seo-topic-map`, `channel-playbook`, `activation-onboarding`, `email-lifecycle`, `content-engine`, `product-led-growth` |
+| Risk / Legal / Finance | `threat-modeling`, `privacy-data-handling`, `compliance-readiness`, `pricing-unit-economics`, `tos-privacy-drafting`, `incident-response`, `support-operations`, `security-posture` |
 
-**Customizing**: Edit any skill's `SKILL.md` to match your processes. Frontmatter uses official Claude Code fields (`name`, `description`, `allowed-tools`, etc.). Supporting files (templates, references) live alongside `SKILL.md`.
+**Customizing**: Edit any skill's `SKILL.md` to match your processes. Frontmatter uses official Claude Code fields (`name`, `description`, `user-invokable`, `disable-model-invocation`, `compatibility`, `license`, `metadata`, `argument-hint`). Supporting files (templates, references) live alongside `SKILL.md`.
 
 ### Tools (Execution Layer) — `tools/`
 
@@ -341,10 +344,10 @@ Shell scripts that agents execute via Bash. They perform deterministic actions.
 | Skill Registry | `tools/registry/` | search-skill, health-check, detect-changes |
 | CI / Engineering | `tools/ci/` | run-tests, lint-format, openapi-lint |
 | Database | `tools/db/` | migration-check, seed |
-| QA | `tools/qa/` | contract-test, perf-benchmark, smoke-test, dogfood |
-| Security | `tools/security/` | dependency-scan, secrets-scan, sast |
+| QA | `tools/qa/` | contract-test, perf-benchmark, smoke-test, dogfood, experiment-report, resilience-test, test-health |
+| Security | `tools/security/` | dependency-scan, secrets-scan, sast, posture-check |
 | Analytics | `tools/analytics/` | query-metrics, publish-content |
-| Ops | `tools/ops/` | status-check |
+| Ops | `tools/ops/` | status-check, dashboard, support-faq-check, token-ledger |
 | Deploy | `tools/deploy/` | pre-deploy |
 | Versioning | `tools/versioning/` | version-bump |
 
@@ -616,7 +619,7 @@ Or manually:
    ---
    name: skill-name          # lowercase-hyphens, max 64 chars
    description: What this skill does. Use when [trigger phrase].
-   allowed-tools: Read, Grep, Glob, Bash   # optional: restrict available tools
+   user-invokable: true       # optional: can be invoked by user as /skill-name
    ---
    ```
 3. Write the procedure in the markdown body (include a Reference section for custom metadata)
@@ -747,7 +750,7 @@ Runs `detect-changes.sh` → shows all artifacts with their types and statuses.
 ```
 company-os/
 ├── CLAUDE.md                   # Master prompt for Claude Code sessions
-├── SETUP_COMPANY_OS.md         # This file
+├── SETUP.md                    # This file (in .company-os/docs/)
 ├── setup.sh                    # Bash setup fallback (scaffolds dirs + template config)
 ├── company.config.yaml         # Your company configuration (stays at root)
 ├── .claude/
@@ -761,50 +764,55 @@ company-os/
 │   │   ├── qa-release.md
 │   │   ├── growth.md
 │   │   └── ops-risk.md
-│   └── skills/                 # 46 skill directories (SKILL.md + supporting files)
-│       ├── workflow-router/
-│       │   └── SKILL.md
-│       ├── prd-writer/
-│       │   ├── SKILL.md
-│       │   └── prd-template.md
-│       ├── architecture-draft/
-│       │   ├── SKILL.md
-│       │   └── rfc-template.md
-│       ├── api-contract-designer/
-│       │   ├── SKILL.md
-│       │   └── error-format-reference.md
-│       ├── release-readiness-gate/
-│       │   └── SKILL.md
-│       ├── ingest/
-│       │   └── SKILL.md
-│       ├── artifact-import/
-│       │   └── SKILL.md
-│       ├── setup/
-│       │   └── SKILL.md
-│       ├── seed-data/
-│       │   └── SKILL.md
-│       ├── dogfood/
-│       │   └── SKILL.md
-│       ├── code-review/
-│       │   ├── SKILL.md
-│       │   └── review-report-template.md
-│       ├── discovery-validation/
-│       │   └── SKILL.md
-│       ├── deployment-strategy/
-│       │   └── SKILL.md
-│       ├── instrumentation/
-│       │   └── SKILL.md
-│       ├── feature-flags/
-│       │   └── SKILL.md
-│       ├── user-docs/
-│       │   └── SKILL.md
-│       ├── mobile-readiness/
-│       │   └── SKILL.md
-│       ├── incident-response/
-│       │   └── SKILL.md
-│       ├── email-lifecycle/
-│       │   └── SKILL.md
-│       └── ... (19 more skill directories)
+│   ├── skills/                 # 62 skill directories (SKILL.md + supporting files)
+│   │   ├── workflow-router/
+│   │   │   └── SKILL.md
+│   │   ├── prd-writer/
+│   │   │   ├── SKILL.md
+│   │   │   └── prd-template.md
+│   │   ├── architecture-draft/
+│   │   │   ├── SKILL.md
+│   │   │   └── rfc-template.md
+│   │   ├── api-contract-designer/
+│   │   │   ├── SKILL.md
+│   │   │   └── error-format-reference.md
+│   │   ├── release-readiness-gate/
+│   │   │   └── SKILL.md
+│   │   ├── ingest/
+│   │   │   └── SKILL.md
+│   │   ├── artifact-import/
+│   │   │   └── SKILL.md
+│   │   ├── setup/
+│   │   │   └── SKILL.md
+│   │   ├── seed-data/
+│   │   │   └── SKILL.md
+│   │   ├── dogfood/
+│   │   │   └── SKILL.md
+│   │   ├── code-review/
+│   │   │   ├── SKILL.md
+│   │   │   └── review-report-template.md
+│   │   ├── discovery-validation/
+│   │   │   └── SKILL.md
+│   │   ├── deployment-strategy/
+│   │   │   └── SKILL.md
+│   │   ├── instrumentation/
+│   │   │   └── SKILL.md
+│   │   ├── feature-flags/
+│   │   │   └── SKILL.md
+│   │   ├── user-docs/
+│   │   │   └── SKILL.md
+│   │   ├── mobile-readiness/
+│   │   │   └── SKILL.md
+│   │   ├── incident-response/
+│   │   │   └── SKILL.md
+│   │   ├── email-lifecycle/
+│   │   │   └── SKILL.md
+│   │   └── ... (more skill directories)
+│   └── agent-memory/          # Persistent cross-session memory for agents
+│       ├── engineering/MEMORY.md
+│       ├── qa-release/MEMORY.md
+│       ├── product/MEMORY.md
+│       └── growth/MEMORY.md
 ├── seeds/                      # Seed data scenarios (generated by /seed-data skill)
 │   └── scenarios/              # Runnable seed files per scenario (nominal, edge-cases, etc.)
 ├── imports/                    # Staging area for importing external documents
@@ -814,11 +822,12 @@ company-os/
 │   ├── registry/               # search-skill, health-check, detect-changes
 │   ├── ci/                     # run-tests, lint-format, openapi-lint
 │   ├── db/                     # migration-check, seed
-│   ├── qa/                     # contract-test, perf-benchmark, smoke-test, dogfood
-│   ├── security/               # dependency-scan, secrets-scan, sast
+│   ├── qa/                     # contract-test, perf-benchmark, smoke-test, dogfood, experiment-report, resilience-test, test-health
+│   ├── security/               # dependency-scan, secrets-scan, sast, posture-check
 │   ├── analytics/              # query-metrics, publish-content
-│   ├── ops/                    # status-check
-│   └── deploy/                 # pre-deploy
+│   ├── ops/                    # status-check, dashboard, support-faq-check, token-ledger
+│   ├── deploy/                 # pre-deploy
+│   └── versioning/             # version-bump
 ├── standards/                  # Your company standards (drop files here, then /ingest)
 │   ├── api/                    # API specs and style guides
 │   ├── brand/                  # Brand guidelines, design tokens, Figma links
@@ -829,6 +838,9 @@ company-os/
 │   ├── docs/                   # Documentation standards, style guides, templates
 │   ├── email/                  # Email templates, lifecycle sequences, deliverability rules
 │   ├── engineering/            # Engineering principles, architecture decision records
+│   ├── growth/                 # Growth playbooks, channel strategies
+│   ├── mobile/                 # Mobile platform guidelines, responsive patterns
+│   ├── security/               # Security posture, threat models, compliance baselines
 │   ├── engineering-preferences.md  # Team engineering philosophy (used by code-review skill)
 │   └── templates/              # Custom artifact templates
 ├── artifacts/                  # Agent-produced outputs with lineage tracking
@@ -840,7 +852,11 @@ company-os/
 │   ├── security-reviews/
 │   ├── decision-memos/
 │   ├── test-data/
+│   ├── product/
+│   ├── support/
 │   └── .audit-log/            # Promotion and linkage audit trail
+├── cogs/                       # Cost of goods sold tracking
+│   └── ai-ledger/             # AI token cost entries (JSONL)
 └── tasks/                      # Session task management
     ├── todo.md                 # Current task tracking
     └── lessons.md              # Accumulated lessons

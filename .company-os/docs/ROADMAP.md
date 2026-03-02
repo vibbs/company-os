@@ -2,7 +2,7 @@
 
 A living roadmap for Company OS capabilities. Organized by priority tier with estimated complexity. Each item describes what it would add to the solopreneur's "AI company" and why it matters.
 
-**Current state**: 56 skills, 9 agents, 28 tool scripts. Covers the full Build → Ship axis (idea → PRD → RFC → implementation → QA → release) plus operational maturity (incidents, deployment, instrumentation), growth infrastructure (feature flags, email lifecycle, analytics), and mobile readiness.
+**Current state**: 62 skills, 9 agents, 31 tool scripts. Covers the full Build → Ship axis (idea → PRD → RFC → implementation → QA → release) plus operational maturity (incidents, deployment, instrumentation), growth infrastructure (feature flags, email lifecycle, analytics, product-led growth), mobile readiness, weekly review cadence, and post-ship retrospectives.
 
 ---
 
@@ -10,35 +10,13 @@ A living roadmap for Company OS capabilities. Organized by priority tier with es
 
 These close the biggest remaining gaps for a solopreneur running a live product.
 
-### Support Triage & Feedback Loop
+### ~~Support Triage & Feedback Loop~~ — COMPLETED (v1.8.0)
 
-**Problem**: Users report bugs, request features, and ask questions. Without a structured intake, feedback gets lost in email, Discord, and Twitter DMs. The solopreneur is the entire support team.
+Implemented as `support-operations` skill with solopreneur mode, escalation tiers, and feedback pipeline to Product Agent. Enhanced `feedback-synthesizer` with small-data path for early-stage products.
 
-**What it adds**:
-- Skill that classifies inbound support requests (bug, feature request, question, churn signal)
-- Severity assignment with SLA guidance (P0 bug → same day, feature request → backlog)
-- Auto-routes to the right artifact: bugs → engineering tasks, feature requests → PRD candidates, churn signals → activation experiments
-- Feedback aggregation: groups similar requests to surface patterns ("12 users asked for dark mode")
-- Integrates with `feedback-synthesizer` skill (already exists) for periodic theme extraction
+### ~~Customer Conversation Framework~~ — COMPLETED (v1.8.0)
 
-**Complexity**: Medium — 1 new skill + modifications to feedback-synthesizer and prd-writer
-**Agent**: Product
-**Dependencies**: None
-
-### Customer Conversation Framework
-
-**Problem**: The solopreneur talks to users (sales calls, support chats, user interviews) but has no structured way to capture insights and feed them back into the product process.
-
-**What it adds**:
-- Pre-call prep templates: what to ask, what to listen for, what not to lead with
-- Post-call debrief template: key quotes, pain points, willingness to pay, competitive mentions
-- Pattern library: common conversation types (discovery interview, demo call, churn save, upsell)
-- Output feeds into ICP refinement (existing `icp-positioning` skill) and PRD evidence sections
-- Conversation log stored in `artifacts/decision-memos/` with `CONV-` prefix for traceability
-
-**Complexity**: Medium — 1 new skill + modifications to icp-positioning and prd-writer
-**Agent**: Product
-**Dependencies**: None
+Implemented as `customer-conversations` skill with prep/debrief modes, cold-outreach type, "starting from scratch" detection, and CONV- prefixed artifact storage. Integrated with `icp-positioning` for hypothesis validation.
 
 ---
 

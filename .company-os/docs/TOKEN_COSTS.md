@@ -91,7 +91,7 @@ For a 10-feature milestone: **~1.6M-2.2M tokens** (with some efficiency from con
 |--------|------------------|-----------------|-------|
 | Main session overhead | ~11,000 (platform) | ~12,897 (+CLAUDE.md) | **+1,897** |
 | Agent spawn overhead | ~6,000-8,000 (platform) | ~9,000-24,000 (+skills) | **+3,000-16,000** |
-| Structure and enforcement | None — you prompt manually | 6 agents, 44 skills, 23 tools, stage gates, artifact validation | Included in delta |
+| Structure and enforcement | None — you prompt manually | 9 agents, 62 skills, 31 tools, stage gates, artifact validation | Included in delta |
 
 The cost of Company OS is ~1,897 tokens per session + ~3,000-16,000 tokens per agent spawn. In exchange, you get structured workflows, enforced quality gates, and consistent artifact production.
 

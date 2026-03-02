@@ -57,7 +57,7 @@ Run `/upgrade-company-os` to check for updates, preview changes, upgrade, or rol
 - `tasks/todo.md` — current session task tracking
 - `tasks/lessons.md` — accumulated corrections and patterns
 - `.claude/hooks/session-start.sh` — SessionStart context bootstrapping (company, stage, branch, recent lessons)
-- `.claude/agent-memory/` — persistent cross-session memory for Engineering, QA, and Product agents (project-scoped, version controlled)
+- `.claude/agent-memory/` — persistent cross-session memory for Engineering, QA, Product, and Growth agents (project-scoped, version controlled)
 
 ### Context Optimization
 Avoid reading these directories during normal operations — they're loaded-on-demand by specific skills and reading them wastes tokens:
@@ -66,7 +66,7 @@ Avoid reading these directories during normal operations — they're loaded-on-d
 - `cogs/*/entries.jsonl` — raw COGS ledger data. Only read by `/token-cost`.
 
 ### Artifact Lineage & Enforcement
-Every artifact has YAML frontmatter with: `id`, `type`, `status` (draft/review/approved/archived), `parent`, `children`, `depends_on`, `blocks`. Always maintain these links when creating or updating artifacts.
+Every artifact has YAML frontmatter. Required fields: `id`, `type`, `title`, `status` (draft/review/approved/archived), `created`, `author`. Optional lineage fields: `parent`, `children`, `depends_on`, `blocks`. Always maintain these links when creating or updating artifacts.
 
 **Enforcement tools** (use these — don't skip them):
 - `./tools/artifact/validate.sh` — checks frontmatter + verifies parent/depends_on/children references exist
@@ -104,9 +104,11 @@ Always read `company.config.yaml` before making technical recommendations. If th
 
 ### 3. Self-Improvement Loop
 - After ANY correction from the user: update `tasks/lessons.md` with the pattern
+- After noticing a recurring friction point (repeated lookups, confusing patterns, fragile approaches): capture it too
 - Write rules for yourself that prevent the same mistake
 - Ruthlessly iterate on these lessons until mistake rate drops
 - Review lessons at session start for relevant project
+- When lessons.md exceeds ~20 entries: consolidate — merge related lessons, archive resolved ones under `## Archive`, keep active patterns above the fold
 
 ### 4. Verification Before Done
 - Never mark a task complete without proving it works
@@ -149,7 +151,7 @@ Always read `company.config.yaml` before making technical recommendations. If th
   - Before and after risky refactors
 - **Never leave uncommitted work** at the end of a task — if the user asked you to build something, commit the result
 - **Branch strategy**: read `conventions.branching` from config. Default to feature branches off main unless told otherwise
-- **Version bump before push** (Company OS repo only): Before pushing to remote, always check if `VERSION` and `CHANGELOG.md` reflect the changes being pushed. If new features were added → MINOR bump. If only bug fixes → PATCH bump. If breaking changes → MAJOR bump. Move the `[Unreleased]` section in CHANGELOG.md to a versioned heading with today's date. Never push unversioned feature work.
+- **Version bump before push** (Company OS repo only): Before pushing to remote, always check if `.company-os/version` and `.company-os/docs/CHANGELOG.md` reflect the changes being pushed. If new features were added → MINOR bump. If only bug fixes → PATCH bump. If breaking changes → MAJOR bump. Move the `[Unreleased]` section in CHANGELOG.md to a versioned heading with today's date. Never push unversioned feature work.
 
 ### 9. Library Documentation (Context7)
 - **Before using any library or framework API**, fetch current documentation via Context7:

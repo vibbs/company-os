@@ -1,64 +1,106 @@
 # Company OS
 
-An AI-powered operating system for building SaaS products with Claude Code. Company OS gives your AI assistant a complete team of specialized agents, structured workflows, and quality gates — taking you from idea to shipped product with full audit trails.
+A deterministic governance layer for AI-assisted SaaS delivery — built for Claude Code, with human-in-the-loop quality gates at every stage.
 
-## Prerequisites
+`Claude Code specific` · `Human-in-the-loop` · `Document-first` · `v1.8.0`
 
-- **Git** — Company OS uses git for artifact audit trails. Initialize a repo before installing:
-  ```bash
-  git init  # if you don't already have one
-  ```
-- **Claude Code** — Install from [claude.ai/code](https://claude.ai/code) (required to run agents and skills)
-- **python3** (optional) — Used by the installer to smart-merge `.claude/settings.json` when overlaying onto existing Claude Code setups. Available by default on macOS and most Linux distros.
+You stay in control. The system proposes — PRDs, RFCs, threat models, QA reports, launch briefs — you review and approve before anything advances. Enforced by shell scripts, not prompts.
 
 ---
 
-## Install
+## What It Is / What It Isn't
 
-Company OS is an **overlay** — it adds its own files alongside your code and never touches your source. Works with new projects, existing repos, and mono repos. If you already have Claude Code configured (`.claude/settings.json`, custom agents), the installer smart-merges — your existing permissions, agents, and skills are preserved.
+| Company OS is… | Company OS is not… |
+|---|---|
+| A structured workflow with enforced quality gates | An autonomous agent that ships code without your review |
+| A set of specialized AI team members you direct | A replacement for engineering judgment |
+| A document trail (PRDs, RFCs, QA reports) you own | A black box that makes decisions for you |
+| Human-in-the-loop by design — you approve every stage | A "give it a goal and walk away" system |
+| An overlay on your existing repo — never touches source | A platform you migrate your code into |
 
-### Existing Project (one command)
+Every workflow pauses for your review. The Orchestrator does not advance past a gate until you've seen the artifact and approved the transition. This is enforced by `check-gate.sh` — a shell script that verifies required artifacts exist and are in approved status before proceeding.
 
-```bash
-cd my-project
-curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash
-```
+---
 
-This downloads the Company OS overlay (`.claude/`, `tools/`, `company.config.yaml`, `CLAUDE.md`) and scaffolds working directories. Your existing code is untouched.
+## Design Philosophy
 
-### New Project (GitHub template)
+### Built for Claude Code — not an abstraction layer
 
-```bash
-# Option A — GitHub CLI
-gh repo create my-app --template vibbs/company-os --clone
-cd my-app
+Company OS does not try to work with every AI coding tool. It is built specifically for Claude Code's agent, skills, and subagent architecture, and uses those primitives directly.
 
-# Option B — GitHub UI
-# Click "Use this template" on the repo page, then clone your new repo
-```
+This specificity is a deliberate tradeoff: you get deep integration (agent memory, skill preloading, hook-based validation, subagent delegation) instead of lowest-common-denominator compatibility. If you use Claude Code, you get the full system. If you don't, this tool is not for you — and that's intentional.
 
-### After Install
+### Every stage is a decision point, not a handoff
 
-Open Claude Code and run the setup wizard:
+The Orchestrator routes and delegates. It does not execute autonomously. After each major stage — PRD, RFC, implementation, QA, launch — artifacts are produced and presented for your review. You decide what happens next.
 
-```bash
-claude
-> /setup
-```
+Gates are enforced by `check-gate.sh`. The tool checks that required artifacts exist in approved status before allowing the next stage to begin. Your approval is the key that unlocks each stage. The system cannot skip stages on your behalf.
 
-The wizard configures `company.config.yaml` for your company, tech stack, and conventions, then generates permissions and scaffolds directories. Three input modes:
+### Artifacts are the source of truth, not the byproduct
 
-| Mode | How | Best for |
-|------|-----|----------|
-| **Interactive** | `/setup` | First-timers — guided step-by-step |
-| **Express** | `/setup` + config block | Power users — paste everything at once |
-| **Auto-Extract** | `/setup https://yoursite.com` | Fastest — extracts from your website or unstructured text |
+Most AI coding tools produce code. Company OS produces code AND a full paper trail: PRD → RFC → API contract → threat model → QA report → launch brief. Each artifact has YAML frontmatter with lineage links (parent, children, depends_on, blocks).
 
-Then build your first feature:
+For solopreneurs especially: six months from now, you can open `artifacts/rfcs/` and understand exactly what was built, why it was built that way, which tradeoffs were made, and which risks were flagged. The code tells you *what* — the artifacts tell you *why*.
 
-```
-> Build [feature] for [product]
-```
+---
+
+## What You Get Out of the Box
+
+### 9 Agents (6 top-level + 3 engineering sub-agents)
+
+| Agent | Role |
+|-------|------|
+| **Orchestrator** | Routes tasks, enforces gates, approves releases |
+| **Product** | Discovery, PRDs, prioritization, scope control |
+| **Engineering** | Staff Engineer — architecture, decomposition, delegation, code review |
+| **Engineering: Backend** | Sub-agent — API endpoints, data models, business logic, background jobs |
+| **Engineering: Frontend** | Sub-agent — UI components, responsive design, instrumentation, user docs |
+| **Engineering: DevOps** | Sub-agent — deployment, observability, feature flags, dev environment |
+| **QA & Release** | Test plans, quality gates, release readiness |
+| **Growth** | Launch strategy, SEO, activation, email lifecycle |
+| **Ops & Risk** | Security, compliance, incidents, legal, finance |
+
+### 62 Skills
+
+| Category | Skills |
+|----------|--------|
+| Orchestration | workflow-router, ship, status, decision-memo-writer, conflict-resolver, ingest, system-maintenance, artifact-import, setup, upgrade-company-os, rapid-prototype, token-cost-ledger, weekly-review, retrospective |
+| Product | icp-positioning, prd-writer, sprint-prioritizer, feedback-synthesizer, discovery-validation, ux-research, market-intelligence, customer-conversations |
+| Engineering | architecture-draft, api-contract-designer, background-jobs, multi-tenancy, implementation-decomposer, code-review, seed-data, deployment-strategy, instrumentation, feature-flags, user-docs, mobile-readiness, dev-environment, ai-engineering, design-system, observability-baseline, resilience-testing |
+| QA / Release | test-plan-generator, api-tester-playbook, release-readiness-gate, perf-benchmark-checklist, dogfood, test-intelligence, experiment-framework |
+| Growth | positioning-messaging, landing-page-copy, seo-topic-map, channel-playbook, activation-onboarding, email-lifecycle, content-engine, product-led-growth |
+| Risk / Legal | threat-modeling, privacy-data-handling, compliance-readiness, pricing-unit-economics, tos-privacy-drafting, incident-response, support-operations, security-posture |
+
+### 31 Tool Scripts
+
+| Tool | Purpose |
+|------|---------|
+| `validate.sh` | Checks artifact frontmatter + reference integrity |
+| `promote.sh` | Enforces lifecycle ordering (draft → review → approved) |
+| `link.sh` | Links parent/child artifacts bidirectionally |
+| `check-gate.sh` | Stage gate checks (prd-to-rfc, rfc-to-impl, impl-to-qa, release) |
+| `version-bump.sh` | Stage-aware app version bumping with changelog + git tags |
+| `smoke-test.sh` | Smoke tests against deployed environment (auto-resolves URL) |
+| `pre-deploy.sh` | Pre-deployment validation gate (8 checks incl. version) |
+| `secrets-scan.sh` | Secret detection in codebase |
+| `token-ledger.sh` | AI token cost logging to COGS ledger |
+| `posture-check.sh` | Security posture health check (findings, scan freshness, policy) |
+| `dashboard.sh` | Project dashboard with artifact graph, gate readiness, open risks, cost snapshot |
+
+See [SETUP.md](.company-os/docs/SETUP.md) for the full list across all 10 tool categories.
+
+### Stage-Aware Gates
+
+Company OS reads `company.stage` from `company.config.yaml` and adjusts enforcement:
+
+| Stage | Gate Behavior |
+|-------|--------------|
+| `idea` | All gates advisory — warnings only, move fast |
+| `mvp` | Core gates enforced (prd-to-rfc, rfc-to-impl) |
+| `growth` | All gates enforced |
+| `scale` | All gates enforced + stricter release bars |
+
+Start permissive, tighten as you scale. The system adapts without reconfiguration.
 
 ---
 
@@ -83,6 +125,8 @@ Then build your first feature:
 │  that validate, promote, link, gate.         │
 └─────────────────────────────────────────────┘
 ```
+
+The dependency rule is strict: Agents depend on Skills for reasoning, Skills depend on Tools for execution. Tools never contain AI reasoning — they are deterministic shell scripts. This separation means enforcement cannot be soft-talked out of.
 
 ### Multi-Agent Orchestration
 
@@ -113,8 +157,7 @@ Each agent only sees the skills relevant to its role. The Orchestrator never wri
 
 ### Ship Flow
 
-Every feature follows this enforced path. After implementation, a **Seed & Verify** step presents start commands, per-service URLs (derived from `.env.example`), and seed data so you can test what was built before handing off to QA.
-
+Every feature follows this enforced path:
 
 ```
 Objective → Orchestrator → Product Agent (PRD)
@@ -141,51 +184,81 @@ Objective → Orchestrator → Product Agent (PRD)
                     Orchestrator Approves Release
 ```
 
-Run `/ship` to kick off the full pipeline. Gates are enforced by `tools/artifact/check-gate.sh` — you can't skip stages.
+Run `/ship` to kick off the full pipeline. Gates are enforced by `tools/artifact/check-gate.sh` — you can't skip stages. After implementation, a **Seed & Verify** step presents start commands, service URLs, and seed data so you can test what was built before handing off to QA.
 
 ---
 
-## What's Included
+## Why Company OS
 
-### 9 Agents (6 top-level + 3 engineering sub-agents)
+### 1. Deterministic enforcement, not prompts
+Rules are shell scripts, not instructions. `check-gate.sh`, `validate.sh`, and `promote.sh` cannot be argued with, hallucinated around, or accidentally skipped.
 
-| Agent | Role |
-|-------|------|
-| **Orchestrator** | Routes tasks, enforces gates, approves releases |
-| **Product** | Discovery, PRDs, prioritization, scope control |
-| **Engineering** | Staff Engineer — architecture, decomposition, delegation, code review |
-| **Engineering: Backend** | Sub-agent — API endpoints, data models, business logic, background jobs |
-| **Engineering: Frontend** | Sub-agent — UI components, responsive design, instrumentation, user docs |
-| **Engineering: DevOps** | Sub-agent — deployment, observability, feature flags, dev environment |
-| **QA & Release** | Test plans, quality gates, release readiness |
-| **Growth** | Launch strategy, SEO, activation, email lifecycle |
-| **Ops & Risk** | Security, compliance, incidents, legal, finance |
+### 2. Artifact lineage as source of truth
+Every artifact carries YAML frontmatter with `id`, `parent`, `children`, `depends_on`, and `blocks`. The Orchestrator traces this graph to verify prerequisites before advancing — no manual tracking required.
 
-### 46 Skills
+### 3. Stage-aware progressive gates
+At `idea` stage, gates are advisory. At `growth` stage, they're enforced. The same `company.config.yaml` drives this — you set `company.stage` once, the system adjusts.
 
-| Category | Skills |
-|----------|--------|
-| Orchestration | workflow-router, ship, status, decision-memo-writer, conflict-resolver, ingest, system-maintenance, artifact-import, setup, upgrade-company-os |
-| Product | icp-positioning, prd-writer, sprint-prioritizer, feedback-synthesizer, discovery-validation |
-| Engineering | architecture-draft, api-contract-designer, background-jobs, multi-tenancy, implementation-decomposer, observability-baseline, code-review, seed-data, deployment-strategy, instrumentation, feature-flags, user-docs, mobile-readiness, dev-environment |
-| QA / Release | test-plan-generator, api-tester-playbook, release-readiness-gate, perf-benchmark-checklist, dogfood |
-| Growth | positioning-messaging, landing-page-copy, seo-topic-map, channel-playbook, activation-onboarding, email-lifecycle |
-| Risk / Legal | threat-modeling, privacy-data-handling, compliance-readiness, pricing-unit-economics, tos-privacy-drafting, incident-response |
+### 4. Overlay model — never touches your source
+Company OS installs into `.claude/`, `tools/`, and `company.config.yaml`. It does not modify your source directories, existing CI, or git history. Uninstall is a directory removal.
 
-### 24 Tool Scripts (highlights)
+### 5. Config-driven adaptation
+`company.config.yaml` drives agent behavior: tech stack, API conventions, branching strategy, model selection per agent, COGS budget, design archetype, experiment settings. No prompt editing required to adapt the system to your project.
 
-| Tool | Purpose |
-|------|---------|
-| `validate.sh` | Checks artifact frontmatter + reference integrity |
-| `promote.sh` | Enforces lifecycle ordering (draft → review → approved) |
-| `link.sh` | Links parent/child artifacts bidirectionally |
-| `check-gate.sh` | Stage gate checks (prd-to-rfc, rfc-to-impl, impl-to-qa, release) |
-| `version-bump.sh` | Stage-aware app version bumping with changelog + git tags |
-| `smoke-test.sh` | Smoke tests against deployed environment (auto-resolves URL) |
-| `dogfood.sh` | Dogfood pre-flight validation and seed data checks |
-| `pre-deploy.sh` | Pre-deployment validation gate (8 checks incl. version) |
+### 6. Cost consciousness built in
+The COGS ledger (`cogs/ai-ledger/`) tracks AI token spend as a first-class business cost. Token costs are published transparently in [TOKEN_COSTS.md](.company-os/docs/TOKEN_COSTS.md). The system uses model routing (opus for reasoning, sonnet for templates) to minimize spend.
 
-See [SETUP.md](.company-os/docs/SETUP.md) for the full list across all 9 tool categories.
+---
+
+## Install
+
+Company OS is an **overlay** — it adds its own files alongside your code and never touches your source. Works with new projects, existing repos, and monorepos. If you already have Claude Code configured (`.claude/settings.json`, custom agents), the installer smart-merges — your existing permissions, agents, and skills are preserved.
+
+### Prerequisites
+
+- **Git** — Company OS uses git for artifact audit trails (`git init` if you don't have one)
+- **Claude Code** — Install from [claude.ai/code](https://claude.ai/code)
+- **python3** (optional) — Used by the installer to smart-merge `.claude/settings.json`
+
+### Existing Project (one command)
+
+```bash
+cd my-project
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash
+```
+
+### New Project (GitHub template)
+
+```bash
+# GitHub CLI
+gh repo create my-app --template vibbs/company-os --clone
+cd my-app
+
+# Or click "Use this template" on the repo page
+```
+
+### After Install
+
+Open Claude Code and run the setup wizard:
+
+```bash
+claude
+> /setup
+```
+
+Three input modes:
+
+| Mode | How | Best for |
+|------|-----|----------|
+| **Interactive** | `/setup` | First-timers — guided step-by-step |
+| **Express** | `/setup` + config block | Power users — paste everything at once |
+| **Auto-Extract** | `/setup https://yoursite.com` | Fastest — extracts from your website or text |
+
+Then build your first feature:
+
+```
+> Build [feature] for [product]
+```
 
 ---
 
@@ -201,6 +274,11 @@ See [SETUP.md](.company-os/docs/SETUP.md) for the full list across all 9 tool ca
 | `/system-maintenance` | Audit and fix documentation after structural changes |
 | `/dev-environment` | Generate Docker Compose + dev scripts from tech stack config |
 | `/upgrade-company-os` | Check for updates, preview changes, upgrade, or rollback |
+| `/rapid-prototype` | Time-boxed PoC (4h/1d/3d) — skips RFC and QA gates |
+| `/token-cost` | Log AI token spend to COGS ledger |
+| `/design-system` | Configure design archetype and generate visual tokens |
+| `/weekly-review` | Weekly operating summary — shipped, spend, risks, priorities |
+| `/retrospective` | Post-ship retro — trace lineage, evaluate metrics, capture lessons |
 
 ---
 
@@ -213,6 +291,7 @@ See [SETUP.md](.company-os/docs/SETUP.md) for the full list across all 9 tool ca
 | Standards | `standards/` | User | Permanent reference docs agents read continuously |
 | Session Work | `tasks/` | Agent | Task tracking + accumulated learning |
 | Deliverables | `artifacts/` | Agent | Lifecycle-managed outputs with audit trail |
+| COGS Ledger | `cogs/ai-ledger/` | Agent | AI token spend tracking as business cost |
 
 ---
 
@@ -248,33 +327,6 @@ Full reference: [SETUP](.company-os/docs/SETUP.md) | [FAQ](.company-os/docs/FAQ.
 
 Company OS uses semantic versioning. Check your installed version in `.company-os/version`.
 
-### Quick Upgrade
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --force
-```
-
-The `--force` flag updates Company OS agents, skills, and tools while preserving your `company.config.yaml`, custom permissions in `settings.json`, and any project-specific content in `CLAUDE.md`.
-
-### Upgrade Options
-
-```bash
-# Check if an update is available
-curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --check
-
-# Preview what would change (no modifications)
-curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --dry-run --force
-
-# Upgrade with backup
-curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --force --backup
-
-# Install a specific version
-curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --version 1.2.0 --force
-
-# View changelog since your version
-curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --changelog
-```
-
 ### From Inside Claude Code
 
 ```
@@ -284,14 +336,19 @@ curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | 
 > /upgrade-company-os rollback   # restore from backup
 ```
 
-### Conflict Detection
+### From Terminal
 
-The installer uses a manifest to track which template files you've modified. On upgrade:
-- **Unmodified files** are auto-updated (safe)
-- **Your customizations** are preserved
-- **Conflicts** (you modified + template changed) are saved to `.company-os/conflicts/` for manual resolution
+```bash
+# Quick upgrade (preserves your config, permissions, and custom content)
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --force
 
-Major version upgrades automatically create a backup in `.company-os/backup/`.
+# Preview first
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --dry-run --force
+```
+
+Conflicts (you modified + template changed) are saved to `.company-os/conflicts/` for manual resolution. Major version upgrades automatically create a backup.
+
+See [SETUP.md](.company-os/docs/SETUP.md) for all upgrade flags and options.
 
 ---
 
