@@ -17,6 +17,17 @@ description: Produces structured decision records with rationale, alternatives c
 Records non-trivial decisions with full rationale, alternatives evaluated, and anticipated consequences so that future team members can understand why a particular path was chosen without re-litigating the discussion.
 
 ## Procedure
+
+### ID Convention
+Use the format `DM-{NNN}` for decision memo IDs (e.g., DM-001, DM-002). For specialized memos, use prefixes:
+- `REVIEW-` for review memos (e.g., REVIEW-WEEKLY-2026-03-01)
+- `RETRO-` for retrospective memos (e.g., RETRO-PRD-001)
+- `GROWTH-` for growth experiment memos (e.g., GROWTH-001)
+- `CONV-` for customer conversation logs (e.g., CONV-001)
+
+Check `artifacts/decision-memos/` for existing IDs to avoid collisions.
+
+### Steps
 1. Gather the decision context: what problem or question triggered this decision.
 2. List all alternatives considered, including the status-quo option.
 3. For each alternative, document pros, cons, risks, and estimated effort.

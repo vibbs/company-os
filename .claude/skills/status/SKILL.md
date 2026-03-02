@@ -2,8 +2,7 @@
 name: status
 description: Shows project artifact status summary — counts, statuses, broken links, and gate readiness across all artifact types.
 user-invokable: true
-argument-hint: "[optional: prd|rfc|qa|all]"
-allowed-tools: Read, Grep, Glob, Bash
+argument-hint: "[optional: prd|rfc|qa|all|--dashboard]"
 ---
 
 # Status Dashboard
@@ -14,7 +13,7 @@ allowed-tools: Read, Grep, Glob, Bash
 - **Inputs**: artifacts/ directory contents, company.config.yaml
 - **Outputs**: Formatted status dashboard
 - **Used by**: User (directly)
-- **Tool scripts**: ./tools/artifact/validate.sh, ./tools/artifact/check-gate.sh
+- **Tool scripts**: ./tools/artifact/validate.sh, ./tools/artifact/check-gate.sh, ./tools/ops/dashboard.sh
 
 ## Purpose
 
@@ -35,7 +34,7 @@ Read `company.config.yaml` and extract `personas.*` values. When referencing age
 
 ### Step 1.5: Scan Artifact Directories
 
-Scan all 7 artifact directories:
+Scan all 9 artifact directories:
 - `artifacts/prds/`
 - `artifacts/rfcs/`
 - `artifacts/test-plans/`
@@ -43,6 +42,8 @@ Scan all 7 artifact directories:
 - `artifacts/security-reviews/`
 - `artifacts/launch-briefs/`
 - `artifacts/decision-memos/`
+- `artifacts/product/`
+- `artifacts/experiments/`
 
 For each `.md` file found, extract YAML frontmatter:
 - `id`
@@ -121,6 +122,16 @@ Based on the scan, suggest next actions:
 - If gates are failing: "Complete missing artifacts to unblock gates"
 - If everything is clean: "All artifacts validated and linked. Ready to ship."
 
+### Step 7: Generate Dashboard (Optional)
+
+If the user passes `--dashboard`:
+
+1. Run `./tools/ops/dashboard.sh` to generate a comprehensive dashboard with artifact status, gate readiness, artifact graph (Mermaid), open risks, and cost ledger snapshot.
+2. For HTML output: `./tools/ops/dashboard.sh --html --out artifacts/dashboard.html`
+3. Present the dashboard output or file path to the user.
+
+This delegates the heavy lifting to the dashboard tool, which reads all artifact directories, parses lineage links, and builds the visualization.
+
 ## Filtering
 
 If the user provides an argument:
@@ -128,6 +139,7 @@ If the user provides an argument:
 - `rfc` -- only show RFC status + gates
 - `qa` -- only show QA-related artifacts (test plans, QA reports)
 - `all` -- full dashboard with gate checks (default if no argument)
+- `--dashboard` -- generate comprehensive dashboard via `./tools/ops/dashboard.sh` (Markdown or HTML)
 
 ## Quality Checklist
 

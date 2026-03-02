@@ -16,8 +16,7 @@ Checks for updates, previews changes, upgrades, or rolls back Company OS to a pr
 Check if an update is available:
 
 1. Read `.company-os/version` for the currently installed version
-2. Read `VERSION` for the version in the current template (if running from the repo itself)
-3. If checking against remote, advise the user to run:
+2. If checking against remote, advise the user to run:
    ```bash
    curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --check
    ```
@@ -81,12 +80,19 @@ Restore from a previous backup:
 
 | File | Purpose |
 |------|---------|
-| `VERSION` | Template source of truth (in the repo) |
-| `.company-os/version` | Installed version stamp (in user's project) |
+| `.company-os/version` | Template version — single source of truth |
 | `.company-os/manifest` | SHA256 hashes of installed template files |
 | `.company-os/backup/` | Timestamped backups (auto for major upgrades) |
 | `.company-os/conflicts/` | Conflicting file versions during upgrade |
 | `.company-os/docs/CHANGELOG.md` | Human-readable changelog (Keep a Changelog format) |
+
+## Reference
+
+- **ID**: S-ORG-10
+- **Category**: Orchestration
+- **Inputs**: `.company-os/version`, `.company-os/manifest`, remote release metadata
+- **Outputs**: upgraded system files, backup in `.company-os/backup/`
+- **Used by**: User (directly), Orchestrator Agent
 
 ## Notes
 

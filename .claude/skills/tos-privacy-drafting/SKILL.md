@@ -6,8 +6,8 @@ description: Drafts Terms of Service and Privacy Policy outlines tailored to the
 # TOS & Privacy Policy Drafting
 
 ## Reference
-- **ID**: S-LEGAL-01
-- **Category**: Legal
+- **ID**: S-RISK-06
+- **Category**: Ops & Risk
 - **Inputs**: product description, data handling policy, jurisdiction requirements, business model
 - **Outputs**: TOS and Privacy Policy draft outlines → artifacts/legal/
 - **Used by**: Ops & Risk Agent
@@ -41,6 +41,25 @@ Produces structured draft outlines for Terms of Service and Privacy Policy docum
 5. Mark all sections as DRAFT — NOT LEGAL ADVICE.
 6. Save the draft outlines to `artifacts/legal/`.
 7. Validate the artifact using `./tools/artifact/validate.sh`.
+
+### Next Steps for Deployment
+
+**Important:** This skill produces a structural outline, not final legal text. Convert each section to actual legal clauses before publishing.
+
+1. **Getting from outline to clauses:**
+   - Free generators: Termly, Iubenda (template-based, good for MVP)
+   - Paid: Clerky (startup-focused legal docs)
+   - Full custom: Startup lawyer ($500-2000 for initial TOS + Privacy Policy)
+
+2. **Where to publish:**
+   - Create `/terms` and `/privacy` routes/pages
+   - Link from site footer and sign-up flow
+   - Include consent checkbox at registration
+
+3. **Change management:**
+   - Version your legal documents (v1.0, v1.1, etc.)
+   - Notify existing users of material changes via email
+   - Keep previous versions accessible
 
 ## Quality Checklist
 - [ ] TOS covers all standard sections for a SaaS product

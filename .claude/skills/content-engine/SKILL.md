@@ -1,7 +1,6 @@
 ---
 name: content-engine
 description: Produces multi-format content strategies with editorial calendars, content briefs, and multiplication workflows. Use when building a content marketing engine, planning blog/newsletter cadence, or creating content briefs.
-allowed-tools: Read, Grep, Glob, Bash, Write
 ---
 
 # Content Engine
@@ -102,6 +101,15 @@ Define how each pillar piece generates 5+ derivatives:
 +-- 1 Video Script Outline (talking points for 3-5 min video)
 +-- 1 Community Post (Reddit/HN value-first version)
 ```
+
+**Solo Founder Mode** (idea/mvp stage):
+
+Priority order for content multiplication:
+1. Primary piece (blog post, guide, or video)
+2. Community post (highest leverage per effort — Reddit, HN, Indie Hackers, relevant Slack)
+3. Newsletter excerpt (if email list exists)
+
+Social posts are copy-paste from community post. Video script and email sequence deferred to growth stage. Focus on depth over breadth — one great piece per week beats five mediocre ones.
 
 Rules:
 - Each derivative adapts tone and format for its platform (reference channel-playbook)

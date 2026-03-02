@@ -6,7 +6,7 @@ description: Designs "aha moment" flows and activation experiments to improve ne
 # Activation & Onboarding
 
 ## Reference
-- **ID**: S-GROW-05
+- **ID**: S-GRO-05
 - **Category**: Growth
 - **Inputs**: user journey data, sign-up funnel metrics, product analytics, ICP document
 - **Outputs**: activation playbook → artifacts/growth/
@@ -17,6 +17,20 @@ description: Designs "aha moment" flows and activation experiments to improve ne
 Designs the onboarding experience that guides new users to their "aha moment" as quickly as possible, and defines activation experiments to systematically improve conversion from sign-up to active user.
 
 ## Procedure
+
+### Step 0: Pre-Data Mode Check
+
+Read `company.stage` from `company.config.yaml`. If `idea`/`mvp` with fewer than 100 users:
+
+**Pre-Data Mode** — pivot to hypothesis-driven activation:
+1. Define "aha moment" hypothesis from ICP document and customer conversations (not data)
+2. Instrument the hypothesized aha moment immediately (use instrumentation skill)
+3. Define "enough data" threshold before running experiments
+4. Replace A/B test recommendations with manual interview protocol for 5 users
+5. Use discovery-validation and customer-conversations skills to validate hypotheses
+
+Proceed to full data-driven activation design once threshold is met.
+
 1. Define the "aha moment": the specific action that correlates with long-term retention.
 2. Map the current onboarding flow from sign-up to aha moment, step by step.
 3. Identify drop-off points in the funnel using product analytics data.

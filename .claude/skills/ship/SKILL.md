@@ -3,7 +3,6 @@ name: ship
 description: Kick off the full ship flow for a feature or objective. Routes through the Orchestrator to produce PRD, RFC, implementation, QA, and launch artifacts with gate checks at every stage.
 user-invokable: true
 argument-hint: "describe what you want to build"
-allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 ---
 
 # Ship
@@ -145,6 +144,8 @@ This step runs after implementation but before dogfooding/QA, so tours and docs 
 ### Step 5.8: Seed & Verify
 
 After implementation completes and `impl-to-qa` gate passes, help the developer test what was built before handing off to QA:
+
+**Preflight**: Verify `tools/dev/start.sh` exists. If not, instruct Engineering Agent to run `/dev-environment` first to generate development infrastructure scripts. The Seed & Verify step requires a running application.
 
 **1. Detect new domain entities**
 

@@ -1,7 +1,6 @@
 ---
 name: support-operations
 description: Designs customer support infrastructure including FAQ generation, SLA tiers, escalation paths, and support-to-product feedback pipelines. Use when establishing support operations or improving customer service.
-allowed-tools: Read, Grep, Glob, Bash, Write
 ---
 
 # Support Operations
@@ -36,6 +35,7 @@ Before generating any support artifacts:
 2. **Read PRDs** in `artifacts/prds/` -- build a feature inventory from shipped/approved PRDs
 3. **Check existing support artifacts** in `artifacts/support/` -- understand current FAQ coverage, SLA definitions, and any existing escalation documentation
 4. **Check `standards/ops/support-runbook.md`** -- load the operational support runbook for procedural alignment
+5. **Check `standards/ops/inbound-loop-sop.md`** -- understand the full inbound feedback pipeline cadence and routing rules
 
 ### Step 2: FAQ Generation
 
@@ -90,6 +90,16 @@ Define escalation levels with clear boundaries:
 | **L2** | Email/Chat support | First human contact, standard issues | 20-25% | Based on SLA tier resolution time |
 | **L3** | Engineering escalation | Bugs, data issues, security concerns | 5-10% | 4 hours at L3 before L4 review |
 | **L4** | Executive escalation | Critical business impact, legal, data loss | <1% | Immediate resolution track |
+
+**Solopreneur Mode** (idea/mvp stage):
+
+Escalation tiers for solo founders:
+- **L1**: Self-serve docs (FAQ, help center, in-app tooltips)
+- **L2**: You — async email (aim for < 4 hour response during business hours)
+- **L3**: You — synchronous investigation (scheduled call for complex issues)
+- **L4**: You + hosting provider support (emergency, infrastructure issues)
+
+First-person communication builds more trust with early customers than corporate-sounding responses. Use your name, be direct, follow up personally.
 
 For each level, document:
 
@@ -187,6 +197,8 @@ Define how support insights feed back to product development:
    - Comparison to previous period (if available)
 5. **Feedback loop closure**: Track which support themes resulted in product changes, and update FAQ/docs when fixes ship
 
+See `standards/ops/inbound-loop-sop.md` for the bi-weekly feedback synthesis cadence that feeds support themes into feedback-synthesizer and the full inbound loop pipeline.
+
 ### Step 9: Save Artifacts
 
 1. Save FAQ documents to `artifacts/support/faq-{feature-name}.md` with proper artifact frontmatter:
@@ -228,6 +240,8 @@ Run `./tools/artifact/validate.sh` on all produced artifacts to verify:
 - **prd-writer** -- source of feature definitions used to generate FAQs
 - **incident-response** -- handles P0/P1 escalations that originate from support tickets
 - **privacy-data-handling** -- governs what customer data support agents can access
+- **customer-conversations** -- conversation logs (CONV-) are a source input alongside support tickets for feedback-synthesizer
+- **inbound-loop-sop** -- `standards/ops/inbound-loop-sop.md` documents the full feedback pipeline
 
 ## Quality Checklist
 

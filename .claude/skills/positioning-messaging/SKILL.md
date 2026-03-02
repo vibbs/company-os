@@ -6,7 +6,7 @@ description: Crafts a crisp product narrative and competitive differentiators fo
 # Positioning & Messaging
 
 ## Reference
-- **ID**: S-GROW-01
+- **ID**: S-GRO-01
 - **Category**: Growth
 - **Inputs**: ICP document, competitive landscape, product capabilities, customer testimonials
 - **Outputs**: messaging framework document → artifacts/growth/
@@ -31,6 +31,8 @@ Produces a messaging framework that articulates the product narrative, value pro
 ## Brand Identity Extension
 
 When producing positioning and messaging, extend into full brand identity to ensure consistent brand expression across all touchpoints.
+
+**Brand Identity Extension** — Steps 8-11 below are Growth/Scale deliverables. At idea/mvp stage, complete Steps 1-7 (core positioning) and run `/design-system` for visual tokens. Skip brand guidelines, voice documentation, and style guide until you have a designer or reach growth stage.
 
 ### Step 8: Brand Voice Matrix
 

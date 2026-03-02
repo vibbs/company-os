@@ -43,6 +43,8 @@ Determine the type of work:
 | **Launch** | Taking something live | QA gate → Growth assets → Release |
 | **Compliance** | Security/privacy/legal requirement | Risk review → Remediation → Verification |
 | **Prototype/Demo** | Time-boxed proof-of-concept or investor demo | Mini-PRD (3 AC max) → Build → Demo script (skip RFC/QA/Growth) |
+| **Refactor / Tech Debt** | Internal code quality improvement, no user-facing change | RFC (if large scope) → Build → Test → Release |
+| **Dependency Upgrade** | Updating libraries or frameworks to newer versions | Scan → RFC (if breaking) → Build → Test |
 
 ### Step 2: Check Current State
 
@@ -150,6 +152,18 @@ Produce a structured execution plan:
 - Keywords that trigger this flow: "prototype", "demo", "proof of concept", "MVP test", "investor demo", "hackathon", "spike with code"
 - **Exit criteria**: Either the prototype proves/disproves the hypothesis, or graduate to full `/ship` flow
 - After prototype: run `/ship` to graduate the prototype to production quality (PRD gets expanded, RFC gets created, code gets refactored)
+
+### Refactor / Tech Debt Flow
+1. Engineering Agent leads. Skip PRD — no user-facing change
+2. RFC required if touching >3 files or changing interfaces
+3. Build → Test → Release
+- Skip: PRD, Growth, Ops (unless changing security-sensitive code)
+
+### Dependency Upgrade Flow
+1. Engineering Agent scans for breaking changes
+2. RFC only if upgrade changes APIs or requires migration
+3. Build → Test
+- Skip: PRD, Growth (unless upgrade introduces user-visible changes)
 
 ## Quality Checklist
 

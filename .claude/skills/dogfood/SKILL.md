@@ -3,7 +3,6 @@ name: dogfood
 description: Autonomous dogfooding — tests the product by using it as real users would, capturing issues with severity ratings. Supports web apps (via agent-browser) and API-only products.
 user-invokable: true
 argument-hint: "<app-url> [--prd <prd-id>]"
-allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 ---
 
 # Dogfood
@@ -37,6 +36,18 @@ Autonomously exercise the product the way real users do. Instead of checking art
 4. **For API-only products**: `curl` must be available (always present)
 
 ## Dogfood Procedure
+
+### Step 0: Preflight Check
+
+Before starting dogfood testing:
+1. Detect if `agent-browser` MCP tool or Playwright MCP is available
+2. If available: proceed with web app testing mode
+3. If NOT available: immediately declare operating mode:
+   - "Web app interactive testing unavailable — running in API-only mode" (if API endpoints exist)
+   - "Producing manual test checklist for human execution" (if no API)
+4. Document what MCP tool would satisfy this dependency for future sessions
+
+**Note:** Full web app dogfooding requires a browser automation tool. Without one, this skill provides API validation and a structured manual testing checklist.
 
 ### Step 1: Load Context
 

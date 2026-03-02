@@ -1,7 +1,6 @@
 ---
 name: instrumentation
 description: Defines analytics instrumentation standards including event taxonomy, tracker ID conventions, and per-feature instrumentation plans for measurable product development.
-allowed-tools: Read, Grep, Glob, Bash, Write
 user-invokable: false
 ---
 
@@ -27,6 +26,19 @@ Define analytics instrumentation standards so every feature ships with measurabl
 - Onboarding a new analytics provider
 
 ## Instrumentation Procedure
+
+### Step 0: Provider Selection
+
+If `analytics.provider` is empty or not configured in `company.config.yaml`, present a provider selection guide before generating the event taxonomy:
+
+| Provider | Best For | Free Tier | Self-Hosted |
+|----------|----------|-----------|-------------|
+| PostHog | Product analytics + session replay | 1M events/month | Yes |
+| Plausible | Privacy-first web analytics | None (paid) | Yes |
+| Mixpanel | Event-based product analytics | 20M events/month | No |
+| Segment | Data routing to multiple tools | 1K users/month | No |
+
+Walk the user through updating `company.config.yaml` before proceeding.
 
 ### Step 1: Load Context
 

@@ -3,7 +3,6 @@ name: design-system
 description: Reads configured design archetype and UX baseline to produce project-specific design tokens, component guidance, and UX patterns. Use when building UI components, reviewing design consistency, or configuring design preferences for the first time.
 user-invokable: true
 argument-hint: "[generate-tokens | review | reconfigure]"
-allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 ---
 
 # Design System
@@ -281,6 +280,14 @@ Issues found: {count}
 ### Info (consider)
 - {file}:{line} — Spinner used for content loading, prefer skeleton screen
 ```
+
+### Accessibility Baseline
+
+At `growth`+ stage, include automated accessibility checking:
+- Reference `axe-core` CLI for automated WCAG AA compliance checking
+- Minimum: color contrast ratios (4.5:1 for text, 3:1 for large text), focus indicators, alt text
+- Add to CI pipeline: `npx axe-core <url>` for automated scanning
+- At `idea`/`mvp`: follow semantic HTML and basic contrast — defer automated tooling
 
 ### Step 5: Delight Patterns
 

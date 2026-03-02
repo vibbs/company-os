@@ -18,6 +18,16 @@ user-invokable: false
 Defines the architecture and conventions for multi-tenant data isolation, ensuring that tenant data is properly scoped, row-level security is enforced, and cross-tenant data leakage is prevented at every layer of the stack.
 
 ## Procedure
+
+### Step 0: Multi-Tenancy Check
+
+Read `architecture.multi_tenant` from `company.config.yaml`.
+
+If `false` or absent: output "Multi-tenancy not configured for this project. Set `architecture.multi_tenant: true` in company.config.yaml to enable multi-tenant design patterns." and skip the remaining procedure.
+
+If `true`: proceed with full multi-tenancy design.
+
+### Steps
 1. Define the tenant model: what constitutes a tenant (org, workspace, account).
 2. Choose the isolation strategy: shared database with RLS, schema-per-tenant, or database-per-tenant.
 3. Design the org-scoping layer: how every query is automatically scoped to the current tenant.

@@ -1,7 +1,6 @@
 ---
 name: resilience-testing
 description: Designs failure mode catalogs, circuit breaker tests, latency injection plans, and blast radius analysis for system resilience verification. Use when validating system behavior under failure conditions.
-allowed-tools: Read, Grep, Glob, Bash, Write
 ---
 
 # Resilience Testing
@@ -178,6 +177,8 @@ Run `./tools/artifact/validate.sh` on the produced artifact to verify:
 - **observability-baseline** — failure detection depends on metrics, logging, and alerting being configured
 - **feature-flags** — graceful degradation often relies on feature flags as kill switches
 - **threat-modeling** — failure modes overlap with threat scenarios (denial of service, dependency compromise)
+
+**Tool Limitation Note:** `resilience-test.sh` performs basic HTTP health and timeout checks only. The circuit breaker, latency injection, and blast radius tests described in this skill require manual execution or Claude-driven testing against a running application. The tool provides a smoke-test baseline, not full resilience verification. For production-grade resilience testing, consider dedicated chaos engineering tools (Litmus, Gremlin, or Chaos Monkey).
 
 ## Quality Checklist
 

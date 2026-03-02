@@ -1,7 +1,6 @@
 ---
 name: ai-engineering
 description: Designs AI/ML feature architectures including LLM integration, RAG pipelines, prompt engineering, and AI cost optimization. Use when building features that involve AI/ML components.
-allowed-tools: Read, Grep, Glob, Bash, Write
 ---
 
 # AI Engineering
@@ -183,6 +182,16 @@ Define how to measure AI feature quality.
    - Define the experiment: which AI variation to test (model, prompt, retrieval strategy)
    - Define the success metric: user satisfaction, task completion, accuracy
    - Plan the rollout: feature flag with percentage-based allocation
+
+### Eval Framework Selection
+
+Recommend an eval framework based on the AI architecture:
+- **PromptFoo**: Best for prompt engineering and LLM output evaluation (Claude, GPT). Supports assertions, model comparison, red teaming.
+- **RAGAS**: Best for RAG pipeline evaluation. Measures faithfulness, relevance, context recall.
+- **Custom evals via batch API**: For domain-specific evaluation. Use Anthropic's batch API for cost-efficient bulk evaluation runs.
+- **DeepEval**: General-purpose LLM evaluation with built-in metrics.
+
+For all approaches: define eval datasets early, run evals in CI, track scores over time.
 
 ### Step 7: Ethical AI Checklist
 

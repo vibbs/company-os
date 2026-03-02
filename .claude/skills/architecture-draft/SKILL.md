@@ -1,7 +1,6 @@
 ---
 name: architecture-draft
 description: Produces RFC/ADR defining system boundaries, modules, data model, and integration points. Use when translating a PRD into technical design, making architectural decisions, or designing new system components.
-allowed-tools: Read, Grep, Glob, Bash, Write
 ---
 
 # Architecture Draft (SaaS Core)

@@ -3,7 +3,6 @@ name: artifact-import
 description: Imports existing documents (PRDs, RFCs, API specs, test plans) into Company OS with proper frontmatter, type classification, and artifact linking. Use when bringing external documents into the artifact system.
 user-invokable: true
 argument-hint: "[path/to/file or paste content inline]"
-allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 ---
 
 # Artifact Import
@@ -155,6 +154,7 @@ All artifacts passed validation.
 
 ## Reference
 
+- **ID**: S-ORG-05
 - **Category**: Orchestration
 - **Inputs**: files in `imports/` OR inline content
 - **Outputs**: properly formatted artifacts in `artifacts/` subdirectories

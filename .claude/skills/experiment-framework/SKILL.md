@@ -1,7 +1,6 @@
 ---
 name: experiment-framework
 description: Designs statistically rigorous A/B experiments with sample size calculation, guardrail metrics, and results analysis. Use when planning experiments, validating feature impact, or analyzing test results.
-allowed-tools: Read, Grep, Glob, Bash, Write
 ---
 
 # Experiment Framework
@@ -29,6 +28,15 @@ Move beyond intuition-driven development to hypothesis-driven development. Every
 - Activation experiments from activation-onboarding skill need statistical design
 
 ## Experiment Framework Procedure
+
+### Step 0.5: Traffic Feasibility Check
+
+Before designing any experiment:
+1. If `analytics.provider` is configured, estimate current DAU from available data
+2. Calculate minimum feasible MDE (Minimum Detectable Effect) given traffic and 90-day max duration
+3. If DAU < 1,000: recommend qualitative validation (user interviews via discovery-validation, customer-conversations) over quantitative experiments
+4. Flag explicitly: "Quantitative experiments require N users over M days for statistical significance. Current traffic may not support this."
+5. For low-traffic products, suggest: fake door tests, concierge tests, or Wizard of Oz experiments as alternatives
 
 ### Step 1: Load Context
 

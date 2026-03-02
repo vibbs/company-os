@@ -3,7 +3,6 @@ name: system-maintenance
 description: Audits and syncs all Company OS documentation after structural changes. Use when skills, agents, tools, artifact types, or stage gates are added, removed, or modified.
 user-invokable: true
 argument-hint: "(no arguments needed)"
-allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 ---
 
 # System Maintenance
@@ -102,3 +101,12 @@ For each discrepancy:
 - After all fixes, re-run health-check to verify
 
 If no discrepancies: report "All documentation is in sync" and exit.
+
+## Reference
+
+- **ID**: S-ORG-07
+- **Category**: Orchestration
+- **Inputs**: all agent, skill, tool, and documentation files
+- **Outputs**: corrected documentation files
+- **Used by**: User (directly), Orchestrator Agent
+- **Tool scripts**: `./tools/registry/health-check.sh`

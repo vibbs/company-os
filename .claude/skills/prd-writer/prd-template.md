@@ -61,6 +61,19 @@ tags: []
 - **Translatable content**: [strings, emails, notifications, etc.]
 - **Locale detection**: [browser, user preference, IP, or N/A]
 
+## Discovery Validation
+<!-- For novel features only. Skip for common patterns (auth, CRUD, etc.) -->
+- **Validation method**: [interviews / landing page test / prototype / competitive analysis]
+- **Key findings**: [what was learned]
+- **Confidence level**: [high / medium / low]
+- **Link to validation artifact**: [if exists]
+
+## Measurement Plan
+| Event Name | Trigger | Properties | Tool |
+|------------|---------|------------|------|
+| [e.g., feature_activated] | [user completes X] | [user_id, plan, timestamp] | [PostHog/Mixpanel/etc.] |
+| [e.g., feature_error] | [error occurs during X] | [error_code, user_id] | [Sentry/etc.] |
+
 ## Context & References
 - [Link to user feedback, competitor analysis, mockups, etc.]
 ```

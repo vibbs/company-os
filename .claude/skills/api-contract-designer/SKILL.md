@@ -1,7 +1,6 @@
 ---
 name: api-contract-designer
 description: Designs REST/GraphQL API contracts with consistent error handling, pagination, auth, and i18n. Use when designing new API endpoints, modifying existing APIs, or creating service interfaces.
-allowed-tools: Read, Grep, Glob, Bash, Write
 ---
 
 # API Contract Designer

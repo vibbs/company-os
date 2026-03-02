@@ -134,6 +134,21 @@ When generating reports, if artifacts exist in `artifacts/finance/`, note how AI
 - CAC (AI-assisted customer acquisition costs)
 - Infrastructure costs in the investor template
 
+### Typical Session Cost Estimates
+
+Reference ranges for planning (based on Claude Opus/Sonnet pricing):
+
+| Flow | Typical Input Tokens | Typical Output Tokens | Estimated Cost |
+|------|---------------------|-----------------------|---------------|
+| `/ship` (full) | 150-300K | 30-60K | $3-8 |
+| `/prototype` | 50-100K | 15-30K | $1-3 |
+| `/code-review` | 30-80K | 10-20K | $0.50-2 |
+| `/status` | 10-30K | 5-10K | $0.20-0.50 |
+| Single skill | 20-50K | 5-15K | $0.30-1 |
+| Agent sub-delegation | 15-40K per agent | 5-10K per agent | $0.25-1 per agent |
+
+These are estimates only. Actual costs depend on codebase size, artifact count, and conversation length.
+
 ## Cross-References
 
 - **pricing-unit-economics** — consumes AI cost data for infrastructure cost calculations

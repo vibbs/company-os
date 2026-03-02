@@ -6,7 +6,7 @@ description: Builds keyword clusters and internal linking strategy for content-l
 # SEO Topic Map
 
 ## Reference
-- **ID**: S-GROW-03
+- **ID**: S-GRO-03
 - **Category**: Growth
 - **Inputs**: ICP document, product capabilities, competitor content, keyword research data
 - **Outputs**: SEO topic map and linking strategy → artifacts/growth/
@@ -17,6 +17,20 @@ description: Builds keyword clusters and internal linking strategy for content-l
 Creates a structured topic map that organizes target keywords into clusters around pillar pages, defines internal linking relationships, and prioritizes content creation based on search volume, difficulty, and business relevance.
 
 ## Procedure
+
+### Domain Authority Gate
+
+If `company.stage` is `idea`/`mvp` and domain is new (< 6 months old or DA < 10):
+
+**Zero-Authority Mode:**
+- Target keyword difficulty (KD) < 10 only
+- Target search volume < 1,000/month
+- Prioritize question-format queries (featured snippet opportunity)
+- Focus on long-tail, low-competition terms
+- The pillar-cluster architecture is a 12-month horizon play — build it now but expect results later
+
+**Primary acquisition while authority builds:** Use channel-playbook skill for direct outreach, community participation, and social channels. SEO is a long game at this stage.
+
 1. Review the ICP document to understand what the target audience searches for.
 2. Conduct keyword research: seed keywords from product capabilities and pain points.
 3. Group keywords into topic clusters around 4-6 pillar themes.

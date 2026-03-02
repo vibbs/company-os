@@ -6,8 +6,8 @@ description: Performs CAC/LTV analysis and pricing model validation. Use when se
 # Pricing & Unit Economics
 
 ## Reference
-- **ID**: S-FIN-01
-- **Category**: Finance
+- **ID**: S-RISK-05
+- **Category**: Ops & Risk
 - **Inputs**: revenue data, cost structure, acquisition spend, churn rates, customer segmentation
 - **Outputs**: unit economics report + financial forecast → artifacts/finance/
 - **Used by**: Ops & Risk Agent
@@ -17,6 +17,20 @@ description: Performs CAC/LTV analysis and pricing model validation. Use when se
 Analyzes customer acquisition cost (CAC), lifetime value (LTV), and related unit economics to validate that the pricing model is sustainable and identify levers for improving profitability.
 
 ## Procedure
+
+### Step 0: Revenue Stage Check
+
+Read `company.stage` from `company.config.yaml`.
+
+**Pre-Revenue Mode** (idea/mvp, 0-10 customers):
+1. Value metric selection — what unit of value does the customer pay for?
+2. Willingness-to-pay hypothesis via customer conversations
+3. Competitive pricing teardown — 3-5 comparable products
+4. Initial price range (floor = cost x 3, ceiling = competitor median)
+5. Price sensitivity test script for first 10 sales conversations
+
+Skip CAC/LTV/NRR calculations until sufficient data exists. Proceed to full unit economics when monthly revenue exceeds $1K or customer count exceeds 20.
+
 1. Calculate **CAC**: total acquisition spend / number of new customers acquired, by channel.
 2. Calculate **LTV**: average revenue per user (ARPU) * gross margin % * average customer lifetime.
 3. Compute the **LTV:CAC ratio** and assess health (target: 3:1 or higher).

@@ -6,7 +6,7 @@ description: Generates conversion-focused landing page copy organized by section
 # Landing Page Copy
 
 ## Reference
-- **ID**: S-GROW-02
+- **ID**: S-GRO-02
 - **Category**: Growth
 - **Inputs**: messaging framework, ICP document, campaign goals, CTA targets
 - **Outputs**: landing page copy document → artifacts/growth/
@@ -52,6 +52,19 @@ When landing page content is adapted for presentations:
 - **Slide framework**: Problem (1-2 slides) -> Solution (1-2 slides) -> Demo (2-3 slides) -> Social Proof (1 slide) -> CTA (1 slide)
 - **One idea per slide**: Don't crowd. Large text, minimal bullets.
 - **Visual consistency**: Use brand colors, consistent fonts, company logo on every slide.
+
+### Deployable Format Output
+
+After producing the copy document, generate a deployment-ready format:
+
+1. Read `tech_stack.framework` from `company.config.yaml`
+2. Produce format based on stack:
+   - **Next.js/React**: `.tsx` page component scaffold with copy inline as JSX
+   - **HTML/Static**: complete HTML file with inline Tailwind CDN styles
+   - **Webflow/Framer**: structured JSON with section labels mapping to CMS fields
+   - **Astro**: `.astro` page component with copy inline
+3. Copy document still saved to `artifacts/growth/`; deployable format is the working output
+4. Include placeholder slots for images, CTAs, and form elements
 
 ## Quality Checklist
 - [ ] Single clear CTA is consistent throughout the page

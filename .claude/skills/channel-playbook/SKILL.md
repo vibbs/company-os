@@ -6,7 +6,7 @@ description: Creates platform-specific marketing playbooks for acquisition chann
 # Channel Playbook
 
 ## Reference
-- **ID**: S-GROW-04
+- **ID**: S-GRO-04
 - **Category**: Growth
 - **Inputs**: ICP document, messaging framework, channel selection, budget constraints
 - **Outputs**: channel playbook document → artifacts/growth/
@@ -17,6 +17,32 @@ description: Creates platform-specific marketing playbooks for acquisition chann
 Produces a platform-specific marketing playbook for a chosen acquisition channel, covering content strategy, posting cadence, engagement tactics, and success metrics tailored to that channel's dynamics.
 
 ## Procedure
+
+### Direct Outreach / Founder-Led Sales
+
+**Stage: Highest leverage at idea/mvp. Every founder should start here.**
+
+1. **ICP-to-Prospecting**: Where targets are findable
+   - LinkedIn: job title + company size filters
+   - Slack/Discord communities: where your ICP hangs out
+   - Twitter/X lists: curated lists of target personas
+   - GitHub: for developer tools (contributors to related projects)
+
+2. **Outreach Message Frameworks** (problem-led, not pitch-led):
+   - Lead with a question about their pain point, not your solution
+   - Reference something specific about them (recent post, company news)
+   - Ask for 15 minutes, not a demo
+   - Template: "Hey [name], I noticed [specific observation]. I'm building [one-liner] and curious — how do you currently handle [pain point]? Would love 15 min to learn from you."
+
+3. **Follow-up Cadence** (3-touch sequence):
+   - Day 0: Initial message
+   - Day 3: Value-add follow-up (share relevant content/insight)
+   - Day 7: Final follow-up with soft close
+
+4. **Bridge to Discovery**: Use customer-conversations skill for the actual call prep and debrief
+
+---
+
 1. Select the target channel and review its audience dynamics, algorithm behavior, and best practices.
 2. Review the ICP document to confirm audience presence on this channel.
 3. Define channel-specific goals: awareness, traffic, leads, or direct conversions.

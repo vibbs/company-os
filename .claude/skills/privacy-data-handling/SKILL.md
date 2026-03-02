@@ -17,6 +17,22 @@ description: Defines data retention policies, access controls, and deletion proc
 Establishes clear policies for data retention, access controls, and deletion procedures that comply with privacy regulations and protect user data throughout its lifecycle from collection to destruction.
 
 ## Procedure
+
+### Step 0: Identify Data Processors
+
+Read `company.config.yaml` and extract third-party data processors:
+- `analytics.provider` (e.g., PostHog, Mixpanel, Plausible)
+- `email.provider` (e.g., Resend, SendGrid, Postmark)
+- `observability.error_tracking` (e.g., Sentry, Datadog)
+- `ai.llm_provider` (e.g., Anthropic, OpenAI)
+- `support.platform` (e.g., Intercom, Crisp)
+
+For each identified processor, add a specific line to the DPA (Data Processing Agreement) checklist:
+- [ ] DPA signed with [provider]
+- [ ] Data residency confirmed (EU/US)
+- [ ] Sub-processor list reviewed
+- [ ] Deletion/export API documented
+
 1. Inventory all personal and sensitive data collected: what data, where stored, why collected.
 2. Classify data by sensitivity level: public, internal, confidential, restricted.
 3. Define retention periods for each data category based on business need and regulatory requirements.

@@ -1,7 +1,6 @@
 ---
 name: prd-writer
 description: Generates consistent PRDs with problem statements, acceptance criteria, success metrics, and scope boundaries. Use when creating or updating product requirements for any feature.
-allowed-tools: Read, Grep, Glob, Bash, Write
 ---
 
 # PRD Writer

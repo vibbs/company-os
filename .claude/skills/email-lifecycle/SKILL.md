@@ -1,13 +1,12 @@
 ---
 name: email-lifecycle
 description: Designs email sequences, templates, and send triggers for SaaS lifecycle marketing and transactional emails. Use when planning onboarding drips, transactional notifications, activation campaigns, or retention email flows.
-allowed-tools: Read, Grep, Glob, Bash, Write
 ---
 
 # Email Lifecycle
 
 ## Reference
-- **ID**: S-GROW-06
+- **ID**: S-GRO-06
 - **Category**: Growth
 - **Inputs**: company.config.yaml (email section, tech_stack), PRDs, activation-onboarding output
 - **Outputs**: email strategy (standards/email/), per-feature email templates and triggers
@@ -26,6 +25,18 @@ Design and document the complete email lifecycle for a SaaS product -- transacti
 - Activation or retention email campaigns are being planned
 
 ## Procedure
+
+### Step 0: Email Provider Check
+
+Read `email.provider` from `company.config.yaml`.
+
+If not configured, pause and recommend a provider:
+- **Resend**: Simple API, React Email templates, free tier < 3K emails/month. Best for developers.
+- **Postmark**: Excellent deliverability, transactional-only focus. Best for transactional emails.
+- **SendGrid**: Full-featured, good free tier. Best if you need marketing + transactional.
+- **Amazon SES**: Cheapest at scale, more setup. Best for high-volume senders.
+
+Walk the user through updating `company.config.yaml` with their choice before proceeding.
 
 ### Step 1: Load Context
 

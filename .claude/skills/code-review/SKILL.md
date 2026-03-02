@@ -3,7 +3,6 @@ name: code-review
 description: Structured multi-section code review with interactive feedback — architecture, quality, tests, performance. Use for PR reviews, pre-merge quality checks, or self-review before handoff.
 user-invokable: true
 argument-hint: "[pr-number or file-paths]"
-allowed-tools: Read, Grep, Glob, Bash
 ---
 
 # Code Review
@@ -67,7 +66,7 @@ After determining scope, report:
 
 **BEFORE YOU START:** Ask whether the user wants:
 
-**1/ BIG CHANGE** — Work through interactively, one section at a time (Architecture → Code Quality → Tests → Performance) with at most 4 top issues in each section.
+**1/ BIG CHANGE** — Work through interactively, one section at a time (Architecture → Code Quality → Tests → Performance → Security) with at most 4 top issues in each section.
 
 **2/ SMALL CHANGE** — Work through interactively, ONE question per review section.
 
@@ -186,9 +185,27 @@ Same issue format. Pause for user feedback after completing.
 
 ---
 
+### Section 5: Security Review
+
+**Default: enabled at all stages. In SMALL CHANGE mode, flag at least 1 security consideration.**
+
+Check for:
+- **Injection patterns**: SQL injection (parameterized queries?), command injection (`exec`/`spawn` with user input?), XSS (output encoding?)
+- **Auth checks**: Every mutating endpoint has authentication middleware? Authorization checked on resource access?
+- **IDOR patterns**: Resource IDs from request params validated against current user's ownership/permissions?
+- **Secrets in code**: Hardcoded API keys, tokens, passwords? `.env` files committed?
+- **Header security**: CORS configured restrictively? CSP headers set? HSTS enabled?
+- **Dependency risk**: Known vulnerabilities in dependencies? Outdated packages with security patches?
+
+**Note:** AI-generated code has elevated risk in auth middleware ordering, SQL construction, and ownership checks. Pay extra attention to these patterns.
+
+Same issue format. Pause for user feedback after completing.
+
+---
+
 ### Step 3: Review Summary
 
-After all four sections are complete (or the focused section if user requested a single one), produce a review summary:
+After all five sections are complete (or the focused section if user requested a single one), produce a review summary:
 
 ```markdown
 ## Code Review Summary
@@ -207,6 +224,7 @@ After all four sections are complete (or the focused section if user requested a
 | Code Quality | N | N | N | N |
 | Test | N | N | N | N |
 | Performance | N | N | N | N |
+| Security | N | N | N | N |
 | **Total** | **N** | **N** | **N** | **N** |
 
 ### Decisions Made
@@ -250,7 +268,7 @@ If the user specifies a single section (e.g., `/code-review src/auth/ --focus pe
 ### Engineering Self-Review (Pre-Handoff)
 
 When invoked by the Engineering Agent as a pre-handoff self-review:
-1. Run all four sections in SMALL CHANGE mode (one issue per section) automatically
+1. Run all five sections in SMALL CHANGE mode (one issue per section) automatically
 2. Do not pause between sections (non-interactive)
 3. If any issue is rated as blocking: stop and address before handoff
 4. Produce the summary artifact automatically and link to the RFC
@@ -258,7 +276,7 @@ When invoked by the Engineering Agent as a pre-handoff self-review:
 ### QA Release Review
 
 When invoked by the QA & Release Agent:
-1. Run Code Quality and Test sections in BIG CHANGE mode
+1. Run Code Quality, Test, and Security sections in BIG CHANGE mode
 2. Run Architecture and Performance in SMALL CHANGE mode
 3. Results feed into the release-readiness-gate Bar 5 (Code Quality) evaluation
 

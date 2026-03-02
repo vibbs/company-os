@@ -3,7 +3,6 @@ name: ingest
 description: Scans standards/ and artifacts/ for new or changed content and suggests updates to skills, agents, and configuration. Use after adding new standards documents, API specs, or artifacts to synchronize the system.
 user-invokable: true
 argument-hint: "[optional: standards, artifacts, or both]"
-allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 ---
 
 # Ingest
@@ -46,6 +45,14 @@ For each detected file, classify its impact area:
 | `standards/coding/*` | implementation-decomposer, observability-baseline | engineering, qa-release |
 | `standards/compliance/*` | compliance-readiness, privacy-data-handling, threat-modeling | ops-risk |
 | `standards/templates/*` | prd-writer, architecture-draft, test-plan-generator (match by template type) | product, engineering, qa-release |
+| `standards/brand/*` | design-system, positioning-messaging | engineering-frontend, growth |
+| `standards/ops/*` | support-operations, token-cost-ledger, incident-response | ops-risk, orchestrator |
+| `standards/analytics/*` | instrumentation, experiment-framework | engineering, qa-release |
+| `standards/docs/*` | user-docs | engineering-frontend |
+| `standards/email/*` | email-lifecycle | growth |
+| `standards/engineering/*` | ai-engineering, architecture-draft | engineering |
+| `standards/growth/*` | content-engine, channel-playbook | growth |
+| `standards/security/*` | security-posture, threat-modeling, compliance-readiness | ops-risk |
 | `artifacts/prds/*` | workflow-router (state tracking), sprint-prioritizer | orchestrator, product |
 | `artifacts/rfcs/*` | workflow-router, implementation-decomposer, api-tester-playbook | orchestrator, engineering, qa-release |
 | `artifacts/security-reviews/*` | release-readiness-gate, threat-modeling | orchestrator, ops-risk |
@@ -116,6 +123,21 @@ On first run (no previous ingest), scan everything (don't filter by date). Map a
 
 ### Conflicting Standards
 If a new standard contradicts an existing one in the same directory, flag it explicitly: "standards/api/error-format-v1.md and standards/api/error-format-v2.md may conflict — review before applying."
+
+### State Tracking
+
+After a successful ingest:
+1. Write `.company-os/last-ingest.json` with:
+   ```json
+   {
+     "timestamp": "ISO-8601",
+     "files_processed": ["list of files"],
+     "changes_detected": ["list of changes"],
+     "skills_updated": ["list of skills"]
+   }
+   ```
+2. On subsequent runs, use `timestamp` as the default `--since` value to only process new changes
+3. If `--force` is passed, ignore the timestamp and process all files
 
 ## Quality Checklist
 

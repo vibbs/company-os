@@ -17,6 +17,18 @@ description: Prioritizes features and work items using impact, effort, and risk 
 Takes a backlog of features and work items and produces a prioritized sprint plan by scoring each item on impact, effort, and risk, ensuring the team works on the highest-value items first.
 
 ## Procedure
+
+### Step 0: Define Sprint Capacity
+
+Before prioritization, establish capacity constraints:
+- **Sprint duration**: default 2 weeks (configurable)
+- **Available hours**: default for solopreneur is 28h productive per week (56h per sprint)
+- **Effort scale**: 1 = 1 day, 2 = 3 days, 3 = 1 week, 4 = 2 weeks, 5 = 3+ weeks (split required)
+- **Default weights**: Impact 40%, Effort 30%, Risk 20%, Strategic Alignment 10%
+
+Read `company.stage` from config — at `idea`/`mvp`, bias toward Impact weight (50%) and reduce Strategic Alignment (0%) since survival trumps strategy.
+
+### Steps
 1. Collect the candidate feature/work-item backlog for the upcoming sprint.
 2. For each item, score **impact** (1-5): user value, revenue potential, strategic alignment.
 3. For each item, score **effort** (1-5): engineering complexity, dependencies, unknowns.

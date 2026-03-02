@@ -11,7 +11,7 @@ description: Generates API testing playbooks covering contract tests, authentica
 - **Inputs**: API specification (OpenAPI/Swagger), auth model, endpoint inventory
 - **Outputs**: API test playbook → artifacts/qa/
 - **Used by**: QA Agent
-- **Tool scripts**: ./tools/artifact/validate.sh
+- **Tool scripts**: ./tools/artifact/validate.sh, ./tools/qa/contract-test.sh
 
 ## Purpose
 Produces a structured API testing playbook that covers contract testing, authentication and authorization edge cases, pagination correctness, rate limiting behavior, and error response validation for every endpoint.
@@ -28,6 +28,20 @@ Produces a structured API testing playbook that covers contract testing, authent
 9. Organize tests into a runnable playbook with setup/teardown steps.
 10. Save the playbook to `artifacts/qa/`.
 11. Validate the artifact using `./tools/artifact/validate.sh`.
+
+### Test Scaffold Generation
+
+After producing the playbook document, generate actual test file scaffolds:
+
+1. Read `tech_stack.test_framework` and `tech_stack.language` from `company.config.yaml`
+2. Generate test files based on stack:
+   - **TypeScript + Jest/Vitest**: `tests/integration/api/<endpoint>.test.ts`
+   - **Python + pytest**: `tests/api/test_<endpoint>.py`
+   - **Go + testing**: `internal/<package>/<endpoint>_test.go`
+3. Each test file includes: setup/teardown, auth helper, one happy-path test, one error test
+4. Run `./tools/qa/contract-test.sh <spec> <url>` to validate against API spec
+
+The playbook document remains as a companion artifact in `artifacts/test-plans/`.
 
 ## Quality Checklist
 - [ ] Every endpoint has contract tests

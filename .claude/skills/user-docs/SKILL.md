@@ -1,7 +1,6 @@
 ---
 name: user-docs
 description: Produces user-facing documentation, guided tour specifications, and changelog entries for every shipped feature. Ensures users can discover, learn, and adopt new functionality.
-allowed-tools: Read, Grep, Glob, Bash, Write
 user-invokable: false
 ---
 

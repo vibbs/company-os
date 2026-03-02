@@ -2,7 +2,6 @@
 name: release-readiness-gate
 description: Final quality gate checklist with pass/fail evaluation and release verdict. Run this before approving any release.
 disable-model-invocation: true
-allowed-tools: Read, Grep, Glob, Bash
 ---
 
 # Release Readiness Gate
@@ -55,12 +54,14 @@ Each bar is pass/fail. ALL must pass for release approval.
 - [ ] All acceptance criteria are present and testable
 - [ ] Success metrics are defined with baselines and targets
 - [ ] Scope boundaries are explicit
+- Stage-aware: advisory in `idea` stage.
 
 #### Bar 2: Technical Design
 - [ ] RFC/ADR exists and is approved
 - [ ] API contract exists (if feature has API changes)
 - [ ] Data model changes documented
 - [ ] Migration strategy defined (if applicable)
+- Stage-aware: advisory in `idea`, RFC required at `mvp`+.
 
 #### Bar 3: Security & Risk
 - [ ] Threat model exists (even minimal)
@@ -68,12 +69,15 @@ Each bar is pass/fail. ALL must pass for release approval.
 - [ ] Dependency scan has been run (logs exist)
 - [ ] Secrets scan has been run (logs exist)
 - [ ] Auth model reviewed
+- [ ] Security posture snapshot exists and is recent (run `/security-posture` or `./tools/security/posture-check.sh`)
+- Stage-aware: minimal threat model at `mvp`, full dependency/secrets scan at `growth`+.
 
 #### Bar 4: Testing
 - [ ] Test plan exists linked to PRD acceptance criteria
 - [ ] Unit/integration tests pass
 - [ ] API contract tests pass (if applicable)
 - [ ] No critical test failures
+- Stage-aware: basic test plan at `mvp`+, contract tests at `growth`+.
 
 #### Bar 5: Code Quality
 - [ ] Lint passes
@@ -87,7 +91,8 @@ Each bar is pass/fail. ALL must pass for release approval.
 - [ ] Rollback strategy documented in RFC
 - [ ] Deployment strategy exists in `standards/ops/deployment-strategy.md` (or feature-level deployment plan in RFC)
 - [ ] Pre-deploy checks pass (`./tools/deploy/pre-deploy.sh`)
-- [ ] Incident runbook exists in `standards/ops/incident-runbook.md` (at least for production-stage products)
+- [ ] Incident runbook exists (e.g., `standards/ops/support-runbook.md` or dedicated incident runbook) (at least for production-stage products)
+- Stage-aware: incident runbook at `growth`+ only. Deployment strategy at `mvp`+.
 
 #### Bar 7: Release Versioning
 - [ ] App version file exists (`package.json`, `pyproject.toml`, or `VERSION`)

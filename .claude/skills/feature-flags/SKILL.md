@@ -1,7 +1,6 @@
 ---
 name: feature-flags
 description: Designs feature flag strategy, progressive discovery patterns, and per-feature flag specifications for safe rollouts and organic product learning.
-allowed-tools: Read, Grep, Glob, Bash, Write
 user-invokable: false
 ---
 

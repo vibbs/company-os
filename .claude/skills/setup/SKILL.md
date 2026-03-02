@@ -502,6 +502,8 @@ artifacts/qa-reports/
 artifacts/launch-briefs/
 artifacts/security-reviews/
 artifacts/decision-memos/
+artifacts/product/
+artifacts/experiments/
 artifacts/.audit-log/
 standards/api/
 standards/coding/
@@ -632,8 +634,8 @@ Files that are **always kept** (operationally required):
 - {N} directories created, {M} already existed
 
 ### Next Steps
-1. **Install dependencies** — run `npm install`, `pip install -r requirements.txt`, `go mod download`, or the equivalent for your tech stack
-2. **Set up dev infrastructure** — run `/dev-environment` to generate Docker Compose files, `.env.example`, and dev scripts. Then: `cp .env.example .env && bash tools/dev/start.sh`
+1. **`/dev-environment`** — Generate Docker Compose, `.env.example`, and dev scripts. **Required before running `/ship`** — the Seed & Verify step depends on `tools/dev/start.sh`.
+2. **Install dependencies** — run `npm install`, `pip install -r requirements.txt`, `go mod download`, or the equivalent for your tech stack
 3. **Place reference docs** in `standards/` and run `/ingest` to sync agents
 4. **Import existing artifacts** — if you have PRDs, RFCs, or specs elsewhere, run `/artifact-import` to bring them in
 5. **Generate seed data** — after your first ship cycle creates domain entities, run `/seed-data` to generate test data for all scenarios
@@ -649,6 +651,7 @@ Files that are **always kept** (operationally required):
 
 ## Reference
 
+- **ID**: S-ORG-06
 - **Category**: Orchestration
 - **Inputs**: user prompts, existing config state, environment signals
 - **Outputs**: `company.config.yaml`, `.claude/settings.json`, scaffolded directories

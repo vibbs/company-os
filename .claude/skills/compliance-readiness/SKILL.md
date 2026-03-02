@@ -17,6 +17,23 @@ description: Performs SOC2-lite checklist assessment and compliance gap analysis
 Assesses the organization's compliance posture against SOC2 Trust Service Criteria (or a lightweight subset), identifies gaps, and produces a prioritized remediation plan to achieve or maintain compliance readiness.
 
 ## Procedure
+
+### Step 0: Stage-Based Compliance Routing
+
+Read `company.stage` and data types handled from `company.config.yaml`.
+
+**idea/mvp stage**:
+- GDPR basics: consent mechanism, privacy policy, deletion rights, DPA with Stripe/email provider
+- CCPA awareness if US-based users
+- HIPAA awareness check (if health data)
+- PCI scope check (using Stripe = not in PCI scope)
+- Skip full SOC2 assessment
+
+**growth/scale stage** or explicit enterprise customer requirement:
+- Full SOC2-lite assessment (existing procedure below)
+- Add vendor security questionnaire readiness
+- Data processing inventory
+
 1. Define the compliance scope: which systems, services, and data are in scope.
 2. Map current controls against SOC2 Trust Service Criteria categories:
    - Security (CC): access controls, encryption, vulnerability management.

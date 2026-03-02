@@ -17,6 +17,18 @@ description: Defines ideal customer profile and product positioning. Use when es
 Produces a clear ideal customer profile (ICP) and positioning statement that align the team on who the product is built for, what problem it solves, and why it wins against alternatives.
 
 ## Procedure
+
+### Step 0: Evidence Check
+
+If no user evidence exists (no CONV- artifacts in `artifacts/decision-memos/`, no interview summaries):
+
+Produce a **Hypothesis ICP** with clearly labeled assumptions:
+- Each assumption should have a validation method (interview question, signup data, usage metric)
+- Tag artifact status `draft` and add `assumption_based: true` to frontmatter
+- Once 5+ customer conversations validate or invalidate assumptions, update to Evidence ICP and promote to `review`
+
+Proceed to full evidence-based ICP when sufficient data exists.
+
 1. Gather inputs: market research data, user interview summaries, competitor analysis.
 2. Define ICP demographics: company size, industry, role/title, budget range.
 3. Define ICP psychographics: pain points, goals, buying triggers, objections.
