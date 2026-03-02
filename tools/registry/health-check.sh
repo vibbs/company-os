@@ -61,26 +61,89 @@ for skill_dir in "$SKILLS_DIR"/*/; do
   fi
 
   # Check for invalid frontmatter fields (non-official)
-  for field in "id" "category" "inputs" "outputs" "output_schema" "recommended_tools" "used_by"; do
+  for field in "id" "category" "inputs" "outputs" "output_schema" "recommended_tools" "used_by" "allowed-tools"; do
     if echo "$FRONTMATTER" | grep -q "^${field}:"; then
       echo "⚠️  $DIR_NAME: Non-official frontmatter field '$field' (move to markdown body)"
       WARNINGS=$((WARNINGS + 1))
     fi
   done
 
+  # Check for common misspelling of user-invokable
+  if echo "$FRONTMATTER" | grep -q "^user-invocable:"; then
+    echo "⚠️  $DIR_NAME: Misspelled field 'user-invocable' — should be 'user-invokable'"
+    WARNINGS=$((WARNINGS + 1))
+  fi
+
 done
 
 echo ""
 echo "==========================="
-echo "Total skills: $TOTAL"
-echo "Errors: $ERRORS"
-echo "Warnings: $WARNINGS"
+
+# --- Agent Health Check ---
+echo ""
+echo "Agent Registry Health Check"
+echo "==========================="
+
+AGENT_TOTAL=0
+AGENT_WARNINGS=0
+AGENT_ERRORS=0
+
+for agent_file in "$AGENTS_DIR"/*.md; do
+  [[ ! -f "$agent_file" ]] && continue
+  AGENT_NAME=$(basename "$agent_file" .md)
+  AGENT_TOTAL=$((AGENT_TOTAL + 1))
+
+  # Check frontmatter exists
+  FIRST_LINE=$(head -1 "$agent_file")
+  if [[ "$FIRST_LINE" != "---" ]]; then
+    echo "❌ $AGENT_NAME: Missing YAML frontmatter"
+    AGENT_ERRORS=$((AGENT_ERRORS + 1))
+    continue
+  fi
+
+  # Extract frontmatter
+  AGENT_FM=$(sed -n '/^---$/,/^---$/p' "$agent_file" | sed '1d;$d')
+
+  # Check required fields
+  for field in "name" "description" "tools"; do
+    if ! echo "$AGENT_FM" | grep -q "^${field}:"; then
+      echo "❌ $AGENT_NAME: Missing required field '$field'"
+      AGENT_ERRORS=$((AGENT_ERRORS + 1))
+    fi
+  done
+
+  # Check skills references resolve to actual skill directories
+  AGENT_SKILLS=$(echo "$AGENT_FM" | grep "^  - " | sed 's/^  - //' || true)
+  if [[ -n "$AGENT_SKILLS" ]]; then
+    while IFS= read -r skill; do
+      if [[ ! -d "$SKILLS_DIR/$skill" ]]; then
+        echo "❌ $AGENT_NAME: References non-existent skill '$skill'"
+        AGENT_ERRORS=$((AGENT_ERRORS + 1))
+      fi
+    done <<< "$AGENT_SKILLS"
+  fi
+
+  # Check memory: project agents have MEMORY.md
+  if echo "$AGENT_FM" | grep -q "^memory: project"; then
+    MEMORY_DIR="$(dirname "$0")/../../.claude/agent-memory/$AGENT_NAME"
+    if [[ ! -f "$MEMORY_DIR/MEMORY.md" ]]; then
+      echo "⚠️  $AGENT_NAME: Has memory: project but no MEMORY.md at .claude/agent-memory/$AGENT_NAME/"
+      AGENT_WARNINGS=$((AGENT_WARNINGS + 1))
+    fi
+  fi
+done
+
+echo ""
+echo "==========================="
+echo "Skills:  $TOTAL total, $ERRORS errors, $WARNINGS warnings"
+echo "Agents:  $AGENT_TOTAL total, $AGENT_ERRORS errors, $AGENT_WARNINGS warnings"
 echo ""
 
-if [[ $ERRORS -gt 0 ]]; then
+TOTAL_ERRORS=$((ERRORS + AGENT_ERRORS))
+if [[ $TOTAL_ERRORS -gt 0 ]]; then
   echo "❌ Health check FAILED"
   exit 1
 else
-  echo "✅ Health check PASSED (with $WARNINGS warnings)"
+  echo "✅ Health check PASSED (with $((WARNINGS + AGENT_WARNINGS)) warnings)"
   exit 0
 fi
