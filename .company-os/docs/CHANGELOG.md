@@ -11,6 +11,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [1.10.0] - 2026-03-17
+
+### Added
+- **GTM Sprint skill** (`/gtm-sprint`, S-GRO-09) — Time-boxed go-to-market sprint (7/14/21 days) that sequences customer validation, positioning, launch, and distribution with quantified decision gates. Inspired by the 100x GTM Playbook methodology. Includes LOI template, sprint plan/report artifacts, and stage-aware defaults
+- **Mom-Test interview methodology** in `customer-conversations` — New `mom-test` conversation type with The Mom Test rules, question bank, anti-patterns, and enhanced debrief fields ($$ quantification, commitment signals)
+- **Pain Matrix output** in `feedback-synthesizer` — Step 12 produces a Pain Matrix table (themes x $$ impact x urgency), quadrant classification (Build Now / Build Next / Quick Win / Monitor), and quotable quotes section for landing pages and pitch decks
+- **Directory Blitz playbook** in `channel-playbook` — Master list of 19 SaaS directories with submission requirements, hook formulas using interview data, and submission tracking checklist
+- **Build-in-Public arc** in `channel-playbook` — Structured 14-day content arc that turns a GTM sprint into a public narrative across Twitter/LinkedIn/communities
+- **Competitor Poaching playbook** in `channel-playbook` — How to find competitor reviewers (G2, Capterra, Reddit), value-first outreach templates, and concierge migration offers
+- **LOI artifact type** — `loi` added to `validate.sh` VALID_TYPES for Letter of Intent artifacts with structured template (commitment level, pilot terms, prospect context)
+- **GTM/Market Validation** workflow type in Workflow Router — New classification that routes to Growth Agent GTM Sprint, skipping Engineering entirely
+- **GTM Sprint Flow** section in CLAUDE.md — Documents the GTM Sprint as an alternative to `/ship` for market validation
+
+### Changed
+- **Growth Agent**: 8 → 9 skills (added gtm-sprint). New GTM Sprint behavioral rules for pre-product validation and LOI tracking
+- **Orchestrator**: New delegation pattern for GTM/market validation ("Go to market", "GTM", "Validate market", "Find customers")
+- **Workflow Router**: 9 → 10 classification types (added GTM / Market Validation with shortcut flow)
+- Skill count: 62 → 63
+
 ## [1.9.0] - 2026-03-02
 
 ### Added

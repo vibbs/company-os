@@ -30,6 +30,7 @@ Structures the process of talking to customers. Provides pre-call preparation (w
 | Type | Purpose | Key Signals |
 |------|---------|-------------|
 | `discovery` | Understand user problems, validate hypotheses | Pain intensity, current workarounds, willingness to pay |
+| `mom-test` | Mom-Test methodology — validate pain without leading | Current behavior, $$ cost of status quo, workarounds tried |
 | `demo` | Show the product, gauge interest | Feature reactions, objections, comparison mentions |
 | `churn-save` | Understand why a user is leaving | Root cause, what would change their mind, competitor mentions |
 | `upsell` | Explore expansion opportunities | Usage patterns, feature gaps, budget signals |
@@ -50,6 +51,44 @@ Structures the process of talking to customers. Provides pre-call preparation (w
 - Guidance on finding first 10 targets (LinkedIn search, community lurking, competitor reviews)
 - Starter interview script focused on problem discovery
 - Link to icp-positioning skill to formalize learnings after 5+ conversations
+
+### Mom-Test Interview Methodology
+
+When conversation type is `mom-test`, apply The Mom Test rules strictly:
+
+**Core Principle**: Talk about their life, not your idea. Extract facts about past behavior, not opinions about the future.
+
+**The 5 Mom-Test Rules**:
+1. **Never ask "Would you use this?"** — People are polite liars. Instead ask: "How do you handle [problem] today?"
+2. **Never ask "Would you pay for this?"** — Instead ask: "What does [current workaround] cost you in time/money?"
+3. **Ask about specifics in the past, not hypotheticals** — "Tell me about the last time [problem] happened" vs. "Do you ever experience [problem]?"
+4. **Talk less, listen more** — Target 80% listening, 20% talking. Follow their energy.
+5. **Extract commitment or advancement** — End every call with a concrete next step (intro to a colleague, LOI review, pilot agreement).
+
+**Mom-Test Question Bank** (use 5-7 per call, 15 min max):
+- "What's the hardest part of [workflow] for you right now?"
+- "Can you walk me through the last time that happened?"
+- "What did you do about it? What else have you tried?"
+- "How much time/money does that cost you per [week/month]?"
+- "Who else in your org deals with this problem?"
+- "What would a dream solution look like?" (only AFTER understanding the problem)
+- "If you had a magic wand, what would you change about [current tool/process]?"
+- "What are you using today to solve this? What's working? What's not?"
+- "Have you looked for solutions? What happened?"
+- "How urgent is solving this? What's your timeline?"
+
+**Anti-Patterns to Avoid**:
+- Pitching your solution before minute 10
+- Asking binary yes/no questions
+- Fishing for compliments ("Don't you think X would be great?")
+- Talking about features before understanding the problem
+- Accepting "that would be nice" as validation (it's not)
+
+**Debrief Extras for Mom-Test**:
+When debriefing a mom-test conversation, also capture:
+- **$$ Quantification**: estimated cost of the problem per month/year
+- **Workarounds tried**: what they've already done to solve this
+- **Commitment signal**: did they offer an intro, agree to review an LOI, or ask for a follow-up?
 
 ### Mode: `prep <type>`
 

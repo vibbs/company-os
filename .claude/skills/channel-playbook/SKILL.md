@@ -113,6 +113,100 @@ When producing channel-specific playbooks, reference the platform-specific guida
 - **Commenting**: Contribute thoughtful, technical responses. Don't ask for upvotes. Don't use multiple accounts.
 - **Avoid**: Marketing language, growth hacking, shallow content, astroturfing, voting rings.
 
+## GTM Sprint Tactics
+
+The following tactical playbooks are designed for time-boxed GTM sprints (see `/gtm-sprint`). They can also be used standalone.
+
+### Directory Blitz
+
+**When**: Day 9 of GTM Sprint, or any launch push needing broad visibility fast.
+
+**Procedure**:
+1. Select relevant directories from the master list below based on product category
+2. Prepare a submission packet: one-liner, 3-sentence description, 3 screenshots, logo, founder bio
+3. Craft a directory-specific hook using interview data (e.g., "We interviewed 60 compliance teams and found...")
+4. Submit to 15+ directories in a single session
+5. Track submissions in a checklist artifact
+
+**Directory Master List** (SaaS / Developer Tools):
+
+| Directory | Category | Notes |
+|-----------|----------|-------|
+| Product Hunt | Launch | Tue-Thu, 12:01 AM PST (see PH deep-dive above) |
+| BetaList | Pre-launch | Good for wait-list building |
+| Launching Next | Pre-launch | Upcoming product announcements |
+| SaaSHub | SaaS | Alternative-to style listings |
+| AlternativeTo | Alternatives | Position against specific competitors |
+| G2 | Reviews | Requires verified reviews, longer setup |
+| Capterra | Reviews | Pay-to-play for featured, free basic listing |
+| GetApp | Reviews | Gartner-owned, good for enterprise visibility |
+| StackShare | Dev tools | Developer-focused, good for technical products |
+| SourceForge | Open source | If applicable |
+| Indie Hackers | Community | Product directory + community post |
+| Hacker News | Community | Show HN (see HN deep-dive above) |
+| Dev.to | Developer | Developer community listings |
+| Crunchbase | Business | Company profile, investor visibility |
+| AngelList / Wellfound | Startup | Hiring + product visibility |
+| AppSumo | Deals | Lifetime deal marketplace (if pricing allows) |
+| Slant | Recommendations | Community-voted alternatives |
+| There's An AI For That | AI | AI-specific directory (if applicable) |
+| Uneed | Products | Curated product directory |
+
+**Hook Formulas** (adapt with your interview data):
+- Data-led: "We interviewed {N} {role}s and discovered {surprising finding}..."
+- Pain-led: "{N}% of {role}s waste {X hours/week} on {pain point}. We fix that."
+- Outcome-led: "{Company type}s using {product} save {$X/month} on {category}."
+
+### Build-in-Public Arc
+
+**When**: Day 5-13 of GTM Sprint, or any founder-led distribution effort.
+
+A structured content arc that turns your GTM sprint into a public narrative. Each post builds on the last, creating a story that attracts users, talent, and investors.
+
+**14-Day Content Arc**:
+
+| Day | Post Type | Content | Platform |
+|-----|-----------|---------|----------|
+| 5 | Announcement | "I'm building X because Y. Here's what I've learned from 20 interviews..." | Twitter/LinkedIn |
+| 7 | Insight | Share one surprising finding from interviews (data/chart if possible) | Twitter/LinkedIn |
+| 9 | Progress | "Landing page is live. Here's our approach to [positioning angle]..." | Twitter/LinkedIn |
+| 10 | Community | Share the insight chart in relevant Slack/Discord with context | Communities |
+| 12 | Traction | "12-day recap: {N} interviews, {N} LOIs, {N} wait-list sign-ups" with metrics screenshot | Twitter/LinkedIn |
+| 13 | Reflection | "What worked, what didn't, and what's next" — public retro | Twitter/LinkedIn/Blog |
+
+**Principles**:
+- Lead with learning, not pitching
+- Share specific numbers (interviews, sign-ups, revenue) — transparency builds trust
+- Acknowledge what's not working — vulnerability resonates
+- Tag people you interviewed (with permission) — they become amplifiers
+- Respond to every comment within 2 hours
+
+### Competitor Poaching
+
+**When**: Day 11 of GTM Sprint, or when entering a market with established competitors.
+
+**Procedure**:
+1. **Find Competitor Reviewers**
+   - G2/Capterra: read 1-3 star reviews, note reviewer names/companies
+   - Reddit: search `r/[industry]` for "[competitor] alternative" or "[competitor] frustrating"
+   - Twitter/X: search "[competitor] sucks" or "[competitor] alternative"
+   - App Store reviews: filter by 1-2 star ratings
+   - Note: respect platform ToS — read publicly available reviews, do not scrape private data
+
+2. **Craft Value-First Outreach**
+   - Template: "Hey {name}, I noticed your review of {competitor} — you mentioned {specific frustration}. We're building {product} specifically to solve that. Would you be open to a 10-min chat about what you wish {competitor} did differently?"
+   - Never badmouth the competitor directly
+   - Lead with empathy for their frustration, not a sales pitch
+
+3. **Offer Concierge Migration**
+   - For the first 10-20 users: offer white-glove migration assistance
+   - Template: "We'll personally migrate your data from {competitor} in under {X} hours — free for early adopters."
+   - This builds loyalty and generates testimonials
+
+4. **Track Conversion**
+   - Log outreach attempts vs. responses vs. conversions
+   - Feed successful patterns back into channel-playbook
+
 ## Quality Checklist
 - [ ] Channel selection is justified by ICP presence
 - [ ] Messaging is adapted to the channel's native tone
@@ -123,4 +217,13 @@ When producing channel-specific playbooks, reference the platform-specific guida
 - [ ] Review cadence is established
 - [ ] Platform-specific algorithm knowledge is reflected in channel tactics
 - [ ] Cultural norms are respected (especially Reddit and HN)
+- [ ] Directory blitz includes 15+ relevant directories (when used)
+- [ ] Build-in-public arc has specific daily content plan (when used)
+- [ ] Competitor poaching respects platform ToS (when used)
 - [ ] Artifact passes validation
+
+## Cross-References
+- **gtm-sprint** (S-GRO-09) — orchestrates directory blitz, build-in-public, and competitor poaching within a time-boxed sprint
+- **positioning-messaging** (S-GRO-01) — provides messaging hooks for directory submissions
+- **content-engine** (S-GRO-07) — content multiplication from build-in-public posts
+- **customer-conversations** (S-PROD-08) — interview data feeds directory hooks and competitor poaching outreach

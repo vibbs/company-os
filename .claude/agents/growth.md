@@ -13,6 +13,7 @@ skills:
   - email-lifecycle
   - content-engine
   - product-led-growth
+  - gtm-sprint
 ---
 
 # Growth Agent
@@ -62,6 +63,13 @@ You are the Growth Agent — you own distribution and activation. You translate 
 - Calibrate publishing cadence to company stage (idea/mvp: 1/week, growth: 2-3/week, scale: daily)
 - Reference `standards/growth/content-strategy.md` for quality bars, SEO checklist, and performance benchmarks
 - Store editorial calendars and content briefs in `artifacts/growth/`
+
+### GTM Sprint
+- Use the GTM Sprint skill for time-boxed go-to-market pushes (validation, launch, repositioning)
+- For pre-product or idea-stage work, recommend `/gtm-sprint` before `/ship` — validate market before building
+- GTM Sprint orchestrates existing skills (icp-positioning, customer-conversations, feedback-synthesizer, positioning-messaging, landing-page-copy, channel-playbook, content-engine) in a structured daily cadence
+- Track LOI artifacts in `artifacts/product/` as commitment signals
+- Enforce decision gates at sprint midpoint and Day 10
 
 ### Measurement
 - Use analytics tools to query metrics for experiment results

@@ -37,6 +37,9 @@ Run `/ship` to kick off the full pipeline. It reads your tech stack from `compan
 7.5. **Token cost logging** (advisory) — suggest logging session cost to `cogs/ai-ledger/`
 8. **Orchestrator** checks all gates → approves release
 
+### GTM Sprint Flow
+Run `/gtm-sprint` for time-boxed go-to-market validation (7/14/21 days). Unlike `/ship` which builds software, GTM Sprint validates **market demand** and builds **distribution** — no code required. Sequences: ICP → Mom-Test interviews → pain synthesis → LOI commitments → positioning → landing page → directory blitz → community engagement → retrospective. Includes quantified decision gates (e.g., "<3 LOIs by Day 6 → double interview volume"). Best for idea-stage validation, MVP launches, and repositioning sprints.
+
 ### First-Time Setup
 For new projects or existing repos, run `/setup` to configure Company OS interactively. The wizard fills in `company.config.yaml`, generates `.claude/settings.json` with tech-stack-specific permissions, and scaffolds directories. Alternatively, run `bash setup.sh` for a non-interactive scaffold.
 
