@@ -34,7 +34,7 @@ Read `company.stage` from `company.config.yaml`. If `idea` or `mvp`:
 Reserve full STRIDE analysis for `growth`/`scale` stages or features touching financial data/PII at scale. If user passes `--quick`, always use MVP mode regardless of stage.
 
 1. Define the scope: which system, feature, or data flow is being modeled.
-2. Draw or review the data flow diagram (DFD): external entities, processes, data stores, data flows.
+2. Draw or review the data flow diagram (DFD): external entities, processes, data stores, data flows. Use the **excalidraw skill** (S-ENG-17) to produce the DFD — Mermaid `flowchart LR` with trust boundary subgraphs inline, and optionally an Excalidraw file for richer documentation.
 3. Identify trust boundaries: where data crosses between trust zones.
 4. Enumerate threats using STRIDE (Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege) for each element.
 5. Rate each threat: likelihood (1-5) and impact (1-5), calculate risk score.

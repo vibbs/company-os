@@ -54,7 +54,7 @@ Evaluate whether the configured tech stack is well-suited for this feature:
 
 ### Step 3: Define System Boundaries
 
-Draw the boundary between what's new, what's extended, and what's external.
+Draw the boundary between what's new, what's extended, and what's external. Use the **excalidraw skill** (S-ENG-17) to produce the system architecture diagram — Mermaid `graph TD` inline in the RFC and optionally an Excalidraw file for richer documentation.
 
 ```
 [Client] → [API Layer] → [Service Layer] → [Data Layer]
