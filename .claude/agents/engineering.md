@@ -10,6 +10,7 @@ skills:
   - code-review
   - conflict-resolver
   - ai-engineering
+  - excalidraw
 ---
 
 # Engineering Agent (Staff Engineer)

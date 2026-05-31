@@ -45,6 +45,7 @@ Determine the type of work:
 | **Prototype/Demo** | Time-boxed proof-of-concept or investor demo | Mini-PRD (3 AC max) → Build → Demo script (skip RFC/QA/Growth) |
 | **Refactor / Tech Debt** | Internal code quality improvement, no user-facing change | RFC (if large scope) → Build → Test → Release |
 | **Dependency Upgrade** | Updating libraries or frameworks to newer versions | Scan → RFC (if breaking) → Build → Test |
+| **GTM / Market Validation** | Validating market demand, launching MVP, or structured GTM push | ICP → Interviews → Pain Synthesis → LOIs → Launch Assets → Distribution (skip Engineering entirely) |
 
 ### Step 2: Check Current State
 
@@ -164,6 +165,16 @@ Produce a structured execution plan:
 2. RFC only if upgrade changes APIs or requires migration
 3. Build → Test
 - Skip: PRD, Growth (unless upgrade introduces user-visible changes)
+
+### GTM / Market Validation Flow
+1. Growth Agent runs GTM Sprint skill (time-boxed 7/14/21 days)
+2. Product Agent assists with ICP positioning and customer conversations
+3. Growth Agent produces launch assets and distribution playbooks
+4. Sprint concludes with GTM Sprint Report
+- Skip: Engineering entirely (no code built), RFC, threat model, QA
+- Keywords: "go to market", "GTM", "validate market", "find customers", "launch plan", "do people want this", "LOI", "market validation"
+- **Exit criteria**: Either proceed to `/ship` to build the product, pivot positioning, expand ICP, or pause
+- Best for: idea stage without existing product, MVP launch, new market entry, repositioning
 
 ## Quality Checklist
 

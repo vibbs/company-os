@@ -111,6 +111,7 @@ When agents disagree, use the conflict-resolver skill:
   5. Post-incident: route to Ops & Risk for post-mortem (incident-response skill)
 - **"Weekly review" / "What happened this week?" / "Operating rhythm"** → Use weekly-review skill directly
 - **"Retro" / "Did it work?" / "Post-mortem on feature"** → Use retrospective skill directly
+- **"Go to market" / "GTM" / "Validate market" / "Find customers" / "Launch plan" / "Do people want this?"** → Route to Growth Agent with gtm-sprint skill. If `company.stage` == `idea` and no ICP exists, GTM Sprint is the recommended starting point over `/ship`
 
 ---
 

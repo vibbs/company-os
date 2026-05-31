@@ -2,7 +2,7 @@
 
 A deterministic governance layer for AI-assisted SaaS delivery — built for Claude Code, with human-in-the-loop quality gates at every stage.
 
-`Claude Code specific` · `Human-in-the-loop` · `Document-first` · `v1.9.0`
+`Claude Code specific` · `Human-in-the-loop` · `Document-first` · `v1.11.0`
 
 You stay in control. The system proposes — PRDs, RFCs, threat models, QA reports, launch briefs — you review and approve before anything advances. Enforced by shell scripts, not prompts.
 
@@ -60,15 +60,15 @@ For solopreneurs especially: six months from now, you can open `artifacts/rfcs/`
 | **Growth** | Launch strategy, SEO, activation, email lifecycle |
 | **Ops & Risk** | Security, compliance, incidents, legal, finance |
 
-### 62 Skills
+### 64 Skills
 
 | Category | Skills |
 |----------|--------|
 | Orchestration | workflow-router, ship, status, decision-memo-writer, conflict-resolver, ingest, system-maintenance, artifact-import, setup, upgrade-company-os, rapid-prototype, token-cost-ledger, weekly-review, retrospective |
 | Product | icp-positioning, prd-writer, sprint-prioritizer, feedback-synthesizer, discovery-validation, ux-research, market-intelligence, customer-conversations |
-| Engineering | architecture-draft, api-contract-designer, background-jobs, multi-tenancy, implementation-decomposer, code-review, seed-data, deployment-strategy, instrumentation, feature-flags, user-docs, mobile-readiness, dev-environment, ai-engineering, design-system, observability-baseline, resilience-testing |
+| Engineering | architecture-draft, api-contract-designer, background-jobs, multi-tenancy, implementation-decomposer, code-review, seed-data, deployment-strategy, instrumentation, feature-flags, user-docs, mobile-readiness, dev-environment, ai-engineering, design-system, observability-baseline, resilience-testing, excalidraw |
 | QA / Release | test-plan-generator, api-tester-playbook, release-readiness-gate, perf-benchmark-checklist, dogfood, test-intelligence, experiment-framework |
-| Growth | positioning-messaging, landing-page-copy, seo-topic-map, channel-playbook, activation-onboarding, email-lifecycle, content-engine, product-led-growth |
+| Growth | positioning-messaging, landing-page-copy, seo-topic-map, channel-playbook, activation-onboarding, email-lifecycle, content-engine, product-led-growth, gtm-sprint |
 | Risk / Legal | threat-modeling, privacy-data-handling, compliance-readiness, pricing-unit-economics, tos-privacy-drafting, incident-response, support-operations, security-posture |
 
 ### 31 Tool Scripts
@@ -220,21 +220,9 @@ Company OS is an **overlay** — it adds its own files alongside your code and n
 - **Claude Code** — Install from [claude.ai/code](https://claude.ai/code)
 - **python3** (optional) — Used by the installer to smart-merge `.claude/settings.json`
 
-### Existing Project (one command)
-
 ```bash
-cd my-project
+cd my-project   # or: mkdir my-project && cd my-project
 curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash
-```
-
-### New Project (GitHub template)
-
-```bash
-# GitHub CLI
-gh repo create my-app --template vibbs/company-os --clone
-cd my-app
-
-# Or click "Use this template" on the repo page
 ```
 
 ### After Install

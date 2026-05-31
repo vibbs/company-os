@@ -17,8 +17,8 @@ Interactive setup skill for Company OS. Works on both new (greenfield) and exist
 
 ## Deployment Models
 
-- **New project**: Fork/clone the template, run `/setup`
-- **Existing repo**: Clone Company OS files into your repo root, run `/setup`
+- **New project**: Run the curl installer, then `/setup`
+- **Existing repo**: Run the curl installer in your repo root, then `/setup`
 - **Mono repo**: Run `/setup` at the repo root. `company.config.yaml` describes the shared stack. Agents work across all packages.
 - **Multi repo**: Each repo gets its own Company OS instance with independent artifacts and config.
 
