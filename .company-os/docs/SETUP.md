@@ -8,31 +8,19 @@ This guide walks you through installing and configuring Company OS. Two phases: 
 
 Company OS is an **overlay** — it adds its own files alongside your code and never touches your source.
 
-### Existing Project (recommended)
-
 ```bash
-cd my-project
+cd my-project   # or: mkdir my-project && cd my-project
 curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash
 ```
 
 This downloads the Company OS overlay files (`.claude/`, `tools/`, `company.config.yaml`, `CLAUDE.md`) and scaffolds working directories. Your existing code is untouched.
-
-### New Project (GitHub template)
-
-```bash
-# GitHub CLI
-gh repo create my-app --template vibbs/company-os --clone
-cd my-app
-
-# Or click "Use this template" on the GitHub repo page
-```
 
 ### What Gets Installed
 
 | Item | Purpose |
 |------|---------|
 | `.claude/agents/` | 9 specialized AI agents (6 top-level + 3 engineering sub-agents) |
-| `.claude/skills/` | 62 procedural skills with templates and checklists |
+| `.claude/skills/` | 64 procedural skills with templates and checklists |
 | `.claude/hooks/` | Automatic artifact validation hooks |
 | `tools/` | 31 enforcement scripts (validation, gates, lifecycle, versioning) |
 | `company.config.yaml` | Central config file (empty template — you fill it in Phase 2) |
