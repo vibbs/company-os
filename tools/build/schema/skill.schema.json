@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://company-os.dev/schemas/skill.schema.json",
+  "title": "Company OS Skill",
+  "description": "Neutral skill schema. Source-of-truth for all runtime adapters.",
+  "type": "object",
+  "required": ["name", "description"],
+  "additionalProperties": true,
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Kebab-case identifier. Must match the directory name.",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "description": {
+      "type": "string",
+      "description": "One-sentence summary used by every runtime to decide relevance.",
+      "minLength": 10
+    },
+    "id": {
+      "type": "string",
+      "description": "Stable internal ID, e.g. S-ORG-08.",
+      "pattern": "^[A-Z]+-[A-Z]+-\\d+$"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["product", "engineering", "qa", "growth", "ops-risk", "orchestration", "shared"]
+    },
+    "argument-hint": {
+      "type": "string",
+      "description": "Placeholder text when the skill is user-invoked."
+    },
+    "inputs": { "type": "array", "items": { "type": "string" } },
+    "outputs": { "type": "array", "items": { "type": "string" } },
+    "tools_used": { "type": "array", "items": { "type": "string" } },
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "runtimes": {
+      "type": "object",
+      "description": "Runtime-specific extensions. Adapters consume the matching key; other runtimes ignore.",
+      "additionalProperties": true,
+      "properties": {
+        "claude": {
+          "type": "object",
+          "properties": {
+            "user-invokable": { "type": "boolean" },
+            "disable-model-invocation": { "type": "boolean" },
+            "compatibility": { "type": "string" },
+            "license": { "type": "string" }
+          }
+        },
+        "cursor": {
+          "type": "object",
+          "properties": {
+            "globs": { "type": "array", "items": { "type": "string" } },
+            "alwaysApply": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "user-invokable": {
+      "type": "boolean",
+      "description": "DEPRECATED — move under runtimes.claude.user-invokable. Allowed during migration."
+    },
+    "disable-model-invocation": {
+      "type": "boolean",
+      "description": "DEPRECATED — move under runtimes.claude.disable-model-invocation. Allowed during migration."
+    },
+    "compatibility": { "type": "string", "description": "DEPRECATED — move under runtimes.claude." },
+    "license": { "type": "string", "description": "DEPRECATED — move under runtimes.claude." },
+    "metadata": { "type": "object", "additionalProperties": true }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://company-os.dev/schemas/agent.schema.json",
+  "title": "Company OS Agent",
+  "description": "Neutral agent (persona) schema. Source-of-truth for all runtime adapters.",
+  "type": "object",
+  "required": ["name", "description"],
+  "additionalProperties": true,
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 10
+    },
+    "tools": {
+      "type": "array",
+      "description": "Logical tool capabilities the persona uses. Adapters map to the runtime's tool names.",
+      "items": { "type": "string" }
+    },
+    "model": {
+      "type": "string",
+      "description": "Recommended model tier (e.g. opus, sonnet, haiku). Runtimes pick concrete model IDs.",
+      "enum": ["opus", "sonnet", "haiku"]
+    },
+    "skills": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "memory": {
+      "type": "string",
+      "enum": ["user", "project", "local"],
+      "description": "Where persistent memory should be stored. Runtimes that don't support memory ignore this."
+    },
+    "runtimes": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Runtime-specific overrides (e.g. Claude-specific subagent_type)."
+    }
+  }
+}

@@ -49,6 +49,12 @@ if [ "$CHECK" = true ]; then
   echo "  Source dir: $SRC"
   echo "  Skills: $(skill_list | wc -l | tr -d ' ')"
   echo "  Agents: $(agent_list | wc -l | tr -d ' ')"
+  echo ""
+  echo "→ Running skill validator..."
+  bash tools/build/validate-skill.sh --all 2>&1 | tail -3
+  echo ""
+  echo "→ Running agent validator..."
+  bash tools/build/validate-agent.sh --all 2>&1 | tail -3
   exit 0
 fi
 
