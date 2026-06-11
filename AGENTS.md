@@ -404,6 +404,8 @@ Deterministic shell scripts. Safe to invoke directly. All live under `tools/`.
 - `tools/qa/test-health.sh` — Tool: T-QA-06 Test Health Analyzer
 - `tools/registry/detect-changes.sh` — Tool: Detect Changes
 - `tools/registry/health-check.sh` — Tool: Skill Health Check
+- `tools/registry/install-runtime.sh` — When you set up the project with --runtime=claude and later want to also
+- `tools/registry/list-runtimes.sh` — OS adapters are installed for them.
 - `tools/registry/search-skill.sh` — Tool: Skill Search
 - `tools/security/dependency-scan.sh` — Tool: T-SEC-01 Dependency Scan
 - `tools/security/posture-check.sh` — Tool: T-SEC-04 Security Posture Check

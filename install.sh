@@ -35,33 +35,90 @@ CHECK_ONLY=false
 SHOW_CHANGELOG=false
 BACKUP=false
 TARGET_VERSION=""
+RUNTIME_SPEC=""        # raw value passed to --runtime; resolved below
 
 # --- Parse flags ---
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --force)     FORCE=true; shift ;;
-    --branch)    BRANCH="$2"; shift 2 ;;
-    --version)   TARGET_VERSION="$2"; shift 2 ;;
-    --dry-run)   DRY_RUN=true; shift ;;
-    --check)     CHECK_ONLY=true; shift ;;
-    --changelog) SHOW_CHANGELOG=true; shift ;;
-    --backup)    BACKUP=true; shift ;;
+    --force)         FORCE=true; shift ;;
+    --branch)        BRANCH="$2"; shift 2 ;;
+    --version)       TARGET_VERSION="$2"; shift 2 ;;
+    --dry-run)       DRY_RUN=true; shift ;;
+    --check)         CHECK_ONLY=true; shift ;;
+    --changelog)     SHOW_CHANGELOG=true; shift ;;
+    --backup)        BACKUP=true; shift ;;
+    --runtime=*)     RUNTIME_SPEC="${1#*=}"; shift ;;
+    --runtime)       RUNTIME_SPEC="$2"; shift 2 ;;
     --help)
       echo "Usage: curl -fsSL https://raw.githubusercontent.com/$REPO/main/install.sh | bash"
       echo ""
       echo "Flags:"
-      echo "  --force      Update existing Company OS files (preserves user config)"
-      echo "  --branch     Use a specific branch (default: main)"
-      echo "  --version    Install a specific version (e.g., --version 1.2.0)"
-      echo "  --dry-run    Preview what would change without applying"
-      echo "  --check      Check if an upgrade is available"
-      echo "  --changelog  Show changelog since installed version"
-      echo "  --backup     Create backup before upgrading (auto for major upgrades)"
+      echo "  --force            Update existing Company OS files (preserves user config)"
+      echo "  --branch <name>    Use a specific branch (default: main)"
+      echo "  --version <vN>     Install a specific version (e.g., --version 1.2.0)"
+      echo "  --dry-run          Preview what would change without applying"
+      echo "  --check            Check if an upgrade is available"
+      echo "  --changelog        Show changelog since installed version"
+      echo "  --backup           Create backup before upgrading (auto for major upgrades)"
+      echo "  --runtime <names>  Comma-separated runtimes to install adapters for."
+      echo "                     Values: claude | cursor | codex | gemini | aider | all | auto | core"
+      echo "                       auto  → detect installed agent CLIs/dirs and install for those (default)"
+      echo "                       all   → install every adapter"
+      echo "                       core  → install os/ + AGENTS.md only (no runtime-specific adapter)"
       exit 0
       ;;
     *) echo "Unknown flag: $1"; exit 1 ;;
   esac
 done
+
+# --- Runtime selection ---
+# RUNTIMES is a space-separated whitelist used by should_install_runtime().
+# Always-on universal AGENTS.md is governed by INSTALL_AGENTS_MD (true unless
+# RUNTIME_SPEC explicitly excludes it via "core" pruning — currently no path
+# does, so AGENTS.md is always installed).
+INSTALL_AGENTS_MD=true
+
+detect_local_runtimes() {
+  local out=""
+  if command -v claude >/dev/null 2>&1 || [ -d "$HOME/.claude" ]; then out="$out claude"; fi
+  if command -v cursor >/dev/null 2>&1 || [ -d "$HOME/.cursor" ] || [ -d "$HOME/Library/Application Support/Cursor" ]; then out="$out cursor"; fi
+  if command -v codex >/dev/null 2>&1 || [ -d "$HOME/.codex" ]; then out="$out codex"; fi
+  if command -v gemini >/dev/null 2>&1 || [ -d "$HOME/.gemini" ]; then out="$out gemini"; fi
+  if command -v aider >/dev/null 2>&1; then out="$out aider"; fi
+  echo "$out"
+}
+
+case "${RUNTIME_SPEC:-auto}" in
+  ""|auto)
+    RUNTIMES="$(detect_local_runtimes)"
+    if [ -z "$RUNTIMES" ]; then
+      # No agent CLI detected — install only the universal AGENTS.md story.
+      RUNTIMES=""
+    fi
+    RUNTIME_MODE="auto"
+    ;;
+  all)
+    RUNTIMES="claude cursor codex gemini aider"
+    RUNTIME_MODE="all"
+    ;;
+  core)
+    RUNTIMES=""
+    RUNTIME_MODE="core"
+    ;;
+  *)
+    # Comma- or space-separated list
+    RUNTIMES="$(echo "$RUNTIME_SPEC" | tr ',' ' ')"
+    RUNTIME_MODE="custom"
+    ;;
+esac
+
+should_install_runtime() {
+  local r="$1"
+  case " $RUNTIMES " in
+    *" $r "*) return 0 ;;
+    *)        return 1 ;;
+  esac
+}
 
 # --- Colors ---
 if [ -t 1 ]; then
@@ -260,6 +317,11 @@ create_backup() {
 echo ""
 echo -e "${BOLD}  Company OS — Installer${NC}"
 echo -e "${DIM}  ─────────────────────────────────────${NC}"
+if [ -n "$RUNTIMES" ]; then
+  echo -e "${DIM}  Runtime adapters ($RUNTIME_MODE): ${NC}${BOLD}$(echo "$RUNTIMES" | xargs)${NC}"
+else
+  echo -e "${DIM}  Runtime adapters ($RUNTIME_MODE): ${NC}${BOLD}(core only — AGENTS.md)${NC}"
+fi
 echo ""
 
 # --- Pre-flight checks ---
@@ -805,25 +867,44 @@ merge_directory "$SRC/os/skills"      "os/skills"      "os/skills/"
 merge_directory "$SRC/os/playbooks"   "os/playbooks"   "os/playbooks/"
 merge_directory "$SRC/os/hooks"       "os/hooks"       "os/hooks/"
 
-# --- .claude/ (generated adapter — committed for clone-and-go in Claude Code) ---
-if [ "$DRY_RUN" = false ]; then
-  mkdir -p .claude
+# --- .claude/ (Claude Code adapter — gated by runtime selection) ---
+if should_install_runtime claude; then
+  if [ "$DRY_RUN" = false ]; then
+    mkdir -p .claude
+  fi
+  merge_directory "$SRC/.claude/agents"  ".claude/agents"  ".claude/agents/"
+  merge_directory "$SRC/.claude/skills"  ".claude/skills"  ".claude/skills/"
+  merge_directory "$SRC/.claude/hooks"   ".claude/hooks"   ".claude/hooks/"
+  merge_settings_json "$SRC/.claude/settings.json" ".claude/settings.json"
 fi
-merge_directory "$SRC/.claude/agents"  ".claude/agents"  ".claude/agents/"
-merge_directory "$SRC/.claude/skills"  ".claude/skills"  ".claude/skills/"
-merge_directory "$SRC/.claude/hooks"   ".claude/hooks"   ".claude/hooks/"
-merge_settings_json "$SRC/.claude/settings.json" ".claude/settings.json"
 
-# --- Runtime-neutral and Cursor/Gemini/Codex adapters (cheap, no harm if absent) ---
-[ -f "$SRC/AGENTS.md" ] && merge_file "$SRC/AGENTS.md" "AGENTS.md" || true
-[ -f "$SRC/GEMINI.md" ] && merge_file "$SRC/GEMINI.md" "GEMINI.md" || true
-[ -f "$SRC/.cursorrules" ] && merge_file "$SRC/.cursorrules" ".cursorrules" || true
-if [ -d "$SRC/.cursor" ]; then
-  merge_directory "$SRC/.cursor/rules"  ".cursor/rules"  ".cursor/rules/"
+# --- AGENTS.md (universal runtime-neutral instruction file — always installed) ---
+if [ "$INSTALL_AGENTS_MD" = true ] && [ -f "$SRC/AGENTS.md" ]; then
+  merge_file "$SRC/AGENTS.md" "AGENTS.md"
 fi
-if [ -d "$SRC/.codex" ]; then
-  merge_directory "$SRC/.codex"  ".codex"  ".codex/"
+
+# --- Cursor adapter ---
+if should_install_runtime cursor; then
+  [ -f "$SRC/.cursorrules" ] && merge_file "$SRC/.cursorrules" ".cursorrules" || true
+  if [ -d "$SRC/.cursor" ]; then
+    merge_directory "$SRC/.cursor/rules"  ".cursor/rules"  ".cursor/rules/"
+  fi
 fi
+
+# --- Gemini adapter ---
+if should_install_runtime gemini; then
+  [ -f "$SRC/GEMINI.md" ] && merge_file "$SRC/GEMINI.md" "GEMINI.md" || true
+fi
+
+# --- Codex adapter (relies on AGENTS.md plus a thin Codex pointer) ---
+if should_install_runtime codex; then
+  if [ -d "$SRC/.codex" ]; then
+    merge_directory "$SRC/.codex"  ".codex"  ".codex/"
+  fi
+fi
+
+# --- Aider (just uses AGENTS.md — no extra files) ---
+# (No-op; AGENTS.md handled above.)
 
 # --- tools/ (per-subdirectory smart merge) ---
 if [ "$DRY_RUN" = false ]; then
@@ -1000,19 +1081,38 @@ echo ""
 if [ "$LOCAL_VERSION" = "unknown" ] && [ "$DRY_RUN" = false ]; then
   echo -e "  ${BOLD}Next steps:${NC}"
   echo ""
-  echo -e "    ${BLUE}1.${NC} Open Claude Code in this directory:"
-  echo -e "       ${DIM}$ claude${NC}"
+  if should_install_runtime claude; then
+    echo -e "    ${BLUE}1.${NC} Open Claude Code in this directory:"
+    echo -e "       ${DIM}$ claude${NC}"
+    echo ""
+    echo -e "    ${BLUE}2.${NC} Run the setup wizard:"
+    echo -e "       ${DIM}> /setup${NC}"
+    echo ""
+    echo -e "    ${BLUE}3.${NC} Build your first feature:"
+    echo -e "       ${DIM}> Build [feature] for [product]${NC}"
+  elif should_install_runtime cursor; then
+    echo -e "    ${BLUE}1.${NC} Open Cursor in this directory — rules under ${BOLD}.cursor/rules/${NC} auto-attach."
+    echo -e "    ${BLUE}2.${NC} Ask Cursor to run the ${BOLD}setup${NC} skill (see catalog in ${BOLD}.cursor/rules/10-skills.mdc${NC})."
+    echo -e "    ${BLUE}3.${NC} Edit ${BOLD}company.config.yaml${NC} for your project."
+  elif should_install_runtime codex; then
+    echo -e "    ${BLUE}1.${NC} Run ${BOLD}codex${NC} in this directory — it will read ${BOLD}AGENTS.md${NC} automatically."
+    echo -e "    ${BLUE}2.${NC} Ask the agent to run the ${BOLD}setup${NC} skill (see ${BOLD}AGENTS.md${NC} skill catalog)."
+    echo -e "    ${BLUE}3.${NC} Edit ${BOLD}company.config.yaml${NC} for your project."
+  elif should_install_runtime gemini; then
+    echo -e "    ${BLUE}1.${NC} Run ${BOLD}gemini${NC} in this directory — it will read ${BOLD}GEMINI.md${NC} automatically."
+    echo -e "    ${BLUE}2.${NC} Ask the agent to run the ${BOLD}setup${NC} skill."
+    echo -e "    ${BLUE}3.${NC} Edit ${BOLD}company.config.yaml${NC} for your project."
+  elif should_install_runtime aider; then
+    echo -e "    ${BLUE}1.${NC} Aider reads ${BOLD}AGENTS.md${NC} at session start — open the project as usual."
+    echo -e "    ${BLUE}2.${NC} Ask aider to follow the ${BOLD}setup${NC} skill listed in AGENTS.md."
+  else
+    echo -e "    ${BLUE}1.${NC} No specific runtime adapter installed."
+    echo -e "       ${BOLD}AGENTS.md${NC} is present — any AGENTS.md-compatible agent can use it."
+    echo -e "    ${BLUE}2.${NC} Add an adapter later with:"
+    echo -e "       ${DIM}./tools/registry/install-runtime.sh <runtime>${NC}"
+  fi
   echo ""
-  echo -e "    ${BLUE}2.${NC} Run the setup wizard:"
-  echo -e "       ${DIM}> /setup${NC}"
-  echo ""
-  echo -e "       Three ways to configure:"
-  echo -e "       ${DIM}> /setup                              ${NC}${DIM}# interactive wizard${NC}"
-  echo -e "       ${DIM}> /setup https://yoursite.com          ${NC}${DIM}# auto-extract from URL${NC}"
-  echo -e "       ${DIM}> /setup                              ${NC}${DIM}# + paste config block${NC}"
-  echo ""
-  echo -e "    ${BLUE}3.${NC} Build your first feature:"
-  echo -e "       ${DIM}> Build [feature] for [product]${NC}"
+  echo -e "  ${DIM}Tip: ${NC}${DIM}see installed/available runtimes with: ${NC}${BOLD}./tools/registry/list-runtimes.sh${NC}"
   echo ""
 
   # --- Git hint ---

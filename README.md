@@ -216,18 +216,36 @@ The COGS ledger (`cogs/ai-ledger/`) tracks AI token spend as a first-class busin
 
 ## Install
 
-Company OS is an **overlay** — it adds its own files alongside your code and never touches your source. Works with new projects, existing repos, and monorepos. If you already have Claude Code configured (`.claude/settings.json`, custom agents), the installer smart-merges — your existing permissions, agents, and skills are preserved.
+Company OS is an **overlay** — it adds its own files alongside your code and never touches your source. Works with new projects, existing repos, and monorepos. If you already have a runtime configured (e.g., `.claude/settings.json`), the installer smart-merges — your existing permissions, agents, and skills are preserved.
 
 ### Prerequisites
 
 - **Git** — Company OS uses git for artifact audit trails (`git init` if you don't have one)
-- **Claude Code** — Install from [claude.ai/code](https://claude.ai/code)
-- **python3** (optional) — Used by the installer to smart-merge `.claude/settings.json`
+- **An AI coding agent** — Claude Code, Cursor, Codex CLI, Gemini CLI, or any [AGENTS.md](https://agents.md/)-compatible agent
+- **python3** (optional) — Used by the installer to smart-merge `.claude/settings.json` if you install the Claude adapter
 
 ```bash
 cd my-project   # or: mkdir my-project && cd my-project
 curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash
 ```
+
+By default the installer **auto-detects** which agent CLIs are installed locally and only installs adapters for those. Pin the runtime explicitly with `--runtime`:
+
+```bash
+# Claude Code adapter only
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --runtime=claude
+
+# Cursor only
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --runtime=cursor
+
+# All adapters (Claude + Cursor + Codex + Gemini + Aider)
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --runtime=all
+
+# Core only (os/ + AGENTS.md — no runtime-specific adapter)
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --runtime=core
+```
+
+Add a runtime later with `./tools/registry/install-runtime.sh <runtime>`, or see what's installed with `./tools/registry/list-runtimes.sh`.
 
 ### After Install
 
