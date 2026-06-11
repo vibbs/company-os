@@ -7,7 +7,12 @@
 set -euo pipefail
 
 QUERY="${1:-}"
-SKILLS_DIR="$(dirname "$0")/../../.claude/skills"
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+if [ -d "$ROOT/os/skills" ]; then
+  SKILLS_DIR="$ROOT/os/skills"
+else
+  SKILLS_DIR="$ROOT/.claude/skills"
+fi
 
 if [[ -z "$QUERY" ]]; then
   echo "ERROR: No search query provided"

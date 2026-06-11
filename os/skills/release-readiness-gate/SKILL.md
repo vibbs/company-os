@@ -1,0 +1,201 @@
+---
+name: release-readiness-gate
+description: Final quality gate checklist with pass/fail evaluation and release verdict. Run this before approving any release.
+disable-model-invocation: true
+---
+
+# Release Readiness Gate
+
+## Reference
+- **ID**: S-QA-03
+- **Category**: QA / Release
+- **Inputs**: PRD (approved), RFC (approved), QA report, security review, tool logs
+- **Outputs**: release readiness verdict (pass/fail with reasons)
+- **Used by**: Orchestrator Agent, QA & Release Agent
+- **Tool scripts**: ./tools/artifact/validate.sh, ./tools/artifact/promote.sh, ./tools/artifact/link.sh, ./tools/artifact/check-gate.sh
+
+## Purpose
+
+Evaluate whether a feature/release meets all minimum quality bars. This is the final checkpoint before the Orchestrator approves a release. The gate produces a clear pass/fail verdict with specific reasons for any failures.
+
+## When to Use
+
+- Engineering has completed implementation
+- QA has run tests and produced a QA report
+- Ops & Risk has completed security review
+- Orchestrator asks "Is this ready to ship?"
+
+## Release Readiness Procedure
+
+### Step 1: Gather Required Artifacts
+
+Collect and verify the existence of all required artifacts:
+
+| # | Artifact | Location | Required |
+|---|----------|----------|----------|
+| 1 | PRD | artifacts/prds/ | YES |
+| 2 | RFC/ADR | artifacts/rfcs/ | YES |
+| 3 | API Contract | (in RFC or separate) | YES (if API changes) |
+| 4 | Threat Model | artifacts/security-reviews/ | YES |
+| 5 | Test Plan | artifacts/test-plans/ | YES |
+| 6 | QA Report | artifacts/qa-reports/ | YES |
+| 7 | Launch Brief | artifacts/launch-briefs/ | NO (recommended) |
+
+Run `./tools/artifact/check-gate.sh release <prd-path>` to verify all required artifacts exist and are approved, then run `./tools/artifact/validate.sh` on each artifact for structural correctness.
+
+**If any REQUIRED artifact is missing or check-gate fails: FAIL immediately.**
+
+### Step 2: Evaluate Minimum Bars
+
+Each bar is pass/fail. ALL must pass for release approval.
+
+#### Bar 1: PRD Completeness
+- [ ] PRD has status `approved`
+- [ ] All acceptance criteria are present and testable
+- [ ] Success metrics are defined with baselines and targets
+- [ ] Scope boundaries are explicit
+- Stage-aware: advisory in `idea` stage.
+
+#### Bar 2: Technical Design
+- [ ] RFC/ADR exists and is approved
+- [ ] API contract exists (if feature has API changes)
+- [ ] Data model changes documented
+- [ ] Migration strategy defined (if applicable)
+- Stage-aware: advisory in `idea`, RFC required at `mvp`+.
+
+#### Bar 3: Security & Risk
+- [ ] Threat model exists (even minimal)
+- [ ] No unresolved CRITICAL or HIGH severity findings
+- [ ] Dependency scan has been run (logs exist)
+- [ ] Secrets scan has been run (logs exist)
+- [ ] Auth model reviewed
+- [ ] Security posture snapshot exists and is recent (run `/security-posture` or `./tools/security/posture-check.sh`)
+- Stage-aware: minimal threat model at `mvp`, full dependency/secrets scan at `growth`+.
+
+#### Bar 4: Testing
+- [ ] Test plan exists linked to PRD acceptance criteria
+- [ ] Unit/integration tests pass
+- [ ] API contract tests pass (if applicable)
+- [ ] No critical test failures
+- Stage-aware: basic test plan at `mvp`+, contract tests at `growth`+.
+
+#### Bar 5: Code Quality
+- [ ] Lint passes
+- [ ] No TODO/FIXME/HACK in new code (or explicitly tracked)
+- [ ] Code follows conventions from `standards/coding/`
+
+#### Bar 6: Operational Readiness
+- [ ] Logging covers key operations
+- [ ] Error handling doesn't leak internal details
+- [ ] Performance baselines met (if applicable)
+- [ ] Rollback strategy documented in RFC
+- [ ] Deployment strategy exists in `standards/ops/deployment-strategy.md` (or feature-level deployment plan in RFC)
+- [ ] Pre-deploy checks pass (`./tools/deploy/pre-deploy.sh`)
+- [ ] Incident runbook exists (e.g., `standards/ops/support-runbook.md` or dedicated incident runbook) (at least for production-stage products)
+- Stage-aware: incident runbook at `growth`+ only. Deployment strategy at `mvp`+.
+
+#### Bar 7: Release Versioning
+- [ ] App version file exists (`package.json`, `pyproject.toml`, or `VERSION`)
+- [ ] Version follows semantic versioning (MAJOR.MINOR.PATCH)
+- [ ] Version has been bumped since last release (compare against `.previous-version`)
+- [ ] `CHANGELOG.md` has an entry for the new version with date
+- [ ] Version is stage-appropriate: v0.x.x for `idea`/`mvp`, v1.x.x+ for `growth`/`scale`
+- Stage-aware: advisory in `idea` stage, enforced in `mvp`+. Run `./tools/versioning/version-bump.sh --dry-run` to preview.
+
+#### Bar 8: Dogfood Report (Optional — Non-Blocking)
+- [ ] Dogfood report exists in `artifacts/qa-reports/` (if dogfooding was performed)
+- [ ] No CRITICAL severity issues in dogfood report
+- [ ] All P0 user journeys passed (or failures are tracked with remediation plan)
+- Note: This bar is informational by default. It reports whether dogfooding was run and what was found, but does not block release unless explicitly configured (`qa.dogfood_blocking: true` in `company.config.yaml`).
+
+#### Bar 9: Design Quality (Advisory in idea/mvp — Enforced in growth/scale)
+- [ ] Design archetype is configured in `company.config.yaml` (`design.archetype` is not empty)
+- [ ] UX baseline patterns are implemented for all user-facing views:
+  - Empty states have icon + headline + description + CTA (never blank containers)
+  - Loading states use skeleton screens matching content layout (not centered spinners)
+  - Error states are inline for form fields, toast for action failures, full page for route errors
+  - Form validation is inline on blur (not submit-and-scroll)
+- [ ] No hardcoded color hex values in component files (colors should reference design tokens/theme)
+- [ ] Responsive behavior verified: sidebar collapses, tables scroll, no horizontal overflow at 320px
+- [ ] Touch targets minimum 44x44px on all interactive elements
+- Stage-aware: **advisory** in `idea` and `mvp` stages (reported but does not block). **Enforced** in `growth` and `scale` stages. To override for a specific release, add `design_gate_override: true` to the PRD frontmatter.
+
+#### Bar 10: AI Safety (Conditional — Only when AI features are present)
+- [ ] Feature uses AI/LLM (check: `ai.llm_provider` is configured AND RFC mentions AI/LLM/RAG/prompt)
+- [ ] Prompt injection protection documented (input validation, output filtering)
+- [ ] Output guardrails specified (content filtering, response validation, fallback behavior)
+- [ ] Cost guardrails defined (token budget per request, monthly budget cap, rate limiting)
+- [ ] Bias/fairness assessment completed (or explicitly accepted as known risk with mitigation plan)
+- [ ] PII handling in prompts documented (no PII sent to external LLM, or explicit consent + DPA in place)
+- Stage-aware: **advisory** in `idea` and `mvp` stages. **Enforced** in `growth` and `scale` stages. Only triggers when `ai.llm_provider` is set and the RFC references AI/LLM components.
+
+### Step 3: Calculate Overall Verdict
+
+```markdown
+## Release Readiness Verdict
+
+### Summary
+| Bar | Status |
+|-----|--------|
+| PRD Completeness | PASS / FAIL |
+| Technical Design | PASS / FAIL |
+| Security & Risk | PASS / FAIL |
+| Testing | PASS / FAIL |
+| Code Quality | PASS / FAIL |
+| Operational Readiness | PASS / FAIL |
+| Release Versioning | PASS / FAIL |
+| Dogfood (optional) | PASS / FAIL / SKIPPED |
+| Design Quality | PASS / FAIL / ADVISORY |
+| AI Safety (conditional) | PASS / FAIL / ADVISORY / N/A |
+
+### Overall: APPROVED FOR RELEASE / NOT READY
+
+### Blocking Issues (if any)
+1. [Specific issue] — assigned to [agent] — must resolve before re-evaluation
+
+### Recommendations (non-blocking)
+1. [Nice-to-have improvement]
+```
+
+### Step 4: Handle Verdict
+
+**If APPROVED:**
+1. Run `./tools/artifact/promote.sh` to promote all artifacts to `approved`
+2. Run `./tools/artifact/link.sh` to ensure lineage links are complete
+3. Produce the release readiness report in `artifacts/qa-reports/`
+4. Notify Orchestrator: "Release approved — all minimum bars passed"
+
+**If NOT READY:**
+1. List every blocking issue with what's wrong, who fixes it, and what "fixed" looks like
+2. Do NOT promote any artifacts
+3. Notify Orchestrator: "Release blocked — [N] issues must be resolved"
+
+## Edge Cases
+
+### Expedited Release (Hotfix)
+Reduced bars: bug documented, fix tested, no new security vulnerabilities. Skip full PRD, RFC, threat model.
+
+### Partial Release (Feature Flag)
+All bars still apply, plus: flag is configured, kill switch works, monitoring covers flagged behavior.
+
+## Quality Checklist
+
+- [ ] All required artifacts inventoried
+- [ ] Each minimum bar evaluated with evidence
+- [ ] Blocking issues are specific and assigned
+- [ ] Verdict is binary (approved or not — no "mostly ready")
+- [ ] Report stored with proper artifact frontmatter
+- [ ] Artifact lineage links are complete
+
+## Definition of Done
+
+A feature is "done" when ALL are true:
+
+1. **PRD approved** — problem validated, acceptance criteria testable, scope bounded
+2. **RFC approved** — technical design covers every AC, migration safe
+3. **Security reviewed** — threat model exists, no unresolved CRITICAL/HIGH findings
+4. **Tests pass** — test plan covers ACs, unit/integration/contract tests green
+5. **Code quality verified** — lint passes, no untracked TODOs in new code
+6. **Operationally ready** — logging covers key operations, errors don't leak internals
+7. **Artifacts linked** — lineage complete (parent/children/depends_on resolve)
+8. **Human review complete** — all artifacts promoted to `approved` through review lifecycle

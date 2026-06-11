@@ -66,18 +66,20 @@ run() {
 
 case "$RUNTIME" in
   all)
+    run tools/build/build-claude.sh
     run tools/build/build-agents-md.sh
     run tools/build/build-gemini.sh
     run tools/build/build-cursor.sh
     run tools/build/build-codex.sh
     ;;
+  claude)  run tools/build/build-claude.sh ;;
   agents)  run tools/build/build-agents-md.sh ;;
   gemini)  run tools/build/build-gemini.sh ;;
   cursor)  run tools/build/build-cursor.sh ;;
   codex)   run tools/build/build-codex.sh ;;
   *)
     echo "Unknown runtime: $RUNTIME"
-    echo "Valid: all | agents | gemini | cursor | codex"
+    echo "Valid: all | claude | agents | gemini | cursor | codex"
     exit 1
     ;;
 esac

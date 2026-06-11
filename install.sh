@@ -181,7 +181,9 @@ generate_manifest() {
   echo "# Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> .company-os/manifest
 
   # Hash all template-owned files
-  for dir in .claude/agents .claude/skills .claude/hooks tools; do
+  # os/ is the authoring source; .claude/ is a generated adapter (still tracked
+  # so Claude Code users can clone-and-go without running the build step)
+  for dir in os/agents os/skills os/playbooks os/hooks .claude/agents .claude/skills .claude/hooks tools; do
     if [ -d "$dir" ]; then
       while IFS= read -r file; do
         hash=$(file_hash "$file")
@@ -240,7 +242,7 @@ create_backup() {
   local backup_dir=".company-os/backup/$(date +%Y%m%d-%H%M%S)-v${version}"
   mkdir -p "$backup_dir"
 
-  for dir in .claude/agents .claude/skills .claude/hooks tools; do
+  for dir in os/agents os/skills os/playbooks os/hooks .claude/agents .claude/skills .claude/hooks tools; do
     if [ -d "$dir" ]; then
       local target_dir="$backup_dir/$dir"
       mkdir -p "$(dirname "$target_dir")"
@@ -553,6 +555,38 @@ merge_directory() {
   fi
 }
 
+# merge_file: Copy a single template file into the project.
+# Skips if file exists and user has not requested --force. Used for generated
+# top-level adapter files (AGENTS.md, GEMINI.md, .cursorrules) which can always
+# be regenerated locally via tools/build/build.sh.
+# Usage: merge_file <src_file> <dst_file>
+merge_file() {
+  local src_file="$1" dst_file="$2"
+  if [ ! -f "$src_file" ]; then
+    return
+  fi
+  if [ -f "$dst_file" ] && [ "$FORCE" = false ]; then
+    if [ "$DRY_RUN" = true ]; then
+      echo "    SKIP  $dst_file (exists)"
+    fi
+    SKIPPED=$((SKIPPED + 1))
+    return
+  fi
+  if [ "$DRY_RUN" = true ]; then
+    if [ -f "$dst_file" ]; then
+      echo "    UPDATE  $dst_file"
+    else
+      echo "    CREATE  $dst_file"
+    fi
+    return
+  fi
+  mkdir -p "$(dirname "$dst_file")"
+  cp "$src_file" "$dst_file"
+  if [ -f "$dst_file" ] && [ ! -L "$dst_file" ]; then
+    CREATED=$((CREATED + 1))
+  fi
+}
+
 # merge_settings_json: Merges Company OS permissions and hooks into existing settings.json.
 # Never replaces — always merges, even with --force. Uses python3 for JSON handling.
 # Usage: merge_settings_json <src_file> <dst_file>
@@ -762,7 +796,16 @@ else
 fi
 echo ""
 
-# --- .claude/ (per-component smart merge) ---
+# --- os/ (neutral authoring source — Phase C source-of-truth) ---
+if [ "$DRY_RUN" = false ]; then
+  mkdir -p os
+fi
+merge_directory "$SRC/os/agents"      "os/agents"      "os/agents/"
+merge_directory "$SRC/os/skills"      "os/skills"      "os/skills/"
+merge_directory "$SRC/os/playbooks"   "os/playbooks"   "os/playbooks/"
+merge_directory "$SRC/os/hooks"       "os/hooks"       "os/hooks/"
+
+# --- .claude/ (generated adapter — committed for clone-and-go in Claude Code) ---
 if [ "$DRY_RUN" = false ]; then
   mkdir -p .claude
 fi
@@ -770,6 +813,17 @@ merge_directory "$SRC/.claude/agents"  ".claude/agents"  ".claude/agents/"
 merge_directory "$SRC/.claude/skills"  ".claude/skills"  ".claude/skills/"
 merge_directory "$SRC/.claude/hooks"   ".claude/hooks"   ".claude/hooks/"
 merge_settings_json "$SRC/.claude/settings.json" ".claude/settings.json"
+
+# --- Runtime-neutral and Cursor/Gemini/Codex adapters (cheap, no harm if absent) ---
+[ -f "$SRC/AGENTS.md" ] && merge_file "$SRC/AGENTS.md" "AGENTS.md" || true
+[ -f "$SRC/GEMINI.md" ] && merge_file "$SRC/GEMINI.md" "GEMINI.md" || true
+[ -f "$SRC/.cursorrules" ] && merge_file "$SRC/.cursorrules" ".cursorrules" || true
+if [ -d "$SRC/.cursor" ]; then
+  merge_directory "$SRC/.cursor/rules"  ".cursor/rules"  ".cursor/rules/"
+fi
+if [ -d "$SRC/.codex" ]; then
+  merge_directory "$SRC/.codex"  ".codex"  ".codex/"
+fi
 
 # --- tools/ (per-subdirectory smart merge) ---
 if [ "$DRY_RUN" = false ]; then

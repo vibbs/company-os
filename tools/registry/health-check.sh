@@ -6,8 +6,16 @@
 # Outputs: health report for all skills
 set -euo pipefail
 
-SKILLS_DIR="$(dirname "$0")/../../.claude/skills"
-AGENTS_DIR="$(dirname "$0")/../../.claude/agents"
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+
+# Prefer the neutral source-of-truth (os/) over the Claude adapter (.claude/).
+if [ -d "$ROOT/os/skills" ]; then
+  SKILLS_DIR="$ROOT/os/skills"
+  AGENTS_DIR="$ROOT/os/agents"
+else
+  SKILLS_DIR="$ROOT/.claude/skills"
+  AGENTS_DIR="$ROOT/.claude/agents"
+fi
 
 echo "Skill Registry Health Check"
 echo "==========================="

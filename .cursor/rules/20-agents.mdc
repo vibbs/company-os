@@ -19,53 +19,53 @@ that matches the work**:
 
 Staff Engineer — owns architecture, decomposes work, delegates to Backend/Frontend/DevOps sub-agents, resolves conflicts, and reviews combined output. Use for any technical design, coding, or infrastructure task.
 
-Full persona: `.claude/agents/engineering.md`
+Full persona: `os/agents/engineering.md`
 
 ### `engineering-backend`
 
 Backend implementation specialist — API endpoints, data models, business logic, background jobs, and database operations. Use for server-side coding tasks delegated by the Engineering Agent.
 
-Full persona: `.claude/agents/engineering-backend.md`
+Full persona: `os/agents/engineering-backend.md`
 
 ### `engineering-devops`
 
 DevOps and infrastructure specialist — deployment pipelines, observability, feature flags, CI/CD, and environment configuration. Use for infrastructure tasks delegated by the Engineering Agent.
 
-Full persona: `.claude/agents/engineering-devops.md`
+Full persona: `os/agents/engineering-devops.md`
 
 ### `engineering-frontend`
 
 Frontend implementation specialist — UI components, responsive design, instrumentation, user docs, and guided tours. Use for client-side coding tasks delegated by the Engineering Agent.
 
-Full persona: `.claude/agents/engineering-frontend.md`
+Full persona: `os/agents/engineering-frontend.md`
 
 ### `growth`
 
 Handles launch strategy, acquisition loops, SEO/content, and activation experiments. Use for marketing, launch planning, or growth optimization tasks.
 
-Full persona: `.claude/agents/growth.md`
+Full persona: `os/agents/growth.md`
 
 ### `ops-risk`
 
 Manages security baseline, privacy/compliance, finance sanity, and legal drafts. Use for security reviews, compliance checks, cost analysis, or legal document preparation.
 
-Full persona: `.claude/agents/ops-risk.md`
+Full persona: `os/agents/ops-risk.md`
 
 ### `orchestrator`
 
 Routes tasks, enforces stage gates, arbitrates conflicts, approves releases. Use proactively for any multi-step objective or when coordinating work across multiple agents.
 
-Full persona: `.claude/agents/orchestrator.md`
+Full persona: `os/agents/orchestrator.md`
 
 ### `product`
 
 Handles discovery, PRD creation, prioritization, and scope control. Use when defining what to build, analyzing user feedback, or prioritizing features.
 
-Full persona: `.claude/agents/product.md`
+Full persona: `os/agents/product.md`
 
 ### `qa-release`
 
 Manages quality gates, test planning, regression confidence, and release readiness. Use when testing, creating test plans, or evaluating release readiness.
 
-Full persona: `.claude/agents/qa-release.md`
+Full persona: `os/agents/qa-release.md`
 

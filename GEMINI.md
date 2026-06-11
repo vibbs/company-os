@@ -32,11 +32,14 @@ the Gemini CLI equivalents:
 An AI Agentic Company OS — a template project system for building SaaS products
 with AI agents, skills, and tools. The system has three layers:
 
-| Layer | Location | Purpose |
-|-------|----------|---------|
-| **Agents** (Authority) | `.claude/agents/` (Phase A) / `os/agents/` (Phase C) | Choose what happens next. Route, decide, delegate. |
-| **Skills** (Procedural) | `.claude/skills/` (Phase A) / `os/skills/` (Phase C) | Advise + produce artifacts. Procedures, templates, checklists. |
+| Layer | Authoring source | Purpose |
+|-------|------------------|---------|
+| **Agents** (Authority) | `os/agents/` | Choose what happens next. Route, decide, delegate. |
+| **Skills** (Procedural) | `os/skills/` | Advise + produce artifacts. Procedures, templates, checklists. |
 | **Tools** (Execution) | `tools/` | Execute fixed, deterministic actions. Shell scripts. |
+
+Per-runtime adapters (`.claude/`, `.cursor/`, `.codex/`) are **generated** from
+`os/` by `tools/build/build.sh`.
 
 **Dependency rules:**
 - Agents depend on Skills for *how to think / what to produce*
@@ -87,7 +90,7 @@ Staff Engineer — owns architecture, decomposes work, delegates to Backend/Fron
 - `ai-engineering`
 - `excalidraw`
 
-Full persona: [`.claude/agents/engineering.md`](.claude/agents/engineering.md)
+Full persona: [`os/agents/engineering.md`](os/agents/engineering.md)
 
 ### `engineering-backend`
 
@@ -101,7 +104,7 @@ Backend implementation specialist — API endpoints, data models, business logic
 - `multi-tenancy`
 - `seed-data`
 
-Full persona: [`.claude/agents/engineering-backend.md`](.claude/agents/engineering-backend.md)
+Full persona: [`os/agents/engineering-backend.md`](os/agents/engineering-backend.md)
 
 ### `engineering-devops`
 
@@ -116,7 +119,7 @@ DevOps and infrastructure specialist — deployment pipelines, observability, fe
 - `dev-environment`
 - `resilience-testing`
 
-Full persona: [`.claude/agents/engineering-devops.md`](.claude/agents/engineering-devops.md)
+Full persona: [`os/agents/engineering-devops.md`](os/agents/engineering-devops.md)
 
 ### `engineering-frontend`
 
@@ -130,7 +133,7 @@ Frontend implementation specialist — UI components, responsive design, instrum
 - `instrumentation`
 - `user-docs`
 
-Full persona: [`.claude/agents/engineering-frontend.md`](.claude/agents/engineering-frontend.md)
+Full persona: [`os/agents/engineering-frontend.md`](os/agents/engineering-frontend.md)
 
 ### `growth`
 
@@ -149,7 +152,7 @@ Handles launch strategy, acquisition loops, SEO/content, and activation experime
 - `product-led-growth`
 - `gtm-sprint`
 
-Full persona: [`.claude/agents/growth.md`](.claude/agents/growth.md)
+Full persona: [`os/agents/growth.md`](os/agents/growth.md)
 
 ### `ops-risk`
 
@@ -168,7 +171,7 @@ Manages security baseline, privacy/compliance, finance sanity, and legal drafts.
 - `token-cost-ledger`
 - `security-posture`
 
-Full persona: [`.claude/agents/ops-risk.md`](.claude/agents/ops-risk.md)
+Full persona: [`os/agents/ops-risk.md`](os/agents/ops-risk.md)
 
 ### `orchestrator`
 
@@ -193,7 +196,7 @@ Routes tasks, enforces stage gates, arbitrates conflicts, approves releases. Use
 - `weekly-review`
 - `retrospective`
 
-Full persona: [`.claude/agents/orchestrator.md`](.claude/agents/orchestrator.md)
+Full persona: [`os/agents/orchestrator.md`](os/agents/orchestrator.md)
 
 ### `product`
 
@@ -211,7 +214,7 @@ Handles discovery, PRD creation, prioritization, and scope control. Use when def
 - `market-intelligence`
 - `customer-conversations`
 
-Full persona: [`.claude/agents/product.md`](.claude/agents/product.md)
+Full persona: [`os/agents/product.md`](os/agents/product.md)
 
 ### `qa-release`
 
@@ -230,7 +233,7 @@ Manages quality gates, test planning, regression confidence, and release readine
 - `experiment-framework`
 - `test-intelligence`
 
-Full persona: [`.claude/agents/qa-release.md`](.claude/agents/qa-release.md)
+Full persona: [`os/agents/qa-release.md`](os/agents/qa-release.md)
 
 ---
 
@@ -242,133 +245,133 @@ description matches the task**. Each skill ends with a procedure section — fol
 the steps in order.
 
 - **`activation-onboarding`** — Designs "aha moment" flows and activation experiments to improve new user onboarding. Use when optimizing the path from sign-up to first value realization. 
-  → [`.claude/skills/activation-onboarding/SKILL.md`](.claude/skills/activation-onboarding/SKILL.md)
+  → [`os/skills/activation-onboarding/SKILL.md`](os/skills/activation-onboarding/SKILL.md)
 - **`ai-engineering`** — Designs AI/ML feature architectures including LLM integration, RAG pipelines, prompt engineering, and AI cost optimization. Use when building features that involve AI/ML components. 
-  → [`.claude/skills/ai-engineering/SKILL.md`](.claude/skills/ai-engineering/SKILL.md)
+  → [`os/skills/ai-engineering/SKILL.md`](os/skills/ai-engineering/SKILL.md)
 - **`api-contract-designer`** — Designs REST/GraphQL API contracts with consistent error handling, pagination, auth, and i18n. Use when designing new API endpoints, modifying existing APIs, or creating service interfaces. 
-  → [`.claude/skills/api-contract-designer/SKILL.md`](.claude/skills/api-contract-designer/SKILL.md)
+  → [`os/skills/api-contract-designer/SKILL.md`](os/skills/api-contract-designer/SKILL.md)
 - **`api-tester-playbook`** — Generates API testing playbooks covering contract tests, authentication testing, pagination validation, and error handling. Use when building or reviewing API test suites. 
-  → [`.claude/skills/api-tester-playbook/SKILL.md`](.claude/skills/api-tester-playbook/SKILL.md)
+  → [`os/skills/api-tester-playbook/SKILL.md`](os/skills/api-tester-playbook/SKILL.md)
 - **`architecture-draft`** — Produces RFC/ADR defining system boundaries, modules, data model, and integration points. Use when translating a PRD into technical design, making architectural decisions, or designing new system components. 
-  → [`.claude/skills/architecture-draft/SKILL.md`](.claude/skills/architecture-draft/SKILL.md)
+  → [`os/skills/architecture-draft/SKILL.md`](os/skills/architecture-draft/SKILL.md)
 - **`artifact-import`** — Imports existing documents (PRDs, RFCs, API specs, test plans) into Company OS with proper frontmatter, type classification, and artifact linking. Use when bringing external documents into the artifact system. 
-  → [`.claude/skills/artifact-import/SKILL.md`](.claude/skills/artifact-import/SKILL.md)
+  → [`os/skills/artifact-import/SKILL.md`](os/skills/artifact-import/SKILL.md)
 - **`background-jobs`** — Design patterns for background job processing including retries, idempotency, and queue management. Use when designing or reviewing async task infrastructure. 
-  → [`.claude/skills/background-jobs/SKILL.md`](.claude/skills/background-jobs/SKILL.md)
+  → [`os/skills/background-jobs/SKILL.md`](os/skills/background-jobs/SKILL.md)
 - **`channel-playbook`** — Creates platform-specific marketing playbooks for acquisition channels. Use when launching or optimizing a specific growth channel (e.g., LinkedIn, Twitter, email, Product Hunt). 
-  → [`.claude/skills/channel-playbook/SKILL.md`](.claude/skills/channel-playbook/SKILL.md)
+  → [`os/skills/channel-playbook/SKILL.md`](os/skills/channel-playbook/SKILL.md)
 - **`code-review`** — Structured multi-section code review with interactive feedback — architecture, quality, tests, performance. Use for PR reviews, pre-merge quality checks, or self-review before handoff. 
-  → [`.claude/skills/code-review/SKILL.md`](.claude/skills/code-review/SKILL.md)
+  → [`os/skills/code-review/SKILL.md`](os/skills/code-review/SKILL.md)
 - **`compliance-readiness`** — Performs SOC2-lite checklist assessment and compliance gap analysis. Use when preparing for audits, assessing compliance posture, or building toward SOC2 certification. 
-  → [`.claude/skills/compliance-readiness/SKILL.md`](.claude/skills/compliance-readiness/SKILL.md)
+  → [`os/skills/compliance-readiness/SKILL.md`](os/skills/compliance-readiness/SKILL.md)
 - **`conflict-resolver`** — Resolves disagreements between agents using structured tradeoff analysis. Use when two or more agents propose conflicting approaches and a principled resolution is needed. 
-  → [`.claude/skills/conflict-resolver/SKILL.md`](.claude/skills/conflict-resolver/SKILL.md)
+  → [`os/skills/conflict-resolver/SKILL.md`](os/skills/conflict-resolver/SKILL.md)
 - **`content-engine`** — Produces multi-format content strategies with editorial calendars, content briefs, and multiplication workflows. Use when building a content marketing engine, planning blog/newsletter cadence, or creating content briefs. 
-  → [`.claude/skills/content-engine/SKILL.md`](.claude/skills/content-engine/SKILL.md)
+  → [`os/skills/content-engine/SKILL.md`](os/skills/content-engine/SKILL.md)
 - **`customer-conversations`** — Prepares pre-call briefings, captures post-call debriefs, and routes insights to ICP refinement and PRD evidence. Stores conversation logs as CONV- artifacts in artifacts/decision-memos/. 
-  → [`.claude/skills/customer-conversations/SKILL.md`](.claude/skills/customer-conversations/SKILL.md)
+  → [`os/skills/customer-conversations/SKILL.md`](os/skills/customer-conversations/SKILL.md)
 - **`decision-memo-writer`** — Produces structured decision records with rationale, alternatives considered, and consequences. Use when recording non-trivial decisions that future team members need to understand. 
-  → [`.claude/skills/decision-memo-writer/SKILL.md`](.claude/skills/decision-memo-writer/SKILL.md)
+  → [`os/skills/decision-memo-writer/SKILL.md`](os/skills/decision-memo-writer/SKILL.md)
 - **`deployment-strategy`** — Designs deployment pipelines, rollout strategies, and environment configurations. Use when establishing deployment procedures, planning a feature rollout, or setting up CI/CD pipelines. 
-  → [`.claude/skills/deployment-strategy/SKILL.md`](.claude/skills/deployment-strategy/SKILL.md)
+  → [`os/skills/deployment-strategy/SKILL.md`](os/skills/deployment-strategy/SKILL.md)
 - **`design-system`** — Reads configured design archetype and UX baseline to produce project-specific design tokens, component guidance, and UX patterns. Use when building UI components, reviewing design consistency, or configuring design preferences for the first time. 
-  → [`.claude/skills/design-system/SKILL.md`](.claude/skills/design-system/SKILL.md)
+  → [`os/skills/design-system/SKILL.md`](os/skills/design-system/SKILL.md)
 - **`dev-environment`** — Generates Docker Compose files and dev scripts from tech stack config. Creates environment-specific infrastructure for local development, QA, and production. 
-  → [`.claude/skills/dev-environment/SKILL.md`](.claude/skills/dev-environment/SKILL.md)
+  → [`os/skills/dev-environment/SKILL.md`](os/skills/dev-environment/SKILL.md)
 - **`discovery-validation`** — Smart pre-build discovery that validates novel feature ideas before committing to a full PRD. Classifies objectives as common patterns (skip) or novel concepts (full validation with lean canvas, competitive scan, and risk assessment). 
-  → [`.claude/skills/discovery-validation/SKILL.md`](.claude/skills/discovery-validation/SKILL.md)
+  → [`os/skills/discovery-validation/SKILL.md`](os/skills/discovery-validation/SKILL.md)
 - **`dogfood`** — Autonomous dogfooding — tests the product by using it as real users would, capturing issues with severity ratings. Supports web apps (via agent-browser) and API-only products. 
-  → [`.claude/skills/dogfood/SKILL.md`](.claude/skills/dogfood/SKILL.md)
+  → [`os/skills/dogfood/SKILL.md`](os/skills/dogfood/SKILL.md)
 - **`email-lifecycle`** — Designs email sequences, templates, and send triggers for SaaS lifecycle marketing and transactional emails. Use when planning onboarding drips, transactional notifications, activation campaigns, or retention email flows. 
-  → [`.claude/skills/email-lifecycle/SKILL.md`](.claude/skills/email-lifecycle/SKILL.md)
+  → [`os/skills/email-lifecycle/SKILL.md`](os/skills/email-lifecycle/SKILL.md)
 - **`excalidraw`** — Produces architecture diagrams, data flow diagrams, ERDs, and system overviews in Mermaid (inline) and Excalidraw JSON (standalone). Use when an RFC, threat model, or documentation needs visual diagrams. 
-  → [`.claude/skills/excalidraw/SKILL.md`](.claude/skills/excalidraw/SKILL.md)
+  → [`os/skills/excalidraw/SKILL.md`](os/skills/excalidraw/SKILL.md)
 - **`experiment-framework`** — Designs statistically rigorous A/B experiments with sample size calculation, guardrail metrics, and results analysis. Use when planning experiments, validating feature impact, or analyzing test results. 
-  → [`.claude/skills/experiment-framework/SKILL.md`](.claude/skills/experiment-framework/SKILL.md)
+  → [`os/skills/experiment-framework/SKILL.md`](os/skills/experiment-framework/SKILL.md)
 - **`feature-flags`** — Designs feature flag strategy, progressive discovery patterns, and per-feature flag specifications for safe rollouts and organic product learning. 
-  → [`.claude/skills/feature-flags/SKILL.md`](.claude/skills/feature-flags/SKILL.md)
+  → [`os/skills/feature-flags/SKILL.md`](os/skills/feature-flags/SKILL.md)
 - **`feedback-synthesizer`** — Turns messy, unstructured customer and user feedback into actionable themes with supporting evidence. Use when consolidating feedback from multiple sources into product insights. 
-  → [`.claude/skills/feedback-synthesizer/SKILL.md`](.claude/skills/feedback-synthesizer/SKILL.md)
+  → [`os/skills/feedback-synthesizer/SKILL.md`](os/skills/feedback-synthesizer/SKILL.md)
 - **`gtm-sprint`** — Time-boxed go-to-market sprint that sequences customer validation, positioning, launch, and distribution over 7-21 days. Use when validating market demand, launching an MVP, or running a structured GTM push. 
-  → [`.claude/skills/gtm-sprint/SKILL.md`](.claude/skills/gtm-sprint/SKILL.md)
+  → [`os/skills/gtm-sprint/SKILL.md`](os/skills/gtm-sprint/SKILL.md)
 - **`icp-positioning`** — Defines ideal customer profile and product positioning. Use when establishing or refining who the product serves and how it is differentiated in the market. 
-  → [`.claude/skills/icp-positioning/SKILL.md`](.claude/skills/icp-positioning/SKILL.md)
+  → [`os/skills/icp-positioning/SKILL.md`](os/skills/icp-positioning/SKILL.md)
 - **`implementation-decomposer`** — Breaks a PRD or RFC into small, well-scoped implementation tasks suitable for individual pull requests. Use when translating product requirements into engineering work items. 
-  → [`.claude/skills/implementation-decomposer/SKILL.md`](.claude/skills/implementation-decomposer/SKILL.md)
+  → [`os/skills/implementation-decomposer/SKILL.md`](os/skills/implementation-decomposer/SKILL.md)
 - **`incident-response`** — Generates incident runbooks, post-mortem templates, and incident response records. Use when establishing incident response procedures, handling a live incident, or conducting post-incident reviews. 
-  → [`.claude/skills/incident-response/SKILL.md`](.claude/skills/incident-response/SKILL.md)
+  → [`os/skills/incident-response/SKILL.md`](os/skills/incident-response/SKILL.md)
 - **`ingest`** — Scans standards/ and artifacts/ for new or changed content and suggests updates to skills, agents, and configuration. Use after adding new standards documents, API specs, or artifacts to synchronize the system. 
-  → [`.claude/skills/ingest/SKILL.md`](.claude/skills/ingest/SKILL.md)
+  → [`os/skills/ingest/SKILL.md`](os/skills/ingest/SKILL.md)
 - **`instrumentation`** — Defines analytics instrumentation standards including event taxonomy, tracker ID conventions, and per-feature instrumentation plans for measurable product development. 
-  → [`.claude/skills/instrumentation/SKILL.md`](.claude/skills/instrumentation/SKILL.md)
+  → [`os/skills/instrumentation/SKILL.md`](os/skills/instrumentation/SKILL.md)
 - **`landing-page-copy`** — Generates conversion-focused landing page copy organized by sections. Use when creating or optimizing landing pages for product launches, features, or campaigns. 
-  → [`.claude/skills/landing-page-copy/SKILL.md`](.claude/skills/landing-page-copy/SKILL.md)
+  → [`os/skills/landing-page-copy/SKILL.md`](os/skills/landing-page-copy/SKILL.md)
 - **`market-intelligence`** — Produces competitive landscape scans, technology radar assessments, and trend timing analysis. Use when monitoring competitors, evaluating new technologies, or identifying market opportunities. 
-  → [`.claude/skills/market-intelligence/SKILL.md`](.claude/skills/market-intelligence/SKILL.md)
+  → [`os/skills/market-intelligence/SKILL.md`](os/skills/market-intelligence/SKILL.md)
 - **`mobile-readiness`** — Defines responsive web design patterns and React Native/Expo mobile architecture ensuring all products work on every screen size. Use when building mobile-first web UIs, planning native mobile apps, or adding PWA support. 
-  → [`.claude/skills/mobile-readiness/SKILL.md`](.claude/skills/mobile-readiness/SKILL.md)
+  → [`os/skills/mobile-readiness/SKILL.md`](os/skills/mobile-readiness/SKILL.md)
 - **`multi-tenancy`** — Design patterns for multi-tenant architecture including org scoping, row-level security, and tenant data isolation. Use when designing or auditing tenant isolation boundaries. 
-  → [`.claude/skills/multi-tenancy/SKILL.md`](.claude/skills/multi-tenancy/SKILL.md)
+  → [`os/skills/multi-tenancy/SKILL.md`](os/skills/multi-tenancy/SKILL.md)
 - **`observability-baseline`** — Establishes logging, metrics, and tracing conventions for the codebase. Use when setting up or auditing the observability stack and standards. 
-  → [`.claude/skills/observability-baseline/SKILL.md`](.claude/skills/observability-baseline/SKILL.md)
+  → [`os/skills/observability-baseline/SKILL.md`](os/skills/observability-baseline/SKILL.md)
 - **`perf-benchmark-checklist`** — Establishes baseline performance metrics and regression detection criteria. Use when setting up performance benchmarks or investigating performance regressions. 
-  → [`.claude/skills/perf-benchmark-checklist/SKILL.md`](.claude/skills/perf-benchmark-checklist/SKILL.md)
+  → [`os/skills/perf-benchmark-checklist/SKILL.md`](os/skills/perf-benchmark-checklist/SKILL.md)
 - **`positioning-messaging`** — Crafts a crisp product narrative and competitive differentiators for go-to-market materials. Use when defining or refreshing the product story for marketing and sales. 
-  → [`.claude/skills/positioning-messaging/SKILL.md`](.claude/skills/positioning-messaging/SKILL.md)
+  → [`os/skills/positioning-messaging/SKILL.md`](os/skills/positioning-messaging/SKILL.md)
 - **`prd-writer`** — Generates consistent PRDs with problem statements, acceptance criteria, success metrics, and scope boundaries. Use when creating or updating product requirements for any feature. 
-  → [`.claude/skills/prd-writer/SKILL.md`](.claude/skills/prd-writer/SKILL.md)
+  → [`os/skills/prd-writer/SKILL.md`](os/skills/prd-writer/SKILL.md)
 - **`pricing-unit-economics`** — Performs CAC/LTV analysis and pricing model validation. Use when setting initial pricing, evaluating pricing changes, or assessing unit economics health. 
-  → [`.claude/skills/pricing-unit-economics/SKILL.md`](.claude/skills/pricing-unit-economics/SKILL.md)
+  → [`os/skills/pricing-unit-economics/SKILL.md`](os/skills/pricing-unit-economics/SKILL.md)
 - **`privacy-data-handling`** — Defines data retention policies, access controls, and deletion procedures. Use when establishing or auditing how personal and sensitive data is stored, accessed, and removed. 
-  → [`.claude/skills/privacy-data-handling/SKILL.md`](.claude/skills/privacy-data-handling/SKILL.md)
+  → [`os/skills/privacy-data-handling/SKILL.md`](os/skills/privacy-data-handling/SKILL.md)
 - **`product-led-growth`** — Designs product-led growth mechanics — free tier structure, viral loops, referral programs, and in-product growth moments. Use when building self-serve acquisition and expansion. 
-  → [`.claude/skills/product-led-growth/SKILL.md`](.claude/skills/product-led-growth/SKILL.md)
+  → [`os/skills/product-led-growth/SKILL.md`](os/skills/product-led-growth/SKILL.md)
 - **`rapid-prototype`** — Time-boxed MVP prototyping methodology for proof-of-concept and investor demos. Skips RFC, security review, and full QA for speed. Use when validating ideas quickly or preparing demos. 
-  → [`.claude/skills/rapid-prototype/SKILL.md`](.claude/skills/rapid-prototype/SKILL.md)
+  → [`os/skills/rapid-prototype/SKILL.md`](os/skills/rapid-prototype/SKILL.md)
 - **`release-readiness-gate`** — Final quality gate checklist with pass/fail evaluation and release verdict. Run this before approving any release. 
-  → [`.claude/skills/release-readiness-gate/SKILL.md`](.claude/skills/release-readiness-gate/SKILL.md)
+  → [`os/skills/release-readiness-gate/SKILL.md`](os/skills/release-readiness-gate/SKILL.md)
 - **`resilience-testing`** — Designs failure mode catalogs, circuit breaker tests, latency injection plans, and blast radius analysis for system resilience verification. Use when validating system behavior under failure conditions. 
-  → [`.claude/skills/resilience-testing/SKILL.md`](.claude/skills/resilience-testing/SKILL.md)
+  → [`os/skills/resilience-testing/SKILL.md`](os/skills/resilience-testing/SKILL.md)
 - **`retrospective`** — Post-ship retrospective — traces artifact lineage from PRD to launch, evaluates success metrics, captures lessons learned, and produces a structured retro document. 
-  → [`.claude/skills/retrospective/SKILL.md`](.claude/skills/retrospective/SKILL.md)
+  → [`os/skills/retrospective/SKILL.md`](os/skills/retrospective/SKILL.md)
 - **`security-posture`** — Aggregates open threats, scan status, compliance gaps, and human checkpoint audit into a unified security posture snapshot. Use when reviewing overall security health or before major releases. 
-  → [`.claude/skills/security-posture/SKILL.md`](.claude/skills/security-posture/SKILL.md)
+  → [`os/skills/security-posture/SKILL.md`](os/skills/security-posture/SKILL.md)
 - **`seed-data`** — Generates test seed data, fixtures, and factory definitions for all data scenarios. Produces tech-stack-appropriate seed files and a seed-data catalog artifact. 
-  → [`.claude/skills/seed-data/SKILL.md`](.claude/skills/seed-data/SKILL.md)
+  → [`os/skills/seed-data/SKILL.md`](os/skills/seed-data/SKILL.md)
 - **`seo-topic-map`** — Builds keyword clusters and internal linking strategy for content-led SEO growth. Use when planning content strategy or optimizing site architecture for organic search. 
-  → [`.claude/skills/seo-topic-map/SKILL.md`](.claude/skills/seo-topic-map/SKILL.md)
+  → [`os/skills/seo-topic-map/SKILL.md`](os/skills/seo-topic-map/SKILL.md)
 - **`setup`** — Interactive setup wizard for Company OS. Configures company.config.yaml, generates .claude/settings.json with tech-stack-specific permissions, and scaffolds directories. Supports three modes — interactive wizard, express config block, or auto-extract from a URL/unstructured text. 
-  → [`.claude/skills/setup/SKILL.md`](.claude/skills/setup/SKILL.md)
+  → [`os/skills/setup/SKILL.md`](os/skills/setup/SKILL.md)
 - **`ship`** — Kick off the full ship flow for a feature or objective. Routes through the Orchestrator to produce PRD, RFC, implementation, QA, and launch artifacts with gate checks at every stage. 
-  → [`.claude/skills/ship/SKILL.md`](.claude/skills/ship/SKILL.md)
+  → [`os/skills/ship/SKILL.md`](os/skills/ship/SKILL.md)
 - **`sprint-prioritizer`** — Prioritizes features and work items using impact, effort, and risk scoring. Use when planning sprints or deciding what to build next. 
-  → [`.claude/skills/sprint-prioritizer/SKILL.md`](.claude/skills/sprint-prioritizer/SKILL.md)
+  → [`os/skills/sprint-prioritizer/SKILL.md`](os/skills/sprint-prioritizer/SKILL.md)
 - **`status`** — Shows project artifact status summary — counts, statuses, broken links, and gate readiness across all artifact types. 
-  → [`.claude/skills/status/SKILL.md`](.claude/skills/status/SKILL.md)
+  → [`os/skills/status/SKILL.md`](os/skills/status/SKILL.md)
 - **`support-operations`** — Designs customer support infrastructure including FAQ generation, SLA tiers, escalation paths, and support-to-product feedback pipelines. Use when establishing support operations or improving customer service. 
-  → [`.claude/skills/support-operations/SKILL.md`](.claude/skills/support-operations/SKILL.md)
+  → [`os/skills/support-operations/SKILL.md`](os/skills/support-operations/SKILL.md)
 - **`system-maintenance`** — Audits and syncs all Company OS documentation after structural changes. Use when skills, agents, tools, artifact types, or stage gates are added, removed, or modified. 
-  → [`.claude/skills/system-maintenance/SKILL.md`](.claude/skills/system-maintenance/SKILL.md)
+  → [`os/skills/system-maintenance/SKILL.md`](os/skills/system-maintenance/SKILL.md)
 - **`test-intelligence`** — Analyzes test suite health including flaky test detection, coverage scoring, test pyramid balance, and mutation testing guidance. Use when assessing test quality or diagnosing test reliability issues. 
-  → [`.claude/skills/test-intelligence/SKILL.md`](.claude/skills/test-intelligence/SKILL.md)
+  → [`os/skills/test-intelligence/SKILL.md`](os/skills/test-intelligence/SKILL.md)
 - **`test-plan-generator`** — Generates comprehensive test plans from PRD acceptance criteria. Use when a new feature needs a structured testing strategy before implementation begins. 
-  → [`.claude/skills/test-plan-generator/SKILL.md`](.claude/skills/test-plan-generator/SKILL.md)
+  → [`os/skills/test-plan-generator/SKILL.md`](os/skills/test-plan-generator/SKILL.md)
 - **`threat-modeling`** — Performs data flow threat analysis with structured mitigations. Use when assessing security threats for new features, architecture changes, or compliance reviews. 
-  → [`.claude/skills/threat-modeling/SKILL.md`](.claude/skills/threat-modeling/SKILL.md)
+  → [`os/skills/threat-modeling/SKILL.md`](os/skills/threat-modeling/SKILL.md)
 - **`token-cost-ledger`** — Tracks AI token usage and costs as COGS. Logs entries, generates reports, monitors budget, shows per-feature cost. Use when reviewing AI spend, logging session costs, or checking budget status. 
-  → [`.claude/skills/token-cost-ledger/SKILL.md`](.claude/skills/token-cost-ledger/SKILL.md)
+  → [`os/skills/token-cost-ledger/SKILL.md`](os/skills/token-cost-ledger/SKILL.md)
 - **`tos-privacy-drafting`** — Drafts Terms of Service and Privacy Policy outlines tailored to the product. Use when creating initial legal documents or reviewing existing TOS/Privacy Policy for completeness. 
-  → [`.claude/skills/tos-privacy-drafting/SKILL.md`](.claude/skills/tos-privacy-drafting/SKILL.md)
+  → [`os/skills/tos-privacy-drafting/SKILL.md`](os/skills/tos-privacy-drafting/SKILL.md)
 - **`upgrade-company-os`** — Check for Company OS updates, preview changes, and upgrade to the latest version. Shows changelog, migration notes, and handles breaking changes safely. 
-  → [`.claude/skills/upgrade-company-os/SKILL.md`](.claude/skills/upgrade-company-os/SKILL.md)
+  → [`os/skills/upgrade-company-os/SKILL.md`](os/skills/upgrade-company-os/SKILL.md)
 - **`user-docs`** — Produces user-facing documentation, guided tour specifications, and changelog entries for every shipped feature. Ensures users can discover, learn, and adopt new functionality. 
-  → [`.claude/skills/user-docs/SKILL.md`](.claude/skills/user-docs/SKILL.md)
+  → [`os/skills/user-docs/SKILL.md`](os/skills/user-docs/SKILL.md)
 - **`ux-research`** — Designs lean user research plans with method selection, interview scripts, usability testing protocols, and journey mapping. Use when validating user needs, testing usability, or building personas before PRD creation. 
-  → [`.claude/skills/ux-research/SKILL.md`](.claude/skills/ux-research/SKILL.md)
+  → [`os/skills/ux-research/SKILL.md`](os/skills/ux-research/SKILL.md)
 - **`weekly-review`** — Weekly operating rhythm — summarizes what shipped, AI spend, support themes, security health, and surfaces next priorities. Use at the end of each week to maintain operating cadence. 
-  → [`.claude/skills/weekly-review/SKILL.md`](.claude/skills/weekly-review/SKILL.md)
+  → [`os/skills/weekly-review/SKILL.md`](os/skills/weekly-review/SKILL.md)
 - **`workflow-router`** — Maps objectives to required artifacts, stages, and responsible agents. Use when routing any objective, deciding what happens next, or determining which agents need to be involved in a task. 
-  → [`.claude/skills/workflow-router/SKILL.md`](.claude/skills/workflow-router/SKILL.md)
+  → [`os/skills/workflow-router/SKILL.md`](os/skills/workflow-router/SKILL.md)
 
 ---
 
@@ -383,6 +386,7 @@ Deterministic shell scripts. Safe to invoke directly. All live under `tools/`.
 - `tools/artifact/promote.sh` — Tool: Artifact Promote
 - `tools/artifact/validate.sh` — Tool: Artifact Validate
 - `tools/build/build-agents-md.sh` — Reads CLAUDE.md, skills, agents, and config and emits AGENTS.md at the
+- `tools/build/build-claude.sh` — Claude Code is now treated as one runtime adapter among several. This script
 - `tools/build/build-codex.sh` — Codex CLI reads AGENTS.md natively. This script ensures AGENTS.md is fresh
 - `tools/build/build-cursor.sh` — Emits:
 - `tools/build/build-gemini.sh` — Gemini CLI reads GEMINI.md (its own convention) — same payload as AGENTS.md
@@ -390,6 +394,8 @@ Deterministic shell scripts. Safe to invoke directly. All live under `tools/`.
 - `tools/build/lib-agent-index.sh` — Source this file. Provides:
 - `tools/build/lib-frontmatter.sh` — Source this file; do not execute directly.
 - `tools/build/lib-skill-index.sh` — Source this file. Provides:
+- `tools/build/validate-agent.sh` — Usage:
+- `tools/build/validate-skill.sh` — Usage:
 - `tools/ci/lint-format.sh` — Tool: T-CI-02 Lint/Format
 - `tools/ci/openapi-lint.sh` — Tool: T-API-01 OpenAPI Lint/Validate
 - `tools/ci/run-tests.sh` — Tool: T-CI-01 Run Tests

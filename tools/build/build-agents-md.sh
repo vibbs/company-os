@@ -61,11 +61,14 @@ cat >> "$TMP" <<'EOF'
 An AI Agentic Company OS — a template project system for building SaaS products
 with AI agents, skills, and tools. The system has three layers:
 
-| Layer | Location | Purpose |
-|-------|----------|---------|
-| **Agents** (Authority) | `.claude/agents/` (Phase A) / `os/agents/` (Phase C) | Choose what happens next. Route, decide, delegate. |
-| **Skills** (Procedural) | `.claude/skills/` (Phase A) / `os/skills/` (Phase C) | Advise + produce artifacts. Procedures, templates, checklists. |
+| Layer | Authoring source | Purpose |
+|-------|------------------|---------|
+| **Agents** (Authority) | `os/agents/` | Choose what happens next. Route, decide, delegate. |
+| **Skills** (Procedural) | `os/skills/` | Advise + produce artifacts. Procedures, templates, checklists. |
 | **Tools** (Execution) | `tools/` | Execute fixed, deterministic actions. Shell scripts. |
+
+Per-runtime adapters (`.claude/`, `.cursor/`, `.codex/`) are **generated** from
+`os/` by `tools/build/build.sh`.
 
 **Dependency rules:**
 - Agents depend on Skills for *how to think / what to produce*

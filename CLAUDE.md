@@ -10,11 +10,15 @@ This is an **AI Agentic Company OS** — a template project system for building 
 
 ### Three-Layer Architecture
 
-| Layer | Location | Purpose |
-|-------|----------|---------|
-| **Agents** (Authority) | `.claude/agents/` | Choose what happens next. Route, decide, delegate. |
-| **Skills** (Procedural) | `.claude/skills/` | Advise + produce artifacts. Procedures, templates, checklists. |
-| **Tools** (Execution) | `tools/` | Execute fixed, deterministic actions. Shell scripts. |
+| Layer | Authoring source | Claude Code adapter | Purpose |
+|-------|------------------|---------------------|---------|
+| **Agents** (Authority) | `os/agents/` | `.claude/agents/` (generated) | Choose what happens next. Route, decide, delegate. |
+| **Skills** (Procedural) | `os/skills/` | `.claude/skills/` (generated) | Advise + produce artifacts. Procedures, templates, checklists. |
+| **Tools** (Execution) | `tools/` | `tools/` (shared) | Execute fixed, deterministic actions. Shell scripts. |
+
+**Source of truth is `os/`.** When editing a skill or agent, edit the file under `os/` and run `bash tools/build/build.sh` — this regenerates `.claude/`, `.cursor/`, `AGENTS.md`, `GEMINI.md`, and `.codex/` from the same authored content. Both `os/` and the generated adapters are committed (so cloning works without a build step), but `os/` is what you edit.
+
+Claude Code's hook files (`.claude/hooks/`), settings (`.claude/settings.json`), and agent memory (`.claude/agent-memory/`) are Claude-specific and live directly under `.claude/` — they are *not* generated.
 
 ### Dependency Rules
 - Agents depend on Skills for *how to think / what to produce*

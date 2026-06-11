@@ -192,7 +192,11 @@ fi
 if [[ "$PRODUCT_TYPE" == "web-app" ]]; then
   echo ""
   echo "Checking browser automation..."
-  BROWSER_SKILL="$PROJECT_ROOT/.claude/skills/agent-browser"
+  if [[ -d "$PROJECT_ROOT/os/skills/agent-browser" ]]; then
+    BROWSER_SKILL="$PROJECT_ROOT/os/skills/agent-browser"
+  else
+    BROWSER_SKILL="$PROJECT_ROOT/.claude/skills/agent-browser"
+  fi
   if [[ -d "$BROWSER_SKILL" ]]; then
     echo "OK: agent-browser skill found locally"
   else
