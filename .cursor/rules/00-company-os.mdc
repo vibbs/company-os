@@ -1,0 +1,42 @@
+---
+description: Company OS — overview and working conventions (always applied)
+alwaysApply: true
+---
+
+# Company OS
+
+This project follows the Company OS methodology — a three-layer system of
+**Agents** (authority), **Skills** (procedures), and **Tools** (deterministic
+execution). All work produces **Artifacts** with YAML frontmatter and lineage
+links.
+
+## Before doing anything technical
+
+1. Read `company.config.yaml` — defines the tech stack, conventions, and
+   architecture for this project.
+2. Read `AGENTS.md` for the agent/skill/tool catalog.
+3. Read `CLAUDE.md` for full conventions (it includes everything in this rules
+   file plus Claude-specific guidance).
+
+## Artifact lineage is enforced
+
+Every file under `artifacts/` must have YAML frontmatter:
+`id`, `type`, `title`, `status`, `created`, `author`.
+
+Use these tools when working with artifacts:
+
+- `./tools/artifact/validate.sh` — check frontmatter + link integrity
+- `./tools/artifact/link.sh` — link parent ↔ child
+- `./tools/artifact/promote.sh` — status transitions
+- `./tools/artifact/check-gate.sh` — stage gate checks
+
+## Commit discipline
+
+Read `conventions.commit_style` from `company.config.yaml`. One concern per
+commit. Commit at logical boundaries.
+
+## Skills in Cursor
+
+Cursor doesn't have a native skill system. When a task matches a skill below,
+**read the skill file directly and follow its procedure section**. The skill
+catalog lives at `.cursor/rules/10-skills.mdc`.

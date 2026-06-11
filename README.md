@@ -2,7 +2,9 @@
 
 A deterministic governance layer for AI-assisted SaaS delivery — built for Claude Code, with human-in-the-loop quality gates at every stage.
 
-`Claude Code specific` · `Human-in-the-loop` · `Document-first` · `v1.11.0`
+`Multi-runtime` · `Human-in-the-loop` · `Document-first` · `v1.11.0`
+
+Runs natively in **Claude Code** and ships adapters for **Cursor**, **Codex CLI**, **Gemini CLI**, and any agent that follows the [AGENTS.md](https://agents.md/) convention. Authoring happens once; adapters are generated.
 
 You stay in control. The system proposes — PRDs, RFCs, threat models, QA reports, launch briefs — you review and approve before anything advances. Enforced by shell scripts, not prompts.
 
@@ -24,11 +26,13 @@ Every workflow pauses for your review. The Orchestrator does not advance past a 
 
 ## Design Philosophy
 
-### Built for Claude Code — not an abstraction layer
+### Claude Code-native, multi-runtime via adapters
 
-Company OS does not try to work with every AI coding tool. It is built specifically for Claude Code's agent, skills, and subagent architecture, and uses those primitives directly.
+Company OS is authored in Claude Code's skill/agent/hook format — that's where you get the deepest integration (agent memory, JIT skill loading, hook-based validation, subagent delegation). The Claude Code experience is the flagship.
 
-This specificity is a deliberate tradeoff: you get deep integration (agent memory, skill preloading, hook-based validation, subagent delegation) instead of lowest-common-denominator compatibility. If you use Claude Code, you get the full system. If you don't, this tool is not for you — and that's intentional.
+For users on Cursor, Codex CLI, Gemini CLI, Aider, or any AGENTS.md-compatible runtime, the system ships generated adapters: `AGENTS.md`, `GEMINI.md`, `.cursor/rules/`, `.codex/config.md`. Adapters expose the same skill catalog, agent personas, and tool scripts — what changes is how each runtime loads them. Regenerate with `bash tools/build/build.sh`.
+
+You author once. The build step keeps every runtime in sync.
 
 ### Every stage is a decision point, not a handoff
 

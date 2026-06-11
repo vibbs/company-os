@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+> **Multi-runtime note:** Company OS now ships adapters for other agentic runtimes. `AGENTS.md`, `GEMINI.md`, `.cursor/rules/`, and `.codex/config.md` are **generated** from this file plus `.claude/`. Regenerate after any change to skills, agents, or this file: `bash tools/build/build.sh`.
+
 ## Company OS Overview
 
 This is an **AI Agentic Company OS** — a template project system for building SaaS products with AI-assisted agents, skills, and tools. Users fork this repo, configure `company.config.yaml`, and use the agent system to go from idea → PRD → architecture → implementation → release.
