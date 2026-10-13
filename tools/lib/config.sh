@@ -3,7 +3,7 @@
 #
 # Usage:
 #   source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/config.sh"
-#   LINTER="$(cfg_get tech_stack.linter)"
+#   LINTER="$(cfg_get conventions.linter)"
 #
 # cfg_get <dotted.key> [config-file]
 #   Walks nested keys by indentation (a.b.c matches a: / b: / c:).

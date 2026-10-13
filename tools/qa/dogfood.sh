@@ -23,10 +23,12 @@ API_ONLY=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --prd)
+      [[ $# -ge 2 ]] || { echo "ERROR: --prd requires a value" >&2; exit 1; }
       PRD_ID="$2"
       shift 2
       ;;
     --journey)
+      [[ $# -ge 2 ]] || { echo "ERROR: --journey requires a value" >&2; exit 1; }
       JOURNEY="$2"
       shift 2
       ;;

@@ -52,10 +52,12 @@ while [[ $# -gt 0 ]]; do
       usage
       ;;
     --timeout)
+      [[ $# -ge 2 ]] || { echo "ERROR: --timeout requires a value" >&2; exit 1; }
       TIMEOUT_MS="$2"
       shift 2
       ;;
     --expected-status)
+      [[ $# -ge 2 ]] || { echo "ERROR: --expected-status requires a value" >&2; exit 1; }
       EXPECTED_STATUS="$2"
       shift 2
       ;;
@@ -77,9 +79,9 @@ done
 
 # Show usage if no URLs provided
 if [[ ${#URLS[@]} -eq 0 ]]; then
-  echo "Error: No URLs provided." >&2
-  echo ""
-  usage
+  echo "ERROR: No URLs provided." >&2
+  echo "Run with --help for usage." >&2
+  exit 2
 fi
 
 # Convert timeout from milliseconds to seconds for curl (supports decimals)

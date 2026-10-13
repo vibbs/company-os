@@ -20,10 +20,12 @@ DIR_FILTER="all"
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --since)
+      [[ $# -ge 2 ]] || { echo "ERROR: --since requires a value" >&2; exit 1; }
       SINCE="$2"
       shift 2
       ;;
     --dir)
+      [[ $# -ge 2 ]] || { echo "ERROR: --dir requires a value" >&2; exit 1; }
       DIR_FILTER="$2"
       shift 2
       ;;

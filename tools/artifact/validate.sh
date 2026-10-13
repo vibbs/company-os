@@ -19,6 +19,7 @@ for arg in "$@"; do
   case "$arg" in
     --strict) STRICT=true ;;
     --all) ALL=true ;;
+    -*) echo "ERROR: Unknown option: $arg" >&2; echo "Usage: validate.sh [--strict] <file> | --all" >&2; exit 1 ;;
     *) ARTIFACT_PATH="$arg" ;;
   esac
 done

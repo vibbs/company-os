@@ -43,7 +43,7 @@ for arg in "$@"; do
       exit 0
       ;;
     *)
-      echo -e "${RED}ERROR: Unknown argument: $arg${RESET}"
+      echo -e "${RED}ERROR: Unknown argument: $arg${RESET}" >&2
       echo "Usage: ./tools/versioning/version-bump.sh <major|minor|patch> [--dry-run] [--no-tag]" >&2
       exit 1
       ;;
@@ -51,7 +51,7 @@ for arg in "$@"; do
 done
 
 if [[ -z "$BUMP_TYPE" ]]; then
-  echo -e "${RED}ERROR: Bump type required (major, minor, or patch)${RESET}"
+  echo -e "${RED}ERROR: Bump type required (major, minor, or patch)${RESET}" >&2
   echo "Usage: ./tools/versioning/version-bump.sh <major|minor|patch> [--dry-run] [--no-tag]" >&2
   exit 1
 fi
@@ -129,20 +129,20 @@ detect_version_file() {
 }
 
 if ! detect_version_file; then
-  echo -e "${RED}ERROR: No app version file found.${RESET}"
-  echo "Expected one of:"
-  echo "  - package.json with \"version\" field"
-  echo "  - pyproject.toml with version field"
-  echo "  - VERSION file (plain text)"
-  echo ""
-  echo "Run /setup to initialize app versioning, or create a VERSION file:"
-  echo "  echo '0.1.0' > VERSION"
+  echo -e "${RED}ERROR: No app version file found.${RESET}" >&2
+  echo "Expected one of:" >&2
+  echo "  - package.json with \"version\" field" >&2
+  echo "  - pyproject.toml with version field" >&2
+  echo "  - VERSION file (plain text)" >&2
+  echo "" >&2
+  echo "Run /setup to initialize app versioning, or create a VERSION file:" >&2
+  echo "  echo '0.1.0' > VERSION" >&2
   exit 1
 fi
 
 # ─── Parse current version ──────────────────────────────────────────────────────
 if ! [[ "$CURRENT_VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]]; then
-  echo -e "${RED}ERROR: Current version '$CURRENT_VERSION' is not valid semver (expected MAJOR.MINOR.PATCH)${RESET}"
+  echo -e "${RED}ERROR: Current version '$CURRENT_VERSION' is not valid semver (expected MAJOR.MINOR.PATCH)${RESET}" >&2
   exit 1
 fi
 
