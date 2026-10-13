@@ -56,7 +56,7 @@ What the default run creates (only if missing):
   .claude/settings.json     Node.js default permissions
 
 What --cleanup removes (if present):
-  .company-os/docs/SETUP.md, FAQ.md, TOKEN_COSTS.md, ROADMAP.md,
+  .company-os/docs/ (every guide except CHANGELOG.md, which upgrades read),
   the example PRD, RFC and standards files
 
 Next steps:
@@ -78,7 +78,7 @@ if [[ "${1:-}" == "--cleanup" ]]; then
   echo "Removing template documentation files (not needed for daily operation)..."
   echo ""
   REMOVED=0
-  for f in .company-os/docs/TOKEN_COSTS.md .company-os/docs/FAQ.md .company-os/docs/SETUP.md .company-os/docs/ROADMAP.md TOKEN_COSTS.md FAQ.md SETUP_COMPANY_OS.md artifacts/prds/PRD-EXAMPLE-001-notifications.md artifacts/rfcs/RFC-EXAMPLE-001-notification-system.md standards/api/example-api-conventions.md standards/coding/example-coding-standards.md; do
+  for f in .company-os/docs/SETUP.md .company-os/docs/CONCEPTS.md .company-os/docs/CONFIG_REFERENCE.md .company-os/docs/CUSTOMIZING.md .company-os/docs/TROUBLESHOOTING.md .company-os/docs/FAQ.md .company-os/docs/TOKEN_COSTS.md .company-os/docs/ROADMAP.md TOKEN_COSTS.md FAQ.md SETUP_COMPANY_OS.md artifacts/prds/PRD-EXAMPLE-001-notifications.md artifacts/rfcs/RFC-EXAMPLE-001-notification-system.md standards/api/example-api-conventions.md standards/coding/example-coding-standards.md; do
     if [ -f "$f" ]; then
       rm "$f"
       echo -e "  ${RED}Removed${NC}  $f"

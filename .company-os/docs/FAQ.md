@@ -486,4 +486,4 @@ Company OS does not replace your native build toolchain (Xcode, Android Studio, 
 - `/system-maintenance`: re-sync docs after structural changes
 - Issues and questions: [github.com/vibbs/company-os/issues](https://github.com/vibbs/company-os/issues)
 
-> This FAQ and the other files in `.company-os/docs/` explain Company OS itself. `bash setup.sh --cleanup` (or the cleanup option in `/setup`) removes `SETUP.md`, `FAQ.md`, `TOKEN_COSTS.md` and `ROADMAP.md` once you no longer need them.
+> This FAQ and the other files in `.company-os/docs/` explain Company OS itself. `bash setup.sh --cleanup` (or the cleanup option in `/setup`) removes all of them except `CHANGELOG.md` once you no longer need them.
