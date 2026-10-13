@@ -40,6 +40,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - `install.sh --help` lists `--runtime` in its header, adds examples and the docs link
 
 ### Fixed
+- Installs now include the reference standards skills read (`standards/brand/archetypes/`, `ux-baseline.md`, `standards/ops/*` SOPs, `security-posture.md` and others), copied only when missing; before, `/design-system` and the inbound loop pointed at files that were not there
+- Diagrams and the skill schema now ship inside `.company-os/docs/`, so their links work in installed projects
 - Docs used command names that do not exist: `/prototype` is `/rapid-prototype` and `/token-cost` is `/token-cost-ledger`
 - Tool scripts no longer abort silently on an unmatched `grep`, reject missing flag values and unknown flags, and send errors to stderr
 - `check-gate.sh` exits 2 when the artifact path does not exist

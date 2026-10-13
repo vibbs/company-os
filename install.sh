@@ -1048,6 +1048,26 @@ fi
 
 # --- Scaffold directories (create if missing, never overwrite) ---
 if [ "$DRY_RUN" = false ]; then
+  # Copy reference standards that skills and agents read (design archetypes,
+  # UX baseline, SOPs, security posture, ...) only when absent. They become
+  # yours to edit, so they are never overwritten. example-* files are samples
+  # and are not copied.
+  STANDARDS_ADDED=0
+  if [ -d "$SRC/standards" ]; then
+    while IFS= read -r std_file; do
+      std_rel="${std_file#"$SRC"/}"
+      if [ ! -f "$std_rel" ]; then
+        mkdir -p "$(dirname "$std_rel")"
+        cp "$std_file" "$std_rel"
+        STANDARDS_ADDED=$((STANDARDS_ADDED + 1))
+      fi
+    done < <(find "$SRC/standards" -type f -name '*.md' -not -name 'example-*' | sort)
+  fi
+  if [ "$STANDARDS_ADDED" -gt 0 ]; then
+    echo -e "  ${GREEN}Added${NC}    standards/ ($STANDARDS_ADDED reference docs; existing files kept)"
+    ADDED=$((ADDED + STANDARDS_ADDED))
+  fi
+
   for dir in \
     artifacts/prds artifacts/rfcs artifacts/test-plans artifacts/qa-reports \
     artifacts/launch-briefs artifacts/security-reviews artifacts/decision-memos \

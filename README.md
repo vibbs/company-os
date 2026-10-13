@@ -328,7 +328,8 @@ Add a runtime later with `./tools/registry/install-runtime.sh <runtime>`. See wh
 | `company.config.yaml` | Your settings |
 | `.company-os/` | Version, install manifest, backups and the user docs |
 | `.claude/`, `.cursor/` and `.cursorrules`, `.codex/`, `GEMINI.md` | Runtime adapters, only for the runtimes you install |
-| `artifacts/`, `standards/`, `seeds/` | Empty working folders for your documents, reference standards and test data |
+| `standards/` | Reference standards that agents read (design archetypes, UX baseline, operating procedures, security posture). Added only when missing, then yours to edit |
+| `artifacts/`, `imports/`, `seeds/`, `tasks/` | Working folders for your documents, files to import, test data, and task notes (`todo.md`, `lessons.md`) |
 
 The full tree is in [Where things live](.company-os/docs/CONCEPTS.md#where-things-live).
 
