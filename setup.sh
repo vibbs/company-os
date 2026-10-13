@@ -8,6 +8,7 @@
 # Usage:
 #   bash setup.sh             # scaffold directories + template config
 #   bash setup.sh --cleanup   # remove example artifacts and standards
+#   bash setup.sh --claude    # also create .claude/settings.json without a .claude/ folder
 #   bash setup.sh --help      # show this help
 #
 # After running this script, open Claude Code and run /setup to customize
@@ -44,6 +45,7 @@ if you do not use one. Existing files are never overwritten.
 Usage:
   bash setup.sh             Scaffold folders and template files
   bash setup.sh --cleanup   Remove example files (the guides in .company-os/docs/ stay)
+  bash setup.sh --claude    Also create .claude/settings.json when .claude/ does not exist yet
   bash setup.sh --help      Show this help
 
 What the default run creates (only if missing):
@@ -53,7 +55,8 @@ What the default run creates (only if missing):
                docs, email, engineering
   imports/  tasks/ (todo.md, lessons.md)  seeds/  cogs/ai-ledger/
   company.config.yaml       blank template
-  .claude/settings.json     Node.js default permissions
+  .claude/settings.json     Node.js default permissions, only when the Claude Code
+                            adapter is installed (.claude/ exists) or with --claude
 
 What --cleanup removes (if present):
   the example PRD, RFC and standards files, and old root-level copies of
@@ -70,6 +73,13 @@ Docs: https://github.com/vibbs/company-os#readme
 HELP
   exit 0
 fi
+
+WITH_CLAUDE=false
+case "${1:-}" in
+  ""|--cleanup) ;;
+  --claude) WITH_CLAUDE=true ;;
+  *) echo "ERROR: Unknown option: $1" >&2; echo "Run: bash setup.sh --help" >&2; exit 1 ;;
+esac
 
 # --- Cleanup Mode ---
 if [[ "${1:-}" == "--cleanup" ]]; then
@@ -297,8 +307,11 @@ else
   SKIPPED=$((SKIPPED + 1))
 fi
 
-# .claude/settings.json (default Node.js permissions — only if missing)
-if [ ! -f ".claude/settings.json" ]; then
+# .claude/settings.json (default Node.js permissions — only if missing, and only
+# for Claude Code: when .claude/ exists or --claude was passed)
+if [ ! -d ".claude" ] && [ "$WITH_CLAUDE" = false ]; then
+  echo -e "  ${YELLOW}Skipped${NC}  .claude/settings.json (Claude Code adapter not installed; use --claude to create it)"
+elif [ ! -f ".claude/settings.json" ]; then
   mkdir -p ".claude"
   cat > ".claude/settings.json" << 'JSON'
 {

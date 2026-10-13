@@ -40,6 +40,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - `install.sh --help` lists `--runtime` in its header, adds examples and the docs link
 
 ### Fixed
+- `/setup` and `setup.sh` no longer create `.claude/settings.json` for Cursor, Codex, Gemini or Aider installs; it is written only when `.claude/` exists (or with `setup.sh --claude`)
 - The skill field is now spelled `user-invocable`, the name Claude Code reads. With the old `user-invokable` spelling, the 18 helper skills marked `false` still showed in the `/` menu. The old spelling still works: the build writes it out as `user-invocable` and the validator warns
 - Installs now include the reference standards skills read (`standards/brand/archetypes/`, `ux-baseline.md`, `standards/ops/*` SOPs, `security-posture.md` and others), copied only when missing; before, `/design-system` and the inbound loop pointed at files that were not there
 - Diagrams and the skill schema now ship inside `.company-os/docs/`, so their links work in installed projects

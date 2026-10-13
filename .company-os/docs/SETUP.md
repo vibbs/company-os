@@ -63,7 +63,7 @@ Run `bash install.sh --help` to see every flag (`--runtime`, `--version`, `--dry
 
 ## 4. Configure with `/setup`
 
-`/setup` fills in `company.config.yaml`, writes `.claude/settings.json` permissions for your stack, and creates the working folders. Commit the installed files first so you can see what it changes.
+`/setup` fills in `company.config.yaml`, creates the working folders, and (Claude Code only) writes `.claude/settings.json` permissions for your stack. Commit the installed files first so you can see what it changes.
 
 Pick the mode that suits you:
 

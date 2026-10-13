@@ -15,7 +15,7 @@ Interactive setup skill for Company OS. Works on both new (greenfield) and exist
 
 - **What it does**: asks about your company and tech stack, then configures Company OS for your project.
 - **Three ways to run it**: answer questions (interactive), paste a filled-in config block (express), or give a URL or description and confirm what it infers (auto-extract).
-- **Files it writes**: `company.config.yaml`, `.claude/settings.json` (permissions for your stack), and the `artifacts/`, `tasks/` and related folders. It never edits your source code.
+- **Files it writes**: `company.config.yaml`, `.claude/settings.json` (permissions for your stack; Claude Code only), and the `artifacts/`, `tasks/` and related folders. It never edits your source code.
 - **Time**: about 5 minutes interactive, under 1 minute in express mode.
 - **Safe to rerun**: existing config and settings are merged, not overwritten.
 - **Done when**: you see the "Setup Complete" summary with next steps (usually `/ship` or `/gtm-sprint`).
@@ -447,6 +447,8 @@ Write the complete config file with all gathered values. Preserve the comment st
 
 ### Step 7: Generate / Merge `.claude/settings.json`
 
+**Claude Code only.** Run this step only when the Claude Code adapter is installed (the `.claude/` folder exists) or you are running inside Claude Code. In Cursor, Codex, Gemini CLI or Aider without a `.claude/` folder, skip it and say "Skipped .claude/settings.json (Claude Code is not installed)". Do not create a `.claude/` folder for other runtimes.
+
 **If `.claude/settings.json` already exists:**
 1. Read and parse the existing file
 2. Preserve ALL existing user rules in `allow` and `deny` arrays
@@ -621,7 +623,7 @@ Files that are **always kept** (operationally required):
 
 1. Run `./tools/registry/health-check.sh` — verify all skills discoverable
 2. Validate `company.config.yaml` is well-formed YAML
-3. Validate `.claude/settings.json` is well-formed JSON
+3. If Step 7 ran, validate `.claude/settings.json` is well-formed JSON
 4. Print setup summary:
 
 ```
@@ -637,7 +639,7 @@ Files that are **always kept** (operationally required):
 - Hosting: {hosting}, CI: {ci}
 
 ### Permissions
-- .claude/settings.json configured with {N} allow rules, {M} deny rules
+- .claude/settings.json configured with {N} allow rules, {M} deny rules (or "skipped: Claude Code not installed")
 - Tech stack: {language} permissions included
 
 ### Directories
