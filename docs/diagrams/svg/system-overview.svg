@@ -1,0 +1,214 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="cos-system-overview" width="960" height="872" viewBox="0 0 960 872" role="img" aria-labelledby="cos-system-overview-title cos-system-overview-desc">
+<title id="cos-system-overview-title">How Company OS fits into your repo</title>
+<desc id="cos-system-overview-desc">Company OS overlays your repo. You run a command; 9 agents decide what happens, 64 skills say how to think and what to produce, and 33 tool scripts execute fixed actions. All layers read and write artifacts: Markdown files with YAML frontmatter and lineage links. Skills and agents are authored in os/ and built into runtime adapters.</desc>
+<style>
+#cos-system-overview{--bg:#f6f8fa;--surface:#ffffff;--sunken:#f6f8fa;--border:#d1d9e0;--border-soft:#e4e9ee;--text:#1f2328;--text-2:#4b5562;--text-3:#606a76;--line:#8c959f;--shadow:#1f2328;--shadow-o:0.07;--solid:#24292f;--on-solid:#ffffff;--mono:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+#cos-system-overview .f-orch{--a:#4f46e5;--a-soft:#eef0ff}#cos-system-overview .f-product{--a:#7c3aed;--a-soft:#f4effe}#cos-system-overview .f-eng{--a:#0f766e;--a-soft:#e6f5f3}#cos-system-overview .f-qa{--a:#0369a1;--a-soft:#e8f4fb}#cos-system-overview .f-growth{--a:#be185d;--a-soft:#fdf0f6}#cos-system-overview .f-ops{--a:#b42318;--a-soft:#fdf1f0}#cos-system-overview .f-gate{--a:#b45309;--a-soft:#fef6e7}#cos-system-overview .f-neutral{--a:#4b5562;--a-soft:#f1f3f5}
+@media (prefers-color-scheme: dark){#cos-system-overview{--bg:#0d1117;--surface:#151b23;--sunken:#10151c;--border:#3d444d;--border-soft:#2a3038;--text:#e6edf3;--text-2:#b1bac4;--text-3:#9198a1;--line:#7d8590;--shadow:#000000;--shadow-o:0.35;--solid:#e6edf3;--on-solid:#0d1117}#cos-system-overview .f-orch{--a:#a5b4fc;--a-soft:rgba(129,140,248,0.16)}#cos-system-overview .f-product{--a:#c4b5fd;--a-soft:rgba(167,139,250,0.16)}#cos-system-overview .f-eng{--a:#5eead4;--a-soft:rgba(45,212,191,0.14)}#cos-system-overview .f-qa{--a:#7dd3fc;--a-soft:rgba(56,189,248,0.14)}#cos-system-overview .f-growth{--a:#f9a8d4;--a-soft:rgba(244,114,182,0.14)}#cos-system-overview .f-ops{--a:#fca5a5;--a-soft:rgba(248,113,113,0.14)}#cos-system-overview .f-gate{--a:#fbbf24;--a-soft:rgba(251,191,36,0.14)}#cos-system-overview .f-neutral{--a:#b1bac4;--a-soft:rgba(177,186,196,0.12)}}
+#cos-system-overview text{font-family:-apple-system, 'Segoe UI', Inter, Helvetica, Arial, sans-serif;fill:var(--text)}
+#cos-system-overview .r-title{font-size:22px;font-weight:600}#cos-system-overview .r-sub{font-size:14px;font-weight:400}#cos-system-overview .r-h{font-size:14px;font-weight:600}#cos-system-overview .r-hs{font-size:13px;font-weight:600}#cos-system-overview .r-body{font-size:13px;font-weight:400}#cos-system-overview .r-meta{font-size:12px;font-weight:400}#cos-system-overview .r-badge{font-size:12px;font-weight:500}#cos-system-overview .r-label{font-size:12px;font-weight:600;letter-spacing:0.04em}#cos-system-overview .r-code{font-size:12px;font-weight:400;font-family:var(--mono)}#cos-system-overview .r-codeh{font-size:13px;font-weight:600;font-family:var(--mono)}
+#cos-system-overview .r-sub,#cos-system-overview .r-body{fill:var(--text-2)}
+#cos-system-overview .r-meta{fill:var(--text-3)}
+#cos-system-overview .r-label,#cos-system-overview .c-a{fill:var(--a)}
+#cos-system-overview .c-2{fill:var(--text-2)}#cos-system-overview .c-3{fill:var(--text-3)}#cos-system-overview .c-on{fill:var(--on-solid)}
+#cos-system-overview .panel{fill:var(--bg);stroke:var(--border)}
+#cos-system-overview .card{fill:var(--surface);stroke:var(--border)}
+#cos-system-overview .sunken{fill:var(--sunken);stroke:var(--border-soft)}
+#cos-system-overview .tint{fill:var(--a-soft);stroke:var(--a)}
+#cos-system-overview .tint-soft{fill:var(--a-soft);stroke:none}
+#cos-system-overview .bar{fill:var(--a)}
+#cos-system-overview .chip{fill:var(--sunken);stroke:var(--border)}
+#cos-system-overview .solid{fill:var(--solid);stroke:var(--solid)}
+#cos-system-overview .fold{fill:var(--border-soft);stroke:var(--border)}
+#cos-system-overview .rule{stroke:var(--border-soft);fill:none}
+#cos-system-overview .edge{fill:none;stroke:var(--line);stroke-width:1.25}
+#cos-system-overview .ah{fill:var(--line)}
+#cos-system-overview .dashed{stroke-dasharray:5 4}
+#cos-system-overview .dotted{stroke-dasharray:1.5 3;stroke-linecap:round}
+#cos-system-overview .lbg{fill:var(--bg)}#cos-system-overview .lbg-card{fill:var(--surface)}
+#cos-system-overview .shadow{flood-color:var(--shadow);flood-opacity:var(--shadow-o)}
+#cos-system-overview .tick{fill:none;stroke:var(--a);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+</style>
+<defs>
+<filter id="cos-system-overview-sh" x="-5%" y="-5%" width="110%" height="130%"><feDropShadow dx="0" dy="1" stdDeviation="1.5" class="shadow"/></filter>
+<marker id="cos-system-overview-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M1,1.5 L9,5 L1,8.5 Z" class="ah"/></marker>
+</defs>
+<rect x="0.5" y="0.5" width="959" height="871" rx="16" class="panel"/>
+<text x="40" y="52" class="r-title">How Company OS fits into your repo</text>
+<text x="40" y="78" class="r-sub">Three layers do the work. Artifacts are how they hand work to each other.</text>
+<rect x="40" y="112" width="880" height="64" rx="10" class="card" filter="url(#cos-system-overview-sh)"/>
+<text x="64" y="139" class="r-h">You</text>
+<text x="64" y="159" class="r-body">run /ship, /gtm-sprint, /setup</text>
+<line x1="333.3" y1="126" x2="333.3" y2="162" class="rule"/>
+<text x="357.3" y="139" class="r-codeh">company.config.yaml</text>
+<text x="357.3" y="159" class="r-body">tech stack, stage, conventions</text>
+<line x1="626.7" y1="126" x2="626.7" y2="162" class="rule"/>
+<text x="650.7" y="139" class="r-codeh">standards/</text>
+<text x="650.7" y="159" class="r-body">reference docs agents read</text>
+<rect x="96" y="216" width="536" height="112" rx="10" class="card" filter="url(#cos-system-overview-sh)"/>
+<rect x="104" y="228" width="3" height="88" rx="1.5" class="bar f-orch"/>
+<g class="f-orch">
+<text x="120" y="244" class="r-label">AGENTS · AUTHORITY</text>
+</g>
+<rect x="536" y="228" width="76" height="24" rx="12" class="tint f-orch"/>
+<g class="f-orch">
+<text x="574" y="244.2" class="r-badge c-a" text-anchor="middle">9 agents</text>
+</g>
+<text x="120" y="268" class="r-body">Choose what happens next: route, decide, delegate.</text>
+<rect x="120" y="286" width="104" height="24" rx="12" class="chip"/>
+<g>
+<text x="172" y="302.2" class="r-badge" text-anchor="middle">Orchestrator</text>
+</g>
+<rect x="232" y="286" width="125" height="24" rx="12" class="chip"/>
+<g>
+<text x="294.5" y="302.2" class="r-badge" text-anchor="middle">5 domain agents</text>
+</g>
+<rect x="365" y="286" width="188" height="24" rx="12" class="chip"/>
+<g>
+<text x="459" y="302.2" class="r-badge" text-anchor="middle">3 engineering sub-agents</text>
+</g>
+<rect x="96" y="376" width="536" height="112" rx="10" class="card" filter="url(#cos-system-overview-sh)"/>
+<rect x="104" y="388" width="3" height="88" rx="1.5" class="bar f-eng"/>
+<g class="f-eng">
+<text x="120" y="404" class="r-label">SKILLS · PROCEDURE</text>
+</g>
+<rect x="529" y="388" width="83" height="24" rx="12" class="tint f-eng"/>
+<g class="f-eng">
+<text x="570.5" y="404.2" class="r-badge c-a" text-anchor="middle">64 skills</text>
+</g>
+<text x="120" y="428" class="r-body">Advise and produce artifacts: procedures, templates, checklists.</text>
+<rect x="120" y="446" width="90" height="24" rx="12" class="chip"/>
+<g>
+<text x="165" y="462.2" class="r-badge" text-anchor="middle">prd-writer</text>
+</g>
+<rect x="218" y="446" width="146" height="24" rx="12" class="chip"/>
+<g>
+<text x="291" y="462.2" class="r-badge" text-anchor="middle">architecture-draft</text>
+</g>
+<rect x="372" y="446" width="125" height="24" rx="12" class="chip"/>
+<g>
+<text x="434.5" y="462.2" class="r-badge" text-anchor="middle">threat-modeling</text>
+</g>
+<rect x="505" y="446" width="76" height="24" rx="12" class="chip"/>
+<g>
+<text x="543" y="462.2" class="r-badge" text-anchor="middle">+61 more</text>
+</g>
+<rect x="96" y="536" width="536" height="112" rx="10" class="card" filter="url(#cos-system-overview-sh)"/>
+<rect x="104" y="548" width="3" height="88" rx="1.5" class="bar f-neutral"/>
+<g class="f-neutral">
+<text x="120" y="564" class="r-label">TOOLS · EXECUTION</text>
+</g>
+<rect x="487" y="548" width="125" height="24" rx="12" class="tint f-neutral"/>
+<g class="f-neutral">
+<text x="549.5" y="564.2" class="r-badge c-a" text-anchor="middle">33 tool scripts</text>
+</g>
+<text x="120" y="588" class="r-body">Run fixed, deterministic actions. Tools never contain reasoning.</text>
+<rect x="120" y="606" width="102" height="24" rx="12" class="chip"/>
+<g>
+<text x="171" y="622.2" class="r-code" text-anchor="middle">validate.sh</text>
+</g>
+<rect x="230" y="606" width="117" height="24" rx="12" class="chip"/>
+<g>
+<text x="288.5" y="622.2" class="r-code" text-anchor="middle">check-gate.sh</text>
+</g>
+<rect x="355" y="606" width="110" height="24" rx="12" class="chip"/>
+<g>
+<text x="410" y="622.2" class="r-code" text-anchor="middle">run-tests.sh</text>
+</g>
+<rect x="473" y="606" width="80" height="24" rx="12" class="chip"/>
+<g>
+<text x="513" y="622.2" class="r-code" text-anchor="middle">+30 more</text>
+</g>
+<path d="M364,176 L364,216" class="edge" marker-end="url(#cos-system-overview-ah)"/>
+<rect x="328.5" y="186" width="71" height="18" rx="4" class="lbg"/>
+<text x="364" y="199.5" class="r-meta" text-anchor="middle">objective</text>
+<path d="M364,328 L364,376" class="edge" marker-end="url(#cos-system-overview-ah)"/>
+<rect x="291.5" y="342" width="145" height="18" rx="4" class="lbg"/>
+<text x="364" y="355.5" class="r-meta" text-anchor="middle">use for how to think</text>
+<path d="M364,488 L364,536" class="edge dashed" marker-end="url(#cos-system-overview-ah)"/>
+<rect x="291.5" y="502" width="145" height="18" rx="4" class="lbg"/>
+<text x="364" y="515.5" class="r-meta" text-anchor="middle">recommend, never run</text>
+<path d="M96,272 L70,272 Q64,272 64,278 L64,586 Q64,592 70,592 L96,592" class="edge" marker-end="url(#cos-system-overview-ah)"/>
+<rect x="56" y="370" width="16" height="124" class="lbg"/>
+<text x="68" y="432" class="r-meta" text-anchor="middle" transform="rotate(-90 68 432)">use for how to act</text>
+<rect x="664" y="216" width="256" height="432" rx="10" class="card" filter="url(#cos-system-overview-sh)"/>
+<rect x="672" y="228" width="3" height="408" rx="1.5" class="bar f-gate"/>
+<g class="f-gate">
+<text x="688" y="244" class="r-label">ARTIFACTS · HANDSHAKE</text>
+</g>
+<text x="688" y="270" class="r-codeh">artifacts/</text>
+<text x="688" y="292" class="r-body">Markdown files with YAML</text>
+<text x="688" y="310" class="r-body">frontmatter and lineage</text>
+<text x="688" y="328" class="r-body">links between them.</text>
+<path d="M690,348 H700 L705,353 V366 H690 Z" class="card"/>
+<text x="716" y="362" class="r-body">PRD</text>
+<path d="M690,380 H700 L705,385 V398 H690 Z" class="card"/>
+<text x="716" y="394" class="r-body">RFC</text>
+<path d="M690,412 H700 L705,417 V430 H690 Z" class="card"/>
+<text x="716" y="426" class="r-body">Security review</text>
+<path d="M690,444 H700 L705,449 V462 H690 Z" class="card"/>
+<text x="716" y="458" class="r-body">Test plan</text>
+<path d="M690,476 H700 L705,481 V494 H690 Z" class="card"/>
+<text x="716" y="490" class="r-body">QA report</text>
+<path d="M690,508 H700 L705,513 V526 H690 Z" class="card"/>
+<text x="716" y="522" class="r-body">Launch brief</text>
+<text x="690" y="554" class="r-meta">+10 more types</text>
+<line x1="684" y1="588" x2="900" y2="588" class="rule"/>
+<rect x="688" y="604" width="46" height="24" rx="12" class="chip"/>
+<g>
+<text x="711" y="620.2" class="r-meta" text-anchor="middle">draft</text>
+</g>
+<path d="M734,616 L748,616" class="edge" marker-end="url(#cos-system-overview-ah)"/>
+<rect x="752" y="604" width="53" height="24" rx="12" class="chip"/>
+<g>
+<text x="778.5" y="620.2" class="r-meta" text-anchor="middle">review</text>
+</g>
+<path d="M805,616 L819,616" class="edge" marker-end="url(#cos-system-overview-ah)"/>
+<rect x="823" y="604" width="66" height="24" rx="12" class="chip"/>
+<g>
+<text x="856" y="620.2" class="r-meta" text-anchor="middle">approved</text>
+</g>
+<path d="M634,272 L662,272" class="edge" marker-end="url(#cos-system-overview-ah)" marker-start="url(#cos-system-overview-ah)"/>
+<path d="M634,432 L662,432" class="edge" marker-end="url(#cos-system-overview-ah)" marker-start="url(#cos-system-overview-ah)"/>
+<path d="M634,592 L662,592" class="edge" marker-end="url(#cos-system-overview-ah)" marker-start="url(#cos-system-overview-ah)"/>
+<rect x="40" y="680" width="880" height="96" rx="10" class="card" filter="url(#cos-system-overview-sh)"/>
+<g class="f-neutral">
+<text x="64" y="708" class="r-label">WHERE IT IS AUTHORED</text>
+</g>
+<rect x="64" y="722" width="89" height="40" rx="8" class="sunken"/>
+<text x="78" y="739" class="r-codeh">os/</text>
+<text x="78" y="755" class="r-meta">edit here</text>
+<path d="M155,742 L183,742" class="edge" marker-end="url(#cos-system-overview-ah)"/>
+<rect x="185" y="722" width="195" height="40" rx="8" class="sunken"/>
+<text x="199" y="739" class="r-codeh">tools/build/build.sh</text>
+<text x="199" y="755" class="r-meta">regenerates adapters</text>
+<path d="M382,742 L410,742" class="edge" marker-end="url(#cos-system-overview-ah)"/>
+<rect x="412" y="730" width="80" height="24" rx="12" class="chip"/>
+<g>
+<text x="452" y="746.2" class="r-code" text-anchor="middle">.claude/</text>
+</g>
+<rect x="500" y="730" width="87" height="24" rx="12" class="chip"/>
+<g>
+<text x="543.5" y="746.2" class="r-code" text-anchor="middle">AGENTS.md</text>
+</g>
+<rect x="595" y="730" width="87" height="24" rx="12" class="chip"/>
+<g>
+<text x="638.5" y="746.2" class="r-code" text-anchor="middle">GEMINI.md</text>
+</g>
+<rect x="690" y="730" width="80" height="24" rx="12" class="chip"/>
+<g>
+<text x="730" y="746.2" class="r-code" text-anchor="middle">.cursor/</text>
+</g>
+<rect x="778" y="730" width="73" height="24" rx="12" class="chip"/>
+<g>
+<text x="814.5" y="746.2" class="r-code" text-anchor="middle">.codex/</text>
+</g>
+<text x="412" y="712" class="r-meta">generated runtime adapters (committed)</text>
+<path d="M40,812 L66,812" class="edge" marker-end="url(#cos-system-overview-ah)"/>
+<text x="74" y="816" class="r-meta">uses</text>
+<path d="M125,812 L151,812" class="edge dashed" marker-end="url(#cos-system-overview-ah)"/>
+<text x="159" y="816" class="r-meta">recommends only</text>
+<path d="M285,812 L309,812" class="edge" marker-end="url(#cos-system-overview-ah)" marker-start="url(#cos-system-overview-ah)"/>
+<text x="318" y="816" class="r-meta">reads and writes</text>
+<text x="920" y="854" class="r-meta" text-anchor="end">Company OS · generated by docs/diagrams/render.js</text>
+</svg>

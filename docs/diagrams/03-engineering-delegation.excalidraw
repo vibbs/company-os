@@ -1997,15 +1997,15 @@
       "type": "text",
       "x": 520,
       "y": 425,
-      "width": 636,
+      "width": 714,
       "height": 13.75,
-      "text": "Skills: architecture-draft · implementation-decomposer · code-review · conflict-resolver · ai-engineering",
+      "text": "Skills: architecture-draft · implementation-decomposer · code-review · conflict-resolver · ai-engineering · excalidraw",
       "fontSize": 11,
       "fontFamily": 2,
       "textAlign": "left",
       "verticalAlign": "middle",
       "containerId": null,
-      "originalText": "Skills: architecture-draft · implementation-decomposer · code-review · conflict-resolver · ai-engineering",
+      "originalText": "Skills: architecture-draft · implementation-decomposer · code-review · conflict-resolver · ai-engineering · excalidraw",
       "autoResize": true,
       "lineHeight": 1.25
     }

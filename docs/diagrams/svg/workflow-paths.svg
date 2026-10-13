@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="cos-workflow-paths" width="960" height="894" viewBox="0 0 960 894" role="img" aria-labelledby="cos-workflow-paths-title cos-workflow-paths-desc">
+<title id="cos-workflow-paths-title">Where to start</title>
+<desc id="cos-workflow-paths-desc">Entry points: /gtm-sprint validates demand in 7, 14 or 21 days with no code; /rapid-prototype proves the tech in 4 hours, 1 day or 3 days and skips RFC, security review and QA; /ship builds and launches with every gate. Not sure: describe the goal and the workflow-router skill picks one of 10 paths. Feedback loop: customer-conversations, feedback-synthesizer (scores candidates: over 15 go to /ship, 8 to 15 to /discovery-validation, under 8 monitor), sprint-prioritizer, prd-writer, /ship, users of the shipped product, back to customer-conversations.</desc>
+<style>
+#cos-workflow-paths{--bg:#f6f8fa;--surface:#ffffff;--sunken:#f6f8fa;--border:#d1d9e0;--border-soft:#e4e9ee;--text:#1f2328;--text-2:#4b5562;--text-3:#606a76;--line:#8c959f;--shadow:#1f2328;--shadow-o:0.07;--solid:#24292f;--on-solid:#ffffff;--mono:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+#cos-workflow-paths .f-orch{--a:#4f46e5;--a-soft:#eef0ff}#cos-workflow-paths .f-product{--a:#7c3aed;--a-soft:#f4effe}#cos-workflow-paths .f-eng{--a:#0f766e;--a-soft:#e6f5f3}#cos-workflow-paths .f-qa{--a:#0369a1;--a-soft:#e8f4fb}#cos-workflow-paths .f-growth{--a:#be185d;--a-soft:#fdf0f6}#cos-workflow-paths .f-ops{--a:#b42318;--a-soft:#fdf1f0}#cos-workflow-paths .f-gate{--a:#b45309;--a-soft:#fef6e7}#cos-workflow-paths .f-neutral{--a:#4b5562;--a-soft:#f1f3f5}
+@media (prefers-color-scheme: dark){#cos-workflow-paths{--bg:#0d1117;--surface:#151b23;--sunken:#10151c;--border:#3d444d;--border-soft:#2a3038;--text:#e6edf3;--text-2:#b1bac4;--text-3:#9198a1;--line:#7d8590;--shadow:#000000;--shadow-o:0.35;--solid:#e6edf3;--on-solid:#0d1117}#cos-workflow-paths .f-orch{--a:#a5b4fc;--a-soft:rgba(129,140,248,0.16)}#cos-workflow-paths .f-product{--a:#c4b5fd;--a-soft:rgba(167,139,250,0.16)}#cos-workflow-paths .f-eng{--a:#5eead4;--a-soft:rgba(45,212,191,0.14)}#cos-workflow-paths .f-qa{--a:#7dd3fc;--a-soft:rgba(56,189,248,0.14)}#cos-workflow-paths .f-growth{--a:#f9a8d4;--a-soft:rgba(244,114,182,0.14)}#cos-workflow-paths .f-ops{--a:#fca5a5;--a-soft:rgba(248,113,113,0.14)}#cos-workflow-paths .f-gate{--a:#fbbf24;--a-soft:rgba(251,191,36,0.14)}#cos-workflow-paths .f-neutral{--a:#b1bac4;--a-soft:rgba(177,186,196,0.12)}}
+#cos-workflow-paths text{font-family:-apple-system, 'Segoe UI', Inter, Helvetica, Arial, sans-serif;fill:var(--text)}
+#cos-workflow-paths .r-title{font-size:22px;font-weight:600}#cos-workflow-paths .r-sub{font-size:14px;font-weight:400}#cos-workflow-paths .r-h{font-size:14px;font-weight:600}#cos-workflow-paths .r-hs{font-size:13px;font-weight:600}#cos-workflow-paths .r-body{font-size:13px;font-weight:400}#cos-workflow-paths .r-meta{font-size:12px;font-weight:400}#cos-workflow-paths .r-badge{font-size:12px;font-weight:500}#cos-workflow-paths .r-label{font-size:12px;font-weight:600;letter-spacing:0.04em}#cos-workflow-paths .r-code{font-size:12px;font-weight:400;font-family:var(--mono)}#cos-workflow-paths .r-codeh{font-size:13px;font-weight:600;font-family:var(--mono)}
+#cos-workflow-paths .r-sub,#cos-workflow-paths .r-body{fill:var(--text-2)}
+#cos-workflow-paths .r-meta{fill:var(--text-3)}
+#cos-workflow-paths .r-label,#cos-workflow-paths .c-a{fill:var(--a)}
+#cos-workflow-paths .c-2{fill:var(--text-2)}#cos-workflow-paths .c-3{fill:var(--text-3)}#cos-workflow-paths .c-on{fill:var(--on-solid)}
+#cos-workflow-paths .panel{fill:var(--bg);stroke:var(--border)}
+#cos-workflow-paths .card{fill:var(--surface);stroke:var(--border)}
+#cos-workflow-paths .sunken{fill:var(--sunken);stroke:var(--border-soft)}
+#cos-workflow-paths .tint{fill:var(--a-soft);stroke:var(--a)}
+#cos-workflow-paths .tint-soft{fill:var(--a-soft);stroke:none}
+#cos-workflow-paths .bar{fill:var(--a)}
+#cos-workflow-paths .chip{fill:var(--sunken);stroke:var(--border)}
+#cos-workflow-paths .solid{fill:var(--solid);stroke:var(--solid)}
+#cos-workflow-paths .fold{fill:var(--border-soft);stroke:var(--border)}
+#cos-workflow-paths .rule{stroke:var(--border-soft);fill:none}
+#cos-workflow-paths .edge{fill:none;stroke:var(--line);stroke-width:1.25}
+#cos-workflow-paths .ah{fill:var(--line)}
+#cos-workflow-paths .dashed{stroke-dasharray:5 4}
+#cos-workflow-paths .dotted{stroke-dasharray:1.5 3;stroke-linecap:round}
+#cos-workflow-paths .lbg{fill:var(--bg)}#cos-workflow-paths .lbg-card{fill:var(--surface)}
+#cos-workflow-paths .shadow{flood-color:var(--shadow);flood-opacity:var(--shadow-o)}
+#cos-workflow-paths .tick{fill:none;stroke:var(--a);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+</style>
+<defs>
+<filter id="cos-workflow-paths-sh" x="-5%" y="-5%" width="110%" height="130%"><feDropShadow dx="0" dy="1" stdDeviation="1.5" class="shadow"/></filter>
+<marker id="cos-workflow-paths-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M1,1.5 L9,5 L1,8.5 Z" class="ah"/></marker>
+</defs>
+<rect x="0.5" y="0.5" width="959" height="893" rx="16" class="panel"/>
+<text x="40" y="52" class="r-title">Where to start</text>
+<text x="40" y="78" class="r-sub">Three entry points, from cheapest to most complete. Then the feedback loop keeps you shipping.</text>
+<rect x="40" y="120" width="264" height="298" rx="10" class="card" filter="url(#cos-workflow-paths-sh)"/>
+<rect x="48" y="132" width="3" height="274" rx="1.5" class="bar f-growth"/>
+<g class="f-growth">
+<text x="64" y="150" class="r-label">VALIDATE DEMAND</text>
+</g>
+<text x="64" y="178" class="r-codeh">/gtm-sprint</text>
+<text x="64" y="198" class="r-meta">7, 14 or 21 days · no code</text>
+<line x1="64" y1="214" x2="284" y2="214" class="rule"/>
+<text x="64" y="238" class="r-hs">Start here if</text>
+<text x="64" y="258" class="r-body">You are not sure anyone will</text>
+<text x="64" y="276" class="r-body">pay.</text>
+<text x="64" y="304" class="r-hs">You get</text>
+<text x="64" y="324" class="r-body">ICP, interviews, pain matrix,</text>
+<text x="64" y="342" class="r-body">LOIs, launch assets.</text>
+<line x1="64" y1="378" x2="284" y2="378" class="rule"/>
+<text x="64" y="402" class="r-meta">Move on when demand is proven.</text>
+<rect x="348" y="120" width="264" height="298" rx="10" class="card" filter="url(#cos-workflow-paths-sh)"/>
+<rect x="356" y="132" width="3" height="274" rx="1.5" class="bar f-eng"/>
+<g class="f-eng">
+<text x="372" y="150" class="r-label">PROVE THE TECH</text>
+</g>
+<text x="372" y="178" class="r-codeh">/rapid-prototype</text>
+<text x="372" y="198" class="r-meta">4 hours, 1 day or 3 days</text>
+<line x1="372" y1="214" x2="592" y2="214" class="rule"/>
+<text x="372" y="238" class="r-hs">Start here if</text>
+<text x="372" y="258" class="r-body">You need a demo or proof of</text>
+<text x="372" y="276" class="r-body">concept.</text>
+<text x="372" y="304" class="r-hs">You get</text>
+<text x="372" y="324" class="r-body">Mini-PRD (3 criteria max),</text>
+<text x="372" y="342" class="r-body">working demo. Skips RFC,</text>
+<text x="372" y="360" class="r-body">security, QA.</text>
+<line x1="372" y1="378" x2="592" y2="378" class="rule"/>
+<text x="372" y="402" class="r-meta">Move on when the idea works.</text>
+<path d="M308,182 L344,182" class="edge" marker-end="url(#cos-workflow-paths-ah)"/>
+<rect x="656" y="120" width="264" height="298" rx="10" class="card" filter="url(#cos-workflow-paths-sh)"/>
+<rect x="664" y="132" width="3" height="274" rx="1.5" class="bar f-orch"/>
+<g class="f-orch">
+<text x="680" y="150" class="r-label">BUILD AND LAUNCH</text>
+</g>
+<text x="680" y="178" class="r-codeh">/ship</text>
+<text x="680" y="198" class="r-meta">full pipeline, every gate</text>
+<line x1="680" y1="214" x2="900" y2="214" class="rule"/>
+<text x="680" y="238" class="r-hs">Start here if</text>
+<text x="680" y="258" class="r-body">You know what to build.</text>
+<text x="680" y="286" class="r-hs">You get</text>
+<text x="680" y="306" class="r-body">PRD, RFC, code, test plan, QA</text>
+<text x="680" y="324" class="r-body">report, launch brief.</text>
+<line x1="680" y1="378" x2="900" y2="378" class="rule"/>
+<text x="680" y="402" class="r-meta">Done when release passes.</text>
+<path d="M616,182 L652,182" class="edge" marker-end="url(#cos-workflow-paths-ah)"/>
+<rect x="40" y="442" width="880" height="48" rx="10" class="sunken"/>
+<text x="64" y="471" class="r-body">Not sure? Describe the goal. The workflow-router skill picks one of 10 paths, such as bug fix or GTM.</text>
+<g class="f-product">
+<text x="40" y="530" class="r-label">AFTER LAUNCH: THE INBOUND FEEDBACK LOOP</text>
+</g>
+<rect x="40" y="550" width="264" height="104" rx="10" class="card" filter="url(#cos-workflow-paths-sh)"/>
+<rect x="48" y="562" width="3" height="80" rx="1.5" class="bar f-product"/>
+<text x="64" y="580" class="r-codeh">customer-conversations</text>
+<text x="64" y="604" class="r-body">Prep calls and log debriefs. 7</text>
+<text x="64" y="622" class="r-body">types, including mom-test.</text>
+<rect x="348" y="550" width="264" height="104" rx="10" class="card" filter="url(#cos-workflow-paths-sh)"/>
+<rect x="356" y="562" width="3" height="80" rx="1.5" class="bar f-product"/>
+<text x="372" y="580" class="r-codeh">feedback-synthesizer</text>
+<text x="372" y="604" class="r-body">Themes, pain matrix, and a</text>
+<text x="372" y="622" class="r-body">score per PRD candidate.</text>
+<rect x="656" y="550" width="264" height="104" rx="10" class="card" filter="url(#cos-workflow-paths-sh)"/>
+<rect x="664" y="562" width="3" height="80" rx="1.5" class="bar f-product"/>
+<text x="680" y="580" class="r-codeh">sprint-prioritizer</text>
+<text x="680" y="604" class="r-body">Ranks candidates by impact,</text>
+<text x="680" y="622" class="r-body">effort, and risk.</text>
+<rect x="656" y="710" width="264" height="104" rx="10" class="card" filter="url(#cos-workflow-paths-sh)"/>
+<rect x="664" y="722" width="3" height="80" rx="1.5" class="bar f-product"/>
+<text x="680" y="740" class="r-codeh">prd-writer</text>
+<text x="680" y="764" class="r-body">Turns the top candidate into a</text>
+<text x="680" y="782" class="r-body">PRD.</text>
+<rect x="348" y="710" width="264" height="104" rx="10" class="card" filter="url(#cos-workflow-paths-sh)"/>
+<rect x="356" y="722" width="3" height="80" rx="1.5" class="bar f-orch"/>
+<text x="372" y="740" class="r-codeh">/ship</text>
+<text x="372" y="764" class="r-body">Build, verify, and release</text>
+<text x="372" y="782" class="r-body">with gates.</text>
+<rect x="40" y="710" width="264" height="104" rx="10" class="card" filter="url(#cos-workflow-paths-sh)"/>
+<rect x="48" y="722" width="3" height="80" rx="1.5" class="bar f-neutral"/>
+<text x="64" y="740" class="r-h">Your users</text>
+<text x="64" y="764" class="r-body">Use the shipped product and</text>
+<text x="64" y="782" class="r-body">talk to you again.</text>
+<path d="M306,602 L346,602" class="edge" marker-end="url(#cos-workflow-paths-ah)"/>
+<path d="M614,602 L654,602" class="edge" marker-end="url(#cos-workflow-paths-ah)"/>
+<path d="M788,656 L788,708" class="edge" marker-end="url(#cos-workflow-paths-ah)"/>
+<path d="M654,762 L614,762" class="edge" marker-end="url(#cos-workflow-paths-ah)"/>
+<path d="M346,762 L306,762" class="edge" marker-end="url(#cos-workflow-paths-ah)"/>
+<path d="M172,708 L172,656" class="edge" marker-end="url(#cos-workflow-paths-ah)"/>
+<path d="M480,654 V668" class="edge dotted"/>
+<rect x="210.5" y="668" width="539" height="28" rx="6" class="sunken"/>
+<text x="480" y="686" class="r-meta" text-anchor="middle">Score: over 15 → /ship · 8 to 15 → /discovery-validation · under 8 → monitor</text>
+<text x="40" y="850" class="r-meta">Other signals: churn risk goes to support-operations, ICP shifts to icp-positioning. See standards/ops/inbound-loop-sop.md</text>
+<text x="920" y="876" class="r-meta" text-anchor="end">Company OS · generated by docs/diagrams/render.js</text>
+</svg>
