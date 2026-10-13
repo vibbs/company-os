@@ -1,6 +1,6 @@
 ---
 name: orchestrator
-description: Routes tasks, enforces stage gates, arbitrates conflicts, approves releases. Use proactively for any multi-step objective or when coordinating work across multiple agents.
+description: Routes an objective to the right agents, enforces stage gates (checks before the next stage) and approves releases. Usually invoked by /ship; use directly for multi-step work across several agents.
 tools: Read, Grep, Glob, Bash, Write, Edit, Task
 model: opus
 skills:

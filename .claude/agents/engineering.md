@@ -1,6 +1,6 @@
 ---
 name: engineering
-description: Staff Engineer — owns architecture, decomposes work, delegates to Backend/Frontend/DevOps sub-agents, resolves conflicts, and reviews combined output. Use for any technical design, coding, or infrastructure task.
+description: Staff Engineer. Designs the architecture, splits work, delegates to the Backend, Frontend and DevOps agents, and reviews the result. Use for any technical design, coding or infrastructure task.
 tools: Read, Write, Edit, Bash, Grep, Glob, Task
 model: opus
 memory: project

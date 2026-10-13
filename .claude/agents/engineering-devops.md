@@ -1,6 +1,6 @@
 ---
 name: engineering-devops
-description: DevOps and infrastructure specialist — deployment pipelines, observability, feature flags, CI/CD, and environment configuration. Use for infrastructure tasks delegated by the Engineering Agent.
+description: Sets up deployment pipelines, monitoring, feature flags, CI/CD and environments. Usually invoked by the Engineering Agent or /ship, so you rarely call it directly.
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
 skills:

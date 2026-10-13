@@ -1,6 +1,6 @@
 ---
 name: growth
-description: Handles launch strategy, acquisition loops, SEO/content, and activation experiments. Use for marketing, launch planning, or growth optimization tasks.
+description: Plans launches and growth: positioning, landing pages, channels, SEO and content, and onboarding experiments. Use for marketing, launch planning or improving user acquisition.
 tools: Read, Grep, Glob, Bash, Write
 model: sonnet
 memory: project

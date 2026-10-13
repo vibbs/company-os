@@ -1,6 +1,6 @@
 ---
 name: engineering-frontend
-description: Frontend implementation specialist — UI components, responsive design, instrumentation, user docs, and guided tours. Use for client-side coding tasks delegated by the Engineering Agent.
+description: Builds user interface code: components, responsive layouts, analytics events, user docs and guided tours. Usually invoked by the Engineering Agent or /ship, so you rarely call it directly.
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
 skills:

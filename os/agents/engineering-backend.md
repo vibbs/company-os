@@ -1,6 +1,6 @@
 ---
 name: engineering-backend
-description: Backend implementation specialist — API endpoints, data models, business logic, background jobs, and database operations. Use for server-side coding tasks delegated by the Engineering Agent.
+description: Writes server-side code: API endpoints, data models, business logic, background jobs and database work. Usually invoked by the Engineering Agent or /ship, so you rarely call it directly.
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
 skills:

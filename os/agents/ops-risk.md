@@ -1,6 +1,6 @@
 ---
 name: ops-risk
-description: Manages security baseline, privacy/compliance, finance sanity, and legal drafts. Use for security reviews, compliance checks, cost analysis, or legal document preparation.
+description: Covers security, privacy, compliance, pricing and cost checks, and legal document drafts. Use for security reviews, compliance checks, cost analysis or Terms of Service and Privacy Policy drafts.
 tools: Read, Grep, Glob, Bash, Write
 model: sonnet
 skills:

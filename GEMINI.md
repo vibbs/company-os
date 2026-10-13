@@ -78,7 +78,7 @@ behave as the Engineering Agent.
 
 ### `engineering`
 
-Staff Engineer — owns architecture, decomposes work, delegates to Backend/Frontend/DevOps sub-agents, resolves conflicts, and reviews combined output. Use for any technical design, coding, or infrastructure task.
+Staff Engineer. Designs the architecture, splits work, delegates to the Backend, Frontend and DevOps agents, and reviews the result. Use for any technical design, coding or infrastructure task.
 
 **Recommended model tier:** `opus`
 
@@ -94,7 +94,7 @@ Full persona: [`os/agents/engineering.md`](os/agents/engineering.md)
 
 ### `engineering-backend`
 
-Backend implementation specialist — API endpoints, data models, business logic, background jobs, and database operations. Use for server-side coding tasks delegated by the Engineering Agent.
+Writes server-side code: API endpoints, data models, business logic, background jobs and database work. Usually invoked by the Engineering Agent or /ship, so you rarely call it directly.
 
 **Recommended model tier:** `sonnet`
 
@@ -108,7 +108,7 @@ Full persona: [`os/agents/engineering-backend.md`](os/agents/engineering-backend
 
 ### `engineering-devops`
 
-DevOps and infrastructure specialist — deployment pipelines, observability, feature flags, CI/CD, and environment configuration. Use for infrastructure tasks delegated by the Engineering Agent.
+Sets up deployment pipelines, monitoring, feature flags, CI/CD and environments. Usually invoked by the Engineering Agent or /ship, so you rarely call it directly.
 
 **Recommended model tier:** `sonnet`
 
@@ -123,7 +123,7 @@ Full persona: [`os/agents/engineering-devops.md`](os/agents/engineering-devops.m
 
 ### `engineering-frontend`
 
-Frontend implementation specialist — UI components, responsive design, instrumentation, user docs, and guided tours. Use for client-side coding tasks delegated by the Engineering Agent.
+Builds user interface code: components, responsive layouts, analytics events, user docs and guided tours. Usually invoked by the Engineering Agent or /ship, so you rarely call it directly.
 
 **Recommended model tier:** `sonnet`
 
@@ -137,7 +137,7 @@ Full persona: [`os/agents/engineering-frontend.md`](os/agents/engineering-fronte
 
 ### `growth`
 
-Handles launch strategy, acquisition loops, SEO/content, and activation experiments. Use for marketing, launch planning, or growth optimization tasks.
+Plans launches and growth: positioning, landing pages, channels, SEO and content, and onboarding experiments. Use for marketing, launch planning or improving user acquisition.
 
 **Recommended model tier:** `sonnet`
 
@@ -156,7 +156,7 @@ Full persona: [`os/agents/growth.md`](os/agents/growth.md)
 
 ### `ops-risk`
 
-Manages security baseline, privacy/compliance, finance sanity, and legal drafts. Use for security reviews, compliance checks, cost analysis, or legal document preparation.
+Covers security, privacy, compliance, pricing and cost checks, and legal document drafts. Use for security reviews, compliance checks, cost analysis or Terms of Service and Privacy Policy drafts.
 
 **Recommended model tier:** `sonnet`
 
@@ -175,7 +175,7 @@ Full persona: [`os/agents/ops-risk.md`](os/agents/ops-risk.md)
 
 ### `orchestrator`
 
-Routes tasks, enforces stage gates, arbitrates conflicts, approves releases. Use proactively for any multi-step objective or when coordinating work across multiple agents.
+Routes an objective to the right agents, enforces stage gates (checks before the next stage) and approves releases. Usually invoked by /ship; use directly for multi-step work across several agents.
 
 **Recommended model tier:** `opus`
 
@@ -200,7 +200,7 @@ Full persona: [`os/agents/orchestrator.md`](os/agents/orchestrator.md)
 
 ### `product`
 
-Handles discovery, PRD creation, prioritization, and scope control. Use when defining what to build, analyzing user feedback, or prioritizing features.
+Turns ideas and feedback into product requirements: discovery, PRDs, prioritization and scope control. Use when defining what to build, analyzing user feedback or ranking features.
 
 **Recommended model tier:** `sonnet`
 
@@ -218,7 +218,7 @@ Full persona: [`os/agents/product.md`](os/agents/product.md)
 
 ### `qa-release`
 
-Manages quality gates, test planning, regression confidence, and release readiness. Use when testing, creating test plans, or evaluating release readiness.
+Plans and runs quality checks: test plans, QA reports and the final release readiness verdict. Use when testing a feature, writing a test plan or deciding whether it is ready to release.
 
 **Recommended model tier:** `sonnet`
 
