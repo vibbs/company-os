@@ -11,6 +11,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [Unreleased]
+
+**Upgrade notes:** Edit skills and agents in `os/` from now on, then run `bash tools/build/build.sh`. Hand edits to `.claude/skills/` or `.claude/agents/` are overwritten by the build. Existing installs keep their current `.company-os/docs/` files; the installer only adds docs that are missing.
+
+### Added
+- **Multi-runtime support.** Company OS now runs in Claude Code, Cursor, Codex CLI, Gemini CLI and Aider.
+  - Phase A: generated adapters `AGENTS.md` (Codex, Aider, other AGENTS.md runtimes), `GEMINI.md`, `.cursor/rules/*.mdc` plus legacy `.cursorrules`, and `.codex/config.md`
+  - Phase B: a runtime-neutral skill and agent schema (`tools/build/schema/`) with `validate-skill.sh` and `validate-agent.sh`, run by `build.sh --check`
+  - Phase C: `os/` is the single authoring source (`os/skills/`, `os/agents/`, `os/playbooks/`, `os/hooks/`); `tools/build/build.sh` regenerates every adapter, including `.claude/`
+  - Phase D: `install.sh --runtime auto|all|core|claude|cursor|codex|gemini|aider` (comma-separated lists allowed; `auto` detects installed runtimes), plus `tools/registry/list-runtimes.sh` and `tools/registry/install-runtime.sh` to inspect and add adapters after install
+- **New user docs** in `.company-os/docs/`: `CONCEPTS.md` (glossary, layers, artifacts, stage-aware gates, ship flow with your job at each gate), `CONFIG_REFERENCE.md` (every config section marked required or optional), `CUSTOMIZING.md` (edit `os/`, then build) and `TROUBLESHOOTING.md`
+- **SVG diagrams** in `docs/diagrams/svg/` (system overview, agent org chart, ship flow, stage gates, artifact lineage, multi-runtime build, install and upgrade, workflow paths), embedded in the docs
+- **FAQ "Getting started" block**: cost, choosing a runtime, use without Claude Code, manual uninstall, customizing, upgrading, stages, troubleshooting
+- **Tool hardening**: every tool script answers `-h` / `--help`; `validate.sh --all` checks every artifact; config is read through one helper (`tools/lib/config.sh`, `cfg_get`); `setup.sh --help`
+
+### Changed
+- `SETUP.md` is now a short quickstart (prerequisites, install, pick your runtime, `/setup`, verify, first `/ship`); reference material moved to the new docs above
+- Skill and agent descriptions rewritten in plain language; key user-facing skills gained an overview and sample output
+- Claude-only skill fields (`user-invokable`, `disable-model-invocation`, `argument-hint`) now live under `runtimes.claude:` in `os/skills/`; the build lifts them to the top level of the generated `.claude/` copy
+- Authoring schema moved from `docs/superpowers/SCHEMA.md` to `docs/contributing/SKILL_SCHEMA.md`; the portability design spec moved to `docs/design/` and is marked Implemented
+- `TOKEN_COSTS.md` re-measured for this release, with always-on cost per runtime; `ROADMAP.md` refreshed with a collapsed Shipped list
+- `install.sh --help` lists `--runtime` in its header, adds examples and the docs link
+
+### Fixed
+- Docs used command names that do not exist: `/prototype` is `/rapid-prototype` and `/token-cost` is `/token-cost-ledger`
+- Tool scripts no longer abort silently on an unmatched `grep`, reject missing flag values and unknown flags, and send errors to stderr
+- `check-gate.sh` exits 2 when the artifact path does not exist
+- Stale counts in the docs (now 64 skills, 9 agents, 33 tool scripts)
+
 ## [1.11.0] - 2026-05-27
 
 ### Added
