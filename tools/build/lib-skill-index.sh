@@ -8,8 +8,8 @@
 #   skill_file <name>           -> echoes the absolute path to <name>'s SKILL.md
 # ============================================================================
 
-# Phase A: source-of-truth is .claude/skills/. Phase C will promote os/skills/.
-# Adapters call skill_source_dir to stay portable across phases.
+# Source of truth is os/skills/ (.claude/skills/ is generated from it).
+# Adapters call skill_source_dir to find it (falls back to .claude/skills/ in older installs).
 skill_source_dir() {
   if [ -d "os/skills" ]; then
     echo "os/skills"

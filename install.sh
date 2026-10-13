@@ -904,7 +904,7 @@ else
 fi
 echo ""
 
-# --- os/ (neutral authoring source — Phase C source-of-truth) ---
+# --- os/ (neutral authoring source) ---
 if [ "$DRY_RUN" = false ]; then
   mkdir -p os
 fi

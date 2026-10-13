@@ -448,8 +448,8 @@ skill file and follow the procedure.
 
 ## Re-generating This File
 
-This file is generated from `.claude/skills/`, `.claude/agents/`, and
-`CLAUDE.md`. To regenerate after changes:
+This file is generated from `os/skills/`, `os/agents/`, and
+`CLAUDE.md`. Edit those, not this file. To regenerate after changes:
 
 ```bash
 bash tools/build/build.sh
