@@ -59,7 +59,7 @@ for skill_dir in "$SKILLS_DIR"/*/; do
   done
 
   # Check name matches directory name
-  SKILL_NAME=$(echo "$FRONTMATTER" | grep "^name:" | sed 's/name: *//' | tr -d '"')
+  SKILL_NAME=$(echo "$FRONTMATTER" | { grep "^name:" || true; } | sed 's/name: *//' | tr -d '"')
   if [[ "$SKILL_NAME" != "$DIR_NAME" ]]; then
     echo "⚠️  $DIR_NAME: Frontmatter name '$SKILL_NAME' doesn't match directory name"
     WARNINGS=$((WARNINGS + 1))

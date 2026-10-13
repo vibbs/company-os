@@ -39,7 +39,7 @@ sed_inplace() {
 extract_field() {
   local FILE="$1"
   local FIELD="$2"
-  sed -n '/^---$/,/^---$/p' "$FILE" | grep "^${FIELD}:" | sed "s/${FIELD}: *//" | tr -d '"' | tr -d "'"
+  sed -n '/^---$/,/^---$/p' "$FILE" | { grep "^${FIELD}:" || true; } | sed "s/${FIELD}: *//" | tr -d '"' | tr -d "'"
 }
 
 extract_array_items() {

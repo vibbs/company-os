@@ -45,11 +45,11 @@ for skill_dir in "$SKILLS_DIR"/*/; do
   DIR_NAME=$(basename "$skill_dir")
   if grep -il "$QUERY" "$SKILL_FILE" > /dev/null 2>&1 || echo "$DIR_NAME" | grep -iq "$QUERY"; then
     # Extract metadata from frontmatter
-    NAME=$(sed -n '/^---$/,/^---$/p' "$SKILL_FILE" | grep "^name:" | sed 's/name: *//' | tr -d '"')
-    DESC=$(sed -n '/^---$/,/^---$/p' "$SKILL_FILE" | grep "^description:" | sed 's/description: *//' | tr -d '"')
+    NAME=$(sed -n '/^---$/,/^---$/p' "$SKILL_FILE" | { grep "^name:" || true; } | sed 's/name: *//' | tr -d '"')
+    DESC=$(sed -n '/^---$/,/^---$/p' "$SKILL_FILE" | { grep "^description:" || true; } | sed 's/description: *//' | tr -d '"')
 
-    # Try to extract category from Reference section in body
-    CATEGORY=$(grep -A1 "Category" "$SKILL_FILE" | grep -v "Category" | sed 's/.*\*\*: *//' | head -1)
+    # Category comes from the "- **Category**: X" line in the Reference section
+    CATEGORY=$({ grep -m1 '^- \*\*Category\*\*:' "$SKILL_FILE" || true; } | sed 's/.*\*\*Category\*\*: *//')
 
     echo ""
     echo "  $NAME"

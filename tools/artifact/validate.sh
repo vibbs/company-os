@@ -49,7 +49,7 @@ resolve_artifact_id() {
 extract_field() {
   local FILE="$1"
   local FIELD="$2"
-  sed -n '/^---$/,/^---$/p' "$FILE" | grep "^${FIELD}:" | sed "s/${FIELD}: *//" | tr -d '"' | tr -d "'"
+  sed -n '/^---$/,/^---$/p' "$FILE" | { grep "^${FIELD}:" || true; } | sed "s/${FIELD}: *//" | tr -d '"' | tr -d "'"
 }
 
 # --- Helper: extract YAML inline array items ---
