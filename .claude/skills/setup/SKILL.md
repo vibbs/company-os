@@ -587,12 +587,12 @@ If user removes a category, note it but don't delete skills (they're harmless if
 
 ### Step 10: Template Documentation Cleanup (Optional)
 
-Ask: "Would you like to clean up template documentation files? These explain Company OS itself and aren't needed for daily operation."
+Ask: "Would you like to clean up template example files? This removes the example artifacts and standards, replaces the README and deletes setup.sh. The Company OS guides in `.company-os/docs/` stay."
 
 | File | Purpose | Recommendation |
 |------|---------|----------------|
 | `README.md` | Describes Company OS template | **Replace** with a project-specific README |
-| `.company-os/docs/` (all files except `CHANGELOG.md`) | Company OS guides: SETUP, CONCEPTS, CONFIG_REFERENCE, CUSTOMIZING, TROUBLESHOOTING, FAQ, TOKEN_COSTS, ROADMAP | **Remove** (reference only; they link to each other, so they go together) |
+| `.company-os/docs/*.md` | Company OS guides (SETUP, CONCEPTS, CONFIG_REFERENCE, CUSTOMIZING, TROUBLESHOOTING, FAQ, TOKEN_COSTS, ROADMAP, CHANGELOG) | **Keep.** Other files link to them and they cost no tokens unless read |
 | `setup.sh` | One-time scaffolding script | **Remove** after first run |
 | `artifacts/prds/PRD-EXAMPLE-001-notifications.md` | Example PRD artifact | **Remove** after reviewing |
 | `artifacts/rfcs/RFC-EXAMPLE-001-notification-system.md` | Example RFC artifact | **Remove** after reviewing |
@@ -600,7 +600,7 @@ Ask: "Would you like to clean up template documentation files? These explain Com
 | `standards/coding/example-coding-standards.md` | Example coding standards | **Remove** after reviewing |
 
 If user confirms:
-1. Delete every file in `.company-os/docs/` except `CHANGELOG.md` (the upgrade tool reads it), `setup.sh`, example artifacts, and example standards
+1. Delete `setup.sh`, example artifacts, and example standards
 2. Replace `README.md` with a minimal project README:
    ```
    # {company.product}

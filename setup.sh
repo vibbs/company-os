@@ -7,7 +7,7 @@
 #
 # Usage:
 #   bash setup.sh             # scaffold directories + template config
-#   bash setup.sh --cleanup   # remove template documentation files
+#   bash setup.sh --cleanup   # remove example artifacts and standards
 #   bash setup.sh --help      # show this help
 #
 # After running this script, open Claude Code and run /setup to customize
@@ -43,7 +43,7 @@ if you do not use one. Existing files are never overwritten.
 
 Usage:
   bash setup.sh             Scaffold folders and template files
-  bash setup.sh --cleanup   Remove template docs and example files
+  bash setup.sh --cleanup   Remove example files (the guides in .company-os/docs/ stay)
   bash setup.sh --help      Show this help
 
 What the default run creates (only if missing):
@@ -56,8 +56,9 @@ What the default run creates (only if missing):
   .claude/settings.json     Node.js default permissions
 
 What --cleanup removes (if present):
-  .company-os/docs/ (every guide except CHANGELOG.md, which upgrades read),
-  the example PRD, RFC and standards files
+  the example PRD, RFC and standards files, and old root-level copies of
+  TOKEN_COSTS.md, FAQ.md and SETUP_COMPANY_OS.md.
+  The guides in .company-os/docs/ are kept: other files link to them.
 
 Next steps:
   Claude Code:   run `claude`, then type /setup
@@ -75,10 +76,10 @@ if [[ "${1:-}" == "--cleanup" ]]; then
   echo -e "${BLUE}Company OS — Template Cleanup${NC}"
   echo "================================"
   echo ""
-  echo "Removing template documentation files (not needed for daily operation)..."
+  echo "Removing example artifacts and standards (the guides in .company-os/docs/ are kept)..."
   echo ""
   REMOVED=0
-  for f in .company-os/docs/SETUP.md .company-os/docs/CONCEPTS.md .company-os/docs/CONFIG_REFERENCE.md .company-os/docs/CUSTOMIZING.md .company-os/docs/TROUBLESHOOTING.md .company-os/docs/FAQ.md .company-os/docs/TOKEN_COSTS.md .company-os/docs/ROADMAP.md TOKEN_COSTS.md FAQ.md SETUP_COMPANY_OS.md artifacts/prds/PRD-EXAMPLE-001-notifications.md artifacts/rfcs/RFC-EXAMPLE-001-notification-system.md standards/api/example-api-conventions.md standards/coding/example-coding-standards.md; do
+  for f in TOKEN_COSTS.md FAQ.md SETUP_COMPANY_OS.md artifacts/prds/PRD-EXAMPLE-001-notifications.md artifacts/rfcs/RFC-EXAMPLE-001-notification-system.md standards/api/example-api-conventions.md standards/coding/example-coding-standards.md; do
     if [ -f "$f" ]; then
       rm "$f"
       echo -e "  ${RED}Removed${NC}  $f"

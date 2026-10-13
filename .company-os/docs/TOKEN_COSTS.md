@@ -4,7 +4,7 @@ What Company OS adds to your AI token usage, and how to reduce it. Use it to est
 
 All figures are measured from the files in this release at **about 4 characters per token** (typical for Markdown and YAML). Platform figures (what your runtime sends anyway) are estimates. To track what your sessions actually cost, use `/token-cost-ledger`, which logs spend to `cogs/ai-ledger/`.
 
-> This is reference documentation for evaluating Company OS. After setup you can remove it with `bash setup.sh --cleanup` or the cleanup option in `/setup`.
+> This is reference documentation for evaluating Company OS. It costs no tokens unless an agent reads it, and setup cleanup keeps it. Delete it by hand if you do not want it.
 
 ---
 

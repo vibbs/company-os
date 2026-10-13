@@ -77,7 +77,7 @@ Paste this after `/setup`, edit the values, and the wizard configures everything
 - Clean Up Templates: yes
 ```
 
-`Clean Up Templates: yes` deletes the Company OS guides in `.company-os/docs/` (including this one; `CHANGELOG.md` stays) plus the example artifacts and standards after setup. Say `no` if you want to keep them. The full template, with every preset, is in `os/skills/setup/SKILL.md`.
+`Clean Up Templates: yes` deletes the example artifacts and standards, replaces the README and removes `setup.sh` after setup. The guides in `.company-os/docs/` always stay. Say `no` if you want to keep the examples. The full template, with every preset, is in `os/skills/setup/SKILL.md`.
 
 ---
 
