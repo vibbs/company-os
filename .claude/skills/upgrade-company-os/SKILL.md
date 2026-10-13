@@ -20,7 +20,17 @@ Check if an update is available:
    ```bash
    curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --check
    ```
-4. If `.company-os/version` doesn't exist, inform the user this is a pre-versioning install and recommend running `--force` to stamp the version
+3. If `.company-os/version` doesn't exist, inform the user this is a pre-versioning install and recommend running `--force` to stamp the version
+
+What you will see:
+
+```text
+  Installed:  1.11.0
+  Available:  1.12.0 (minor)
+  Update available - 1.11.0 -> 1.12.0
+```
+
+Or, when nothing is newer: `Up to date - Company OS 1.11.0`.
 
 ### `/upgrade-company-os preview`
 
@@ -35,6 +45,18 @@ Preview what would change without applying:
    curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --dry-run --force
    ```
 3. Parse and display the output — highlight new files, updated files, conflicts, and migration notes
+
+What you will see:
+
+```text
+  Preview  .claude/settings.json (would merge permissions)
+  Preview: Would create 2, add 5, merge 1, update 12, skip 40.
+  Warning: 1 file(s) modified by you AND changed in template.
+  These will be saved to .company-os/conflicts/ on upgrade.
+  Run without --dry-run to apply these changes.
+```
+
+Nothing on disk changes during a preview.
 
 ### `/upgrade-company-os apply`
 
@@ -57,6 +79,17 @@ Perform the upgrade:
 5. Display post-upgrade summary including new version from `.company-os/version`
 6. If conflicts were detected (`.company-os/conflicts/` exists and is non-empty), list the conflicted files and advise manual resolution
 
+What you will see:
+
+```text
+  Backup   Created at .company-os/backup/20261013-101500-v1.11.0
+  ...file-by-file results...
+  1 conflict(s) detected - your modified versions saved to .company-os/conflicts/
+  Review the conflicts and merge manually.
+```
+
+Each conflict has a `.user` file (your version) and a `.new` file (the template version). Merge what you want to keep, then delete the conflict files. If you see `Up to date`, there was nothing to apply.
+
 ### `/upgrade-company-os rollback`
 
 Restore from a previous backup:
@@ -68,13 +101,23 @@ Restore from a previous backup:
 2. If no backups exist, inform the user that backups are created automatically during major upgrades or with the `--backup` flag
 3. If backups exist, present them to the user with timestamps and versions
 4. After user selects a backup, restore by copying the backup files over current template files:
-   - `.claude/agents/` — restore from backup
+   - `os/` (agents, skills, playbooks, hooks) and `.claude/agents/` — restore from backup
    - `.claude/skills/` — restore from backup
    - `.claude/hooks/` — restore from backup
    - `tools/` — restore from backup
    - `CLAUDE.md` — restore if present in backup
 5. Update `.company-os/version` to the backup's version (parse from the backup directory name)
 6. Regenerate the manifest by running install with `--force` flag or manually stamping
+
+What you will see:
+
+```text
+Available backups:
+  .company-os/backup/20261013-101500-v1.11.0/   (version 1.11.0)
+Which one should I restore?
+```
+
+After you choose, the skill restores the template files and reports the restored version. With no backups it says so and explains how backups are created. Your own files (`artifacts/`, `tasks/`, `company.config.yaml`) are never touched by a rollback.
 
 ## Version File Locations
 

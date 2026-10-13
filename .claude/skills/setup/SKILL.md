@@ -9,6 +9,16 @@ argument-hint: "[preset | config block | URL | description]"
 
 Interactive setup skill for Company OS. Works on both new (greenfield) and existing projects. Company OS is an **overlay** — it adds its own files alongside your code and never touches your source.
 
+## At a Glance
+
+- **What it does**: asks about your company and tech stack, then configures Company OS for your project.
+- **Three ways to run it**: answer questions (interactive), paste a filled-in config block (express), or give a URL or description and confirm what it infers (auto-extract).
+- **Files it writes**: `company.config.yaml`, `.claude/settings.json` (permissions for your stack), and the `artifacts/`, `tasks/` and related folders. It never edits your source code.
+- **Time**: about 5 minutes interactive, under 1 minute in express mode.
+- **Safe to rerun**: existing config and settings are merged, not overwritten.
+- **Done when**: you see the "Setup Complete" summary with next steps (usually `/ship` or `/gtm-sprint`).
+- **Note**: the `## Design` block inside Step 5.7 is part of the express template, not a separate step.
+
 ## Modes
 
 - **Interactive** (`/setup` or `/setup nextjs`) — step-by-step guided wizard with smart defaults

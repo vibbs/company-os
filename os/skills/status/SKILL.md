@@ -27,6 +27,32 @@ Show a project health dashboard at a glance: how many artifacts exist, their sta
 - Before starting a new feature (check what exists)
 - Before a release (check all gates)
 - After a session to verify artifact integrity
+## What You Will See
+
+```text
+## Artifact Status Dashboard
+
+| Category         | Total | Draft | Review | Approved | Archived |
+|------------------|-------|-------|--------|----------|----------|
+| PRDs             | 3     | 1     | 0      | 2        | 0        |
+| RFCs             | 2     | 0     | 1      | 1        | 0        |
+| Test Plans       | 1     | 0     | 0      | 1        | 0        |
+| QA Reports       | 0     | 0     | 0      | 0        | 0        |
+
+All artifact references verified.
+
+## Gate Readiness
+
+### PRD-001: User Authentication
+- [x] prd-to-rfc: PASS
+- [x] rfc-to-impl: PASS
+- [ ] impl-to-qa: NOT READY (test plan missing)
+- [ ] release: NOT READY (QA report missing)
+
+Next: write the test plan for PRD-001 to unblock impl-to-qa.
+```
+
+How to read it: a gate is a check that must pass before work moves to the next stage. `PASS` means you can proceed. `NOT READY` lists what is missing. Run `/status --dashboard` for the longer report with a lineage graph and cost snapshot.
 
 ## Procedure
 

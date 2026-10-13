@@ -20,6 +20,48 @@ Imports pre-existing documents from external sources (Google Docs, Notion, Confl
 If both modes are present, process both. If neither, prompt the user:
 > "No files found in `imports/` and no document content provided. Either export your docs as Markdown and place them in `imports/`, or paste the content directly."
 
+## What You Will See
+
+Before: a plain Markdown file you placed in `imports/`.
+
+```markdown
+# User Authentication
+
+## Problem
+Users cannot sign in with a work email.
+```
+
+After: the same text, with frontmatter added and the file moved to `artifacts/prds/PRD-001-user-authentication.md`.
+
+```markdown
+---
+id: PRD-001
+type: prd
+title: "User Authentication"
+status: review
+created: 2026-10-13
+author: imported
+parent: null
+children: []
+depends_on: []
+blocks: []
+tags: [imported]
+---
+
+# User Authentication
+
+## Problem
+Users cannot sign in with a work email.
+```
+
+If the type is unclear, you will be asked one question and should answer with the type:
+
+```text
+I think `auth-notes.md` is an RFC, but it could also be a test plan. Which type should I assign?
+```
+
+Reply `rfc` or `test-plan`. Imported files start at `review` status. You promote them to `approved` after checking them.
+
 ## Procedure
 
 ### Step 1: Detect and Read Sources
