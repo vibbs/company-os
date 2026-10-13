@@ -441,9 +441,19 @@ echo -e "  ${GREEN}Downloaded${NC}"
 echo ""
 
 # --- Read incoming version ---
+# Since v1.9.0 the version and changelog live under .company-os/; older
+# template releases keep them at the repo root, so fall back to those paths.
 INCOMING_VERSION="unknown"
-if [ -f "$SRC/VERSION" ]; then
+if [ -f "$SRC/.company-os/version" ]; then
+  INCOMING_VERSION=$(cat "$SRC/.company-os/version" | tr -d '[:space:]')
+elif [ -f "$SRC/VERSION" ]; then
   INCOMING_VERSION=$(cat "$SRC/VERSION" | tr -d '[:space:]')
+fi
+INCOMING_CHANGELOG=""
+if [ -f "$SRC/.company-os/docs/CHANGELOG.md" ]; then
+  INCOMING_CHANGELOG="$SRC/.company-os/docs/CHANGELOG.md"
+elif [ -f "$SRC/CHANGELOG.md" ]; then
+  INCOMING_CHANGELOG="$SRC/CHANGELOG.md"
 fi
 
 # --- Display version info ---
@@ -472,8 +482,8 @@ if [ "$CHECK_ONLY" = true ]; then
     echo -e "  ${YELLOW}Update available${NC} — $LOCAL_VERSION → $INCOMING_VERSION"
 
     # Show changelog if available
-    if [ -f "$SRC/CHANGELOG.md" ]; then
-      extract_changelog "$SRC/CHANGELOG.md" "$LOCAL_VERSION" "$INCOMING_VERSION"
+    if [ -n "$INCOMING_CHANGELOG" ]; then
+      extract_changelog "$INCOMING_CHANGELOG" "$LOCAL_VERSION" "$INCOMING_VERSION"
     fi
 
     echo ""
@@ -487,13 +497,13 @@ fi
 # Changelog-only mode
 # ============================================================================
 if [ "$SHOW_CHANGELOG" = true ]; then
-  if [ -f "$SRC/CHANGELOG.md" ]; then
+  if [ -n "$INCOMING_CHANGELOG" ]; then
     if [ "$LOCAL_VERSION" = "unknown" ]; then
       echo -e "  ${BOLD}Full Changelog:${NC}"
       echo ""
-      cat "$SRC/CHANGELOG.md" | sed 's/^/  /'
+      cat "$INCOMING_CHANGELOG" | sed 's/^/  /'
     else
-      extract_changelog "$SRC/CHANGELOG.md" "$LOCAL_VERSION" "$INCOMING_VERSION"
+      extract_changelog "$INCOMING_CHANGELOG" "$LOCAL_VERSION" "$INCOMING_VERSION"
     fi
   else
     echo -e "  ${DIM}No changelog available.${NC}"
@@ -512,8 +522,8 @@ if [ "$INCOMING_VERSION" != "unknown" ] && [ "$LOCAL_VERSION" != "unknown" ]; th
       echo -e "  ${RED}MAJOR UPGRADE${NC} — Breaking changes may require action."
       echo ""
 
-      if [ -f "$SRC/CHANGELOG.md" ]; then
-        extract_changelog "$SRC/CHANGELOG.md" "$LOCAL_VERSION" "$INCOMING_VERSION"
+      if [ -n "$INCOMING_CHANGELOG" ]; then
+        extract_changelog "$INCOMING_CHANGELOG" "$LOCAL_VERSION" "$INCOMING_VERSION"
         echo ""
       fi
 
