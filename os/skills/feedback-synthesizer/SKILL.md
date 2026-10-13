@@ -1,6 +1,6 @@
 ---
 name: feedback-synthesizer
-description: Turns messy, unstructured customer and user feedback into actionable themes with supporting evidence. Use when consolidating feedback from multiple sources into product insights.
+description: Turns messy customer feedback into themes with supporting evidence and a ranked pain matrix. Use when consolidating feedback from several sources.
 runtimes:
   claude:
     user-invokable: true

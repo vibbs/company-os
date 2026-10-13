@@ -1,10 +1,10 @@
 ---
 name: status
-description: Shows project artifact status summary — counts, statuses, broken links, and gate readiness across all artifact types.
+description: "Shows a summary of project artifacts: counts by status, broken links and stage gate readiness. Use to check project health; add --dashboard for an HTML report."
 runtimes:
   claude:
     user-invokable: true
-    argument-hint: "[optional: prd|rfc|qa|all|--dashboard]"
+    argument-hint: "[prd | rfc | qa | all | --dashboard]"
 ---
 
 # Status Dashboard

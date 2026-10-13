@@ -1,6 +1,6 @@
 ---
 name: perf-benchmark-checklist
-description: Establishes baseline performance metrics and regression detection criteria. Use when setting up performance benchmarks or investigating performance regressions.
+description: Sets baseline performance metrics and criteria for catching regressions. Use when setting up benchmarks or investigating a slowdown.
 runtimes:
   claude:
     user-invokable: false

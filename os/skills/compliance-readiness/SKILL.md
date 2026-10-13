@@ -1,6 +1,6 @@
 ---
 name: compliance-readiness
-description: Performs SOC2-lite checklist assessment and compliance gap analysis. Use when preparing for audits, assessing compliance posture, or building toward SOC2 certification.
+description: Checks your readiness for a lightweight SOC 2 security audit and lists the gaps. Use when preparing for an audit or customer security questionnaires.
 runtimes:
   claude:
     user-invokable: true

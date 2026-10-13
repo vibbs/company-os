@@ -1,10 +1,10 @@
 ---
 name: ship
-description: Kick off the full ship flow for a feature or objective. Routes through the Orchestrator to produce PRD, RFC, implementation, QA, and launch artifacts with gate checks at every stage.
+description: Takes a feature from idea to release (PRD, RFC, code, QA, launch assets), pausing at each quality gate for your review. Use to build and ship something end to end.
 runtimes:
   claude:
     user-invokable: true
-    argument-hint: "describe what you want to build"
+    argument-hint: "<what you want to build>"
 ---
 
 # Ship

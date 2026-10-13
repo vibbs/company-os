@@ -1,9 +1,10 @@
 ---
 name: icp-positioning
-description: Defines ideal customer profile and product positioning. Use when establishing or refining who the product serves and how it is differentiated in the market.
+description: Defines your ideal customer profile (ICP) and how your product is positioned against alternatives. Use when deciding who the product serves and how it differs.
 runtimes:
   claude:
     user-invokable: true
+    argument-hint: "<product or market>"
 ---
 
 # ICP & Positioning

@@ -1,6 +1,6 @@
 ---
 name: api-tester-playbook
-description: Generates API testing playbooks covering contract tests, authentication testing, pagination validation, and error handling. Use when building or reviewing API test suites.
+description: Writes an API test playbook covering contracts, authentication, pagination and error handling. Use when building or reviewing API tests.
 user-invokable: false
 ---
 

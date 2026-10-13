@@ -1,10 +1,11 @@
 ---
 name: release-readiness-gate
-description: Final quality gate checklist with pass/fail evaluation and release verdict. Run this before approving any release.
+description: Runs the final pass/fail checklist and gives a release verdict. Use before approving any release.
 runtimes:
   claude:
     user-invokable: true
     disable-model-invocation: true
+    argument-hint: "<feature or release name>"
 ---
 
 # Release Readiness Gate

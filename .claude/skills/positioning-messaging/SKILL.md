@@ -1,6 +1,6 @@
 ---
 name: positioning-messaging
-description: Crafts a crisp product narrative and competitive differentiators for go-to-market materials. Use when defining or refreshing the product story for marketing and sales.
+description: Writes the product narrative and competitive differentiators for marketing and sales. Use when defining or refreshing your product story.
 user-invokable: true
 ---
 

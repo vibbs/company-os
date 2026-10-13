@@ -1,6 +1,6 @@
 ---
 name: decision-memo-writer
-description: Produces structured decision records with rationale, alternatives considered, and consequences. Use when recording non-trivial decisions that future team members need to understand.
+description: Writes a decision record with rationale, alternatives considered and consequences. Use when a non-trivial decision needs to be understood later.
 user-invokable: true
 ---
 

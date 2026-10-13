@@ -1,6 +1,6 @@
 ---
 name: activation-onboarding
-description: Designs "aha moment" flows and activation experiments to improve new user onboarding. Use when optimizing the path from sign-up to first value realization.
+description: Designs the first-run flow and experiments that get new users to their first moment of value. Use when sign-ups are not turning into active users.
 user-invokable: true
 ---
 

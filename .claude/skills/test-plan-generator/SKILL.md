@@ -1,6 +1,6 @@
 ---
 name: test-plan-generator
-description: Generates comprehensive test plans from PRD acceptance criteria. Use when a new feature needs a structured testing strategy before implementation begins.
+description: Generates a test plan from a PRD's acceptance criteria. Use when a feature needs a testing strategy before implementation.
 user-invokable: true
 ---
 

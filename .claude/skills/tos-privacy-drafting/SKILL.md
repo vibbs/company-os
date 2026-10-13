@@ -1,6 +1,6 @@
 ---
 name: tos-privacy-drafting
-description: Drafts Terms of Service and Privacy Policy outlines tailored to the product. Use when creating initial legal documents or reviewing existing TOS/Privacy Policy for completeness.
+description: Drafts outlines of your Terms of Service and Privacy Policy. Use when creating first legal documents or checking existing ones for gaps.
 user-invokable: true
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: ux-research
-description: Designs lean user research plans with method selection, interview scripts, usability testing protocols, and journey mapping. Use when validating user needs, testing usability, or building personas before PRD creation.
+description: "Plans lean user research: method choice, interview scripts, usability tests and journey maps. Use when validating user needs or building personas before a PRD."
 runtimes:
   claude:
     user-invokable: true

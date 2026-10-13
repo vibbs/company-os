@@ -1,6 +1,6 @@
 ---
 name: excalidraw
-description: Produces architecture diagrams, data flow diagrams, ERDs, and system overviews in Mermaid (inline) and Excalidraw JSON (standalone). Use when an RFC, threat model, or documentation needs visual diagrams.
+description: Draws architecture, data flow, database (ERD) and system diagrams as Mermaid text and Excalidraw files. Use when a design doc or threat model needs a diagram.
 user-invokable: true
 argument-hint: "[architecture | data-flow | erd | sequence | journey | system-overview]"
 ---

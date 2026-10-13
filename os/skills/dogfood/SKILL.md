@@ -1,10 +1,10 @@
 ---
 name: dogfood
-description: Autonomous dogfooding — tests the product by using it as real users would, capturing issues with severity ratings. Supports web apps (via agent-browser) and API-only products.
+description: Tests your product the way a real user would and logs issues with severity ratings. Use before launch or after a big change; works for web apps and APIs.
 runtimes:
   claude:
     user-invokable: true
-    argument-hint: "<app-url> [--prd <prd-id>]"
+    argument-hint: "<app URL> [--prd <prd-id>]"
 ---
 
 # Dogfood

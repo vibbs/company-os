@@ -1,9 +1,10 @@
 ---
 name: product-led-growth
-description: Designs product-led growth mechanics — free tier structure, viral loops, referral programs, and in-product growth moments. Use when building self-serve acquisition and expansion.
+description: "Designs self-serve growth: free tier, viral loops, referrals and in-product growth moments. Use when building acquisition and expansion into the product itself."
 runtimes:
   claude:
     user-invokable: true
+    argument-hint: "<product or growth goal>"
 ---
 
 # Product-Led Growth

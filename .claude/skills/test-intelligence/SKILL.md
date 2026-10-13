@@ -1,6 +1,6 @@
 ---
 name: test-intelligence
-description: Analyzes test suite health including flaky test detection, coverage scoring, test pyramid balance, and mutation testing guidance. Use when assessing test quality or diagnosing test reliability issues.
+description: "Assesses test suite health: flaky tests, coverage, test balance and mutation testing (checking that tests catch real bugs). Use when judging test quality or reliability."
 user-invokable: false
 ---
 

@@ -1,7 +1,8 @@
 ---
 name: landing-page-copy
-description: Generates conversion-focused landing page copy organized by sections. Use when creating or optimizing landing pages for product launches, features, or campaigns.
+description: Writes conversion-focused landing page copy, section by section. Use when creating or improving a landing page for a launch, feature or campaign.
 user-invokable: true
+argument-hint: "<product, feature or campaign>"
 ---
 
 # Landing Page Copy

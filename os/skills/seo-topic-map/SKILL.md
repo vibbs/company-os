@@ -1,6 +1,6 @@
 ---
 name: seo-topic-map
-description: Builds keyword clusters and internal linking strategy for content-led SEO growth. Use when planning content strategy or optimizing site architecture for organic search.
+description: Builds keyword clusters and an internal linking plan for search-driven content. Use when planning content or site structure for organic search.
 runtimes:
   claude:
     user-invokable: true

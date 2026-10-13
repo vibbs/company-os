@@ -1,10 +1,10 @@
 ---
 name: code-review
-description: Structured multi-section code review with interactive feedback — architecture, quality, tests, performance. Use for PR reviews, pre-merge quality checks, or self-review before handoff.
+description: Reviews code in sections (architecture, quality, tests, performance) with interactive feedback. Use for pull request reviews, pre-merge checks or self-review before handoff.
 runtimes:
   claude:
     user-invokable: true
-    argument-hint: "[pr-number or file-paths]"
+    argument-hint: "<PR number or file paths>"
 ---
 
 # Code Review

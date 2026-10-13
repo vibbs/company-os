@@ -1,6 +1,6 @@
 ---
 name: deployment-strategy
-description: Designs deployment pipelines, rollout strategies, and environment configurations. Use when establishing deployment procedures, planning a feature rollout, or setting up CI/CD pipelines.
+description: Designs deployment pipelines, rollout strategies and environment setups. Use when setting up CI/CD (automated build and deploy) or planning a gradual rollout.
 runtimes:
   claude:
     user-invokable: false

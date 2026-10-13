@@ -1,6 +1,6 @@
 ---
 name: upgrade-company-os
-description: Check for Company OS updates, preview changes, and upgrade to the latest version. Shows changelog, migration notes, and handles breaking changes safely.
+description: Checks for, previews, applies or rolls back Company OS updates. Use when you want the latest version or need to undo an upgrade.
 user-invokable: true
 argument-hint: "[check | preview | apply | rollback]"
 ---

@@ -1,8 +1,7 @@
 ---
 name: system-maintenance
-description: Audits and syncs all Company OS documentation after structural changes. Use when skills, agents, tools, artifact types, or stage gates are added, removed, or modified.
+description: Audits and syncs Company OS documentation after structural changes. Use after adding, removing or changing skills, agents, tools, artifact types or stage gates.
 user-invokable: true
-argument-hint: "(no arguments needed)"
 ---
 
 # System Maintenance

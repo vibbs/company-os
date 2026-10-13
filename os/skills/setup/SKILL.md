@@ -1,10 +1,10 @@
 ---
 name: setup
-description: Interactive setup wizard for Company OS. Configures company.config.yaml, generates .claude/settings.json with tech-stack-specific permissions, and scaffolds directories. Supports three modes — interactive wizard, express config block, or auto-extract from a URL/unstructured text.
+description: "Configures Company OS for your project: company.config.yaml, permissions and folders. Use the first time you open a repo; accepts a preset, a pasted config block, or a URL to auto-fill."
 runtimes:
   claude:
     user-invokable: true
-    argument-hint: "[preset | config block | URL | unstructured description]"
+    argument-hint: "[preset | config block | URL | description]"
 ---
 
 # Setup Wizard

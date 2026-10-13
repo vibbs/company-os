@@ -1,6 +1,6 @@
 ---
 name: ai-engineering
-description: Designs AI/ML feature architectures including LLM integration, RAG pipelines, prompt engineering, and AI cost optimization. Use when building features that involve AI/ML components.
+description: "Designs AI features: LLM integration, retrieval-augmented generation (RAG) over your own data, prompts, and AI cost control. Use when building a feature that calls an AI model."
 runtimes:
   claude:
     user-invokable: false

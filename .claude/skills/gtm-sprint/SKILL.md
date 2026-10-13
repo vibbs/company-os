@@ -1,8 +1,8 @@
 ---
 name: gtm-sprint
-description: Time-boxed go-to-market sprint that sequences customer validation, positioning, launch, and distribution over 7-21 days. Use when validating market demand, launching an MVP, or running a structured GTM push.
+description: "Runs a 7, 14 or 21 day go-to-market (GTM) sprint: customer interviews, positioning, landing page and distribution, with go/no-go checkpoints. Use to test demand or launch an MVP."
 user-invokable: true
-argument-hint: "plan | status | gate-check"
+argument-hint: "[plan | status | gate-check] [7 | 14 | 21]"
 ---
 
 # GTM Sprint

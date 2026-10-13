@@ -1,6 +1,6 @@
 ---
 name: multi-tenancy
-description: Design patterns for multi-tenant architecture including org scoping, row-level security, and tenant data isolation. Use when designing or auditing tenant isolation boundaries.
+description: "Designs multi-tenant architecture: org scoping, row-level security and tenant data isolation. Use when designing or auditing how customers' data is kept separate."
 runtimes:
   claude:
     user-invokable: false

@@ -1,6 +1,6 @@
 ---
 name: content-engine
-description: Produces multi-format content strategies with editorial calendars, content briefs, and multiplication workflows. Use when building a content marketing engine, planning blog/newsletter cadence, or creating content briefs.
+description: "Plans a content program: editorial calendar, content briefs and ways to reuse one piece across formats. Use when starting or scaling blog, newsletter or social content."
 runtimes:
   claude:
     user-invokable: true

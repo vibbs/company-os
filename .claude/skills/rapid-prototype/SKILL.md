@@ -1,8 +1,8 @@
 ---
 name: rapid-prototype
-description: Time-boxed MVP prototyping methodology for proof-of-concept and investor demos. Skips RFC, security review, and full QA for speed. Use when validating ideas quickly or preparing demos.
+description: Builds a time-boxed MVP (4 hours, 1 day or 3 days) for a proof of concept or demo, skipping the RFC, security review and full QA. Use to validate an idea fast.
 user-invokable: true
-argument-hint: "describe what you want to prototype"
+argument-hint: "<what you want to prototype>"
 ---
 
 # Rapid Prototype
