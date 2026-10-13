@@ -1,8 +1,10 @@
 ---
 name: status
 description: Shows project artifact status summary — counts, statuses, broken links, and gate readiness across all artifact types.
-user-invokable: true
-argument-hint: "[optional: prd|rfc|qa|all|--dashboard]"
+runtimes:
+  claude:
+    user-invokable: true
+    argument-hint: "[optional: prd|rfc|qa|all|--dashboard]"
 ---
 
 # Status Dashboard

@@ -1,6 +1,9 @@
 ---
 name: conflict-resolver
 description: Resolves disagreements between agents using structured tradeoff analysis. Use when two or more agents propose conflicting approaches and a principled resolution is needed.
+runtimes:
+  claude:
+    user-invokable: false
 ---
 
 # Conflict Resolver

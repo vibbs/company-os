@@ -1,6 +1,9 @@
 ---
 name: feedback-synthesizer
 description: Turns messy, unstructured customer and user feedback into actionable themes with supporting evidence. Use when consolidating feedback from multiple sources into product insights.
+runtimes:
+  claude:
+    user-invokable: true
 ---
 
 # Feedback Synthesizer

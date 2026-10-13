@@ -1,6 +1,7 @@
 ---
 name: perf-benchmark-checklist
 description: Establishes baseline performance metrics and regression detection criteria. Use when setting up performance benchmarks or investigating performance regressions.
+user-invokable: false
 ---
 
 # Performance Benchmark Checklist

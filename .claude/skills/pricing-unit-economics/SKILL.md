@@ -1,6 +1,7 @@
 ---
 name: pricing-unit-economics
 description: Performs CAC/LTV analysis and pricing model validation. Use when setting initial pricing, evaluating pricing changes, or assessing unit economics health.
+user-invokable: true
 ---
 
 # Pricing & Unit Economics

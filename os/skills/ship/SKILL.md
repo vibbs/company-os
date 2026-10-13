@@ -1,8 +1,10 @@
 ---
 name: ship
 description: Kick off the full ship flow for a feature or objective. Routes through the Orchestrator to produce PRD, RFC, implementation, QA, and launch artifacts with gate checks at every stage.
-user-invokable: true
-argument-hint: "describe what you want to build"
+runtimes:
+  claude:
+    user-invokable: true
+    argument-hint: "describe what you want to build"
 ---
 
 # Ship

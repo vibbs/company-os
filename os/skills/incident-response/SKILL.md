@@ -1,6 +1,9 @@
 ---
 name: incident-response
 description: Generates incident runbooks, post-mortem templates, and incident response records. Use when establishing incident response procedures, handling a live incident, or conducting post-incident reviews.
+runtimes:
+  claude:
+    user-invokable: true
 ---
 
 # Incident Response

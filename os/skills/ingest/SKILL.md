@@ -1,8 +1,10 @@
 ---
 name: ingest
 description: Scans standards/ and artifacts/ for new or changed content and suggests updates to skills, agents, and configuration. Use after adding new standards documents, API specs, or artifacts to synchronize the system.
-user-invokable: true
-argument-hint: "[optional: standards, artifacts, or both]"
+runtimes:
+  claude:
+    user-invokable: true
+    argument-hint: "[optional: standards, artifacts, or both]"
 ---
 
 # Ingest

@@ -1,6 +1,7 @@
 ---
 name: ai-engineering
 description: Designs AI/ML feature architectures including LLM integration, RAG pipelines, prompt engineering, and AI cost optimization. Use when building features that involve AI/ML components.
+user-invokable: false
 ---
 
 # AI Engineering

@@ -1,6 +1,9 @@
 ---
 name: email-lifecycle
 description: Designs email sequences, templates, and send triggers for SaaS lifecycle marketing and transactional emails. Use when planning onboarding drips, transactional notifications, activation campaigns, or retention email flows.
+runtimes:
+  claude:
+    user-invokable: true
 ---
 
 # Email Lifecycle

@@ -1,8 +1,10 @@
 ---
 name: system-maintenance
 description: Audits and syncs all Company OS documentation after structural changes. Use when skills, agents, tools, artifact types, or stage gates are added, removed, or modified.
-user-invokable: true
-argument-hint: "(no arguments needed)"
+runtimes:
+  claude:
+    user-invokable: true
+    argument-hint: "(no arguments needed)"
 ---
 
 # System Maintenance

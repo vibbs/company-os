@@ -1,6 +1,7 @@
 ---
 name: market-intelligence
 description: Produces competitive landscape scans, technology radar assessments, and trend timing analysis. Use when monitoring competitors, evaluating new technologies, or identifying market opportunities.
+user-invokable: true
 ---
 
 # Market Intelligence

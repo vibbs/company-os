@@ -1,6 +1,7 @@
 ---
 name: icp-positioning
 description: Defines ideal customer profile and product positioning. Use when establishing or refining who the product serves and how it is differentiated in the market.
+user-invokable: true
 ---
 
 # ICP & Positioning

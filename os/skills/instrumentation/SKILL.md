@@ -1,7 +1,9 @@
 ---
 name: instrumentation
 description: Defines analytics instrumentation standards including event taxonomy, tracker ID conventions, and per-feature instrumentation plans for measurable product development.
-user-invokable: false
+runtimes:
+  claude:
+    user-invokable: false
 ---
 
 # Instrumentation

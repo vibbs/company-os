@@ -1,8 +1,10 @@
 ---
 name: security-posture
 description: Aggregates open threats, scan status, compliance gaps, and human checkpoint audit into a unified security posture snapshot. Use when reviewing overall security health or before major releases.
-user-invokable: true
-argument-hint: "[--full | --quick | --delta]"
+runtimes:
+  claude:
+    user-invokable: true
+    argument-hint: "[--full | --quick | --delta]"
 ---
 
 # Security Posture

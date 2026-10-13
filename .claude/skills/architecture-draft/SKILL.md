@@ -1,6 +1,7 @@
 ---
 name: architecture-draft
 description: Produces RFC/ADR defining system boundaries, modules, data model, and integration points. Use when translating a PRD into technical design, making architectural decisions, or designing new system components.
+user-invokable: true
 ---
 
 # Architecture Draft (SaaS Core)

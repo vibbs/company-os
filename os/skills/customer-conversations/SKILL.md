@@ -1,8 +1,10 @@
 ---
 name: customer-conversations
 description: Prepares pre-call briefings, captures post-call debriefs, and routes insights to ICP refinement and PRD evidence. Stores conversation logs as CONV- artifacts in artifacts/decision-memos/.
-user-invokable: true
-argument-hint: "prep <type> | debrief | patterns"
+runtimes:
+  claude:
+    user-invokable: true
+    argument-hint: "prep <type> | debrief | patterns"
 ---
 
 # Customer Conversations

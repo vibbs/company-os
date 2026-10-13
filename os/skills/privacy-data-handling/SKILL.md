@@ -1,6 +1,9 @@
 ---
 name: privacy-data-handling
 description: Defines data retention policies, access controls, and deletion procedures. Use when establishing or auditing how personal and sensitive data is stored, accessed, and removed.
+runtimes:
+  claude:
+    user-invokable: true
 ---
 
 # Privacy & Data Handling

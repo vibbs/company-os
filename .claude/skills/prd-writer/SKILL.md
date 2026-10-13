@@ -1,6 +1,7 @@
 ---
 name: prd-writer
 description: Generates consistent PRDs with problem statements, acceptance criteria, success metrics, and scope boundaries. Use when creating or updating product requirements for any feature.
+user-invokable: true
 ---
 
 # PRD Writer

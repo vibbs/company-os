@@ -1,6 +1,7 @@
 ---
 name: sprint-prioritizer
 description: Prioritizes features and work items using impact, effort, and risk scoring. Use when planning sprints or deciding what to build next.
+user-invokable: true
 ---
 
 # Sprint Prioritizer

@@ -1,8 +1,10 @@
 ---
 name: token-cost-ledger
 description: Tracks AI token usage and costs as COGS. Logs entries, generates reports, monitors budget, shows per-feature cost. Use when reviewing AI spend, logging session costs, or checking budget status.
-user-invokable: true
-argument-hint: "log | report | budget-check | feature-cost"
+runtimes:
+  claude:
+    user-invokable: true
+    argument-hint: "log | report | budget-check | feature-cost"
 ---
 
 # Token Cost Ledger

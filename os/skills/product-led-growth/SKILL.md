@@ -1,7 +1,9 @@
 ---
 name: product-led-growth
 description: Designs product-led growth mechanics — free tier structure, viral loops, referral programs, and in-product growth moments. Use when building self-serve acquisition and expansion.
-user-invokable: true
+runtimes:
+  claude:
+    user-invokable: true
 ---
 
 # Product-Led Growth

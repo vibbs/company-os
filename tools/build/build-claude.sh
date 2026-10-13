@@ -6,9 +6,11 @@
 # rebuilds .claude/skills/ and .claude/agents/ from os/skills/ and os/agents/
 # so authoring happens once in the neutral location.
 #
-# Currently the file format is identical between os/ and .claude/, so this is
-# a straight copy. When the neutral schema is fully adopted (legacy fields
-# moved under runtimes.claude), a transform step will live here.
+# Skills are copied as-is except for one transform: Claude Code reads
+# `user-invokable`, `disable-model-invocation` and `argument-hint` at the top
+# level of SKILL.md, but the neutral schema keeps them under `runtimes.claude`.
+# lift_claude_fields() moves them up in the generated copy. Other runtimes'
+# keys under `runtimes:` (e.g. cursor) are left in place.
 #
 # Hooks (.claude/hooks/) and settings (.claude/settings.json) are
 # Claude-specific and are NOT generated — they live directly under .claude/.
@@ -26,6 +28,35 @@ if [ ! -d "os/skills" ] || [ ! -d "os/agents" ]; then
   echo "✗ os/skills/ or os/agents/ not found — nothing to build from" >&2
   exit 1
 fi
+
+# Rewrites the frontmatter of $1 in place: keys nested under
+# `runtimes: > claude:` become top-level keys. No-op when there is no such block.
+lift_claude_fields() {
+  local file="$1" tmp
+  tmp="$(mktemp)"
+  awk '
+    function flush_runtimes(   i) {
+      for (i = 1; i <= nl; i++) print lifted[i]
+      if (nr > 0) { print "runtimes:"; for (i = 1; i <= nr; i++) print rest[i] }
+      nl = 0; nr = 0; inrt = 0; inclaude = 0
+    }
+    /^---$/ { c++; if (c == 2 && inrt) flush_runtimes(); print; next }
+    c != 1 { print; next }
+    inrt {
+      if ($0 ~ /^[^ \t]/) { flush_runtimes() }
+      else {
+        if ($0 ~ /^  claude:[ \t]*$/) { inclaude = 1; next }
+        if (inclaude && $0 ~ /^    /) { line = $0; sub(/^    /, "", line); lifted[++nl] = line; next }
+        if ($0 ~ /^  [^ ]/) inclaude = 0
+        rest[++nr] = $0; next
+      }
+    }
+    /^runtimes:[ \t]*$/ { inrt = 1; next }
+    { print }
+  ' "$file" > "$tmp"
+  cat "$tmp" > "$file"
+  rm -f "$tmp"
+}
 
 # Wipe + regenerate skills and agents only; preserve hooks/settings/agent-memory.
 mkdir -p .claude/skills .claude/agents
@@ -54,6 +85,7 @@ for src in os/skills/*/; do
     rm -rf "$dst"
     cp -R "$src" "$dst"
   }
+  lift_claude_fields "$dst/SKILL.md"
 done
 
 # --- Agents ---

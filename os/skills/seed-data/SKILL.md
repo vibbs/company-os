@@ -1,8 +1,10 @@
 ---
 name: seed-data
 description: Generates test seed data, fixtures, and factory definitions for all data scenarios. Produces tech-stack-appropriate seed files and a seed-data catalog artifact.
-user-invokable: true
-argument-hint: "[prd-id or entity-name]"
+runtimes:
+  claude:
+    user-invokable: true
+    argument-hint: "[prd-id or entity-name]"
 ---
 
 # Seed Data Generator

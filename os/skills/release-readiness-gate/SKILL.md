@@ -1,7 +1,10 @@
 ---
 name: release-readiness-gate
 description: Final quality gate checklist with pass/fail evaluation and release verdict. Run this before approving any release.
-disable-model-invocation: true
+runtimes:
+  claude:
+    user-invokable: true
+    disable-model-invocation: true
 ---
 
 # Release Readiness Gate

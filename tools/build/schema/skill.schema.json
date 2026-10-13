@@ -44,6 +44,7 @@
           "properties": {
             "user-invokable": { "type": "boolean" },
             "disable-model-invocation": { "type": "boolean" },
+            "argument-hint": { "type": "string" },
             "compatibility": { "type": "string" },
             "license": { "type": "string" }
           }

@@ -1,7 +1,9 @@
 ---
 name: user-docs
 description: Produces user-facing documentation, guided tour specifications, and changelog entries for every shipped feature. Ensures users can discover, learn, and adopt new functionality.
-user-invokable: false
+runtimes:
+  claude:
+    user-invokable: false
 ---
 
 # User Documentation

@@ -1,8 +1,10 @@
 ---
 name: dev-environment
 description: Generates Docker Compose files and dev scripts from tech stack config. Creates environment-specific infrastructure for local development, QA, and production.
-user-invokable: true
-argument-hint: "[dev | qa | production | reset]"
+runtimes:
+  claude:
+    user-invokable: true
+    argument-hint: "[dev | qa | production | reset]"
 ---
 
 # Dev Environment Generator

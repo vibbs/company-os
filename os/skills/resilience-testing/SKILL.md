@@ -1,6 +1,9 @@
 ---
 name: resilience-testing
 description: Designs failure mode catalogs, circuit breaker tests, latency injection plans, and blast radius analysis for system resilience verification. Use when validating system behavior under failure conditions.
+runtimes:
+  claude:
+    user-invokable: false
 ---
 
 # Resilience Testing

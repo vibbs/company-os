@@ -1,6 +1,9 @@
 ---
 name: support-operations
 description: Designs customer support infrastructure including FAQ generation, SLA tiers, escalation paths, and support-to-product feedback pipelines. Use when establishing support operations or improving customer service.
+runtimes:
+  claude:
+    user-invokable: true
 ---
 
 # Support Operations

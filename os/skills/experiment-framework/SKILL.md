@@ -1,6 +1,9 @@
 ---
 name: experiment-framework
 description: Designs statistically rigorous A/B experiments with sample size calculation, guardrail metrics, and results analysis. Use when planning experiments, validating feature impact, or analyzing test results.
+runtimes:
+  claude:
+    user-invokable: true
 ---
 
 # Experiment Framework

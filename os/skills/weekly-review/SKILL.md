@@ -1,8 +1,10 @@
 ---
 name: weekly-review
 description: Weekly operating rhythm — summarizes what shipped, AI spend, support themes, security health, and surfaces next priorities. Use at the end of each week to maintain operating cadence.
-user-invokable: true
-argument-hint: "[optional: --save]"
+runtimes:
+  claude:
+    user-invokable: true
+    argument-hint: "[optional: --save]"
 ---
 
 # Weekly Review

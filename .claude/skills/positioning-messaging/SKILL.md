@@ -1,6 +1,7 @@
 ---
 name: positioning-messaging
 description: Crafts a crisp product narrative and competitive differentiators for go-to-market materials. Use when defining or refreshing the product story for marketing and sales.
+user-invokable: true
 ---
 
 # Positioning & Messaging

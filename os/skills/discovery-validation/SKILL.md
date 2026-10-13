@@ -1,7 +1,9 @@
 ---
 name: discovery-validation
 description: Smart pre-build discovery that validates novel feature ideas before committing to a full PRD. Classifies objectives as common patterns (skip) or novel concepts (full validation with lean canvas, competitive scan, and risk assessment).
-user-invokable: false
+runtimes:
+  claude:
+    user-invokable: false
 ---
 
 # Discovery Validation

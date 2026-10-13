@@ -1,8 +1,10 @@
 ---
 name: code-review
 description: Structured multi-section code review with interactive feedback — architecture, quality, tests, performance. Use for PR reviews, pre-merge quality checks, or self-review before handoff.
-user-invokable: true
-argument-hint: "[pr-number or file-paths]"
+runtimes:
+  claude:
+    user-invokable: true
+    argument-hint: "[pr-number or file-paths]"
 ---
 
 # Code Review
