@@ -39,6 +39,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - Tool scripts no longer abort silently on an unmatched `grep`, reject missing flag values and unknown flags, and send errors to stderr
 - `check-gate.sh` exits 2 when the artifact path does not exist
 - Stale counts in the docs (now 64 skills, 9 agents, 33 tool scripts)
+- `install.sh --check` and `--changelog` read the incoming version and changelog from `.company-os/` (they moved in v1.9.0), so they no longer report "unknown"; older template layouts still work
+- `/upgrade-company-os rollback` now restores `os/` and tells you to run `bash tools/build/build.sh` to regenerate the other adapters
+- `/setup` writes agent models to `os/agents/` and rebuilds, not to the generated `.claude/agents/`
+- `/system-maintenance` audits the current docs (`CONCEPTS.md`, `CUSTOMIZING.md`, README) from `os/` and checks count drift
+- `setup.sh --cleanup` and the `/setup` cleanup option remove all Company OS guides together (keeping `CHANGELOG.md`), so no kept guide links to a deleted one
+- `validate.sh` rejects unknown flags; `version-bump.sh` sends errors to stderr; `--since`, `--dir`, `--prd`, `--journey`, `--timeout` and `--expected-status` report a missing value
 
 ## [1.11.0] - 2026-05-27
 
