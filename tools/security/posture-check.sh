@@ -6,6 +6,7 @@
 # Inputs: artifacts/security-reviews/, standards/security/security-posture.md
 # Outputs: posture report to stdout, exit 0=healthy exit 1=issues found
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/config.sh"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/../.."
@@ -58,10 +59,7 @@ else
 fi
 
 # --- Check company stage ---
-STAGE=""
-if [[ -f "$CONFIG_FILE" ]]; then
-  STAGE=$(grep "^  stage:" "$CONFIG_FILE" 2>/dev/null | head -1 | sed 's/.*: *"\{0,1\}\([^"]*\)"\{0,1\}/\1/' | tr -d '[:space:]') || true
-fi
+STAGE="$(cfg_get company.stage)"
 
 # --- Scan security reviews ---
 if [[ -d "$SECURITY_REVIEWS_DIR" ]]; then

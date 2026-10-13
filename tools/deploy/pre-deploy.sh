@@ -5,6 +5,7 @@
 # Inputs: reads company.config.yaml for tech stack detection
 # Outputs: validation report with pass/warn/fail per check, exit 0=pass 1=warnings 2=failures
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/config.sh"
 
 SCRIPT_DIR="$(dirname "$0")"
 CONFIG_FILE="$SCRIPT_DIR/../../company.config.yaml"
@@ -51,14 +52,9 @@ if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
   usage
 fi
 
-# ─── Helper: read a value from company.config.yaml (basic grep, no yq needed) ──
+# ─── Helper: read a value from company.config.yaml (via tools/lib/config.sh) ──
 read_config() {
-  local key="$1"
-  local value=""
-  if [[ -f "$CONFIG_FILE" ]]; then
-    value=$(grep "${key}:" "$CONFIG_FILE" 2>/dev/null | head -1 | sed "s/.*${key}: *//" | tr -d '"' | tr -d "'" | xargs) || true
-  fi
-  echo "$value"
+  cfg_get "$1"
 }
 
 # ─── Helper: report a check result ─────────────────────────────────────────────
@@ -78,10 +74,10 @@ report_fail() {
 }
 
 # ─── Read config values ────────────────────────────────────────────────────────
-TEST_FRAMEWORK=$(read_config "test_framework")
-LINTER=$(read_config "linter")
-BRANCHING=$(read_config "branching")
-ORM=$(read_config "orm")
+TEST_FRAMEWORK=$(read_config "conventions.test_framework")
+LINTER=$(read_config "conventions.linter")
+BRANCHING=$(read_config "conventions.branching")
+ORM=$(read_config "tech_stack.orm")
 
 echo ""
 echo -e "${BOLD}Pre-Deployment Validation${RESET}"

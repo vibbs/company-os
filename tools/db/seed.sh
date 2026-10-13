@@ -7,6 +7,7 @@
 set -euo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
 usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/config.sh"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/../.."
@@ -33,10 +34,7 @@ VALID_SCENARIOS=("empty" "minimal" "nominal" "edge-cases" "high-volume" "error-s
 
 # --- Helper: extract value from company.config.yaml ---
 extract_config() {
-  local KEY="$1"
-  if [[ -f "$CONFIG_FILE" ]]; then
-    grep "^  ${KEY}:" "$CONFIG_FILE" 2>/dev/null | sed "s/.*${KEY}: *//" | tr -d '"' | tr -d "'" || true
-  fi
+  cfg_get "tech_stack.$1"
 }
 
 # --- Helper: detect tech stack from project files ---

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/config.sh"
 
 # ─── App Version Bump Tool ──────────────────────────────────────────────────────
 # Detects the app version file, bumps it by the specified type, updates CHANGELOG.md,
@@ -62,11 +63,9 @@ cd "$PROJECT_ROOT"
 # ─── Read company stage ─────────────────────────────────────────────────────────
 COMPANY_STAGE="growth"  # Default: full enforcement
 CONFIG_FILE="$PROJECT_ROOT/company.config.yaml"
-if [[ -f "$CONFIG_FILE" ]]; then
-  STAGE_VALUE=$(grep "^  stage:" "$CONFIG_FILE" | sed 's/.*stage: *//' | tr -d '"' | tr -d "'" | sed 's/ *#.*//' || true)
-  if [[ -n "$STAGE_VALUE" ]]; then
-    COMPANY_STAGE="$STAGE_VALUE"
-  fi
+STAGE_VALUE="$(cfg_get company.stage)"
+if [[ -n "$STAGE_VALUE" ]]; then
+  COMPANY_STAGE="$STAGE_VALUE"
 fi
 
 # ─── Detect version file ────────────────────────────────────────────────────────

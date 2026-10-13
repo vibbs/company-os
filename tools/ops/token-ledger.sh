@@ -5,6 +5,7 @@
 # Inputs: token usage data (flags or interactive), company.config.yaml for budget
 # Outputs: JSONL ledger entries, summary reports, CSV exports
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/config.sh"
 
 # ─── Paths ────────────────────────────────────────────────────────────────────
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -52,17 +53,7 @@ EOF
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 
 read_config() {
-  local key="$1"
-  local value=""
-  if [[ -f "$CONFIG_FILE" ]]; then
-    value=$(grep -v '^ *#' "$CONFIG_FILE" 2>/dev/null \
-      | grep "${key}:" | head -1 \
-      | sed "s/.*${key}: *//" \
-      | sed 's/ *#.*//' \
-      | tr -d '"' | tr -d "'" \
-      | xargs) || true
-  fi
-  echo "$value"
+  cfg_get "ai.$1"
 }
 
 ensure_ledger_dir() {

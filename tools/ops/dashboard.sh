@@ -7,6 +7,7 @@
 # Inputs: artifacts/ directory, cogs/ai-ledger/entries.jsonl, company.config.yaml
 # Outputs: Markdown or HTML dashboard (stdout or --out path)
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/config.sh"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/../.."
@@ -41,15 +42,9 @@ while [[ $# -gt 0 ]]; do
 done
 
 # --- Read config ---
-COMPANY_NAME=""
-COMPANY_STAGE=""
-COST_BUDGET=""
-
-if [[ -f "$CONFIG_FILE" ]]; then
-  COMPANY_NAME=$(grep "^  name:" "$CONFIG_FILE" 2>/dev/null | head -1 | sed 's/.*: *"\{0,1\}\([^"]*\)"\{0,1\}/\1/' | tr -d '[:space:]') || true
-  COMPANY_STAGE=$(grep "^  stage:" "$CONFIG_FILE" 2>/dev/null | head -1 | sed 's/.*: *"\{0,1\}\([^"]*\)"\{0,1\}/\1/' | tr -d '[:space:]') || true
-  COST_BUDGET=$(grep "cost_budget_monthly:" "$CONFIG_FILE" 2>/dev/null | head -1 | sed 's/.*: *"\{0,1\}\([^"]*\)"\{0,1\}/\1/' | tr -d '[:space:]') || true
-fi
+COMPANY_NAME="$(cfg_get company.name)"
+COMPANY_STAGE="$(cfg_get company.stage)"
+COST_BUDGET="$(cfg_get ai.cost_budget_monthly)"
 
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M')
 

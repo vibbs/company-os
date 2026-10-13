@@ -14,6 +14,7 @@
 set -euo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
 usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/config.sh"
 
 GATE_NAME="${1:-}"
 ARTIFACT_REF="${2:-}"
@@ -26,11 +27,9 @@ ARTIFACTS_DIR="$PROJECT_ROOT/artifacts"
 # Read company stage from config. Default to "growth" (full enforcement).
 COMPANY_STAGE="growth"
 CONFIG_FILE="$PROJECT_ROOT/company.config.yaml"
-if [[ -f "$CONFIG_FILE" ]]; then
-  STAGE_VALUE=$(grep "^  stage:" "$CONFIG_FILE" | sed 's/.*stage: *//' | tr -d '"' | tr -d "'" | sed 's/ *#.*//' || true)
-  if [[ -n "$STAGE_VALUE" ]]; then
-    COMPANY_STAGE="$STAGE_VALUE"
-  fi
+STAGE_VALUE="$(cfg_get company.stage)"
+if [[ -n "$STAGE_VALUE" ]]; then
+  COMPANY_STAGE="$STAGE_VALUE"
 fi
 
 # Determine if the current gate is advisory (warning-only) for this stage
@@ -382,10 +381,7 @@ case "$GATE_NAME" in
       # This script checks artifact existence and status; the skill evaluates qualitative bars.
 
       # 10. AI Safety (conditional — only when ai.llm_provider is set and feature touches AI)
-      AI_PROVIDER=""
-      if [[ -f "$CONFIG_FILE" ]]; then
-        AI_PROVIDER=$(grep "^  llm_provider:" "$CONFIG_FILE" | sed 's/.*llm_provider: *//' | tr -d '"' | tr -d "'" | sed 's/ *#.*//' || true)
-      fi
+      AI_PROVIDER="$(cfg_get ai.llm_provider)"
       if [[ -n "$AI_PROVIDER" && "$AI_PROVIDER" != "none" ]]; then
         # Check if any RFC mentions AI/LLM/RAG/prompt
         AI_RFC_FOUND=false

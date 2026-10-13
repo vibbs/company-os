@@ -7,16 +7,14 @@
 set -euo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
 usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/config.sh"
 
 SCRIPT_DIR="$(dirname "$0")"
 CONFIG_FILE="$SCRIPT_DIR/../../company.config.yaml"
 TEST_PATH="${1:-}"
 
-# Read test framework from config (basic grep — upgrade to yq if available)
-TEST_FRAMEWORK=""
-if [[ -f "$CONFIG_FILE" ]]; then
-  TEST_FRAMEWORK=$(grep "test_framework:" "$CONFIG_FILE" | sed 's/.*test_framework: *//' | tr -d '"' | tr -d "'" | xargs)
-fi
+# Read test framework from config
+TEST_FRAMEWORK="$(cfg_get conventions.test_framework)"
 
 if [[ -z "$TEST_FRAMEWORK" ]]; then
   echo "WARNING: No test_framework configured in company.config.yaml"
