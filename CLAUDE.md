@@ -141,7 +141,7 @@ Always read `company.config.yaml` before making technical recommendations. If th
 - After ANY change to the Company OS structure (skills, agents, tools, artifact types, stage gates):
   run the `system-maintenance` skill to audit and update all documentation
 - Trigger conditions: new/deleted/renamed skill, agent, or tool; modified validate.sh or check-gate.sh
-- Documentation files that must stay in sync: CLAUDE.md, .company-os/docs/SETUP.md, all agent .md files
+- Documentation files that must stay in sync: CLAUDE.md, .company-os/docs/ (SETUP, CONCEPTS, CONFIG_REFERENCE, CUSTOMIZING, TROUBLESHOOTING), all agent .md files
 - This is not optional — stale docs cause cascading confusion for agents and users
 
 ### 8. Git Discipline
