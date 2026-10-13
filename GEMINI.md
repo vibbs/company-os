@@ -390,7 +390,7 @@ Deterministic shell scripts. Safe to invoke directly. All live under `tools/`.
 - `tools/build/build-codex.sh` — Codex CLI reads AGENTS.md natively. This script ensures AGENTS.md is fresh
 - `tools/build/build-cursor.sh` — Emits:
 - `tools/build/build-gemini.sh` — Gemini CLI reads GEMINI.md (its own convention) — same payload as AGENTS.md
-- `tools/build/build.sh` — Regenerates every runtime adapter from the current source-of-truth.
+- `tools/build/build.sh` — Regenerates every runtime adapter (Claude Code, Cursor, Codex, Gemini,
 - `tools/build/lib-agent-index.sh` — Source this file. Provides:
 - `tools/build/lib-frontmatter.sh` — Source this file; do not execute directly.
 - `tools/build/lib-skill-index.sh` — Source this file. Provides:
@@ -402,6 +402,8 @@ Deterministic shell scripts. Safe to invoke directly. All live under `tools/`.
 - `tools/db/migration-check.sh` — Tool: T-DB-01 Migration Check
 - `tools/db/seed.sh` — Tool: Seed Data Runner
 - `tools/deploy/pre-deploy.sh` — Tool: T-DEPLOY-01 Pre-Deploy Validation
+- `tools/lib/config.sh` — Shared helper (sourced, not run): read values from company.config.yaml.
+- `tools/lib/usage.sh` — Shared helper (sourced, not run): print a script's header comment as --help text.
 - `tools/ops/dashboard.sh` — Tool: T-OPS-04 Static Dashboard Generator
 - `tools/ops/status-check.sh` — Tool: T-OPS-01 Status Check
 - `tools/ops/support-faq-check.sh` — Tool: T-OPS-02 Support FAQ Coverage Check

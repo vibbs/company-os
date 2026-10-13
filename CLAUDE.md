@@ -72,7 +72,7 @@ Run `/upgrade-company-os` to check for updates, preview changes, upgrade, or rol
 Avoid reading these directories during normal operations — they're loaded-on-demand by specific skills and reading them wastes tokens:
 - `.company-os/` — internal system metadata (version, manifest, migrations, docs). Only read by `/upgrade-company-os` and `system-maintenance`.
 - `standards/brand/archetypes/` — design token reference files. Only read by `/design-system`.
-- `cogs/*/entries.jsonl` — raw COGS ledger data. Only read by `/token-cost`.
+- `cogs/*/entries.jsonl` — raw COGS ledger data. Only read by `/token-cost-ledger`.
 
 ### Artifact Lineage & Enforcement
 Every artifact has YAML frontmatter. Required fields: `id`, `type`, `title`, `status` (draft/review/approved/archived), `created`, `author`. Optional lineage fields: `parent`, `children`, `depends_on`, `blocks`. Always maintain these links when creating or updating artifacts.

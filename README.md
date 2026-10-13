@@ -285,7 +285,7 @@ Then build your first feature:
 | `/dev-environment` | Generate Docker Compose + dev scripts from tech stack config |
 | `/upgrade-company-os` | Check for updates, preview changes, upgrade, or rollback |
 | `/rapid-prototype` | Time-boxed PoC (4h/1d/3d) — skips RFC and QA gates |
-| `/token-cost` | Log AI token spend to COGS ledger |
+| `/token-cost-ledger` | Log AI token spend to COGS ledger |
 | `/design-system` | Configure design archetype and generate visual tokens |
 | `/weekly-review` | Weekly operating summary — shipped, spend, risks, priorities |
 | `/retrospective` | Post-ship retro — trace lineage, evaluate metrics, capture lessons |

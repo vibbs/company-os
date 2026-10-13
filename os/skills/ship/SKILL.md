@@ -24,7 +24,7 @@ The primary entry point for the canonical ship flow. Takes an objective from ide
 - User wants to ship an improvement or enhancement
 - User wants the full orchestrated pipeline with quality gates
 
-**Alternative**: For time-boxed proofs-of-concept or investor demos, use `/prototype` instead. It skips RFC, security, QA, and growth stages for maximum speed.
+**Alternative**: For time-boxed proofs-of-concept or investor demos, use `/rapid-prototype` instead. It skips RFC, security, QA, and growth stages for maximum speed.
 
 ## Procedure
 

@@ -88,7 +88,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 ### Added
 - **COGS Token Cost Ledger** — Track AI token costs as Cost of Goods Sold. New `cogs/ai-ledger/` directory with JSONL append-only ledger, git-trackable cost history, and per-feature cost attribution
 - **Token Ledger tool** (`tools/ops/token-ledger.sh`, T-OPS-03) — 5 subcommands: `log` (append entry with auto-cost calculation), `summary` (daily/weekly/monthly totals by category/model/agent), `feature-cost` (total cost to build a feature by PRD ID), `export` (JSONL→CSV), `budget` (spend vs budget with projected EOM)
-- **Token Cost Ledger skill** (`/token-cost`, S-OPS-08) — User-invokable with `log | report | budget-check | feature-cost` argument hints. Routes to tool, adds optimization suggestions and unit economics cross-references
+- **Token Cost Ledger skill** (`/token-cost-ledger`, S-OPS-08) — User-invokable with `log | report | budget-check | feature-cost` argument hints. Routes to tool, adds optimization suggestions and unit economics cross-references
 - **Token Cost Tracking standard** (`standards/ops/token-cost-tracking.md`) — Model cost rates (Claude, GPT, Gemini), cost categories, budget framework by stage, feature cost attribution rules, alert thresholds, optimization playbook, COGS expansion guide
 - **Ship flow Step 7.5: Token Cost Logging** — Advisory (non-blocking) step after release summary. Suggests logging session cost with auto-populated `--feature` flag from the ship flow's PRD ID
 - **Context Optimization section** in CLAUDE.md — Behavioral guidance to avoid reading `.company-os/`, `standards/brand/archetypes/`, and `cogs/*/entries.jsonl` during normal operations (loaded-on-demand by specific skills only)
@@ -129,7 +129,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - **Test Intelligence skill** (`test-intelligence`) — Flaky test detection, coverage scoring, test pyramid balance, mutation testing guidance. New `tools/qa/test-health.sh`
 - **Resilience Testing skill** (`resilience-testing`) — Failure mode catalogs, circuit breaker testing, latency injection, blast radius analysis. New `tools/qa/resilience-test.sh`
 - **Support Operations skill** (`support-operations`) — FAQ generation, SLA tiers, escalation paths, de-escalation scripts, support-to-product feedback pipeline. New `support:` config section, `standards/ops/support-runbook.md`, `tools/ops/support-faq-check.sh`
-- **Rapid Prototype skill** (`/prototype`) — Time-boxed MVP prototyping (4h/1d/3d sprints) for proof-of-concept and investor demos. Skips RFC, security review, and full QA
+- **Rapid Prototype skill** (`/rapid-prototype`) — Time-boxed MVP prototyping (4h/1d/3d sprints) for proof-of-concept and investor demos. Skips RFC, security review, and full QA
 - **Release gate Bar 10: AI Safety** — Prompt injection protection, output filtering, cost guardrails, bias assessment. Triggers only when `ai.llm_provider` is set. Advisory in idea/mvp, enforced in growth/scale
 - **Ship flow Step 5.95: Experiment Review** — Verifies experiment specs for features behind experiment flags (advisory, does not block)
 - **Workflow Router: Prototype/Demo** — New classification type for time-boxed PoCs, routes to rapid-prototype skill

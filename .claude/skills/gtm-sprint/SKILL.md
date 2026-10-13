@@ -17,7 +17,7 @@ argument-hint: "plan | status | gate-check"
 
 ## Purpose
 
-Orchestrates a time-boxed go-to-market sprint that sequences validation, commitment, launch, and distribution into a structured daily cadence with quantified decision gates. Unlike `/ship` (which builds software) or `/prototype` (which proves technical feasibility), `/gtm-sprint` validates **market demand** and builds **distribution** — no code required.
+Orchestrates a time-boxed go-to-market sprint that sequences validation, commitment, launch, and distribution into a structured daily cadence with quantified decision gates. Unlike `/ship` (which builds software) or `/rapid-prototype` (which proves technical feasibility), `/gtm-sprint` validates **market demand** and builds **distribution** — no code required.
 
 Inspired by the 100x GTM Playbook methodology: validate with interviews, secure commitments (LOIs), build launch assets, activate distribution channels, and measure traction — all within a fixed sprint window.
 
@@ -32,7 +32,7 @@ Inspired by the 100x GTM Playbook methodology: validate with interviews, secure 
 ## When NOT to Use
 
 - Building software features -> use `/ship`
-- Technical proof-of-concept -> use `/prototype`
+- Technical proof-of-concept -> use `/rapid-prototype`
 - Single-channel optimization -> use `/channel-playbook` directly
 - Post-launch growth optimization -> use individual growth skills directly
 

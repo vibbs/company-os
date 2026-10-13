@@ -13,7 +13,7 @@ argument-hint: "describe what you want to prototype"
 - **Category**: Orchestration
 - **Inputs**: objective description, company.config.yaml
 - **Outputs**: mini-PRD, working prototype, demo script
-- **Used by**: User (directly via /prototype), Orchestrator Agent
+- **Used by**: User (directly via /rapid-prototype), Orchestrator Agent
 - **Tool scripts**: ./tools/artifact/validate.sh, ./tools/db/seed.sh
 
 ## Purpose

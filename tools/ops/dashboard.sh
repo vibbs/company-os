@@ -423,7 +423,7 @@ if [[ -f "$LEDGER_FILE" ]]; then
     fi
   fi
 else
-  append "*No cost data found. Run /token-cost to log your first entry.*"
+  append "*No cost data found. Run /token-cost-ledger to log your first entry.*"
 fi
 
 append ""
