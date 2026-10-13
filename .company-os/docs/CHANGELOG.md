@@ -49,10 +49,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - `check-gate.sh` exits 2 when the artifact path does not exist
 - Stale counts in the docs (now 64 skills, 9 agents, 33 tool scripts)
 - `install.sh --check` and `--changelog` read the incoming version and changelog from `.company-os/` (they moved in v1.9.0), so they no longer report "unknown"; older template layouts still work
-- `/upgrade-company-os rollback` now restores `os/` and tells you to run `bash tools/build/build.sh` to regenerate the other adapters
+- `/upgrade-company-os rollback` now restores `os/`, rebuilds only the adapters the project already has, and pins any reinstall to the backup version (a plain `--force` re-applied the latest release)
 - `/setup` writes agent models to `os/agents/` and rebuilds, not to the generated `.claude/agents/`
 - `/system-maintenance` audits the current docs (`CONCEPTS.md`, `CUSTOMIZING.md`, README) from `os/` and checks count drift
 - `setup.sh --cleanup` and the `/setup` cleanup option keep the guides in `.company-os/docs/` (other files link to them) and remove only the example artifacts and standards
+- `pre-deploy.sh` check 6 no longer crashes under macOS `/bin/bash` 3.2 (`${ORM,,}` replaced)
+- The installer's commit hint lists only the paths it installed (it named `.claude` even on Cursor-only installs), and "Next steps" shows a block for every installed runtime
+- Cursor: the skill catalog rule (`10-skills.mdc`) is now Agent-Requested, so Cursor can pull it into any task, not only work in `artifacts/`, `standards/` or `docs/`
+- `cfg_get` matches exact key paths only and handles CRLF config files; `tools/build/*.sh` and the validators answer `--help` instead of running
 - `validate.sh` rejects unknown flags; `version-bump.sh` sends errors to stderr; `--since`, `--dir`, `--prd`, `--journey`, `--timeout` and `--expected-status` report a missing value
 
 ## [1.11.0] - 2026-05-27
