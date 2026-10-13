@@ -73,7 +73,7 @@ Flags:
                                no runtime-specific adapter
   --force            Update existing Company OS files (keeps your config and edits)
   --branch <name>    Use a specific branch (default: main)
-  --version <X.Y.Z>  Install a specific release, e.g. --version 1.11.0
+  --version <X.Y.Z>  Install a specific release, e.g. --version 1.12.0
   --dry-run          Preview what would change without writing anything
   --check            Check whether an upgrade is available
   --changelog        Show the changelog since the installed version
@@ -92,7 +92,7 @@ Examples:
   curl -fsSL https://raw.githubusercontent.com/$REPO/main/install.sh | bash -s -- --runtime claude,cursor
 
   # Pin a release
-  curl -fsSL https://raw.githubusercontent.com/$REPO/main/install.sh | bash -s -- --version 1.11.0
+  curl -fsSL https://raw.githubusercontent.com/$REPO/main/install.sh | bash -s -- --version 1.12.0
 
   # Preview an upgrade, then apply it
   curl -fsSL https://raw.githubusercontent.com/$REPO/main/install.sh | bash -s -- --force --dry-run
@@ -929,8 +929,14 @@ if [ "$INSTALL_AGENTS_MD" = true ] && [ -f "$SRC/AGENTS.md" ]; then
   merge_file "$SRC/AGENTS.md" "AGENTS.md"
 fi
 
+# Warn when the downloaded release predates an adapter (multi-runtime needs 1.12.0+).
+warn_missing_adapter() {
+  echo -e "  ${YELLOW}Warning${NC}  This release has no $1 adapter (needs Company OS 1.12.0 or later). Skipped." >&2
+}
+
 # --- Cursor adapter ---
 if should_install_runtime cursor; then
+  if [ ! -d "$SRC/.cursor" ] && [ ! -f "$SRC/.cursorrules" ]; then warn_missing_adapter Cursor; fi
   [ -f "$SRC/.cursorrules" ] && merge_file "$SRC/.cursorrules" ".cursorrules" || true
   if [ -d "$SRC/.cursor" ]; then
     merge_directory "$SRC/.cursor/rules"  ".cursor/rules"  ".cursor/rules/"
@@ -939,11 +945,13 @@ fi
 
 # --- Gemini adapter ---
 if should_install_runtime gemini; then
+  [ -f "$SRC/GEMINI.md" ] || warn_missing_adapter Gemini
   [ -f "$SRC/GEMINI.md" ] && merge_file "$SRC/GEMINI.md" "GEMINI.md" || true
 fi
 
 # --- Codex adapter (relies on AGENTS.md plus a thin Codex pointer) ---
 if should_install_runtime codex; then
+  [ -d "$SRC/.codex" ] || warn_missing_adapter Codex
   if [ -d "$SRC/.codex" ]; then
     merge_directory "$SRC/.codex"  ".codex"  ".codex/"
   fi

@@ -6,7 +6,7 @@ Company OS adds a team of AI agents and a reviewed workflow (requirements, desig
 
 ![Company OS in your repo: agents decide what happens next, skills describe how to produce each document, tools run fixed checks, and artifacts are the handshake between them](docs/diagrams/svg/system-overview.svg)
 
-You stay in control. Agents draft the documents and code; you review each one and approve before work moves to the next step. Version 1.11.0, [MIT licensed](LICENSE).
+You stay in control. Agents draft the documents and code; you review each one and approve before work moves to the next step. Version 1.12.0, [MIT licensed](LICENSE).
 
 ---
 
@@ -299,7 +299,7 @@ Pass flags after `bash -s --` when piping, or directly to `bash install.sh`. Run
 | `--runtime <names>` | Runtimes to install adapters for (default `auto`). Values: `claude`, `cursor`, `codex`, `gemini`, `aider`, `all`, `auto`, `core`. Combine with commas: `--runtime claude,cursor` (or `--runtime=claude,cursor`). `auto` detects installed runtimes; `all` installs every adapter; `core` installs shared files only. |
 | `--force` | Update existing Company OS files (keeps your config and edits) |
 | `--branch <name>` | Use a specific branch (default `main`) |
-| `--version <X.Y.Z>` | Install a specific release, for example `--version 1.11.0` |
+| `--version <X.Y.Z>` | Install a specific release, for example `--version 1.12.0` |
 | `--dry-run` | Preview what would change without writing anything |
 | `--check` | Check whether an upgrade is available (run from an existing install) |
 | `--changelog` | Show the changelog since the installed version (run from an existing install) |
@@ -311,8 +311,10 @@ Pass flags after `bash -s --` when piping, or directly to `bash install.sh`. Run
 curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --runtime claude,cursor
 
 # Pin a release instead of tracking main
-curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --version 1.11.0
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --version 1.12.0
 ```
+
+Runtimes other than Claude Code need version 1.12.0 or later, so do not pin an older release with `--runtime cursor`, `codex`, `gemini` or `aider`.
 
 Add a runtime later with `./tools/registry/install-runtime.sh <runtime>`. See what is installed with `./tools/registry/list-runtimes.sh`. If you already have `.claude/settings.json`, the installer merges the Company OS permissions into it and adds the hooks if you have none (this needs `python3`).
 

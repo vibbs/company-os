@@ -2,7 +2,7 @@
 
 What is planned next for Company OS, ordered by priority. Each item says what it would add for a founder running an "AI company" and why it matters. Shipped work is listed at the end.
 
-**Current state** (v1.11.0 plus unreleased work): 64 skills, 9 agents, 33 tool scripts. Covers the full build-and-ship path (idea, PRD, design doc, implementation, QA, release) plus operations (incidents, deployment, monitoring), growth (feature flags, email lifecycle, analytics, product-led growth, GTM sprints), mobile readiness, weekly reviews and retrospectives. Company OS now runs in Claude Code, Cursor, Codex CLI, Gemini CLI and Aider from one `os/` source.
+**Current state** (v1.12.0): 64 skills, 9 agents, 33 tool scripts. Covers the full build-and-ship path (idea, PRD, design doc, implementation, QA, release) plus operations (incidents, deployment, monitoring), growth (feature flags, email lifecycle, analytics, product-led growth, GTM sprints), mobile readiness, weekly reviews and retrospectives. Company OS now runs in Claude Code, Cursor, Codex CLI, Gemini CLI and Aider from one `os/` source.
 
 ---
 
@@ -271,7 +271,7 @@ Infrastructure improvements that use newer Claude Code capabilities. These are n
 
 | Item | Version | What shipped |
 |------|---------|--------------|
-| Multi-runtime portability (Phases A–D) | Unreleased | `os/` as the single authoring source; generated adapters for Claude Code, Cursor, Codex, Gemini and Aider (`AGENTS.md`, `GEMINI.md`, `.cursor/`, `.codex/`); `tools/build/` with validators and a neutral schema; `install.sh --runtime`; `tools/registry/list-runtimes.sh` and `install-runtime.sh` |
+| Multi-runtime portability | 1.12.0 | `os/` as the single authoring source; generated adapters for Claude Code, Cursor, Codex, Gemini and Aider (`AGENTS.md`, `GEMINI.md`, `.cursor/`, `.codex/`); `tools/build/` with validators and a neutral schema; `install.sh --runtime`; `tools/registry/list-runtimes.sh` and `install-runtime.sh` |
 | Architecture diagrams | 1.11.0 | `excalidraw` skill and diagram set in `docs/diagrams/` |
 | GTM sprint | 1.10.0 | `gtm-sprint` skill: Mom-Test interviews, pain matrix, LOIs, directory blitz |
 | Weekly review, retrospectives, product-led growth | 1.9.0 | `weekly-review`, `retrospective` and `product-led-growth` skills |

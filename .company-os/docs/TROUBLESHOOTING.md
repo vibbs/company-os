@@ -45,7 +45,7 @@ bash install.sh --dry-run       # preview every change without writing anything
 bash install.sh                 # install
 ```
 
-To pin a release instead of the latest, add `--version 1.11.0`.
+To pin a release instead of the latest, add `--version 1.12.0`.
 
 ## Wrong runtime detected
 

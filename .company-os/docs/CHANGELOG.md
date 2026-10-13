@@ -13,14 +13,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
-**Upgrade notes:** Edit skills and agents in `os/` from now on, then run `bash tools/build/build.sh`. Hand edits to `.claude/skills/` or `.claude/agents/` are overwritten by the build. Existing installs keep their current `.company-os/docs/` files; the installer only adds docs that are missing.
+---
+
+## [1.12.0] - 2026-10-14
+
+**Upgrade notes:** Edit skills and agents in `os/` from now on, then run `bash tools/build/build.sh`. Hand edits to `.claude/skills/` or `.claude/agents/` are overwritten by the build. Installing with `--runtime` for anything other than `claude` needs 1.12.0 or later; older releases ship only the Claude Code adapter. Existing installs keep their current `.company-os/docs/` files; the installer only adds docs that are missing.
 
 ### Added
 - **Multi-runtime support.** Company OS now runs in Claude Code, Cursor, Codex CLI, Gemini CLI and Aider.
-  - Phase A: generated adapters `AGENTS.md` (Codex, Aider, other AGENTS.md runtimes), `GEMINI.md`, `.cursor/rules/*.mdc` plus legacy `.cursorrules`, and `.codex/config.md`
-  - Phase B: a runtime-neutral skill and agent schema (`tools/build/schema/`) with `validate-skill.sh` and `validate-agent.sh`, run by `build.sh --check`
-  - Phase C: `os/` is the single authoring source (`os/skills/`, `os/agents/`, `os/playbooks/`, `os/hooks/`); `tools/build/build.sh` regenerates every adapter, including `.claude/`
-  - Phase D: `install.sh --runtime auto|all|core|claude|cursor|codex|gemini|aider` (comma-separated lists allowed; `auto` detects installed runtimes), plus `tools/registry/list-runtimes.sh` and `tools/registry/install-runtime.sh` to inspect and add adapters after install
+  - Generated adapters `AGENTS.md` (Codex, Aider, other AGENTS.md runtimes), `GEMINI.md`, `.cursor/rules/*.mdc` plus legacy `.cursorrules`, and `.codex/config.md`
+  - A runtime-neutral skill and agent schema (`tools/build/schema/`) with `validate-skill.sh` and `validate-agent.sh`, run by `build.sh --check`
+  - `os/` is the single authoring source (`os/skills/`, `os/agents/`, `os/playbooks/`, `os/hooks/`); `tools/build/build.sh` regenerates every adapter, including `.claude/`
+  - `install.sh --runtime auto|all|core|claude|cursor|codex|gemini|aider` (comma-separated lists allowed; `auto` detects installed runtimes), plus `tools/registry/list-runtimes.sh` and `tools/registry/install-runtime.sh` to inspect and add adapters after install
 - **New user docs** in `.company-os/docs/`: `CONCEPTS.md` (glossary, layers, artifacts, stage-aware gates, ship flow with your job at each gate), `CONFIG_REFERENCE.md` (every config section marked required or optional), `CUSTOMIZING.md` (edit `os/`, then build) and `TROUBLESHOOTING.md`
 - **SVG diagrams** in `docs/diagrams/svg/` (system overview, agent org chart, ship flow, stage gates, artifact lineage, multi-runtime build, install and upgrade, workflow paths), embedded in the docs
 - **FAQ "Getting started" block**: cost, choosing a runtime, use without Claude Code, manual uninstall, customizing, upgrading, stages, troubleshooting
