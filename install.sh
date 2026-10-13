@@ -41,15 +41,15 @@ RUNTIME_SPEC=""        # raw value passed to --runtime; resolved below
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --force)         FORCE=true; shift ;;
-    --branch)        BRANCH="$2"; shift 2 ;;
-    --version)       TARGET_VERSION="$2"; shift 2 ;;
+    --branch)        [[ $# -ge 2 ]] || { echo "ERROR: --branch requires a value" >&2; exit 1; }; BRANCH="$2"; shift 2 ;;
+    --version)       [[ $# -ge 2 ]] || { echo "ERROR: --version requires a value" >&2; exit 1; }; TARGET_VERSION="$2"; shift 2 ;;
     --dry-run)       DRY_RUN=true; shift ;;
     --check)         CHECK_ONLY=true; shift ;;
     --changelog)     SHOW_CHANGELOG=true; shift ;;
     --backup)        BACKUP=true; shift ;;
     --runtime=*)     RUNTIME_SPEC="${1#*=}"; shift ;;
-    --runtime)       RUNTIME_SPEC="$2"; shift 2 ;;
-    --help)
+    --runtime)       [[ $# -ge 2 ]] || { echo "ERROR: --runtime requires a value" >&2; exit 1; }; RUNTIME_SPEC="$2"; shift 2 ;;
+    --help|-h)
       echo "Usage: curl -fsSL https://raw.githubusercontent.com/$REPO/main/install.sh | bash"
       echo ""
       echo "Flags:"
@@ -67,7 +67,7 @@ while [[ $# -gt 0 ]]; do
       echo "                       core  → install os/ + AGENTS.md only (no runtime-specific adapter)"
       exit 0
       ;;
-    *) echo "Unknown flag: $1"; exit 1 ;;
+    *) echo "ERROR: Unknown flag: $1" >&2; echo "Run with --help for usage." >&2; exit 1 ;;
   esac
 done
 

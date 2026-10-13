@@ -2,10 +2,9 @@
 # ============================================================================
 # build.sh — Run all adapter builders
 # ============================================================================
-# Regenerates every runtime adapter from the current source-of-truth.
-#
-# Phase A: reads from .claude/ and CLAUDE.md
-# Phase C: reads from os/ (once promoted)
+# Regenerates every runtime adapter (Claude Code, Cursor, Codex, Gemini,
+# AGENTS.md) from os/ (skills and agents) and CLAUDE.md. Edit os/, then run
+# this script; do not edit the generated adapters by hand.
 #
 # Usage:
 #   bash tools/build/build.sh                     # build all adapters
@@ -18,6 +17,8 @@
 
 set -euo pipefail
 
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 
@@ -27,13 +28,15 @@ CHECK=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --runtime=*) RUNTIME="${1#*=}"; shift ;;
-    --runtime)   RUNTIME="$2"; shift 2 ;;
+    --runtime)
+      [[ $# -ge 2 ]] || { echo "ERROR: --runtime requires a value (all, claude, cursor, agents, gemini, codex)" >&2; exit 1; }
+      RUNTIME="$2"; shift 2 ;;
     --check)     CHECK=true; shift ;;
-    --help)
-      grep -E '^#' "$0" | sed 's/^# *//'
+    -h|--help)
+      usage_print_header "${BASH_SOURCE[0]}"
       exit 0
       ;;
-    *) echo "Unknown flag: $1"; exit 1 ;;
+    *) echo "ERROR: Unknown flag: $1" >&2; echo "Run with --help for usage." >&2; exit 1 ;;
   esac
 done
 

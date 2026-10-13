@@ -23,8 +23,12 @@ PERIOD="monthly"
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --html) HTML_MODE=true; shift ;;
-    --out) OUT_FILE="$2"; shift 2 ;;
-    --period) PERIOD="$2"; shift 2 ;;
+    --out)
+      [[ $# -ge 2 ]] || { echo "ERROR: --out requires a path" >&2; exit 1; }
+      OUT_FILE="$2"; shift 2 ;;
+    --period)
+      [[ $# -ge 2 ]] || { echo "ERROR: --period requires a value (monthly or all)" >&2; exit 1; }
+      PERIOD="$2"; shift 2 ;;
     --help|-h)
       echo "Usage: ./tools/ops/dashboard.sh [--html] [--out <path>] [--period <monthly|all>]"
       echo ""
@@ -37,7 +41,12 @@ while [[ $# -gt 0 ]]; do
       echo "  --period <monthly|all>  Cost ledger period (default: monthly)"
       exit 0
       ;;
-    *) shift ;;
+    *)
+      echo "ERROR: Unknown flag: $1" >&2
+      echo "Usage: ./tools/ops/dashboard.sh [--html] [--out <path>] [--period <monthly|all>]" >&2
+      echo "Run with --help for details." >&2
+      exit 1
+      ;;
   esac
 done
 
