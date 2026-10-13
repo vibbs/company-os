@@ -990,14 +990,15 @@ fi
 # VERSION is NOT copied — it would conflict with the user's app version file.
 if [ -d "$SRC/.company-os/docs" ] && [ "$DRY_RUN" = false ]; then
   mkdir -p .company-os/docs
-  for doc_file in "$SRC"/.company-os/docs/*; do
-    [ -e "$doc_file" ] || continue
-    doc_name=$(basename "$doc_file")
+  # Recursive: includes diagrams/ (SVGs the docs embed) and SKILL_SCHEMA.md
+  while IFS= read -r doc_file; do
+    doc_rel="${doc_file#"$SRC"/.company-os/docs/}"
     # Only copy if missing (don't overwrite user's edits or cleanup deletions)
-    if [ ! -f ".company-os/docs/$doc_name" ]; then
-      cp "$doc_file" ".company-os/docs/$doc_name"
+    if [ ! -f ".company-os/docs/$doc_rel" ]; then
+      mkdir -p "$(dirname ".company-os/docs/$doc_rel")"
+      cp "$doc_file" ".company-os/docs/$doc_rel"
     fi
-  done
+  done < <(find "$SRC/.company-os/docs" -type f | sort)
 fi
 
 # --- Scaffold directories (create if missing, never overwrite) ---

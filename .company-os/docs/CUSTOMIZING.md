@@ -8,7 +8,7 @@ Make Company OS follow your processes: change a skill, add your own, teach agent
 
 ## How the build works
 
-![Multi-runtime build: os/skills and os/agents are validated, then build.sh generates .claude/, AGENTS.md, GEMINI.md, .cursor/rules and .codex/](../../docs/diagrams/svg/multi-runtime-build.svg)
+![Multi-runtime build: os/skills and os/agents are validated, then build.sh generates .claude/, AGENTS.md, GEMINI.md, .cursor/rules and .codex/](diagrams/multi-runtime-build.svg)
 
 | You edit | Build step | Generated output |
 |----------|------------|------------------|
@@ -26,7 +26,7 @@ bash tools/build/build.sh --check          # validate skills and agents without 
 
 Commit both `os/` and the regenerated adapters, so anyone who clones the repo gets a working setup without a build step. Claude Code's hooks (`.claude/hooks/`), settings (`.claude/settings.json`) and agent memory are not generated: edit them directly.
 
-The full frontmatter schema for skills and agents is in [docs/contributing/SKILL_SCHEMA.md](../../docs/contributing/SKILL_SCHEMA.md).
+The full frontmatter schema for skills and agents is in [SKILL_SCHEMA.md](SKILL_SCHEMA.md).
 
 ---
 

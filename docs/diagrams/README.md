@@ -1,25 +1,25 @@
 # Diagrams
 
-These diagrams explain how Company OS works. They are SVG files, so they stay sharp at any size, and they switch to dark colors when your system uses dark mode.
+These diagrams explain how Company OS works. The published SVGs live in [`.company-os/docs/diagrams/`](../../.company-os/docs/diagrams/), next to the user docs, so the installer ships them with the docs. This folder holds the generator. They are SVG files, so they stay sharp at any size, and they switch to dark colors when your system uses dark mode.
 
 ## The set
 
 | File | What it shows |
 |------|---------------|
-| [`svg/system-overview.svg`](svg/system-overview.svg) | How Company OS sits in your repo: agents, skills and tools, with artifacts as the handshake between them, and where everything is authored. |
-| [`svg/agent-org.svg`](svg/agent-org.svg) | Every agent, the model it runs on, and the skills it owns. |
-| [`svg/ship-flow.svg`](svg/ship-flow.svg) | The `/ship` pipeline step by step, with each artifact, gate and approval pause. |
-| [`svg/stage-gates.svg`](svg/stage-gates.svg) | Which gates warn and which block at each company stage (idea, mvp, growth, scale). |
-| [`svg/artifact-lineage.svg`](svg/artifact-lineage.svg) | Artifact status lifecycle, parent and child links, frontmatter fields, the enforcement tools and the Claude Code hooks. |
-| [`svg/multi-runtime-build.svg`](svg/multi-runtime-build.svg) | How `os/` is built into adapters for Claude Code, Codex, Aider, Gemini CLI and Cursor. |
-| [`svg/install-upgrade.svg`](svg/install-upgrade.svg) | Installing, picking runtimes, upgrading safely and rolling back. |
-| [`svg/workflow-paths.svg`](svg/workflow-paths.svg) | Which command to start with (`/gtm-sprint`, `/rapid-prototype`, `/ship`) and the feedback loop after launch. |
+| [`system-overview.svg`](../../.company-os/docs/diagrams/system-overview.svg) | How Company OS sits in your repo: agents, skills and tools, with artifacts as the handshake between them, and where everything is authored. |
+| [`agent-org.svg`](../../.company-os/docs/diagrams/agent-org.svg) | Every agent, the model it runs on, and the skills it owns. |
+| [`ship-flow.svg`](../../.company-os/docs/diagrams/ship-flow.svg) | The `/ship` pipeline step by step, with each artifact, gate and approval pause. |
+| [`stage-gates.svg`](../../.company-os/docs/diagrams/stage-gates.svg) | Which gates warn and which block at each company stage (idea, mvp, growth, scale). |
+| [`artifact-lineage.svg`](../../.company-os/docs/diagrams/artifact-lineage.svg) | Artifact status lifecycle, parent and child links, frontmatter fields, the enforcement tools and the Claude Code hooks. |
+| [`multi-runtime-build.svg`](../../.company-os/docs/diagrams/multi-runtime-build.svg) | How `os/` is built into adapters for Claude Code, Codex, Aider, Gemini CLI and Cursor. |
+| [`install-upgrade.svg`](../../.company-os/docs/diagrams/install-upgrade.svg) | Installing, picking runtimes, upgrading safely and rolling back. |
+| [`workflow-paths.svg`](../../.company-os/docs/diagrams/workflow-paths.svg) | Which command to start with (`/gtm-sprint`, `/rapid-prototype`, `/ship`) and the feedback loop after launch. |
 
 To show one in Markdown, link it with a path relative to the file you are editing:
 
 ```markdown
-![The /ship pipeline](docs/diagrams/svg/ship-flow.svg)            <!-- from README.md -->
-![The /ship pipeline](../../docs/diagrams/svg/ship-flow.svg)      <!-- from .company-os/docs/*.md -->
+![The /ship pipeline](.company-os/docs/diagrams/ship-flow.svg)   <!-- from README.md -->
+![The /ship pipeline](diagrams/ship-flow.svg)                     <!-- from .company-os/docs/*.md -->
 ```
 
 ## Regenerate
@@ -27,7 +27,7 @@ To show one in Markdown, link it with a path relative to the file you are editin
 The SVGs are generated. Do not edit them by hand.
 
 ```bash
-node docs/diagrams/render.js           # rewrite every SVG in docs/diagrams/svg/
+node docs/diagrams/render.js           # rewrite every SVG in .company-os/docs/diagrams/
 node docs/diagrams/render.js --check   # exit 1 if any SVG is out of date
 ```
 

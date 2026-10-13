@@ -304,7 +304,7 @@ There is no separate observability artifact in the release gate. The `check-gate
 
 **Coverage: Covered (this is a core strength)**
 
-![Agent org chart: the Orchestrator routes to Product, Engineering, QA & Release, Growth and Ops & Risk; Engineering delegates to Backend, Frontend and DevOps sub-agents](../../docs/diagrams/svg/agent-org.svg)
+![Agent org chart: the Orchestrator routes to Product, Engineering, QA & Release, Growth and Ops & Risk; Engineering delegates to Backend, Frontend and DevOps sub-agents](diagrams/agent-org.svg)
 
 #### How it works
 

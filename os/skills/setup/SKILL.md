@@ -594,7 +594,7 @@ Ask: "Would you like to clean up template example files? This removes the exampl
 | File | Purpose | Recommendation |
 |------|---------|----------------|
 | `README.md` | Describes Company OS template | **Replace** with a project-specific README |
-| `.company-os/docs/*.md` | Company OS guides (SETUP, CONCEPTS, CONFIG_REFERENCE, CUSTOMIZING, TROUBLESHOOTING, FAQ, TOKEN_COSTS, ROADMAP, CHANGELOG) | **Keep.** Other files link to them and they cost no tokens unless read |
+| `.company-os/docs/` | Company OS guides (SETUP, CONCEPTS, CONFIG_REFERENCE, CUSTOMIZING, TROUBLESHOOTING, FAQ, TOKEN_COSTS, ROADMAP, CHANGELOG, SKILL_SCHEMA) and the `diagrams/` they embed | **Keep.** Other files link to them and they cost no tokens unless read |
 | `setup.sh` | One-time scaffolding script | **Remove** after first run |
 | `artifacts/prds/PRD-EXAMPLE-001-notifications.md` | Example PRD artifact | **Remove** after reviewing |
 | `artifacts/rfcs/RFC-EXAMPLE-001-notification-system.md` | Example RFC artifact | **Remove** after reviewing |

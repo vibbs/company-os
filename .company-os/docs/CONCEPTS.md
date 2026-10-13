@@ -2,7 +2,7 @@
 
 How Company OS is organized and how work moves through it. Read this once after [SETUP.md](SETUP.md); the other docs link back here for definitions.
 
-![System overview: you and company.config.yaml at the top; agents decide, skills advise, tools execute; every step writes artifacts; os/ is built into runtime adapters](../../docs/diagrams/svg/system-overview.svg)
+![System overview: you and company.config.yaml at the top; agents decide, skills advise, tools execute; every step writes artifacts; os/ is built into runtime adapters](diagrams/system-overview.svg)
 
 ---
 
@@ -44,7 +44,7 @@ Dependency rules:
 
 ## Agents and delegation
 
-![Agent org chart: the Orchestrator routes to Product, Engineering, QA & Release, Growth and Ops & Risk; Engineering delegates to Backend, Frontend and DevOps sub-agents](../../docs/diagrams/svg/agent-org.svg)
+![Agent org chart: the Orchestrator routes to Product, Engineering, QA & Release, Growth and Ops & Risk; Engineering delegates to Backend, Frontend and DevOps sub-agents](diagrams/agent-org.svg)
 
 | Agent | Responsibility |
 |-------|----------------|
@@ -101,7 +101,7 @@ Every tool prints usage with `-h` or `--help`. Tools read `company.config.yaml` 
 
 ## Artifacts and lineage
 
-![Artifact lineage: PRD to RFC to security review, test plan and QA report, plus launch brief; each moves draft to review to approved, checked by validate, link, promote and check-gate](../../docs/diagrams/svg/artifact-lineage.svg)
+![Artifact lineage: PRD to RFC to security review, test plan and QA report, plus launch brief; each moves draft to review to approved, checked by validate, link, promote and check-gate](diagrams/artifact-lineage.svg)
 
 Every artifact starts with a YAML header:
 
@@ -149,7 +149,7 @@ Every promotion and link is logged in `artifacts/.audit-log/promotions.log`. You
 
 ## Stages and gates
 
-![Stage-aware gates: at idea every gate only warns; at mvp the PRD and RFC gates block; at growth and scale every gate blocks](../../docs/diagrams/svg/stage-gates.svg)
+![Stage-aware gates: at idea every gate only warns; at mvp the PRD and RFC gates block; at growth and scale every gate blocks](diagrams/stage-gates.svg)
 
 A gate is run with `./tools/artifact/check-gate.sh <gate> <file>`:
 
@@ -177,7 +177,7 @@ The stage also sets app versioning: `idea` and `mvp` stay on `0.x.x`; `1.0.0` co
 
 ## The ship flow
 
-![Ship flow: Orchestrator routes the objective; Product writes the PRD; Engineering writes the RFC while Ops & Risk reviews security and QA plans tests; Engineering builds; QA reports; Growth prepares launch; the Orchestrator approves the release](../../docs/diagrams/svg/ship-flow.svg)
+![Ship flow: Orchestrator routes the objective; Product writes the PRD; Engineering writes the RFC while Ops & Risk reviews security and QA plans tests; Engineering builds; QA reports; Growth prepares launch; the Orchestrator approves the release](diagrams/ship-flow.svg)
 
 `/ship <what you want to build>` runs the whole pipeline. It shows a plan first, then pauses after each stage. At each pause you see the artifact, its location, and the gate result. Reply `approve` to continue, describe a change to rerun the stage, or `stop` to resume later.
 

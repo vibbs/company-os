@@ -4,7 +4,7 @@ Company OS adds a team of AI agents and a reviewed workflow (requirements, desig
 
 [Quickstart](#quickstart) · [Which flow?](#which-flow-should-i-use) · [Commands](#commands) · [How it works](#how-it-works) · [Install options](#install-options) · [Docs](#documentation) · [Glossary](#glossary)
 
-![Company OS in your repo: agents decide what happens next, skills describe how to produce each document, tools run fixed checks, and artifacts are the handshake between them](docs/diagrams/svg/system-overview.svg)
+![Company OS in your repo: agents decide what happens next, skills describe how to produce each document, tools run fixed checks, and artifacts are the handshake between them](.company-os/docs/diagrams/system-overview.svg)
 
 You stay in control. Agents draft the documents and code; you review each one and approve before work moves to the next step. Version 1.12.0, [MIT licensed](LICENSE).
 
@@ -73,7 +73,7 @@ All 46 commands are listed under [Commands](#commands).
 
 ## Which flow should I use?
 
-![Three entry points: /gtm-sprint to validate demand, /rapid-prototype to prove the tech, /ship to build and launch, followed by an inbound feedback loop](docs/diagrams/svg/workflow-paths.svg)
+![Three entry points: /gtm-sprint to validate demand, /rapid-prototype to prove the tech, /ship to build and launch, followed by an inbound feedback loop](.company-os/docs/diagrams/workflow-paths.svg)
 
 | Start with | When | You get | Time |
 |------------|------|---------|------|
@@ -226,13 +226,13 @@ Six top-level agents plus three engineering sub-agents. The Orchestrator and the
 <details>
 <summary>Show every agent with its model and skills</summary>
 
-![Agent org chart: each agent, the model it runs on and the skills it owns](docs/diagrams/svg/agent-org.svg)
+![Agent org chart: each agent, the model it runs on and the skills it owns](.company-os/docs/diagrams/agent-org.svg)
 
 </details>
 
 ### The ship flow
 
-![The /ship pipeline: Orchestrator routes the objective, Product writes the PRD, Engineering writes the RFC while Ops & Risk reviews security, Engineering builds, QA reports, Growth prepares launch, Orchestrator approves the release](docs/diagrams/svg/ship-flow.svg)
+![The /ship pipeline: Orchestrator routes the objective, Product writes the PRD, Engineering writes the RFC while Ops & Risk reviews security, Engineering builds, QA reports, Growth prepares launch, Orchestrator approves the release](.company-os/docs/diagrams/ship-flow.svg)
 
 `/ship` runs eight steps: plan, PRD, RFC, security review, build, QA, launch prep and release. After the build, it gives you start commands, service URLs and seed data so you can try the feature yourself before QA. The [stage-by-stage table](.company-os/docs/CONCEPTS.md#the-ship-flow) shows what you check at each pause.
 
@@ -240,7 +240,7 @@ Six top-level agents plus three engineering sub-agents. The Orchestrator and the
 
 A gate is a scripted check (`tools/artifact/check-gate.sh`) that must pass before work moves on. How strict gates are depends on `company.stage` in `company.config.yaml`:
 
-![Stage-aware gates: at idea every gate only warns; at mvp the PRD and RFC gates block; at growth and scale every gate blocks](docs/diagrams/svg/stage-gates.svg)
+![Stage-aware gates: at idea every gate only warns; at mvp the PRD and RFC gates block; at growth and scale every gate blocks](.company-os/docs/diagrams/stage-gates.svg)
 
 | Stage | Means | Gate behavior |
 |-------|-------|---------------|
@@ -253,7 +253,7 @@ If `stage` is empty, gates behave as `growth`. Start permissive and tighten as y
 
 ### Artifacts
 
-![Artifact lineage: status moves from draft to review to approved; each artifact links to its parent and children through frontmatter; validate, link, promote and check-gate enforce the rules](docs/diagrams/svg/artifact-lineage.svg)
+![Artifact lineage: status moves from draft to review to approved; each artifact links to its parent and children through frontmatter; validate, link, promote and check-gate enforce the rules](.company-os/docs/diagrams/artifact-lineage.svg)
 
 Every artifact starts with a YAML header (frontmatter) holding its `id`, `type`, `title`, `status`, `created` and `author`, plus optional links (`parent`, `children`, `depends_on`, `blocks`). Status moves `draft` → `review` → `approved` → `archived`. Four scripts in `tools/artifact/` keep this honest: `validate.sh` (add `--all` to check everything), `link.sh`, `promote.sh` and `check-gate.sh`. Six months from now, `artifacts/` tells you what was built, why, and which risks were accepted.
 
@@ -332,7 +332,7 @@ Add a runtime later with `./tools/registry/install-runtime.sh <runtime>`. See wh
 
 The full tree is in [Where things live](.company-os/docs/CONCEPTS.md#where-things-live).
 
-![Install and upgrade: install.sh detects your runtimes, installs os/, AGENTS.md and the matching adapters; /upgrade-company-os checks, previews, applies or rolls back](docs/diagrams/svg/install-upgrade.svg)
+![Install and upgrade: install.sh detects your runtimes, installs os/, AGENTS.md and the matching adapters; /upgrade-company-os checks, previews, applies or rolls back](.company-os/docs/diagrams/install-upgrade.svg)
 
 ### Updating
 
@@ -365,7 +365,7 @@ There is no uninstall script. Delete the files the installer added and keep the 
 
 **Edit `os/`, then run `bash tools/build/build.sh`.** Files in `.claude/agents/`, `.claude/skills/`, `.cursor/`, `.codex/`, `AGENTS.md` and `GEMINI.md` are generated adapters; the build overwrites hand edits to them.
 
-![Multi-runtime build: os/skills and os/agents are validated, then build.sh generates .claude/, AGENTS.md, GEMINI.md, .cursor/rules and .codex/](docs/diagrams/svg/multi-runtime-build.svg)
+![Multi-runtime build: os/skills and os/agents are validated, then build.sh generates .claude/, AGENTS.md, GEMINI.md, .cursor/rules and .codex/](.company-os/docs/diagrams/multi-runtime-build.svg)
 
 | To | Do this |
 |----|---------|
@@ -376,7 +376,7 @@ There is no uninstall script. Delete the files the installer added and keep the 
 | Change gate rules | Update `tools/artifact/check-gate.sh` |
 | Teach agents your house rules | Add documents to `standards/`, then run `/ingest` |
 
-After structural changes, run `/system-maintenance` to keep the docs in sync. Step-by-step guides are in [Customizing](.company-os/docs/CUSTOMIZING.md); the frontmatter schema is in [SKILL_SCHEMA.md](docs/contributing/SKILL_SCHEMA.md).
+After structural changes, run `/system-maintenance` to keep the docs in sync. Step-by-step guides are in [Customizing](.company-os/docs/CUSTOMIZING.md); the frontmatter schema is in [SKILL_SCHEMA.md](.company-os/docs/SKILL_SCHEMA.md).
 
 ---
 
@@ -399,7 +399,7 @@ Company OS adds an instruction file to every session (about 3,450 tokens in Clau
 | [Token costs](.company-os/docs/TOKEN_COSTS.md) | You want to estimate or reduce AI spend |
 | [Roadmap](.company-os/docs/ROADMAP.md) | You want to know what is planned |
 | [Changelog](.company-os/docs/CHANGELOG.md) | You are upgrading |
-| [Skill schema](docs/contributing/SKILL_SCHEMA.md) | You are writing a skill or agent |
+| [Skill schema](.company-os/docs/SKILL_SCHEMA.md) | You are writing a skill or agent |
 | [Diagrams](docs/diagrams/README.md) | You want to regenerate the diagrams on this page |
 
 Found a bug or have a question? [Open an issue](https://github.com/vibbs/company-os/issues).

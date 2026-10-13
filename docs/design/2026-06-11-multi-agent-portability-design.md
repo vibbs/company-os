@@ -5,7 +5,7 @@
 **Owner:** Engineering
 **Stages:** A → B → C → Distribution
 
-> This is the original design record, kept for history. For how to author skills and agents today, read [`docs/contributing/SKILL_SCHEMA.md`](../contributing/SKILL_SCHEMA.md).
+> This is the original design record, kept for history. For how to author skills and agents today, read [`.company-os/docs/SKILL_SCHEMA.md`](../../.company-os/docs/SKILL_SCHEMA.md).
 
 ## Problem
 

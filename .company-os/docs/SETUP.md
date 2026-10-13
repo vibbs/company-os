@@ -4,7 +4,7 @@ Install Company OS into your repo, configure it in one command, and ship your fi
 
 Company OS adds a team of AI agents, a set of step-by-step skills, and checking scripts to your existing project. It does not modify your application code. New to the terms? Read the [glossary in CONCEPTS.md](CONCEPTS.md#glossary).
 
-![Install and upgrade flow: install.sh detects your runtimes, installs os/, AGENTS.md and the matching adapters, then /upgrade-company-os keeps them current](../../docs/diagrams/svg/install-upgrade.svg)
+![Install and upgrade flow: install.sh detects your runtimes, installs os/, AGENTS.md and the matching adapters, then /upgrade-company-os keeps them current](diagrams/install-upgrade.svg)
 
 ---
 
@@ -94,7 +94,7 @@ Something off? See [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
 
 Pick the flow that matches where you are:
 
-![Which workflow to start with: /gtm-sprint to test demand, /rapid-prototype to prove the idea works, /ship to build and release](../../docs/diagrams/svg/workflow-paths.svg)
+![Which workflow to start with: /gtm-sprint to test demand, /rapid-prototype to prove the idea works, /ship to build and release](diagrams/workflow-paths.svg)
 
 | Flow | Use it when | You get |
 |------|-------------|---------|

@@ -26,7 +26,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
   - `os/` is the single authoring source (`os/skills/`, `os/agents/`, `os/playbooks/`, `os/hooks/`); `tools/build/build.sh` regenerates every adapter, including `.claude/`
   - `install.sh --runtime auto|all|core|claude|cursor|codex|gemini|aider` (comma-separated lists allowed; `auto` detects installed runtimes), plus `tools/registry/list-runtimes.sh` and `tools/registry/install-runtime.sh` to inspect and add adapters after install
 - **New user docs** in `.company-os/docs/`: `CONCEPTS.md` (glossary, layers, artifacts, stage-aware gates, ship flow with your job at each gate), `CONFIG_REFERENCE.md` (every config section marked required or optional), `CUSTOMIZING.md` (edit `os/`, then build) and `TROUBLESHOOTING.md`
-- **SVG diagrams** in `docs/diagrams/svg/` (system overview, agent org chart, ship flow, stage gates, artifact lineage, multi-runtime build, install and upgrade, workflow paths), embedded in the docs
+- **SVG diagrams** in `.company-os/docs/diagrams/` (system overview, agent org chart, ship flow, stage gates, artifact lineage, multi-runtime build, install and upgrade, workflow paths), embedded in the docs and installed with them
 - **FAQ "Getting started" block**: cost, choosing a runtime, use without Claude Code, manual uninstall, customizing, upgrading, stages, troubleshooting
 - **Tool hardening**: every tool script answers `-h` / `--help`; `validate.sh --all` checks every artifact; config is read through one helper (`tools/lib/config.sh`, `cfg_get`); `setup.sh --help`
 
@@ -34,7 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - `SETUP.md` is now a short quickstart (prerequisites, install, pick your runtime, `/setup`, verify, first `/ship`); reference material moved to the new docs above
 - Skill and agent descriptions rewritten in plain language; key user-facing skills gained an overview and sample output
 - Claude-only skill fields (`user-invokable`, `disable-model-invocation`, `argument-hint`) now live under `runtimes.claude:` in `os/skills/`; the build lifts them to the top level of the generated `.claude/` copy
-- Authoring schema moved from `docs/superpowers/SCHEMA.md` to `docs/contributing/SKILL_SCHEMA.md`; the portability design spec moved to `docs/design/` and is marked Implemented
+- Authoring schema moved from `docs/superpowers/SCHEMA.md` to `.company-os/docs/SKILL_SCHEMA.md` (installed with the docs); the portability design spec moved to `docs/design/` and is marked Implemented
 - `TOKEN_COSTS.md` re-measured for this release, with always-on cost per runtime; `ROADMAP.md` refreshed with a collapsed Shipped list
 - `install.sh --help` lists `--runtime` in its header, adds examples and the docs link
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // docs/diagrams/render.js
-// Renders the Company OS SVG diagram set into docs/diagrams/svg/.
+// Renders the Company OS SVG diagram set into .company-os/docs/diagrams/.
 //
 // Usage:
 //   node docs/diagrams/render.js           # write all SVGs
@@ -17,7 +17,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..', '..');
-const OUT_DIR = path.join(__dirname, 'svg');
+const OUT_DIR = path.join(ROOT, '.company-os', 'docs', 'diagrams');
 
 // ═══════════════════════════════════════════════════════════════
 // 1. Repo facts (read at render time)
@@ -1333,10 +1333,10 @@ if (require.main === module) {
     const p = path.join(OUT_DIR, file);
     if (check) {
       const cur = fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : '';
-      if (cur !== svg) { stale += 1; console.error(`stale: docs/diagrams/svg/${file}`); }
+      if (cur !== svg) { stale += 1; console.error(`stale: .company-os/docs/diagrams/${file}`); }
     } else {
       fs.writeFileSync(p, svg, 'utf8');
-      console.log(`wrote docs/diagrams/svg/${file}`);
+      console.log(`wrote .company-os/docs/diagrams/${file}`);
     }
   }
   if (check) {
