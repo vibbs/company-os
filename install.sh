@@ -12,16 +12,21 @@
 # Usage:
 #   curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash
 #   curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --force
+#   curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --runtime claude,cursor
 #
 # Flags:
+#   --runtime    Runtimes to install adapters for: auto (default) | all | core |
+#                claude | cursor | codex | gemini | aider (comma-separated list)
 #   --force      Update existing Company OS files (default: skip existing)
 #   --branch     Use a specific branch (default: main)
 #   --version    Install a specific version (e.g., --version 1.2.0)
 #   --dry-run    Preview what would change without applying
-#   --check      Check if an upgrade is available
+#   --check      Check if an upgrade is available (compares with the install here)
 #   --changelog  Show changelog since installed version
 #   --backup     Create backup before upgrading (auto-enabled for major upgrades)
 #   --help       Show this help message
+#
+# Docs: https://github.com/vibbs/company-os#readme
 # ============================================================================
 
 set -euo pipefail
@@ -50,21 +55,52 @@ while [[ $# -gt 0 ]]; do
     --runtime=*)     RUNTIME_SPEC="${1#*=}"; shift ;;
     --runtime)       [[ $# -ge 2 ]] || { echo "ERROR: --runtime requires a value" >&2; exit 1; }; RUNTIME_SPEC="$2"; shift 2 ;;
     --help|-h)
-      echo "Usage: curl -fsSL https://raw.githubusercontent.com/$REPO/main/install.sh | bash"
-      echo ""
-      echo "Flags:"
-      echo "  --force            Update existing Company OS files (preserves user config)"
-      echo "  --branch <name>    Use a specific branch (default: main)"
-      echo "  --version <vN>     Install a specific version (e.g., --version 1.2.0)"
-      echo "  --dry-run          Preview what would change without applying"
-      echo "  --check            Check if an upgrade is available"
-      echo "  --changelog        Show changelog since installed version"
-      echo "  --backup           Create backup before upgrading (auto for major upgrades)"
-      echo "  --runtime <names>  Comma-separated runtimes to install adapters for."
-      echo "                     Values: claude | cursor | codex | gemini | aider | all | auto | core"
-      echo "                       auto  → detect installed agent CLIs/dirs and install for those (default)"
-      echo "                       all   → install every adapter"
-      echo "                       core  → install os/ + AGENTS.md only (no runtime-specific adapter)"
+      cat <<HELP
+Company OS installer and upgrader
+
+Usage:
+  curl -fsSL https://raw.githubusercontent.com/$REPO/main/install.sh | bash
+  curl -fsSL https://raw.githubusercontent.com/$REPO/main/install.sh | bash -s -- [flags]
+  bash install.sh [flags]            (after downloading the script to review it)
+
+Flags:
+  --runtime <names>  Runtimes to install adapters for (default: auto).
+                     Values: claude | cursor | codex | gemini | aider | all | auto | core
+                     Combine with commas: --runtime claude,cursor (or --runtime=claude,cursor)
+                       auto  → detect installed agent CLIs/dirs and install for those
+                       all   → install every adapter
+                       core  → shared files only (os/, tools/, AGENTS.md, CLAUDE.md, config);
+                               no runtime-specific adapter
+  --force            Update existing Company OS files (keeps your config and edits)
+  --branch <name>    Use a specific branch (default: main)
+  --version <X.Y.Z>  Install a specific release, e.g. --version 1.11.0
+  --dry-run          Preview what would change without writing anything
+  --check            Check whether an upgrade is available
+  --changelog        Show the changelog since the installed version
+  --backup           Back up Company OS files before upgrading (automatic for major upgrades)
+  -h, --help         Show this help
+
+--check and --changelog compare against the Company OS install in the current
+directory, so run them from an existing install. In a fresh directory --check
+only reports the latest version and --changelog prints the full changelog.
+
+Examples:
+  # Install for whatever runtimes are detected
+  curl -fsSL https://raw.githubusercontent.com/$REPO/main/install.sh | bash
+
+  # Install for Claude Code and Cursor only
+  curl -fsSL https://raw.githubusercontent.com/$REPO/main/install.sh | bash -s -- --runtime claude,cursor
+
+  # Pin a release
+  curl -fsSL https://raw.githubusercontent.com/$REPO/main/install.sh | bash -s -- --version 1.11.0
+
+  # Preview an upgrade, then apply it
+  curl -fsSL https://raw.githubusercontent.com/$REPO/main/install.sh | bash -s -- --force --dry-run
+  curl -fsSL https://raw.githubusercontent.com/$REPO/main/install.sh | bash -s -- --force
+
+Docs: https://github.com/$REPO#readme
+Setup guide (after install): .company-os/docs/SETUP.md
+HELP
       exit 0
       ;;
     *) echo "ERROR: Unknown flag: $1" >&2; echo "Run with --help for usage." >&2; exit 1 ;;

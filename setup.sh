@@ -8,9 +8,11 @@
 # Usage:
 #   bash setup.sh             # scaffold directories + template config
 #   bash setup.sh --cleanup   # remove template documentation files
+#   bash setup.sh --help      # show this help
 #
 # After running this script, open Claude Code and run /setup to customize
-# your configuration interactively.
+# your configuration interactively. No AI runtime? Edit company.config.yaml
+# by hand using .company-os/docs/CONFIG_REFERENCE.md.
 # ============================================================================
 
 set -euo pipefail
@@ -28,6 +30,44 @@ else
   BLUE=''
   RED=''
   NC=''
+fi
+
+# --- Help ---
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+  cat <<'HELP'
+Company OS — Setup Script (bash fallback)
+
+Creates the Company OS working folders and template files in the current
+directory. Use it when you want to set up before opening an AI runtime, or
+if you do not use one. Existing files are never overwritten.
+
+Usage:
+  bash setup.sh             Scaffold folders and template files
+  bash setup.sh --cleanup   Remove template docs and example files
+  bash setup.sh --help      Show this help
+
+What the default run creates (only if missing):
+  artifacts/   prds, rfcs, test-plans, qa-reports, launch-briefs,
+               security-reviews, decision-memos, test-data, .audit-log
+  standards/   api, coding, compliance, templates, brand, ops, analytics,
+               docs, email, engineering
+  imports/  tasks/ (todo.md, lessons.md)  seeds/  cogs/ai-ledger/
+  company.config.yaml       blank template
+  .claude/settings.json     Node.js default permissions
+
+What --cleanup removes (if present):
+  .company-os/docs/SETUP.md, FAQ.md, TOKEN_COSTS.md, ROADMAP.md,
+  the example PRD, RFC and standards files
+
+Next steps:
+  Claude Code:   run `claude`, then type /setup
+  Other runtime: ask the agent to "run the setup skill"
+  No runtime:    edit company.config.yaml by hand
+                 (guide: .company-os/docs/CONFIG_REFERENCE.md)
+
+Docs: https://github.com/vibbs/company-os#readme
+HELP
+  exit 0
 fi
 
 # --- Cleanup Mode ---
