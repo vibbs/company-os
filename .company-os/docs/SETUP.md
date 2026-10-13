@@ -14,34 +14,14 @@ Company OS adds a team of AI agents, a set of step-by-step skills, and checking 
 |----------|-----|
 | macOS, Linux, or Windows with WSL | The installer and tools are bash scripts (bash 3.2 or newer) |
 | `curl` (or `wget`) and `tar` | The installer downloads and unpacks the release |
-| `git`, with the project already a git repo (`git init`) | Company OS uses git history as its audit trail |
+| `git` (a git repo is recommended) | Company OS uses git history as its audit trail. The installer works without a repo but warns you; run `git init` before you commit |
 | An AI coding runtime: Claude Code, Cursor, Codex CLI, Gemini CLI, or Aider | Company OS runs inside it |
 | `python3` (recommended) | Merges permissions into an existing `.claude/settings.json` |
 | `jq` (recommended, Claude Code only) | The two artifact hooks (validate before promote, header check after write) skip themselves silently without it |
 
-## 2. Install
+## 2. Pick your runtime
 
-From your project root:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash
-```
-
-Prefer to read the script before running it:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh -o install.sh
-less install.sh
-bash install.sh
-```
-
-Run `bash install.sh --help` to see every flag (`--runtime`, `--version`, `--dry-run`, `--force`, and more).
-
-**Mono repo:** install once at the repo root; `company.config.yaml` describes the shared stack. **Multi repo:** install in each repo; each keeps its own config and artifacts.
-
-## 3. Pick your runtime
-
-By default (`--runtime auto`) the installer looks for the runtimes on your machine and installs files for each one it finds. To choose yourself, pass `--runtime` with one or more names, for example `bash -s -- --runtime claude,cursor`.
+You choose runtimes when you install, using the `--runtime` flag. By default (`--runtime auto`) the installer looks for the runtimes on your machine and installs files for each one it finds. To choose yourself, pass one or more names, as shown in the next step.
 
 | Runtime | `--runtime` value | Extra files installed | How to start |
 |---------|-------------------|--------------------------------------------------------|--------------|
@@ -54,6 +34,32 @@ By default (`--runtime auto`) the installer looks for the runtimes on your machi
 Every install also gets the shared files: `os/`, `tools/`, `AGENTS.md`, `CLAUDE.md` (the other runtimes' files point to it for full conventions) and `company.config.yaml`. Other values: `all` installs every adapter; `core` installs only the shared files. Add a runtime later with `./tools/registry/install-runtime.sh <runtime>`; see what is installed with `./tools/registry/list-runtimes.sh`.
 
 Some features exist only in Claude Code: slash commands, the three automatic hooks, and per-agent memory. See [CONCEPTS.md](CONCEPTS.md#runtimes-and-adapters).
+
+## 3. Install
+
+From your project root:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash
+```
+
+To choose runtimes yourself, add `-s -- --runtime=<name>` after `bash`. Use one name or several separated by commas (`claude`, `cursor`, `codex`, `gemini`, `aider`, `all` or `core`):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --runtime=cursor
+```
+
+Prefer to read the script before running it:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh -o install.sh
+less install.sh
+bash install.sh --runtime=cursor   # or leave the flag off to auto-detect
+```
+
+Run `bash install.sh --help` to see every flag (`--runtime`, `--version`, `--dry-run`, `--force`, and more).
+
+**Mono repo:** install once at the repo root; `company.config.yaml` describes the shared stack. **Multi repo:** install in each repo; each keeps its own config and artifacts.
 
 ## 4. Configure with `/setup`
 
@@ -92,9 +98,9 @@ Pick the flow that matches where you are:
 
 | Flow | Use it when | You get |
 |------|-------------|---------|
-| `/gtm-sprint` | You are not sure anyone will pay. No code needed. | Interview notes, a pain matrix, letters of intent, positioning, a landing page, and a go/no-go call after 7, 14 or 21 days |
-| `/rapid-prototype` | You need a demo or proof of concept fast | A time-boxed MVP (4 hours, 1 day or 3 days) that skips the design doc, security review and full QA |
-| `/ship` | You are building something real | A PRD, design doc, code, QA report and launch assets, with a pause for your approval at each gate |
+| `/gtm-sprint` | You are not sure anyone will pay. No code needed. | Interview notes, a pain matrix, LOIs (letters of intent: written commitments to buy or pilot), positioning, a landing page, and a go/no-go call after 7, 14 or 21 days |
+| `/rapid-prototype` | You need a demo or proof of concept fast | A time-boxed MVP (minimum viable product, the smallest working version; 4 hours, 1 day or 3 days) that skips the design doc, security review and full QA |
+| `/ship` | You are building something real | A PRD (product requirements document), design doc, code, QA report and launch assets, with a pause for your approval at each gate |
 
 For example:
 

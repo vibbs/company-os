@@ -140,7 +140,7 @@ Required fields: `id`, `type`, `title`, `status`, `created`, `author`. Valid typ
 |------|--------------|
 | `validate.sh <file>` or `validate.sh --all` | Checks the header and required fields, and that every `parent`, `children`, `depends_on` and `blocks` ID points to a real artifact. `--strict` also checks links in both directions. |
 | `promote.sh <file> <status>` | Changes status. Validates first, checks the order, and checks prerequisites for approval. |
-| `link.sh <parent> <child>` | Links two artifacts and edits both files: sets `parent` on the child and adds the child to the parent's `children`. |
+| `link.sh <parent> <child>` | Links two artifacts and edits both files: sets `parent` on the child, adds the child to the parent's `children`, and adds the parent to the child's `depends_on`. |
 | `check-gate.sh <gate> <file>` | Checks a stage gate (see below). |
 
 Every promotion and link is logged in `artifacts/.audit-log/promotions.log`. You rarely run these yourself: ask "Link the RFC to its PRD" or "Promote the PRD to approved" and the agent runs them.

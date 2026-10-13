@@ -6,13 +6,13 @@ Company OS adds a team of AI agents and a reviewed workflow (requirements, desig
 
 ![Company OS in your repo: agents decide what happens next, skills describe how to produce each document, tools run fixed checks, and artifacts are the handshake between them](docs/diagrams/svg/system-overview.svg)
 
-You stay in control. Agents draft the documents and code; you review each one and approve before work moves to the next stage. Version 1.11.0, [MIT licensed](LICENSE).
+You stay in control. Agents draft the documents and code; you review each one and approve before work moves to the next step. Version 1.11.0, [MIT licensed](LICENSE).
 
 ---
 
 ## Quickstart
 
-You need `git` (the project must be a git repo), `curl`, and one AI coding runtime. Full prerequisites are in the [setup guide](.company-os/docs/SETUP.md#1-prerequisites).
+You need `git` (a git repo is recommended), `curl` (or `wget`), `tar`, and one AI coding runtime. Full prerequisites are in the [setup guide](.company-os/docs/SETUP.md#1-prerequisites).
 
 **1. Install** from your project root:
 
@@ -48,7 +48,7 @@ Every install also gets the shared files: `os/`, `tools/`, `AGENTS.md`, `CLAUDE.
 /ship Add password reset by email
 ```
 
-`/ship` writes a plan, then pauses after each stage so you can approve, ask for changes, or stop. Outside Claude Code, ask the agent to "run the ship skill" instead.
+`/ship` writes a plan, then pauses after each step so you can approve, ask for changes, or stop. Outside Claude Code, see [Commands](#commands) for how to run it.
 
 No AI runtime yet? `bash setup.sh` creates the folders and a blank `company.config.yaml` to fill in by hand. Stuck? See [Troubleshooting](.company-os/docs/TROUBLESHOOTING.md).
 
@@ -209,7 +209,7 @@ Agents use skills to know what to produce and run tools to act. Skills may recom
 
 ### Agents
 
-Six top-level agents plus three engineering sub-agents. The Orchestrator and the Engineering lead run on a stronger reasoning model (`opus`); the rest use `sonnet`. You can change this per agent with `models:` in `company.config.yaml` (Claude Code only).
+Six top-level agents plus three engineering sub-agents. The Orchestrator and the Engineering lead run on a stronger reasoning model (`opus`); the rest use `sonnet`. To change an agent's model (Claude Code only), set `model:` in `os/agents/<agent>.md` and run `bash tools/build/build.sh`, or let `/setup` do both for you. The `models:` section in `company.config.yaml` records your choice.
 
 | Agent | Role |
 |-------|------|
@@ -234,7 +234,7 @@ Six top-level agents plus three engineering sub-agents. The Orchestrator and the
 
 ![The /ship pipeline: Orchestrator routes the objective, Product writes the PRD, Engineering writes the RFC while Ops & Risk reviews security, Engineering builds, QA reports, Growth prepares launch, Orchestrator approves the release](docs/diagrams/svg/ship-flow.svg)
 
-`/ship` runs eight stages: plan, PRD, RFC, security review, build, QA, launch prep and release. After the build, it gives you start commands, service URLs and seed data so you can try the feature yourself before QA. The [stage-by-stage table](.company-os/docs/CONCEPTS.md#the-ship-flow) shows what you check at each pause.
+`/ship` runs eight steps: plan, PRD, RFC, security review, build, QA, launch prep and release. After the build, it gives you start commands, service URLs and seed data so you can try the feature yourself before QA. The [stage-by-stage table](.company-os/docs/CONCEPTS.md#the-ship-flow) shows what you check at each pause.
 
 ### Stage-aware gates
 
@@ -259,7 +259,7 @@ Every artifact starts with a YAML header (frontmatter) holding its `id`, `type`,
 
 ### Hooks (Claude Code only)
 
-Three hooks run automatically and cost no tokens. The two artifact hooks need `jq`.
+Three hooks run automatically with no model calls. The session-start hook adds a few lines of context to each session. The two artifact hooks need `jq`.
 
 | Hook | When | What it does |
 |------|------|--------------|
@@ -272,7 +272,7 @@ Three hooks run automatically and cost no tokens. The two artifact hooks need `j
 | Feature | Claude Code | Cursor, Codex CLI, Gemini CLI, Aider |
 |---------|-------------|--------------------------------------|
 | Agents, skills, tools, artifacts, gates | Yes | Yes (skills are read from the catalog in `AGENTS.md`, `GEMINI.md` or `.cursor/rules/`) |
-| Slash commands such as `/ship` | Yes | No: ask the agent to "run the ship skill" |
+| Slash commands such as `/ship` | Yes | No: see [Commands](#commands) |
 | Automatic hooks | Yes | No |
 | Per-agent memory (`.claude/agent-memory/`) | Yes | No |
 | Per-agent model choice (`models:` in config) | Yes | No: the runtime uses its own model setting |
@@ -282,7 +282,7 @@ Three hooks run automatically and cost no tokens. The two artifact hooks need `j
 ## Why Company OS
 
 - **Checks are scripts, not prompts.** Gates, validation and status changes run as shell scripts with exit codes, so they behave the same in every runtime and every session.
-- **You approve every stage.** The flow pauses after each artifact. Nothing reaches the next stage without your go-ahead (or, at `idea` stage, without you seeing the warning).
+- **You approve every step.** The flow pauses after each artifact. Nothing reaches the next step without your go-ahead (or, at `idea` stage, without you seeing the warning).
 - **The paper trail is the product.** PRDs, RFCs, threat models and QA reports are linked documents in your repo, so decisions survive past the chat session.
 - **Configuration, not prompt editing.** `company.config.yaml` sets your tech stack, API conventions, branching, models and budgets; agents read it before they act.
 - **Costs are visible.** AI token spend is tracked as COGS in `cogs/ai-ledger/`, and the per-session overhead is published in [Token costs](.company-os/docs/TOKEN_COSTS.md).
@@ -355,7 +355,7 @@ Upgrades keep your config, permissions, artifacts and agent memory. If you edite
 
 ### Uninstalling
 
-There is no uninstall script. Delete the files the installer added and keep the folders that hold your own work (`artifacts/`, `standards/`, `tasks/`, `seeds/`, `cogs/`, `.claude/agent-memory/`). If you had your own `CLAUDE.md`, `.claude/settings.json` or `tools/` before installing, remove only the Company OS parts. The [FAQ](.company-os/docs/FAQ.md#how-do-i-uninstall-company-os) has the exact list.
+There is no uninstall script. Delete the files the installer added and keep the folders that hold your own work (`artifacts/`, `standards/`, `imports/`, `tasks/`, `seeds/`, `cogs/`, `.claude/agent-memory/`). If you had your own `CLAUDE.md`, `.claude/settings.json` or `tools/` before installing, remove only the Company OS parts. The [FAQ](.company-os/docs/FAQ.md#how-do-i-uninstall-company-os) has the exact list.
 
 ---
 
@@ -412,7 +412,7 @@ Found a bug or have a question? [Open an issue](https://github.com/vibbs/company
 | **Skill** | A written procedure with templates and checklists; in Claude Code you run it as `/name` |
 | **Tool** | A shell script in `tools/` that performs one fixed action, with no AI reasoning |
 | **Artifact** | A document an agent produces, saved under `artifacts/` with a YAML header |
-| **Gate** | A scripted check that must pass before work moves to the next stage |
+| **Gate** | A scripted check that must pass before work moves to the next step |
 | **Stage** | Your company's maturity (`idea`, `mvp`, `growth`, `scale`); it decides which gates block |
 | **Runtime** | The AI coding tool you work in: Claude Code, Cursor, Codex CLI, Gemini CLI or Aider |
 | **Adapter** | The runtime-specific files generated from `os/`; never edit them by hand |

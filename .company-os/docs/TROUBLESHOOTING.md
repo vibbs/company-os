@@ -18,14 +18,14 @@ Find your symptom, apply the fix. If nothing here helps, run the [health check](
 
 ## Git is not initialized
 
-Company OS uses git history as its audit trail, so run the installer inside a git repo.
+Company OS uses git history as its audit trail, so a git repo is recommended. The installer still runs without one; it prints this warning and carries on.
 
 ```bash
 git init
 git add -A && git commit -m "Initial commit"
 ```
 
-You can install first and run `git init` afterwards; nothing is lost. Commit the installed files before running `/setup`, so you can review exactly what the wizard changes.
+Running `git init` after the install is fine; nothing is lost. Commit the installed files before running `/setup`, so you can review exactly what the wizard changes.
 
 ## python3 or jq is missing
 
@@ -56,7 +56,7 @@ By default the installer installs files for every runtime it finds on your machi
 - Install exactly what you want: re-run the installer with `--runtime`, for example `bash install.sh --runtime claude,cursor`
 - Remove an unwanted runtime: delete its files (see the [uninstall list](FAQ.md#how-do-i-uninstall-company-os)).
 
-If no runtime is found, you get the core install only: `os/`, `tools/`, `AGENTS.md` and `CLAUDE.md`.
+If no runtime is found, you get the core install only: `os/`, `tools/`, `AGENTS.md`, `CLAUDE.md` and `company.config.yaml`.
 
 ## Slash commands missing
 

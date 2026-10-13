@@ -10,7 +10,7 @@ Short answers to the questions new users ask first, then deep dives on what Comp
 
 Company OS itself is free and open source (MIT); you pay only for the AI runtime and model usage you already have.
 
-- In Claude Code, `CLAUDE.md` adds roughly 3,400 tokens to every session, and each agent adds its instructions and skills when it starts.
+- In Claude Code, `CLAUDE.md` adds roughly 3,450 tokens to every session, and each agent adds its instructions and skills when it starts.
 - A full `/ship` run uses far more than a normal chat because several agents each do a stage of work.
 - [TOKEN_COSTS.md](TOKEN_COSTS.md) has the breakdown and ways to cut it. `/token-cost-ledger` logs what your sessions actually cost.
 
@@ -26,7 +26,7 @@ Use Claude Code if you can: it is the only runtime with slash commands, automati
 | Gemini CLI | Yes, via `GEMINI.md` | Same as Cursor |
 | Aider | Yes, via `AGENTS.md` | Same as Cursor |
 
-The installer detects which ones you have. See [SETUP.md](SETUP.md#3-pick-your-runtime).
+The installer detects which ones you have. See [SETUP.md](SETUP.md#2-pick-your-runtime).
 
 ### Can I use it without Claude Code?
 
