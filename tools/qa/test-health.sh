@@ -185,11 +185,11 @@ case "$COMMAND" in
     cmd_analyze
     ;;
   *)
-    echo "Usage: $0 [list|analyze]"
-    echo ""
-    echo "  list     List recent test health reports in artifacts/qa-reports/"
-    echo "  analyze  Run basic test suite analysis (counts, pyramid, flaky patterns)"
-    echo ""
+    echo "Usage: $0 [list|analyze]" >&2
+    echo "" >&2
+    echo "  list     List recent test health reports in artifacts/qa-reports/" >&2
+    echo "  analyze  Run basic test suite analysis (counts, pyramid, flaky patterns)" >&2
+    echo "" >&2
     exit 1
     ;;
 esac

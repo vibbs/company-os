@@ -17,18 +17,18 @@ else
 fi
 
 if [[ -z "$QUERY" ]]; then
-  echo "ERROR: No search query provided"
-  echo "Usage: ./tools/registry/search-skill.sh <query>"
-  echo ""
-  echo "Examples:"
-  echo "  ./tools/registry/search-skill.sh prd"
-  echo "  ./tools/registry/search-skill.sh 'api contract'"
-  echo "  ./tools/registry/search-skill.sh engineering"
+  echo "ERROR: No search query provided" >&2
+  echo "Usage: ./tools/registry/search-skill.sh <query>" >&2
+  echo "" >&2
+  echo "Examples:" >&2
+  echo "  ./tools/registry/search-skill.sh prd" >&2
+  echo "  ./tools/registry/search-skill.sh 'api contract'" >&2
+  echo "  ./tools/registry/search-skill.sh engineering" >&2
   exit 1
 fi
 
 if [[ ! -d "$SKILLS_DIR" ]]; then
-  echo "ERROR: Skills directory not found at $SKILLS_DIR"
+  echo "ERROR: Skills directory not found at $SKILLS_DIR" >&2
   exit 1
 fi
 

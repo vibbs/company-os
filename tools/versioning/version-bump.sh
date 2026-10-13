@@ -44,7 +44,7 @@ for arg in "$@"; do
       ;;
     *)
       echo -e "${RED}ERROR: Unknown argument: $arg${RESET}"
-      echo "Usage: ./tools/versioning/version-bump.sh <major|minor|patch> [--dry-run] [--no-tag]"
+      echo "Usage: ./tools/versioning/version-bump.sh <major|minor|patch> [--dry-run] [--no-tag]" >&2
       exit 1
       ;;
   esac
@@ -52,7 +52,7 @@ done
 
 if [[ -z "$BUMP_TYPE" ]]; then
   echo -e "${RED}ERROR: Bump type required (major, minor, or patch)${RESET}"
-  echo "Usage: ./tools/versioning/version-bump.sh <major|minor|patch> [--dry-run] [--no-tag]"
+  echo "Usage: ./tools/versioning/version-bump.sh <major|minor|patch> [--dry-run] [--no-tag]" >&2
   exit 1
 fi
 

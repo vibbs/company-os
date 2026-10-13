@@ -35,8 +35,8 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     -*)
-      echo "ERROR: Unknown flag: $1"
-      echo "Usage: ./tools/qa/dogfood.sh <url> [--prd <prd-id>] [--journey <name>] [--api-only]"
+      echo "ERROR: Unknown flag: $1" >&2
+      echo "Usage: ./tools/qa/dogfood.sh <url> [--prd <prd-id>] [--journey <name>] [--api-only]" >&2
       exit 1
       ;;
     *)
@@ -106,8 +106,8 @@ HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --connect-timeout 10 --max-
 HTTP_STATUS="${HTTP_STATUS:-000}"
 
 if [[ "$HTTP_STATUS" == "000" ]]; then
-  echo "ERROR: Cannot reach $URL (connection failed or timed out)"
-  echo "Make sure the application is running before dogfooding"
+  echo "ERROR: Cannot reach $URL (connection failed or timed out)" >&2
+  echo "Make sure the application is running before dogfooding" >&2
   exit 1
 elif [[ "$HTTP_STATUS" -ge 500 ]]; then
   echo "WARNING: $URL returned HTTP $HTTP_STATUS (server error)"

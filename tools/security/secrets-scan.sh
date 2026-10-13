@@ -3,12 +3,18 @@
 # Description: Scans repository for accidentally committed secrets (API keys, tokens, passwords)
 # Usage: ./tools/security/secrets-scan.sh [path]
 # Inputs: optional path to scan (default: current directory)
-# Outputs: list of potential secrets found, exit 0 if clean
+# Outputs: list of potential secrets found, exit 0 if clean, exit 2 if the path does not exist
 set -euo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
 usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
 SCAN_PATH="${1:-.}"
+
+if [[ ! -e "$SCAN_PATH" ]]; then
+  echo "ERROR: path not found: $SCAN_PATH" >&2
+  echo "Usage: ./tools/security/secrets-scan.sh [path]" >&2
+  exit 2
+fi
 
 echo "Secrets Scan"
 echo "  Path: $SCAN_PATH"

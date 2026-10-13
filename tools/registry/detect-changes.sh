@@ -28,8 +28,8 @@ while [[ $# -gt 0 ]]; do
       shift 2
       ;;
     *)
-      echo "ERROR: Unknown argument: $1"
-      echo "Usage: ./tools/registry/detect-changes.sh [--since YYYY-MM-DD] [--dir standards|artifacts|all]"
+      echo "ERROR: Unknown argument: $1" >&2
+      echo "Usage: ./tools/registry/detect-changes.sh [--since YYYY-MM-DD] [--dir standards|artifacts|all]" >&2
       exit 1
       ;;
   esac
@@ -37,7 +37,7 @@ done
 
 # Validate dir filter
 if [[ "$DIR_FILTER" != "all" && "$DIR_FILTER" != "standards" && "$DIR_FILTER" != "artifacts" ]]; then
-  echo "ERROR: --dir must be 'standards', 'artifacts', or 'all'"
+  echo "ERROR: --dir must be 'standards', 'artifacts', or 'all'" >&2
   exit 1
 fi
 
@@ -66,7 +66,7 @@ if [[ -n "$SINCE" ]]; then
   # Validate date format
   if ! date -j -f "%Y-%m-%d" "$SINCE" "+%s" > /dev/null 2>&1 && \
      ! date -d "$SINCE" "+%s" > /dev/null 2>&1; then
-    echo "ERROR: Invalid date format: '$SINCE' (expected YYYY-MM-DD)"
+    echo "ERROR: Invalid date format: '$SINCE' (expected YYYY-MM-DD)" >&2
     exit 1
   fi
 

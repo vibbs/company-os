@@ -76,8 +76,8 @@ case "$TEST_FRAMEWORK" in
     fi
     ;;
   *)
-    echo "ERROR: Unknown or unconfigured test framework: '$TEST_FRAMEWORK'"
-    echo "Set test_framework in company.config.yaml to one of: Vitest, Jest, pytest, go test, cargo test"
+    echo "ERROR: Unknown or unconfigured test framework: '$TEST_FRAMEWORK'" >&2
+    echo "Set test_framework in company.config.yaml to one of: Vitest, Jest, pytest, go test, cargo test" >&2
     exit 1
     ;;
 esac

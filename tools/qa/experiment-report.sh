@@ -28,7 +28,7 @@ if [[ -n "$EXPERIMENT_ID" ]]; then
   # Show specific experiment
   FOUND=$(grep -rl "^id: *${EXPERIMENT_ID} *$" "$EXPERIMENTS_DIR" --include="*.md" 2>/dev/null | head -1 || true)
   if [[ -z "$FOUND" ]]; then
-    echo "ERROR: Experiment '$EXPERIMENT_ID' not found in $EXPERIMENTS_DIR"
+    echo "ERROR: Experiment '$EXPERIMENT_ID' not found in $EXPERIMENTS_DIR" >&2
     exit 1
   fi
   echo "=== Experiment: $EXPERIMENT_ID ==="

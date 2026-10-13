@@ -13,8 +13,8 @@ CONCURRENCY="${2:-10}"
 DURATION="${3:-30s}"
 
 if [[ -z "$URL" ]]; then
-  echo "ERROR: No URL provided"
-  echo "Usage: ./tools/qa/perf-benchmark.sh <url> [concurrent-users] [duration]"
+  echo "ERROR: No URL provided" >&2
+  echo "Usage: ./tools/qa/perf-benchmark.sh <url> [concurrent-users] [duration]" >&2
   exit 1
 fi
 

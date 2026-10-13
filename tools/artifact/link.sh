@@ -12,18 +12,18 @@ PARENT_PATH="${1:-}"
 CHILD_PATH="${2:-}"
 
 if [[ -z "$PARENT_PATH" || -z "$CHILD_PATH" ]]; then
-  echo "ERROR: Missing arguments"
-  echo "Usage: ./tools/artifact/link.sh <parent-path> <child-path>"
+  echo "ERROR: Missing arguments" >&2
+  echo "Usage: ./tools/artifact/link.sh <parent-path> <child-path>" >&2
   exit 1
 fi
 
 if [[ ! -f "$PARENT_PATH" ]]; then
-  echo "ERROR: Parent file not found: $PARENT_PATH"
+  echo "ERROR: Parent file not found: $PARENT_PATH" >&2
   exit 1
 fi
 
 if [[ ! -f "$CHILD_PATH" ]]; then
-  echo "ERROR: Child file not found: $CHILD_PATH"
+  echo "ERROR: Child file not found: $CHILD_PATH" >&2
   exit 1
 fi
 
@@ -48,12 +48,12 @@ PARENT_ID=$(extract_field "$PARENT_PATH" "id")
 CHILD_ID=$(extract_field "$CHILD_PATH" "id")
 
 if [[ -z "$PARENT_ID" ]]; then
-  echo "ERROR: Could not extract ID from parent artifact: $PARENT_PATH"
+  echo "ERROR: Could not extract ID from parent artifact: $PARENT_PATH" >&2
   exit 1
 fi
 
 if [[ -z "$CHILD_ID" ]]; then
-  echo "ERROR: Could not extract ID from child artifact: $CHILD_PATH"
+  echo "ERROR: Could not extract ID from child artifact: $CHILD_PATH" >&2
   exit 1
 fi
 

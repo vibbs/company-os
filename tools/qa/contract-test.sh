@@ -56,8 +56,8 @@ SPEC_PATH="${1:-}"
 BASE_URL="${2:-$(resolve_app_url "$PROJECT_ROOT")}"
 
 if [[ -z "$SPEC_PATH" ]]; then
-  echo "ERROR: No spec path provided"
-  echo "Usage: ./tools/qa/contract-test.sh <spec-path> [base-url]"
+  echo "ERROR: No spec path provided" >&2
+  echo "Usage: ./tools/qa/contract-test.sh <spec-path> [base-url]" >&2
   exit 1
 fi
 

@@ -25,9 +25,8 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 
 if [ "${1:-}" = "--list" ] || [ "${1:-}" = "" ]; then
+  echo "Usage: ./tools/registry/install-runtime.sh <runtime>"
   echo "Valid runtimes: claude cursor codex gemini all"
-  echo ""
-  echo "Usage: $0 <runtime>"
   exit 0
 fi
 

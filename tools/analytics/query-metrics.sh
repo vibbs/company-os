@@ -31,17 +31,17 @@ done
 
 if [[ -z "$METRIC" ]]; then
   {
-    echo "ERROR: No metric name provided"
-    echo "$USAGE"
-    echo ""
-    echo "Available metrics (configure based on your analytics provider):"
-    echo "  activation_rate     - % of signups who complete key action"
-    echo "  retention_d7        - 7-day retention rate"
-    echo "  churn_rate          - monthly churn rate"
-    echo "  mrr                 - monthly recurring revenue"
-    echo "  dau                 - daily active users"
-    echo "  api_error_rate      - API 5xx error rate"
-    echo "  p95_latency         - 95th percentile API latency"
+    echo "ERROR: No metric name provided" >&2
+    echo "$USAGE" >&2
+    echo "" >&2
+    echo "Available metrics (configure based on your analytics provider):" >&2
+    echo "  activation_rate     - % of signups who complete key action" >&2
+    echo "  retention_d7        - 7-day retention rate" >&2
+    echo "  churn_rate          - monthly churn rate" >&2
+    echo "  mrr                 - monthly recurring revenue" >&2
+    echo "  dau                 - daily active users" >&2
+    echo "  api_error_rate      - API 5xx error rate" >&2
+    echo "  p95_latency         - 95th percentile API latency" >&2
   } >&2
   exit 1
 fi

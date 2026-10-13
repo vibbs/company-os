@@ -4,7 +4,7 @@
 # Usage: ./tools/artifact/check-gate.sh <gate-name> <artifact-path-or-id>
 # Gates: prd-to-rfc, rfc-to-impl, impl-to-qa, release
 # Inputs: gate name + artifact path or ID to check against
-# Outputs: exit 0 if gate passes, exit 1 with specific failures
+# Outputs: exit 0 if gate passes, exit 1 with specific failures, exit 2 if the artifact is not found
 #
 # Stage-aware behavior (reads company.config.yaml):
 #   idea  — all gates advisory (warnings only, never block)
@@ -59,20 +59,22 @@ is_gate_advisory() {
 }
 
 if [[ -z "$GATE_NAME" ]]; then
-  echo "ERROR: No gate name provided"
-  echo "Usage: ./tools/artifact/check-gate.sh <gate-name> <artifact-path-or-id>"
-  echo ""
-  echo "Available gates:"
-  echo "  prd-to-rfc    — PRD must be approved with acceptance criteria"
-  echo "  rfc-to-impl   — RFC must be approved, parent PRD approved"
-  echo "  impl-to-qa    — RFC approved, implementation exists"
-  echo "  release        — All required artifacts exist and approved"
-  echo ""
-  echo "Stage-aware behavior (reads company.config.yaml stage field):"
-  echo "  idea   — all gates advisory (warnings only)"
-  echo "  mvp    — prd-to-rfc and rfc-to-impl enforced; others advisory"
-  echo "  growth — all gates enforced (default)"
-  echo "  scale  — all gates enforced"
+  {
+    echo "ERROR: No gate name provided"
+    echo "Usage: ./tools/artifact/check-gate.sh <gate-name> <artifact-path-or-id>"
+    echo ""
+    echo "Available gates:"
+    echo "  prd-to-rfc    — PRD must be approved with acceptance criteria"
+    echo "  rfc-to-impl   — RFC must be approved, parent PRD approved"
+    echo "  impl-to-qa    — RFC approved, test plan exists"
+    echo "  release        — All required artifacts exist and approved"
+    echo ""
+    echo "Stage-aware behavior (reads company.config.yaml stage field):"
+    echo "  idea   — all gates advisory (warnings only)"
+    echo "  mvp    — prd-to-rfc and rfc-to-impl enforced; others advisory"
+    echo "  growth — all gates enforced (default)"
+    echo "  scale  — all gates enforced"
+  } >&2
   exit 1
 fi
 
@@ -133,13 +135,14 @@ case "$GATE_NAME" in
 
   "prd-to-rfc")
     if [[ -z "$ARTIFACT_REF" ]]; then
-      echo "ERROR: prd-to-rfc gate requires a PRD path or ID"
+      echo "ERROR: prd-to-rfc gate requires a PRD path or ID" >&2
       exit 1
     fi
 
     PRD_FILE=$(resolve_ref "$ARTIFACT_REF")
     if [[ -z "$PRD_FILE" ]]; then
-      FAILURES+=("PRD not found: '$ARTIFACT_REF'")
+      echo "ERROR: PRD not found: '$ARTIFACT_REF' (give an artifact path or id)" >&2
+      exit 2
     else
       # Check PRD is approved
       PRD_STATUS=$(extract_field "$PRD_FILE" "status")
@@ -168,13 +171,14 @@ case "$GATE_NAME" in
 
   "rfc-to-impl")
     if [[ -z "$ARTIFACT_REF" ]]; then
-      echo "ERROR: rfc-to-impl gate requires an RFC path or ID"
+      echo "ERROR: rfc-to-impl gate requires an RFC path or ID" >&2
       exit 1
     fi
 
     RFC_FILE=$(resolve_ref "$ARTIFACT_REF")
     if [[ -z "$RFC_FILE" ]]; then
-      FAILURES+=("RFC not found: '$ARTIFACT_REF'")
+      echo "ERROR: RFC not found: '$ARTIFACT_REF' (give an artifact path or id)" >&2
+      exit 2
     else
       # Check RFC is approved
       RFC_STATUS=$(extract_field "$RFC_FILE" "status")
@@ -213,13 +217,14 @@ case "$GATE_NAME" in
 
   "impl-to-qa")
     if [[ -z "$ARTIFACT_REF" ]]; then
-      echo "ERROR: impl-to-qa gate requires an RFC path or ID"
+      echo "ERROR: impl-to-qa gate requires an RFC path or ID" >&2
       exit 1
     fi
 
     RFC_FILE=$(resolve_ref "$ARTIFACT_REF")
     if [[ -z "$RFC_FILE" ]]; then
-      FAILURES+=("RFC not found: '$ARTIFACT_REF'")
+      echo "ERROR: RFC not found: '$ARTIFACT_REF' (give an artifact path or id)" >&2
+      exit 2
     else
       RFC_ID=$(extract_field "$RFC_FILE" "id")
 
@@ -267,13 +272,14 @@ case "$GATE_NAME" in
 
   "release")
     if [[ -z "$ARTIFACT_REF" ]]; then
-      echo "ERROR: release gate requires a PRD path or ID as the root artifact"
+      echo "ERROR: release gate requires a PRD path or ID as the root artifact" >&2
       exit 1
     fi
 
     PRD_FILE=$(resolve_ref "$ARTIFACT_REF")
     if [[ -z "$PRD_FILE" ]]; then
-      FAILURES+=("PRD not found: '$ARTIFACT_REF'")
+      echo "ERROR: PRD not found: '$ARTIFACT_REF' (give an artifact path or id)" >&2
+      exit 2
     else
       PRD_ID=$(extract_field "$PRD_FILE" "id")
 
@@ -418,8 +424,8 @@ case "$GATE_NAME" in
     ;;
 
   *)
-    echo "ERROR: Unknown gate: '$GATE_NAME'"
-    echo "Available gates: prd-to-rfc, rfc-to-impl, impl-to-qa, release"
+    echo "ERROR: Unknown gate: '$GATE_NAME'" >&2
+    echo "Available gates: prd-to-rfc, rfc-to-impl, impl-to-qa, release" >&2
     exit 1
     ;;
 esac

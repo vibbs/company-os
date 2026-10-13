@@ -12,14 +12,14 @@ ARTIFACT_PATH="${1:-}"
 NEW_STATUS="${2:-}"
 
 if [[ -z "$ARTIFACT_PATH" || -z "$NEW_STATUS" ]]; then
-  echo "ERROR: Missing arguments"
-  echo "Usage: ./tools/artifact/promote.sh <artifact-path> <new-status>"
-  echo "  Lifecycle: draft → review → approved → archived"
+  echo "ERROR: Missing arguments" >&2
+  echo "Usage: ./tools/artifact/promote.sh <artifact-path> <new-status>" >&2
+  echo "  Lifecycle: draft → review → approved → archived" >&2
   exit 1
 fi
 
 if [[ ! -f "$ARTIFACT_PATH" ]]; then
-  echo "ERROR: File not found: $ARTIFACT_PATH"
+  echo "ERROR: File not found: $ARTIFACT_PATH" >&2
   exit 1
 fi
 
@@ -82,7 +82,7 @@ for vs in "${VALID_STATUSES[@]}"; do
 done
 
 if [[ "$VALID" == "false" ]]; then
-  echo "ERROR: Invalid status: '$NEW_STATUS' (must be: draft, review, approved, archived)"
+  echo "ERROR: Invalid status: '$NEW_STATUS' (must be: draft, review, approved, archived)" >&2
   exit 1
 fi
 
@@ -90,7 +90,7 @@ fi
 CURRENT_STATUS=$(extract_field "$ARTIFACT_PATH" "status")
 
 if [[ -z "$CURRENT_STATUS" ]]; then
-  echo "ERROR: Could not extract current status from $ARTIFACT_PATH"
+  echo "ERROR: Could not extract current status from $ARTIFACT_PATH" >&2
   exit 1
 fi
 
@@ -108,10 +108,10 @@ if [[ "$NEW_STATUS" != "archived" ]]; then
   EXPECTED_ORD=$((CURRENT_ORD + 1))
   if [[ "$NEW_ORD" -ne "$EXPECTED_ORD" ]]; then
     EXPECTED_STATUS=$(ordinal_to_status "$EXPECTED_ORD")
-    echo "ERROR: Cannot promote from '$CURRENT_STATUS' to '$NEW_STATUS'"
-    echo "  Expected next status: '$EXPECTED_STATUS'"
-    echo "  Lifecycle: draft → review → approved → archived"
-    echo "  (Archival is allowed from any status)"
+    echo "ERROR: Cannot promote from '$CURRENT_STATUS' to '$NEW_STATUS'" >&2
+    echo "  Expected next status: '$EXPECTED_STATUS'" >&2
+    echo "  Lifecycle: draft → review → approved → archived" >&2
+    echo "  (Archival is allowed from any status)" >&2
     exit 1
   fi
 fi
@@ -120,7 +120,7 @@ fi
 echo "Running validation..."
 if ! "$SCRIPT_DIR/validate.sh" "$ARTIFACT_PATH"; then
   echo ""
-  echo "ERROR: Artifact validation failed. Fix errors before promoting."
+  echo "ERROR: Artifact validation failed. Fix errors before promoting." >&2
   exit 1
 fi
 
@@ -133,12 +133,12 @@ if [[ "$NEW_STATUS" == "approved" ]]; then
   if [[ -n "$PARENT_ID" && "$PARENT_ID" != "null" ]]; then
     PARENT_FILE=$(resolve_artifact_id "$PARENT_ID")
     if [[ -z "$PARENT_FILE" ]]; then
-      echo "ERROR: Parent '$PARENT_ID' not found — cannot verify approval status"
+      echo "ERROR: Parent '$PARENT_ID' not found — cannot verify approval status" >&2
       exit 1
     fi
     PARENT_STATUS=$(extract_field "$PARENT_FILE" "status")
     if [[ "$PARENT_STATUS" != "approved" ]]; then
-      echo "ERROR: Cannot approve — parent '$PARENT_ID' is still '$PARENT_STATUS' (must be 'approved')"
+      echo "ERROR: Cannot approve — parent '$PARENT_ID' is still '$PARENT_STATUS' (must be 'approved')" >&2
       exit 1
     fi
     echo "  ✅ Parent '$PARENT_ID': approved"
@@ -150,12 +150,12 @@ if [[ "$NEW_STATUS" == "approved" ]]; then
     [[ -z "$dep_id" ]] && continue
     DEP_FILE=$(resolve_artifact_id "$dep_id")
     if [[ -z "$DEP_FILE" ]]; then
-      echo "ERROR: Dependency '$dep_id' not found — cannot verify approval status"
+      echo "ERROR: Dependency '$dep_id' not found — cannot verify approval status" >&2
       exit 1
     fi
     DEP_STATUS=$(extract_field "$DEP_FILE" "status")
     if [[ "$DEP_STATUS" != "approved" ]]; then
-      echo "ERROR: Cannot approve — dependency '$dep_id' is still '$DEP_STATUS' (must be 'approved')"
+      echo "ERROR: Cannot approve — dependency '$dep_id' is still '$DEP_STATUS' (must be 'approved')" >&2
       exit 1
     fi
     echo "  ✅ Dependency '$dep_id': approved"

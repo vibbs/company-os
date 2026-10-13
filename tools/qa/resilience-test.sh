@@ -13,17 +13,17 @@ PROJECT_ROOT="$SCRIPT_DIR/../.."
 
 # ─── Arguments ───────────────────────────────────────────────────────────────
 if [[ $# -lt 1 ]]; then
-  echo "Usage: $0 <url> [timeout_seconds]"
-  echo ""
-  echo "Runs basic resilience checks against a deployed environment:"
-  echo "  1. Health endpoint reachability"
-  echo "  2. Dependency timeout behavior"
-  echo "  3. HTTP error handling (non-500 for bad paths)"
-  echo "  4. Connection refused handling"
-  echo ""
-  echo "Examples:"
-  echo "  $0 http://localhost:3000"
-  echo "  $0 https://staging.example.com 10"
+  echo "Usage: $0 <url> [timeout_seconds]" >&2
+  echo "" >&2
+  echo "Runs basic resilience checks against a deployed environment:" >&2
+  echo "  1. Health endpoint reachability" >&2
+  echo "  2. Dependency timeout behavior" >&2
+  echo "  3. HTTP error handling (non-500 for bad paths)" >&2
+  echo "  4. Connection refused handling" >&2
+  echo "" >&2
+  echo "Examples:" >&2
+  echo "  $0 http://localhost:3000" >&2
+  echo "  $0 https://staging.example.com 10" >&2
   exit 1
 fi
 
