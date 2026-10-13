@@ -17,7 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [1.12.0] - 2026-10-14
 
-**Upgrade notes:** Edit skills and agents in `os/` from now on, then run `bash tools/build/build.sh`. Hand edits to `.claude/skills/` or `.claude/agents/` are overwritten by the build. Installing with `--runtime` for anything other than `claude` needs 1.12.0 or later; older releases ship only the Claude Code adapter. Existing installs keep their current `.company-os/docs/` files; the installer only adds docs that are missing.
+**Upgrade notes:** Edit skills and agents in `os/` from now on, then run `bash tools/build/build.sh`. Hand edits to `.claude/skills/` or `.claude/agents/` are overwritten by the build. Installing with `--runtime` for anything other than `claude` needs 1.12.0 or later; older releases ship only the Claude Code adapter. Upgrades now refresh `.company-os/docs/` (guides, diagrams, schema); if you edited a guide, your copy is kept next to it as `<name>.user`.
 
 ### Added
 - **Multi-runtime support.** Company OS now runs in Claude Code, Cursor, Codex CLI, Gemini CLI and Aider.
@@ -36,6 +36,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - Claude-only skill fields (`user-invokable`, `disable-model-invocation`, `argument-hint`) now live under `runtimes.claude:` in `os/skills/`; the build lifts them to the top level of the generated `.claude/` copy
 - Authoring schema moved from `docs/superpowers/SCHEMA.md` to `.company-os/docs/SKILL_SCHEMA.md` (installed with the docs); the portability design spec moved to `docs/design/` and is marked Implemented
 - `TOKEN_COSTS.md` re-measured for this release, with always-on cost per runtime; `ROADMAP.md` refreshed with a collapsed Shipped list
+- `install.sh` treats `.company-os/docs/` as template-owned: upgrades overwrite it (recursively, including `diagrams/`), saving edited copies as `<name>.user`, and the manifest now records these files
 - `install.sh --help` lists `--runtime` in its header, adds examples and the docs link
 
 ### Fixed

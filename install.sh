@@ -276,12 +276,12 @@ generate_manifest() {
   # Hash all template-owned files
   # os/ is the authoring source; .claude/ is a generated adapter (still tracked
   # so Claude Code users can clone-and-go without running the build step)
-  for dir in os/agents os/skills os/playbooks os/hooks .claude/agents .claude/skills .claude/hooks tools; do
+  for dir in os/agents os/skills os/playbooks os/hooks .claude/agents .claude/skills .claude/hooks tools .company-os/docs; do
     if [ -d "$dir" ]; then
       while IFS= read -r file; do
         hash=$(file_hash "$file")
         echo "$hash  $file" >> .company-os/manifest
-      done < <(find "$dir" -type f 2>/dev/null | sort)
+      done < <(find "$dir" -type f -not -name '*.user' 2>/dev/null | sort)
     fi
   done
 }
@@ -985,20 +985,65 @@ else
   SKIPPED=$((SKIPPED + 1))
 fi
 
-# --- Copy .company-os/docs/ from template (reference docs for users) ---
-# These are Company OS documentation files (CHANGELOG, SETUP, FAQ, etc.).
+# --- .company-os/docs/ (template-owned user guides, diagrams, skill schema) ---
+# These docs belong to the template, so an upgrade refreshes them. A copy you
+# edited (its hash differs from the manifest) is saved next to it as
+# <name>.user before the new version replaces it. Files not in the manifest
+# (installs before 1.12.0 did not record docs) count as unedited.
 # VERSION is NOT copied — it would conflict with the user's app version file.
-if [ -d "$SRC/.company-os/docs" ] && [ "$DRY_RUN" = false ]; then
-  mkdir -p .company-os/docs
-  # Recursive: includes diagrams/ (SVGs the docs embed) and SKILL_SCHEMA.md
+DOCS_ADDED=0 DOCS_REFRESHED=0 DOCS_USER_SAVED=0 DOCS_KEPT=0
+IS_UPGRADE=false
+if [ "$FORCE" = true ] || { [ "$LOCAL_VERSION" != "unknown" ] && [ "$LOCAL_VERSION" != "$INCOMING_VERSION" ]; }; then
+  IS_UPGRADE=true
+fi
+if [ -d "$SRC/.company-os/docs" ]; then
   while IFS= read -r doc_file; do
     doc_rel="${doc_file#"$SRC"/.company-os/docs/}"
-    # Only copy if missing (don't overwrite user's edits or cleanup deletions)
-    if [ ! -f ".company-os/docs/$doc_rel" ]; then
-      mkdir -p "$(dirname ".company-os/docs/$doc_rel")"
-      cp "$doc_file" ".company-os/docs/$doc_rel"
+    doc_dst=".company-os/docs/$doc_rel"
+    if [ ! -f "$doc_dst" ]; then
+      if [ "$DRY_RUN" = false ]; then
+        mkdir -p "$(dirname "$doc_dst")"
+        cp "$doc_file" "$doc_dst"
+      fi
+      DOCS_ADDED=$((DOCS_ADDED + 1))
+    elif ! cmp -s "$doc_file" "$doc_dst"; then
+      if user_modified "$doc_dst"; then
+        if [ "$IS_UPGRADE" = true ]; then
+          if [ "$DRY_RUN" = false ]; then
+            cp "$doc_dst" "$doc_dst.user"
+            cp "$doc_file" "$doc_dst"
+          else
+            echo -e "    ${DIM}Would save${NC} $doc_dst.user (your edits), then refresh $doc_dst"
+          fi
+          DOCS_USER_SAVED=$((DOCS_USER_SAVED + 1))
+        else
+          DOCS_KEPT=$((DOCS_KEPT + 1))
+        fi
+      else
+        if [ "$DRY_RUN" = false ]; then
+          cp "$doc_file" "$doc_dst"
+        fi
+        DOCS_REFRESHED=$((DOCS_REFRESHED + 1))
+      fi
     fi
   done < <(find "$SRC/.company-os/docs" -type f | sort)
+  ADDED=$((ADDED + DOCS_ADDED))
+  UPDATED=$((UPDATED + DOCS_REFRESHED + DOCS_USER_SAVED))
+  SKIPPED=$((SKIPPED + DOCS_KEPT))
+  docs_verb="Updated"
+  [ $((DOCS_REFRESHED + DOCS_USER_SAVED)) -eq 0 ] && docs_verb="Created"
+  [ "$DRY_RUN" = true ] && docs_verb="Preview"
+  if [ $((DOCS_ADDED + DOCS_REFRESHED + DOCS_USER_SAVED)) -gt 0 ]; then
+    echo -e "  ${GREEN}${docs_verb}${NC}  .company-os/docs/ ($DOCS_ADDED new, $((DOCS_REFRESHED + DOCS_USER_SAVED)) refreshed)"
+  else
+    echo -e "  ${DIM}Exists${NC}   .company-os/docs/ (up to date)"
+  fi
+  if [ "$DOCS_USER_SAVED" -gt 0 ]; then
+    echo -e "  ${YELLOW}Note${NC}     $DOCS_USER_SAVED doc(s) you edited were saved as <name>.user next to the new copy"
+  fi
+  if [ "$DOCS_KEPT" -gt 0 ]; then
+    echo -e "  ${DIM}Kept${NC}     $DOCS_KEPT edited doc(s) in .company-os/docs/ (rerun with --force to refresh them; your edits are kept as <name>.user)"
+  fi
 fi
 
 # --- Scaffold directories (create if missing, never overwrite) ---

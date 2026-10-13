@@ -353,7 +353,7 @@ curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | 
 curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --force
 ```
 
-Upgrades keep your config, permissions, artifacts and agent memory. If you edited a Company OS file that the upgrade replaces, both your copy (`.user`) and the new one (`.new`) are saved in `.company-os/conflicts/` so you can merge them. Major upgrades create a backup automatically.
+Upgrades keep your config, permissions, artifacts and agent memory. If you edited a Company OS file that the upgrade replaces, both your copy (`.user`) and the new one (`.new`) are saved in `.company-os/conflicts/` so you can merge them. The guides in `.company-os/docs/` belong to the template and are always refreshed; if you edited one, your copy is kept next to it as `<name>.user`. Major upgrades create a backup automatically.
 
 ### Uninstalling
 
