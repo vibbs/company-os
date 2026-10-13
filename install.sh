@@ -1197,48 +1197,73 @@ else
 fi
 echo ""
 
+# Paths this install actually put in the project (for the git add hint).
+installed_paths() {
+  local out="" p
+  for p in os tools .company-os company.config.yaml CLAUDE.md AGENTS.md \
+           .claude .cursor .cursorrules GEMINI.md .codex \
+           artifacts standards imports tasks seeds; do
+    [ -e "$p" ] && out="$out $p"
+  done
+  echo "${out# }"
+}
+
 # --- Next steps (only on fresh install) ---
 if [ "$LOCAL_VERSION" = "unknown" ] && [ "$DRY_RUN" = false ]; then
-  echo -e "  ${BOLD}Next steps:${NC}"
+  echo -e "  ${BOLD}Next steps${NC} (one block per installed runtime):"
   echo ""
+  SHOWN_RUNTIME=false
   if should_install_runtime claude; then
-    echo -e "    ${BLUE}1.${NC} Open Claude Code in this directory:"
-    echo -e "       ${DIM}$ claude${NC}"
+    echo -e "  ${BOLD}Claude Code${NC}"
+    echo -e "    ${BLUE}1.${NC} Open Claude Code in this directory:  ${DIM}$ claude${NC}"
+    echo -e "    ${BLUE}2.${NC} Run the setup wizard:  ${DIM}> /setup${NC}"
+    echo -e "    ${BLUE}3.${NC} Build your first feature:  ${DIM}> /ship Build [feature] for [product]${NC}"
     echo ""
-    echo -e "    ${BLUE}2.${NC} Run the setup wizard:"
-    echo -e "       ${DIM}> /setup${NC}"
+    SHOWN_RUNTIME=true
+  fi
+  if should_install_runtime cursor; then
+    echo -e "  ${BOLD}Cursor${NC}"
+    echo -e "    ${BLUE}1.${NC} Open Cursor in this directory. ${BOLD}.cursor/rules/00-company-os.mdc${NC} is always on; the skill catalog (${BOLD}10-skills.mdc${NC}) loads when a task needs it."
+    echo -e "    ${BLUE}2.${NC} Ask Cursor to run the ${BOLD}setup${NC} skill (os/skills/setup/SKILL.md)."
+    echo -e "    ${BLUE}3.${NC} Then ask it to run the ${BOLD}ship${NC} skill for your first feature."
     echo ""
-    echo -e "    ${BLUE}3.${NC} Build your first feature:"
-    echo -e "       ${DIM}> Build [feature] for [product]${NC}"
-  elif should_install_runtime cursor; then
-    echo -e "    ${BLUE}1.${NC} Open Cursor in this directory — rules under ${BOLD}.cursor/rules/${NC} auto-attach."
-    echo -e "    ${BLUE}2.${NC} Ask Cursor to run the ${BOLD}setup${NC} skill (see catalog in ${BOLD}.cursor/rules/10-skills.mdc${NC})."
-    echo -e "    ${BLUE}3.${NC} Edit ${BOLD}company.config.yaml${NC} for your project."
-  elif should_install_runtime codex; then
-    echo -e "    ${BLUE}1.${NC} Run ${BOLD}codex${NC} in this directory — it will read ${BOLD}AGENTS.md${NC} automatically."
-    echo -e "    ${BLUE}2.${NC} Ask the agent to run the ${BOLD}setup${NC} skill (see ${BOLD}AGENTS.md${NC} skill catalog)."
-    echo -e "    ${BLUE}3.${NC} Edit ${BOLD}company.config.yaml${NC} for your project."
-  elif should_install_runtime gemini; then
-    echo -e "    ${BLUE}1.${NC} Run ${BOLD}gemini${NC} in this directory — it will read ${BOLD}GEMINI.md${NC} automatically."
+    SHOWN_RUNTIME=true
+  fi
+  if should_install_runtime codex; then
+    echo -e "  ${BOLD}Codex CLI${NC}"
+    echo -e "    ${BLUE}1.${NC} Run ${BOLD}codex${NC} in this directory; it reads ${BOLD}AGENTS.md${NC} automatically."
+    echo -e "    ${BLUE}2.${NC} Ask the agent to run the ${BOLD}setup${NC} skill (listed in the AGENTS.md skill catalog)."
+    echo ""
+    SHOWN_RUNTIME=true
+  fi
+  if should_install_runtime gemini; then
+    echo -e "  ${BOLD}Gemini CLI${NC}"
+    echo -e "    ${BLUE}1.${NC} Run ${BOLD}gemini${NC} in this directory; it reads ${BOLD}GEMINI.md${NC} automatically."
     echo -e "    ${BLUE}2.${NC} Ask the agent to run the ${BOLD}setup${NC} skill."
-    echo -e "    ${BLUE}3.${NC} Edit ${BOLD}company.config.yaml${NC} for your project."
-  elif should_install_runtime aider; then
-    echo -e "    ${BLUE}1.${NC} Aider reads ${BOLD}AGENTS.md${NC} at session start — open the project as usual."
+    echo ""
+    SHOWN_RUNTIME=true
+  fi
+  if should_install_runtime aider; then
+    echo -e "  ${BOLD}Aider${NC}"
+    echo -e "    ${BLUE}1.${NC} Aider reads ${BOLD}AGENTS.md${NC} at session start; open the project as usual."
     echo -e "    ${BLUE}2.${NC} Ask aider to follow the ${BOLD}setup${NC} skill listed in AGENTS.md."
-  else
+    echo ""
+    SHOWN_RUNTIME=true
+  fi
+  if [ "$SHOWN_RUNTIME" = false ]; then
     echo -e "    ${BLUE}1.${NC} No specific runtime adapter installed."
     echo -e "       ${BOLD}AGENTS.md${NC} is present — any AGENTS.md-compatible agent can use it."
     echo -e "    ${BLUE}2.${NC} Add an adapter later with:"
     echo -e "       ${DIM}./tools/registry/install-runtime.sh <runtime>${NC}"
+    echo ""
   fi
-  echo ""
   echo -e "  ${DIM}Tip: ${NC}${DIM}see installed/available runtimes with: ${NC}${BOLD}./tools/registry/list-runtimes.sh${NC}"
   echo ""
 
   # --- Git hint ---
   if [ -d ".git" ]; then
-    echo -e "  ${DIM}Tip: Commit the Company OS files before running /setup${NC}"
-    echo -e "  ${DIM}$ git add .claude tools .company-os company.config.yaml CLAUDE.md && git commit -m \"Add Company OS\"${NC}"
+    echo -e "  ${DIM}Tip: Commit the Company OS files before running setup${NC}"
+    echo -e "  ${DIM}$ git add $(installed_paths) && git commit -m \"Add Company OS\"${NC}"
   else
     echo -e "  ${YELLOW}Note:${NC} No git repo detected. Run ${DIM}git init${NC} first — Company OS uses git for audit trails."
   fi
@@ -1264,14 +1289,14 @@ if [ "$LOCAL_VERSION" != "unknown" ] && [ "$DRY_RUN" = false ]; then
 
     # Verify
     echo -e "    ${BLUE}${STEP}.${NC} Verify everything works:"
-    echo -e "       ${DIM}> /status${NC}"
+    echo -e "       ${DIM}$ bash tools/registry/health-check.sh${NC}   ${DIM}(or /status in Claude Code)${NC}"
     STEP=$((STEP + 1))
     echo ""
 
     # Commit the upgrade
     if [ -d ".git" ]; then
       echo -e "    ${BLUE}${STEP}.${NC} Commit the upgrade:"
-      echo -e "       ${DIM}$ git add .claude tools .company-os CLAUDE.md && git commit -m \"chore: upgrade Company OS ${LOCAL_VERSION} → ${INCOMING_VERSION}\"${NC}"
+      echo -e "       ${DIM}$ git add $(installed_paths) && git commit -m \"chore: upgrade Company OS ${LOCAL_VERSION} → ${INCOMING_VERSION}\"${NC}"
       STEP=$((STEP + 1))
       echo ""
     fi
