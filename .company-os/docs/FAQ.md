@@ -126,14 +126,16 @@ Agents write application code only when you ask them to build something, for exa
 
 #### What Company OS does today
 
-The `api-contract-designer` skill and its `error-format-reference.md` already enforce this pattern:
+The `api-contract-designer` skill and its `error-format-reference.md` already enforce this pattern (RFC 7807 problem details):
 
 ```json
 {
-  "type": "validation_error",
-  "code": "field_required",
-  "field": "email",
-  "message": "Email is required"
+  "type": "https://api.example.com/errors/validation-error",
+  "title": "Validation Error",
+  "status": 422,
+  "errors": [
+    { "field": "email", "code": "required", "message": "Email is required" }
+  ]
 }
 ```
 
@@ -228,10 +230,10 @@ No checklist fully prevents AI slop. The real defense is: (1) specific brand voi
 This is one of the system's core strengths. Multiple enforcement layers prevent "it's done" without proof:
 
 **Stage gates** — 4 gates enforced by `tools/artifact/check-gate.sh`:
-- `prd-to-rfc`: PRD must be approved with testable acceptance criteria
+- `prd-to-rfc`: PRD must be approved and contain acceptance criteria
 - `rfc-to-impl`: RFC and parent PRD must both be approved
 - `impl-to-qa`: RFC approved, test plan must exist
-- `release`: ALL artifacts must exist and be approved
+- `release`: PRD, RFC and QA report approved, security review exists, app version is valid semver and was bumped (plus an AI safety check when `ai.llm_provider` is set)
 
 **Artifact lifecycle** — enforced by `tools/artifact/promote.sh`:
 - `draft` → `review` → `approved` — cannot skip stages
@@ -243,14 +245,17 @@ This is one of the system's core strengths. Multiple enforcement layers prevent 
 - Each test has specific pass/fail criteria (not vague)
 - Test coverage matrix links ACs to test types (unit, integration, E2E)
 
-**Release readiness gate** — 6 required bars (ALL must pass) + 1 optional bar:
-1. PRD completeness (approved, testable ACs, measurable metrics)
-2. Technical design (RFC approved, API contract exists, migrations documented)
-3. Security & risk (threat model exists, no unresolved CRITICAL/HIGH findings)
+**Release readiness gate** — 10 bars, evaluated by the `release-readiness-gate` skill. Bars 1 to 7 must pass; the rest are optional, advisory or conditional. Several bars are advisory at early stages (`idea`, sometimes `mvp`):
+1. PRD completeness (approved, testable ACs, measurable metrics, explicit scope)
+2. Technical design (RFC approved, API contract if the API changes, data model and migrations documented)
+3. Security & risk (threat model exists, no unresolved CRITICAL/HIGH findings, dependency and secrets scans run, posture snapshot)
 4. Testing (test plan linked to ACs, unit/integration/contract tests pass)
-5. Code quality (lint passes, no untracked TODOs)
-6. Operational readiness (logging covers key ops, errors don't leak internals)
-7. Dogfood report (optional, non-blocking — reports whether autonomous dogfooding was run and issues found)
+5. Code quality (lint passes, no untracked TODOs, follows `standards/coding/`)
+6. Operational readiness (logging covers key operations, errors don't leak internals, rollback and deployment strategy, pre-deploy checks pass, incident runbook at `growth`+)
+7. Release versioning (app version file, semver, bumped since last release, changelog entry; advisory at `idea`)
+8. Dogfood report (optional and non-blocking unless `qa.dogfood_blocking: true`)
+9. Design quality (archetype set, UX baseline patterns, design tokens; advisory at `idea`/`mvp`, enforced at `growth`/`scale`)
+10. AI safety (only when `ai.llm_provider` is set and the RFC covers AI features; advisory at `idea`/`mvp`, enforced at `growth`/`scale`)
 
 **Definition of Done** — explicit checklist in the release readiness gate:
 1. PRD approved, 2. RFC approved, 3. Security reviewed, 4. Tests pass, 5. Code quality verified, 6. Operationally ready, 7. Artifacts linked, 8. Human review complete
@@ -360,14 +365,14 @@ Communication is artifact-mediated and sequential, not real-time. If the Enginee
 
 The `incident-response` skill (used by the Ops & Risk Agent) provides a structured incident management framework:
 
-- **Severity classification** — 4-level system (SEV1-Critical through SEV4-Low) with clear criteria for each level, including response time expectations and escalation triggers
-- **Triage procedures** — structured first-responder checklist: assess impact, identify affected systems, establish communication channel, assign incident commander
+- **Severity classification** — 4 levels (P0 Critical through P3 Low) with examples, response times and resolution targets for each
+- **Triage procedures** — a checklist per severity: acknowledge, open an incident channel, run `status-check.sh`, size the blast radius, decide rollback or hotfix, and send status updates on a schedule
 - **Runbook generation** — produces service-specific runbooks with diagnostic commands, common failure modes, and resolution steps
 - **Rollback checklists** — step-by-step rollback procedures with verification gates at each step
 - **Communication templates** — pre-written templates for status page updates, stakeholder notifications, and customer communications at each severity level
 - **Post-mortems** — uses the 5 Whys framework to identify root causes, with sections for timeline reconstruction, contributing factors, corrective actions, and follow-up tracking
 
-The `tools/ops/status-check.sh` tool provides quick health checks that can be run during incidents to assess service status.
+The `tools/ops/status-check.sh` tool checks HTTP endpoints (status code, response time, SSL) and can be run during incidents to assess service status.
 
 #### What you need to bring
 
@@ -404,12 +409,12 @@ Features are gated behind flags that control visibility and access. The skill co
 
 **Deployment strategy skill** (`deployment-strategy`) handles the release mechanics:
 - **Environment ladder** — defines progression from local to staging to production with promotion criteria at each step
-- **Rollout strategies** — percentage-based rollouts, canary deployments, blue-green deployments, and ring-based rollouts depending on risk level
+- **Rollout strategies** — chosen by hosting model: atomic deploys plus feature flags on serverless, rolling update, blue-green or canary on containers, blue-green on VMs, regional rollout on the edge
 - **Rollback procedures** — automated and manual rollback triggers with verification steps
 
-The `tools/deploy/pre-deploy.sh` tool validates deployment readiness before every deployment — checking that tests pass, migrations are safe, feature flags are configured, and the target environment is healthy.
+The `tools/deploy/pre-deploy.sh` tool runs 8 checks before a deployment: git status, branch, tests, lint, secret scan, migrations, environment variables and version management.
 
-The `feature_flags` section in `company.config.yaml` lets you configure your flag provider, discovery levels, and default rollout strategy.
+The `feature_flags` section in `company.config.yaml` sets your flag provider, flag strategy (`progressive-discovery`, `release-only` or `full`) and cleanup SLA (how many days a release flag may stay after full rollout).
 
 #### What you need to bring
 
@@ -423,7 +428,7 @@ The `feature_flags` section in `company.config.yaml` lets you configure your fla
 2. When the Engineering Agent creates an RFC, it includes a feature flag strategy section
 3. During implementation, flags are created following the naming conventions from the skill
 4. Before deployment, `pre-deploy.sh` validates readiness
-5. Rollout follows the deployment strategy: canary first, then percentage ramp, then full release
+5. Rollout follows the deployment strategy for your hosting model (for example canary or blue-green on containers, feature flags for gradual exposure on serverless)
 6. Flags are retired after the feature is stable and fully rolled out
 
 ---
