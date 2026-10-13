@@ -3,7 +3,7 @@ name: conflict-resolver
 description: Resolves disagreements between agents by comparing tradeoffs and recommending one path. Use when two agents propose conflicting approaches.
 runtimes:
   claude:
-    user-invokable: false
+    user-invocable: false
 ---
 
 # Conflict Resolver

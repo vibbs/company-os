@@ -1,7 +1,7 @@
 ---
 name: system-maintenance
 description: Audits and syncs Company OS documentation after structural changes. Use after adding, removing or changing skills, agents, tools, artifact types or stage gates.
-user-invokable: true
+user-invocable: true
 ---
 
 # System Maintenance

@@ -3,7 +3,7 @@ name: dogfood
 description: Tests your product the way a real user would and logs issues with severity ratings. Use before launch or after a big change; works for web apps and APIs.
 runtimes:
   claude:
-    user-invokable: true
+    user-invocable: true
     argument-hint: "<app URL> [--prd <prd-id>]"
 ---
 

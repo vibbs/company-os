@@ -1,7 +1,7 @@
 ---
 name: content-engine
 description: "Plans a content program: editorial calendar, content briefs and ways to reuse one piece across formats. Use when starting or scaling blog, newsletter or social content."
-user-invokable: true
+user-invocable: true
 ---
 
 # Content Engine

@@ -1,7 +1,7 @@
 ---
 name: threat-modeling
 description: Analyzes data flows for security threats and proposes mitigations. Use when assessing a new feature, an architecture change or a compliance review.
-user-invokable: true
+user-invocable: true
 argument-hint: "[--quick]"
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: product-led-growth
 description: "Designs self-serve growth: free tier, viral loops, referrals and in-product growth moments. Use when building acquisition and expansion into the product itself."
-user-invokable: true
+user-invocable: true
 argument-hint: "<product or growth goal>"
 ---
 

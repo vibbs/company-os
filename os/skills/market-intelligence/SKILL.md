@@ -3,7 +3,7 @@ name: market-intelligence
 description: Scans competitors, emerging technologies and market timing. Use when tracking competitors, evaluating a new technology or looking for opportunities.
 runtimes:
   claude:
-    user-invokable: true
+    user-invocable: true
 ---
 
 # Market Intelligence

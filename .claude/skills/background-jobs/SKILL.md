@@ -1,7 +1,7 @@
 ---
 name: background-jobs
 description: "Designs background job processing: retries, idempotency (safe repeats) and queue management. Use when designing or reviewing async task infrastructure."
-user-invokable: false
+user-invocable: false
 ---
 
 # Background Jobs

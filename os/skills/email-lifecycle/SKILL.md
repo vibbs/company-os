@@ -3,7 +3,7 @@ name: email-lifecycle
 description: Designs email sequences, templates and send triggers for onboarding, transactional and retention emails. Use when planning product emails.
 runtimes:
   claude:
-    user-invokable: true
+    user-invocable: true
 ---
 
 # Email Lifecycle

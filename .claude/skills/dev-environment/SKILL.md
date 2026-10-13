@@ -1,7 +1,7 @@
 ---
 name: dev-environment
 description: Generates Docker Compose files, .env.example and dev scripts from your tech stack. Use when setting up local, QA or production environments.
-user-invokable: true
+user-invocable: true
 argument-hint: "[dev | qa | production | reset]"
 ---
 

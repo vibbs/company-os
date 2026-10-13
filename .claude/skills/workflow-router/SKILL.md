@@ -1,7 +1,7 @@
 ---
 name: workflow-router
 description: Maps an objective to the artifacts, stages and agents it needs. Use when deciding what happens next or which agents to involve.
-user-invokable: false
+user-invocable: false
 ---
 
 # Workflow Router

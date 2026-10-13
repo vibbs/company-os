@@ -3,7 +3,7 @@ name: weekly-review
 description: "Summarizes your week: what shipped, AI spend, support themes, security health and next priorities. Use at the end of each week."
 runtimes:
   claude:
-    user-invokable: true
+    user-invocable: true
     argument-hint: "[--save]"
 ---
 

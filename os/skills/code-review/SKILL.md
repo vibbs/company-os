@@ -3,7 +3,7 @@ name: code-review
 description: Reviews code in sections (architecture, quality, tests, performance) with interactive feedback. Use for pull request reviews, pre-merge checks or self-review before handoff.
 runtimes:
   claude:
-    user-invokable: true
+    user-invocable: true
     argument-hint: "<PR number or file paths>"
 ---
 

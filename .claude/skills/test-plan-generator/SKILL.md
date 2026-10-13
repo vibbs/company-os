@@ -1,7 +1,7 @@
 ---
 name: test-plan-generator
 description: Generates a test plan from a PRD's acceptance criteria. Use when a feature needs a testing strategy before implementation.
-user-invokable: true
+user-invocable: true
 ---
 
 # Test Plan Generator

@@ -1,7 +1,7 @@
 ---
 name: prd-writer
 description: Writes a product requirements document (PRD) with problem statement, acceptance criteria, success metrics and scope. Use when creating or updating requirements for a feature.
-user-invokable: true
+user-invocable: true
 argument-hint: "<feature or problem to specify>"
 ---
 

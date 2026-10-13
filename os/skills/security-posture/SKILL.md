@@ -3,7 +3,7 @@ name: security-posture
 description: Summarizes open threats, scan status, compliance gaps and manual checkpoints into one security snapshot. Use to review security health or before a major release.
 runtimes:
   claude:
-    user-invokable: true
+    user-invocable: true
     argument-hint: "[--full | --quick | --delta]"
 ---
 

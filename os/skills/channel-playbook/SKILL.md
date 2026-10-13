@@ -3,7 +3,7 @@ name: channel-playbook
 description: Creates a step-by-step marketing playbook for one acquisition channel such as LinkedIn, Twitter, email or Product Hunt. Use when launching or improving a growth channel.
 runtimes:
   claude:
-    user-invokable: true
+    user-invocable: true
 ---
 
 # Channel Playbook

@@ -1,7 +1,7 @@
 ---
 name: test-intelligence
 description: "Assesses test suite health: flaky tests, coverage, test balance and mutation testing (checking that tests catch real bugs). Use when judging test quality or reliability."
-user-invokable: false
+user-invocable: false
 ---
 
 # Test Intelligence

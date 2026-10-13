@@ -1,7 +1,7 @@
 ---
 name: release-readiness-gate
 description: Runs the final pass/fail checklist and gives a release verdict. Use before approving any release.
-user-invokable: true
+user-invocable: true
 disable-model-invocation: true
 argument-hint: "<feature or release name>"
 ---

@@ -3,7 +3,7 @@ name: excalidraw
 description: Draws architecture, data flow, database (ERD) and system diagrams as Mermaid text and Excalidraw files. Use when a design doc or threat model needs a diagram.
 runtimes:
   claude:
-    user-invokable: true
+    user-invocable: true
     argument-hint: "[architecture | data-flow | erd | sequence | journey | system-overview]"
 ---
 

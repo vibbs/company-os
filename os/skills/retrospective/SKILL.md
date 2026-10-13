@@ -3,7 +3,7 @@ name: retrospective
 description: "Reviews a shipped feature: traces it from PRD to launch, compares results to goals and records lessons. Use after a release."
 runtimes:
   claude:
-    user-invokable: true
+    user-invocable: true
     argument-hint: "<PRD ID or feature name>"
 ---
 

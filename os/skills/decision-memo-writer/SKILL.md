@@ -3,7 +3,7 @@ name: decision-memo-writer
 description: Writes a decision record with rationale, alternatives considered and consequences. Use when a non-trivial decision needs to be understood later.
 runtimes:
   claude:
-    user-invokable: true
+    user-invocable: true
 ---
 
 # Decision Memo Writer

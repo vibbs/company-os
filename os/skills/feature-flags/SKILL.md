@@ -3,7 +3,7 @@ name: feature-flags
 description: Designs a feature flag strategy and per-feature flag specs for safe rollouts. Use when releasing a feature gradually or planning flag cleanup.
 runtimes:
   claude:
-    user-invokable: false
+    user-invocable: false
 ---
 
 # Feature Flags

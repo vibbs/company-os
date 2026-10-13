@@ -33,13 +33,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 ### Changed
 - `SETUP.md` is now a short quickstart (prerequisites, install, pick your runtime, `/setup`, verify, first `/ship`); reference material moved to the new docs above
 - Skill and agent descriptions rewritten in plain language; key user-facing skills gained an overview and sample output
-- Claude-only skill fields (`user-invokable`, `disable-model-invocation`, `argument-hint`) now live under `runtimes.claude:` in `os/skills/`; the build lifts them to the top level of the generated `.claude/` copy
+- Claude-only skill fields (`user-invocable`, `disable-model-invocation`, `argument-hint`) now live under `runtimes.claude:` in `os/skills/`; the build lifts them to the top level of the generated `.claude/` copy
 - Authoring schema moved from `docs/superpowers/SCHEMA.md` to `.company-os/docs/SKILL_SCHEMA.md` (installed with the docs); the portability design spec moved to `docs/design/` and is marked Implemented
 - `TOKEN_COSTS.md` re-measured for this release, with always-on cost per runtime; `ROADMAP.md` refreshed with a collapsed Shipped list
 - `install.sh` treats `.company-os/docs/` as template-owned: upgrades overwrite it (recursively, including `diagrams/`), saving edited copies as `<name>.user`, and the manifest now records these files
 - `install.sh --help` lists `--runtime` in its header, adds examples and the docs link
 
 ### Fixed
+- The skill field is now spelled `user-invocable`, the name Claude Code reads. With the old `user-invokable` spelling, the 18 helper skills marked `false` still showed in the `/` menu. The old spelling still works: the build writes it out as `user-invocable` and the validator warns
 - Installs now include the reference standards skills read (`standards/brand/archetypes/`, `ux-baseline.md`, `standards/ops/*` SOPs, `security-posture.md` and others), copied only when missing; before, `/design-system` and the inbound loop pointed at files that were not there
 - Diagrams and the skill schema now ship inside `.company-os/docs/`, so their links work in installed projects
 - Docs used command names that do not exist: `/prototype` is `/rapid-prototype` and `/token-cost` is `/token-cost-ledger`

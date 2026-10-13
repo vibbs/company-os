@@ -1,7 +1,7 @@
 ---
 name: artifact-import
 description: Brings existing documents (PRDs, RFCs, API specs, test plans) into Company OS with frontmatter, a type and links. Use when you already have docs outside this repo.
-user-invokable: true
+user-invocable: true
 argument-hint: "<file path or pasted content>"
 ---
 

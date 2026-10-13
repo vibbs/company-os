@@ -1,7 +1,7 @@
 ---
 name: experiment-framework
 description: Designs A/B experiments with sample size, guardrail metrics and results analysis. Use when planning a test or judging whether a feature moved the numbers.
-user-invokable: true
+user-invocable: true
 ---
 
 # Experiment Framework

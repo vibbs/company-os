@@ -1,7 +1,7 @@
 ---
 name: deployment-strategy
 description: Designs deployment pipelines, rollout strategies and environment setups. Use when setting up CI/CD (automated build and deploy) or planning a gradual rollout.
-user-invokable: false
+user-invocable: false
 ---
 
 # Deployment Strategy

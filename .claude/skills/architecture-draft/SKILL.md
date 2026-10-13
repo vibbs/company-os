@@ -1,7 +1,7 @@
 ---
 name: architecture-draft
 description: Writes a technical design doc (RFC) covering system boundaries, modules, data model and integrations. Use when turning a PRD into a design or making an architecture decision.
-user-invokable: true
+user-invocable: true
 argument-hint: "<PRD ID or feature to design>"
 ---
 

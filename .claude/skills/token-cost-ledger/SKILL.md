@@ -1,7 +1,7 @@
 ---
 name: token-cost-ledger
 description: "Tracks AI token usage and spend: logs entries, reports, checks budget and shows cost per feature. Use when reviewing AI spend or logging a session's cost."
-user-invokable: true
+user-invocable: true
 argument-hint: "[log | report | budget-check | feature-cost]"
 ---
 

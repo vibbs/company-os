@@ -3,7 +3,7 @@ name: compliance-readiness
 description: Checks your readiness for a lightweight SOC 2 security audit and lists the gaps. Use when preparing for an audit or customer security questionnaires.
 runtimes:
   claude:
-    user-invokable: true
+    user-invocable: true
 ---
 
 # Compliance Readiness

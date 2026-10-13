@@ -3,7 +3,7 @@ name: feedback-synthesizer
 description: Turns messy customer feedback into themes with supporting evidence and a ranked pain matrix. Use when consolidating feedback from several sources.
 runtimes:
   claude:
-    user-invokable: true
+    user-invocable: true
 ---
 
 # Feedback Synthesizer

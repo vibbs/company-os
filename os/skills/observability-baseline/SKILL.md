@@ -3,7 +3,7 @@ name: observability-baseline
 description: Sets logging, metrics and tracing conventions for the codebase. Use when setting up or auditing monitoring.
 runtimes:
   claude:
-    user-invokable: false
+    user-invocable: false
 ---
 
 # Observability Baseline

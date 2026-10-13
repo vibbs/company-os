@@ -50,18 +50,18 @@ in the neutral schema.
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `user-invokable` | boolean | Whether the skill appears as a `/<name>` slash command |
+| `user-invocable` | boolean | Whether the skill appears as a `/<name>` slash command. The older spelling `user-invokable` still works: the build writes it out as `user-invocable` and the validator warns. |
 | `disable-model-invocation` | boolean | Block auto-invocation |
 | `argument-hint` | string | Placeholder text shown after `/<name>` when the user runs it |
 | `compatibility` | string | Min Claude Code version |
 | `license` | string | SPDX identifier |
 
-**`runtimes.cursor`** — fields the Cursor MDC writer reads:
+**`runtimes.cursor`** — reserved. The schema accepts these fields, but `build-cursor.sh` does not read them yet: it writes three fixed rule files for every skill.
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `globs` | string[] | File patterns that auto-attach this skill |
-| `alwaysApply` | boolean | Apply on every prompt |
+| `globs` | string[] | Reserved: file patterns that would auto-attach this skill |
+| `alwaysApply` | boolean | Reserved: apply on every prompt |
 
 When you build, `tools/build/build-claude.sh` lifts every key under
 `runtimes.claude` to the top level of the generated `.claude/skills/<name>/SKILL.md`,
@@ -72,8 +72,11 @@ because that is where Claude Code reads them. Other runtimes ignore the block.
 Older skills put Claude-only fields at the top level. All skills in `os/skills/`
 have been migrated, but the validator still accepts the old form:
 
-- `user-invokable`, `disable-model-invocation`, `compatibility`, `license` at the
-  top level pass validation with a deprecation warning.
+- `user-invocable` (or the older `user-invokable`), `disable-model-invocation`,
+  `compatibility`, `license` at the top level pass validation with a deprecation
+  warning.
+- `user-invokable` under `runtimes.claude` passes with a warning and is built as
+  `user-invocable`.
 - `argument-hint` at the top level is accepted without a warning (it is also
   listed in `skill.schema.json`), but new skills should put it under
   `runtimes.claude`.
@@ -91,11 +94,8 @@ tools_used:
   - tools/artifact/check-gate.sh
 runtimes:
   claude:
-    user-invokable: true
+    user-invocable: true
     argument-hint: "<what you want to build>"
-  cursor:
-    globs:
-      - "artifacts/**"
 ---
 
 # Ship

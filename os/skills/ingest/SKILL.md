@@ -3,7 +3,7 @@ name: ingest
 description: Scans standards/ and artifacts/ for new or changed files and suggests updates to skills and config. Use after adding standards docs, API specs or artifacts.
 runtimes:
   claude:
-    user-invokable: true
+    user-invocable: true
     argument-hint: "[standards | artifacts | both]"
 ---
 

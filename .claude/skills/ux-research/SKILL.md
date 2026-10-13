@@ -1,7 +1,7 @@
 ---
 name: ux-research
 description: "Plans lean user research: method choice, interview scripts, usability tests and journey maps. Use when validating user needs or building personas before a PRD."
-user-invokable: true
+user-invocable: true
 ---
 
 # UX Research

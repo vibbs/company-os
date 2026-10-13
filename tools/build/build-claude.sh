@@ -7,10 +7,12 @@
 # so authoring happens once in the neutral location.
 #
 # Skills are copied as-is except for one transform: Claude Code reads
-# `user-invokable`, `disable-model-invocation` and `argument-hint` at the top
+# `user-invocable`, `disable-model-invocation` and `argument-hint` at the top
 # level of SKILL.md, but the neutral schema keeps them under `runtimes.claude`.
 # lift_claude_fields() moves them up in the generated copy. Other runtimes'
-# keys under `runtimes:` (e.g. cursor) are left in place.
+# keys under `runtimes:` (e.g. cursor) are left in place. The legacy spelling
+# `user-invokable` (nested or top level) is written out as `user-invocable`,
+# so older skills keep working; validate-skill.sh warns about it.
 #
 # Hooks (.claude/hooks/) and settings (.claude/settings.json) are
 # Claude-specific and are NOT generated — they live directly under .claude/.
@@ -46,12 +48,13 @@ lift_claude_fields() {
       if ($0 ~ /^[^ \t]/) { flush_runtimes() }
       else {
         if ($0 ~ /^  claude:[ \t]*$/) { inclaude = 1; next }
-        if (inclaude && $0 ~ /^    /) { line = $0; sub(/^    /, "", line); lifted[++nl] = line; next }
+        if (inclaude && $0 ~ /^    /) { line = $0; sub(/^    /, "", line); sub(/^user-invokable:/, "user-invocable:", line); lifted[++nl] = line; next }
         if ($0 ~ /^  [^ ]/) inclaude = 0
         rest[++nr] = $0; next
       }
     }
     /^runtimes:[ \t]*$/ { inrt = 1; next }
+    /^user-invokable:/ { sub(/^user-invokable:/, "user-invocable:") }
     { print }
   ' "$file" > "$tmp"
   cat "$tmp" > "$file"

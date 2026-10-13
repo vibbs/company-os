@@ -1,7 +1,7 @@
 ---
 name: resilience-testing
 description: "Plans failure tests: failure mode lists, circuit breaker tests, latency injection and how far a failure spreads. Use when checking behavior under failure."
-user-invokable: false
+user-invocable: false
 ---
 
 # Resilience Testing

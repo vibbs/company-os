@@ -1,7 +1,7 @@
 ---
 name: customer-conversations
 description: Prepares briefings before customer calls and records what you learned afterward. Use before and after customer interviews or sales calls.
-user-invokable: true
+user-invocable: true
 argument-hint: "[prep <type> | debrief | patterns]"
 ---
 

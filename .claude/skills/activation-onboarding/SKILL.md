@@ -1,7 +1,7 @@
 ---
 name: activation-onboarding
 description: Designs the first-run flow and experiments that get new users to their first moment of value. Use when sign-ups are not turning into active users.
-user-invokable: true
+user-invocable: true
 ---
 
 # Activation & Onboarding

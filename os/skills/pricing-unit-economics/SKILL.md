@@ -3,7 +3,7 @@ name: pricing-unit-economics
 description: "Analyzes pricing and unit economics: customer acquisition cost (CAC) versus lifetime value (LTV). Use when setting prices, changing them or checking financial health."
 runtimes:
   claude:
-    user-invokable: true
+    user-invocable: true
 ---
 
 # Pricing & Unit Economics

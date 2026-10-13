@@ -3,7 +3,7 @@ name: rapid-prototype
 description: Builds a time-boxed MVP (4 hours, 1 day or 3 days) for a proof of concept or demo, skipping the RFC, security review and full QA. Use to validate an idea fast.
 runtimes:
   claude:
-    user-invokable: true
+    user-invocable: true
     argument-hint: "<what you want to prototype>"
 ---
 

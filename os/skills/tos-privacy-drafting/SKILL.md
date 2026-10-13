@@ -3,7 +3,7 @@ name: tos-privacy-drafting
 description: Drafts outlines of your Terms of Service and Privacy Policy. Use when creating first legal documents or checking existing ones for gaps.
 runtimes:
   claude:
-    user-invokable: true
+    user-invocable: true
 ---
 
 # TOS & Privacy Policy Drafting

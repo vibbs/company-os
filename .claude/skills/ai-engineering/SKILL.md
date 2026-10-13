@@ -1,7 +1,7 @@
 ---
 name: ai-engineering
 description: "Designs AI features: LLM integration, retrieval-augmented generation (RAG) over your own data, prompts, and AI cost control. Use when building a feature that calls an AI model."
-user-invokable: false
+user-invocable: false
 ---
 
 # AI Engineering

@@ -1,7 +1,7 @@
 ---
 name: setup
 description: "Configures Company OS for your project: company.config.yaml, permissions and folders. Use the first time you open a repo; accepts a preset, a pasted config block, or a URL to auto-fill."
-user-invokable: true
+user-invocable: true
 argument-hint: "[preset | config block | URL | description]"
 ---
 

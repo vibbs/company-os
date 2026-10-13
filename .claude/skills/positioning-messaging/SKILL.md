@@ -1,7 +1,7 @@
 ---
 name: positioning-messaging
 description: Writes the product narrative and competitive differentiators for marketing and sales. Use when defining or refreshing your product story.
-user-invokable: true
+user-invocable: true
 ---
 
 # Positioning & Messaging

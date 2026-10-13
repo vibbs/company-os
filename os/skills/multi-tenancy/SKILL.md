@@ -3,7 +3,7 @@ name: multi-tenancy
 description: "Designs multi-tenant architecture: org scoping, row-level security and tenant data isolation. Use when designing or auditing how customers' data is kept separate."
 runtimes:
   claude:
-    user-invokable: false
+    user-invocable: false
 ---
 
 # Multi-Tenancy

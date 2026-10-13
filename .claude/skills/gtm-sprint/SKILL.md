@@ -1,7 +1,7 @@
 ---
 name: gtm-sprint
 description: "Runs a 7, 14 or 21 day go-to-market (GTM) sprint: customer interviews, positioning, landing page and distribution, with go/no-go checkpoints. Use to test demand or launch an MVP."
-user-invokable: true
+user-invocable: true
 argument-hint: "[plan | status | gate-check] [7 | 14 | 21]"
 ---
 

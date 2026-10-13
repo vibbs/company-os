@@ -3,7 +3,7 @@ name: privacy-data-handling
 description: Defines how personal data is retained, accessed and deleted. Use when setting up or auditing data handling.
 runtimes:
   claude:
-    user-invokable: true
+    user-invocable: true
 ---
 
 # Privacy & Data Handling

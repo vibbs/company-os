@@ -1,7 +1,7 @@
 ---
 name: instrumentation
 description: Defines analytics events and tracking plans for a feature. Use when adding product analytics or reviewing event naming.
-user-invokable: false
+user-invocable: false
 ---
 
 # Instrumentation

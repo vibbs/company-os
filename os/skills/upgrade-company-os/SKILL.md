@@ -3,7 +3,7 @@ name: upgrade-company-os
 description: Checks for, previews, applies or rolls back Company OS updates. Use when you want the latest version or need to undo an upgrade.
 runtimes:
   claude:
-    user-invokable: true
+    user-invocable: true
     argument-hint: "[check | preview | apply | rollback]"
 ---
 

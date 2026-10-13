@@ -49,7 +49,7 @@ Ask an agent: "Create a new skill called `my-custom-skill` that handles [your us
    description: What this skill does. Use when [situation].
    runtimes:
      claude:
-       user-invokable: true     # optional: lets users run it as /skill-name
+       user-invocable: true     # optional: lets users run it as /skill-name
        argument-hint: "<what to pass>"   # optional: shown after /skill-name
    ---
    ```

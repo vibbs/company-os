@@ -42,7 +42,8 @@
         "claude": {
           "type": "object",
           "properties": {
-            "user-invokable": { "type": "boolean" },
+            "user-invocable": { "type": "boolean", "description": "Show the skill as a /<name> slash command in Claude Code." },
+            "user-invokable": { "type": "boolean", "description": "DEPRECATED spelling of user-invocable. Still lifted as user-invocable." },
             "disable-model-invocation": { "type": "boolean" },
             "argument-hint": { "type": "string" },
             "compatibility": { "type": "string" },
@@ -58,9 +59,13 @@
         }
       }
     },
+    "user-invocable": {
+      "type": "boolean",
+      "description": "DEPRECATED — move under runtimes.claude.user-invocable. Allowed during migration."
+    },
     "user-invokable": {
       "type": "boolean",
-      "description": "DEPRECATED — move under runtimes.claude.user-invokable. Allowed during migration."
+      "description": "DEPRECATED spelling — move under runtimes.claude.user-invocable. Allowed during migration."
     },
     "disable-model-invocation": {
       "type": "boolean",

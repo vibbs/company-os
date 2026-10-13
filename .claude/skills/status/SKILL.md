@@ -1,7 +1,7 @@
 ---
 name: status
 description: "Shows a summary of project artifacts: counts by status, broken links and stage gate readiness. Use to check project health; add --dashboard for an HTML report."
-user-invokable: true
+user-invocable: true
 argument-hint: "[prd | rfc | qa | all | --dashboard]"
 ---
 

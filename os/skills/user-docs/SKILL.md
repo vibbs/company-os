@@ -3,7 +3,7 @@ name: user-docs
 description: Writes user-facing docs, guided tours and changelog entries for a shipped feature. Use after a feature ships or before launch.
 runtimes:
   claude:
-    user-invokable: false
+    user-invocable: false
 ---
 
 # User Documentation

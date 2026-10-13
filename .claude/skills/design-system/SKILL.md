@@ -1,7 +1,7 @@
 ---
 name: design-system
 description: "Sets up and applies your visual design: tokens (colors, type, spacing), component guidance and UX patterns. Use when building UI or choosing a design style for the first time."
-user-invokable: true
+user-invocable: true
 argument-hint: "[generate-tokens | review | reconfigure]"
 ---
 

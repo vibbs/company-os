@@ -1,7 +1,7 @@
 ---
 name: api-contract-designer
 description: Designs REST or GraphQL API contracts with consistent errors, pagination, auth and translations. Use when adding or changing API endpoints.
-user-invokable: false
+user-invocable: false
 ---
 
 # API Contract Designer

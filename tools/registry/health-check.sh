@@ -78,9 +78,9 @@ for skill_dir in "$SKILLS_DIR"/*/; do
     fi
   done
 
-  # Check for common misspelling of user-invokable
-  if echo "$FRONTMATTER" | grep -q "^user-invocable:"; then
-    echo "⚠️  $DIR_NAME: Misspelled field 'user-invocable' — should be 'user-invokable'"
+  # Claude Code reads 'user-invocable'; the legacy spelling has no effect there
+  if echo "$FRONTMATTER" | grep -q "^user-invokable:"; then
+    echo "⚠️  $DIR_NAME: Legacy field 'user-invokable' — Claude Code reads 'user-invocable' (rebuild with tools/build/build.sh)"
     WARNINGS=$((WARNINGS + 1))
   fi
 

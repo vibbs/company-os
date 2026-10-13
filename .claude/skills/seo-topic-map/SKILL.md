@@ -1,7 +1,7 @@
 ---
 name: seo-topic-map
 description: Builds keyword clusters and an internal linking plan for search-driven content. Use when planning content or site structure for organic search.
-user-invokable: true
+user-invocable: true
 ---
 
 # SEO Topic Map

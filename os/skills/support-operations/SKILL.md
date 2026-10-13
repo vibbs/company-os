@@ -3,7 +3,7 @@ name: support-operations
 description: "Designs customer support: FAQs, response-time tiers (SLAs), escalation paths and a feedback loop to product. Use when setting up or improving support."
 runtimes:
   claude:
-    user-invokable: true
+    user-invocable: true
 ---
 
 # Support Operations

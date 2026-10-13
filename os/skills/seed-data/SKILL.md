@@ -3,7 +3,7 @@ name: seed-data
 description: Generates test seed data, fixtures and factories for normal, edge and empty scenarios. Use when you need data to try out or test a feature.
 runtimes:
   claude:
-    user-invokable: true
+    user-invocable: true
     argument-hint: "<PRD ID or entity name>"
 ---
 

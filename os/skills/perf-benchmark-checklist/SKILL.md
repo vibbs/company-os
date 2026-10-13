@@ -3,7 +3,7 @@ name: perf-benchmark-checklist
 description: Sets baseline performance metrics and criteria for catching regressions. Use when setting up benchmarks or investigating a slowdown.
 runtimes:
   claude:
-    user-invokable: false
+    user-invocable: false
 ---
 
 # Performance Benchmark Checklist

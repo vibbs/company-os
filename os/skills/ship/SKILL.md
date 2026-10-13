@@ -3,7 +3,7 @@ name: ship
 description: Takes a feature from idea to release (PRD, RFC, code, QA, launch assets), pausing at each quality gate for your review. Use to build and ship something end to end.
 runtimes:
   claude:
-    user-invokable: true
+    user-invocable: true
     argument-hint: "<what you want to build>"
 ---
 

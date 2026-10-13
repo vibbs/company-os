@@ -1,7 +1,7 @@
 ---
 name: api-tester-playbook
 description: Writes an API test playbook covering contracts, authentication, pagination and error handling. Use when building or reviewing API tests.
-user-invokable: false
+user-invocable: false
 ---
 
 # API Tester Playbook

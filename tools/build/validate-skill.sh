@@ -21,7 +21,7 @@ source tools/build/lib-frontmatter.sh
 source tools/build/lib-skill-index.sh
 
 # Reserved fields per the JSON schema. Any other top-level key is allowed but warned.
-KNOWN_FIELDS="name description id category argument-hint inputs outputs tools_used tags runtimes user-invokable disable-model-invocation compatibility license metadata"
+KNOWN_FIELDS="name description id category argument-hint inputs outputs tools_used tags runtimes user-invocable user-invokable disable-model-invocation compatibility license metadata"
 
 validate_one() {
   local file="$1"
@@ -80,14 +80,21 @@ validate_one() {
   fi
 
   # --- Deprecation warnings ---
-  for legacy in user-invokable disable-model-invocation compatibility license; do
-    local val
+  for legacy in user-invocable user-invokable disable-model-invocation compatibility license; do
+    local val target
     val="$(fm_field "$file" "$legacy" || true)"
     if [ -n "$val" ]; then
-      echo "⚠ $file: '$legacy' is deprecated — move under runtimes.claude.$legacy" >&2
+      target="$legacy"
+      [ "$legacy" = "user-invokable" ] && target="user-invocable"
+      echo "⚠ $file: top-level '$legacy' is deprecated — move under runtimes.claude.$target" >&2
       warnings=$((warnings + 1))
     fi
   done
+  # Legacy spelling under runtimes.claude: still lifted (as user-invocable), but warn.
+  if printf '%s\n' "$fm" | grep -qE '^[[:space:]]+user-invokable:'; then
+    echo "⚠ $file: 'user-invokable' is a deprecated spelling — Claude Code reads 'user-invocable'" >&2
+    warnings=$((warnings + 1))
+  fi
 
   if [ "$errors" -gt 0 ]; then
     return 1

@@ -3,7 +3,7 @@ name: landing-page-copy
 description: Writes conversion-focused landing page copy, section by section. Use when creating or improving a landing page for a launch, feature or campaign.
 runtimes:
   claude:
-    user-invokable: true
+    user-invocable: true
     argument-hint: "<product, feature or campaign>"
 ---
 

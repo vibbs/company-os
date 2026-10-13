@@ -1,7 +1,7 @@
 ---
 name: discovery-validation
 description: Checks whether a new feature idea is worth building before you write a PRD. Use for novel features; common patterns are skipped.
-user-invokable: false
+user-invocable: false
 ---
 
 # Discovery Validation
