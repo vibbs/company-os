@@ -43,15 +43,15 @@ Run `bash install.sh --help` to see every flag (`--runtime`, `--version`, `--dry
 
 By default (`--runtime auto`) the installer looks for the runtimes on your machine and installs files for each one it finds. To choose yourself, pass `--runtime` with one or more names, for example `bash -s -- --runtime claude,cursor`.
 
-| Runtime | `--runtime` value | Files installed (besides `os/`, `tools/`, `AGENTS.md`) | How to start |
+| Runtime | `--runtime` value | Extra files installed | How to start |
 |---------|-------------------|--------------------------------------------------------|--------------|
-| Claude Code | `claude` | `.claude/` (agents, skills, hooks, settings), `CLAUDE.md` | Run `claude`, then type `/setup` |
+| Claude Code | `claude` | `.claude/` (agents, skills, hooks, settings) | Run `claude`, then type `/setup` |
 | Cursor | `cursor` | `.cursor/rules/*.mdc`, `.cursorrules` | Open the folder in Cursor, ask it to "run the setup skill" |
 | Codex CLI | `codex` | `.codex/config.md` | Run `codex`, ask it to "run the setup skill" |
 | Gemini CLI | `gemini` | `GEMINI.md` | Run `gemini`, ask it to "run the setup skill" |
 | Aider | `aider` | nothing extra; Aider reads `AGENTS.md` | Start Aider, ask it to follow the setup skill in `AGENTS.md` |
 
-Other values: `all` installs every adapter; `core` installs only `os/`, `tools/` and `AGENTS.md`. `CLAUDE.md` is always written, because the other runtimes' files point to it for full conventions. Add a runtime later with `./tools/registry/install-runtime.sh <runtime>`; see what is installed with `./tools/registry/list-runtimes.sh`.
+Every install also gets the shared files: `os/`, `tools/`, `AGENTS.md`, `CLAUDE.md` (the other runtimes' files point to it for full conventions) and `company.config.yaml`. Other values: `all` installs every adapter; `core` installs only the shared files. Add a runtime later with `./tools/registry/install-runtime.sh <runtime>`; see what is installed with `./tools/registry/list-runtimes.sh`.
 
 Some features exist only in Claude Code: slash commands, the three automatic hooks, and per-agent memory. See [CONCEPTS.md](CONCEPTS.md#runtimes-and-adapters).
 
