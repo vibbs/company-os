@@ -37,6 +37,8 @@ commit. Commit at logical boundaries.
 
 ## Skills in Cursor
 
-Cursor doesn't have a native skill system. When a task matches a skill below,
-**read the skill file directly and follow its procedure section**. The skill
-catalog lives at `.cursor/rules/10-skills.mdc`.
+Cursor doesn't have a native skill system. The skill catalog is the
+`.cursor/rules/10-skills.mdc` rule, which Cursor attaches on request. When a
+task matches a skill there (for example setup, ship, prd-writer,
+architecture-draft, test-plan-generator, landing-page-copy), **open
+`os/skills/<name>/SKILL.md` and follow its procedure section**.

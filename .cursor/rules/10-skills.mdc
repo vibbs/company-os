@@ -1,6 +1,6 @@
 ---
-description: Company OS skill catalog
-globs: ["artifacts/**", "standards/**", "docs/**"]
+description: Company OS skill catalog. Use for any product, engineering, QA, growth or operations task (setup, ship, PRD, RFC, API design, test plan, QA, launch copy, pricing, security review, upgrades) to find the matching skill in os/skills/ and follow it.
+alwaysApply: false
 ---
 
 # Skill Catalog

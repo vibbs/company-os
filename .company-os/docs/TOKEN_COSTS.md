@@ -26,12 +26,12 @@ Each runtime loads a Company OS instruction file at the start of every session. 
 
 | Runtime | File loaded every session | Characters | Tokens (approx.) |
 |---------|---------------------------|-----------|------------------|
-| Claude Code | `CLAUDE.md` | 13,793 | ~3,450 |
-| Codex CLI, Aider, other AGENTS.md runtimes | `AGENTS.md` | 28,981 | ~7,250 |
-| Gemini CLI | `GEMINI.md` | 29,248 | ~7,300 |
-| Cursor | `.cursor/rules/00-company-os.mdc` (always applied) | 1,471 | ~370 |
-| Cursor, when you work in `artifacts/`, `standards/` or `docs/` | `.cursor/rules/10-skills.mdc` (skill catalog) | 14,385 | ~3,600 |
-| Cursor, legacy single-file mode | `.cursorrules` | 18,474 | ~4,600 |
+| Claude Code | `CLAUDE.md` | 13,851 | ~3,450 |
+| Codex CLI, Aider, other AGENTS.md runtimes | `AGENTS.md` | 28,998 | ~7,250 |
+| Gemini CLI | `GEMINI.md` | 29,265 | ~7,300 |
+| Cursor | `.cursor/rules/00-company-os.mdc` (always applied) | 1,610 | ~400 |
+| Cursor, when a task needs a skill (Cursor requests the rule by its description) | `.cursor/rules/10-skills.mdc` (skill catalog) | 14,574 | ~3,650 |
+| Cursor, legacy single-file mode | `.cursorrules` | 18,613 | ~4,650 |
 
 `AGENTS.md` and `GEMINI.md` are larger than `CLAUDE.md` because they carry the full skill and agent catalog inline: those runtimes have no separate skill loader. `company.config.yaml` (~2,090 tokens) is read by agents when needed, not loaded every session.
 

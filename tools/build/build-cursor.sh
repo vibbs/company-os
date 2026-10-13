@@ -8,8 +8,10 @@
 #   .cursor/rules/20-agents.mdc       — agent personas
 #   .cursorrules                      — legacy single-file format
 #
-# Cursor MDC rules support `globs` and `alwaysApply` frontmatter, which lets
-# us scope rules to relevant files only.
+# Cursor MDC rules support `globs` and `alwaysApply` frontmatter. The overview
+# is always applied; the skill catalog (~3.5k tokens) and agent personas are
+# Agent-Requested rules (alwaysApply: false, no globs): Cursor reads their
+# description and pulls them in whenever a task needs them, in any folder.
 #
 # Usage:
 #   bash tools/build/build-cursor.sh
@@ -72,23 +74,25 @@ commit. Commit at logical boundaries.
 
 ## Skills in Cursor
 
-Cursor doesn't have a native skill system. When a task matches a skill below,
-**read the skill file directly and follow its procedure section**. The skill
-catalog lives at `.cursor/rules/10-skills.mdc`.
+Cursor doesn't have a native skill system. The skill catalog is the
+`.cursor/rules/10-skills.mdc` rule, which Cursor attaches on request. When a
+task matches a skill there (for example setup, ship, prd-writer,
+architecture-draft, test-plan-generator, landing-page-copy), **open
+`os/skills/<name>/SKILL.md` and follow its procedure section**.
 EOF
 
 mv "$TMP" "$OVERVIEW"
 
 # ----------------------------------------------------------------------------
-# 10-skills.mdc — skill catalog (auto-attach on artifacts/ work)
+# 10-skills.mdc — skill catalog (Agent-Requested: pulled in by description)
 # ----------------------------------------------------------------------------
 SKILLS=".cursor/rules/10-skills.mdc"
 TMP="$(mktemp)"
 
 cat > "$TMP" <<'EOF'
 ---
-description: Company OS skill catalog
-globs: ["artifacts/**", "standards/**", "docs/**"]
+description: Company OS skill catalog. Use for any product, engineering, QA, growth or operations task (setup, ship, PRD, RFC, API design, test plan, QA, launch copy, pricing, security review, upgrades) to find the matching skill in os/skills/ and follow it.
+alwaysApply: false
 ---
 
 # Skill Catalog
