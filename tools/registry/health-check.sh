@@ -71,7 +71,7 @@ for skill_dir in "$SKILLS_DIR"/*/; do
   fi
 
   # Check for invalid frontmatter fields (non-official)
-  for field in "id" "category" "inputs" "outputs" "output_schema" "recommended_tools" "used_by" "allowed-tools"; do
+  for field in "category" "inputs" "outputs" "output_schema" "recommended_tools" "used_by" "allowed-tools"; do
     if echo "$FRONTMATTER" | grep -q "^${field}:"; then
       echo "⚠️  $DIR_NAME: Non-official frontmatter field '$field' (move to markdown body)"
       WARNINGS=$((WARNINGS + 1))
