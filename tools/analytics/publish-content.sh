@@ -8,25 +8,41 @@ set -euo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
 usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
-CONTENT_PATH="${1:-}"
+USAGE="Usage: ./tools/analytics/publish-content.sh <content-path> [--platform PLATFORM]"
+CONTENT_PATH=""
+PLATFORM="not specified"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --platform)
+      [[ $# -ge 2 ]] || { echo "ERROR: --platform requires a value" >&2; exit 1; }
+      PLATFORM="$2"; shift 2 ;;
+    -*)
+      echo "ERROR: Unknown flag: $1" >&2; echo "$USAGE" >&2; exit 1 ;;
+    *)
+      [[ -z "$CONTENT_PATH" ]] || { echo "ERROR: Unexpected argument: $1" >&2; echo "$USAGE" >&2; exit 1; }
+      CONTENT_PATH="$1"; shift ;;
+  esac
+done
 
 if [[ -z "$CONTENT_PATH" ]]; then
-  echo "ERROR: No content path provided"
-  echo "Usage: ./tools/analytics/publish-content.sh <content-path> [--platform PLATFORM]"
+  echo "ERROR: No content path provided" >&2
+  echo "$USAGE" >&2
   exit 1
 fi
 
 if [[ ! -f "$CONTENT_PATH" ]]; then
-  echo "ERROR: Content file not found: $CONTENT_PATH"
+  echo "ERROR: Content file not found: $CONTENT_PATH" >&2
   exit 1
 fi
 
 echo "Publish Draft Content"
 echo "  Source: $CONTENT_PATH"
-echo "  Platform: ${2:-not specified}"
+echo "  Platform: $PLATFORM"
 echo "================================"
 echo ""
-echo "NOTE: This is a stub tool. Connect to your CMS/publishing platform."
+echo "(stub — no provider configured) Nothing was published."
+echo "Connect this script to your CMS/publishing platform."
 echo ""
 echo "To implement, replace this script with calls to your platform:"
 echo "  - Ghost: curl -X POST \$GHOST_URL/ghost/api/admin/posts/ ..."
