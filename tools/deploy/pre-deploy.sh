@@ -255,7 +255,7 @@ echo ""
 echo -e "${BOLD}[6/8] Migration Check${RESET}"
 HAS_MIGRATIONS=false
 
-case "${ORM,,}" in
+case "$(printf '%s' "$ORM" | tr '[:upper:]' '[:lower:]')" in
   prisma)
     if [[ -d "prisma/migrations" ]]; then
       HAS_MIGRATIONS=true
