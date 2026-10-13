@@ -2,39 +2,71 @@
 # Tool: Artifact Validate
 # Description: Validates artifact files have correct YAML frontmatter, required fields, and reference integrity
 # Usage: ./tools/artifact/validate.sh [--strict] <artifact-path>
-# Inputs: path to artifact markdown file, optional --strict flag for bidirectional checks
-# Outputs: exit 0 if valid, exit 1 with errors listed
+#        ./tools/artifact/validate.sh [--strict] --all
+# Inputs: path to artifact markdown file, or --all to check every artifacts/**/*.md
+#         that starts with YAML frontmatter; optional --strict for bidirectional checks
+# Outputs: exit 0 if valid, exit 1 with errors listed (--all also prints a summary line)
 set -euo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
 usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
 # Parse flags
 STRICT=false
+ALL=false
 ARTIFACT_PATH=""
 
 for arg in "$@"; do
   case "$arg" in
     --strict) STRICT=true ;;
+    --all) ALL=true ;;
     *) ARTIFACT_PATH="$arg" ;;
   esac
 done
 
-if [[ -z "$ARTIFACT_PATH" ]]; then
-  echo "ERROR: No artifact path provided"
-  echo "Usage: ./tools/artifact/validate.sh [--strict] <artifact-path>"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ARTIFACTS_DIR="$SCRIPT_DIR/../../artifacts"
+
+# --all: validate every artifact that has YAML frontmatter, then print a summary.
+if [[ "$ALL" == true ]]; then
+  if [[ -n "$ARTIFACT_PATH" ]]; then
+    echo "ERROR: --all cannot be combined with an artifact path" >&2
+    exit 1
+  fi
+  TOTAL=0; VALID=0; INVALID=0; SKIPPED=0
+  STRICT_ARG=()
+  [[ "$STRICT" == true ]] && STRICT_ARG=(--strict)
+  while IFS= read -r f; do
+    if [[ "$(head -1 "$f")" != "---" ]]; then
+      SKIPPED=$((SKIPPED + 1))
+      continue
+    fi
+    TOTAL=$((TOTAL + 1))
+    if bash "${BASH_SOURCE[0]}" ${STRICT_ARG[@]+"${STRICT_ARG[@]}"} "$f"; then
+      VALID=$((VALID + 1))
+    else
+      INVALID=$((INVALID + 1))
+    fi
+  done < <(find "$ARTIFACTS_DIR" -name '*.md' -type f 2>/dev/null | sort)
   echo ""
-  echo "Flags:"
-  echo "  --strict    Also check bidirectional link consistency"
+  echo "Validated $TOTAL artifact(s): $VALID valid, $INVALID invalid ($SKIPPED without frontmatter skipped)"
+  [[ $INVALID -eq 0 ]] && exit 0 || exit 1
+fi
+
+if [[ -z "$ARTIFACT_PATH" ]]; then
+  echo "ERROR: No artifact path provided" >&2
+  echo "Usage: ./tools/artifact/validate.sh [--strict] <artifact-path>" >&2
+  echo "       ./tools/artifact/validate.sh [--strict] --all" >&2
+  echo "" >&2
+  echo "Flags:" >&2
+  echo "  --strict    Also check bidirectional link consistency" >&2
+  echo "  --all       Validate every artifacts/**/*.md that has frontmatter" >&2
   exit 1
 fi
 
 if [[ ! -f "$ARTIFACT_PATH" ]]; then
-  echo "ERROR: File not found: $ARTIFACT_PATH"
+  echo "ERROR: File not found: $ARTIFACT_PATH" >&2
   exit 1
 fi
-
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-ARTIFACTS_DIR="$SCRIPT_DIR/../../artifacts"
 
 ERRORS=()
 WARNINGS=()
