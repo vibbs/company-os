@@ -1,11 +1,7 @@
 # `os/playbooks/`
 
-Cross-runtime workflows referenced by skills — things that don't fit cleanly
-as a skill (procedural) or a tool (deterministic), like interview scripts,
-checklists, narrative templates, and shared examples.
+**This folder is a placeholder and is currently empty.**
 
-A skill in `os/skills/` can point at a playbook here when a procedure step
-expects content the agent should read verbatim or fill in.
+It is meant for reusable content that several skills share and that is neither a procedure (a skill) nor a script (a tool). Examples: an interview script, a launch checklist, a fill-in-the-blanks document template, or a worked example.
 
-This directory is intentionally light at first — add playbooks here as patterns
-emerge from repeated skill content.
+A skill in `os/skills/` can point to a playbook here when one of its steps needs the agent to read text verbatim or fill it in. Add a playbook when you notice the same content repeated across skills.

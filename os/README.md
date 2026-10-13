@@ -1,29 +1,26 @@
-# `os/` — Runtime-Agnostic Authoring Source
+# `os/`: the source you edit
 
-This directory is the **source of truth** for Company OS skills, agents,
-playbooks, and lifecycle hooks. Every runtime adapter (`.claude/`, `.cursor/`,
-`.codex/`, `AGENTS.md`, `GEMINI.md`) is generated from here.
+This folder is the **source of truth** for Company OS skills and agents. Every runtime adapter (`.claude/`, `.cursor/`, `.codex/`, `AGENTS.md`, `GEMINI.md`) is generated from it. Edit here, never in the generated files.
+
+![Multi-runtime build: os/skills and os/agents are validated, then build.sh generates .claude/, AGENTS.md, GEMINI.md, .cursor/rules and .codex/](../docs/diagrams/svg/multi-runtime-build.svg)
 
 ## Layout
 
-| Path | Purpose |
-|------|---------|
-| `os/skills/<name>/SKILL.md` | Procedural skills (PRD writing, code review, ship flow, …). Authored in the [neutral skill schema](../docs/contributing/SKILL_SCHEMA.md). |
-| `os/agents/<name>.md` | Persona definitions (Product, Engineering, QA & Release, …). Authored in the [neutral agent schema](../docs/contributing/SKILL_SCHEMA.md). |
-| `os/playbooks/` | Cross-runtime workflows that skills reference (e.g. interview scripts, checklists). |
-| `os/hooks/` | Portable lifecycle hooks. Runtime-specific wiring lives under each adapter (e.g. `.claude/hooks/`). |
+| Path | Contents | Status |
+|------|----------|--------|
+| `os/skills/<name>/SKILL.md` | Skills: step-by-step procedures such as PRD writing, code review and the ship flow. Written in the [authoring schema](../docs/contributing/SKILL_SCHEMA.md). | In use |
+| `os/agents/<name>.md` | Agents: role definitions such as Product, Engineering, and QA & Release. Same [schema](../docs/contributing/SKILL_SCHEMA.md). | In use |
+| `os/playbooks/` | Reusable content that skills can point to, such as interview scripts and checklists | Placeholder, currently empty |
+| `os/hooks/` | Runtime-neutral versions of the lifecycle hooks | Placeholder, currently empty. The working hooks are in `.claude/hooks/` (see [hooks/README.md](hooks/README.md)) |
 
 ## Editing
 
 1. Edit the file under `os/`.
 2. Run `bash tools/build/build.sh` to regenerate every adapter.
-3. Commit both `os/` and the regenerated adapter outputs.
+3. Commit both `os/` and the regenerated adapters, so a fresh clone works without a build step.
 
-Validators run on every build (`build.sh --check`) and fail CI when authored
-files diverge from the [schema](../docs/contributing/SKILL_SCHEMA.md).
+`bash tools/build/build.sh --check` validates every skill and agent against the schema without writing anything. The full workflow, including adding skills and agents, is in [CUSTOMIZING.md](../.company-os/docs/CUSTOMIZING.md).
 
-## Why a neutral source?
+## Why one neutral source?
 
-Authoring once and generating per-runtime keeps Company OS portable: it works
-in Claude Code, Cursor, Codex, Gemini CLI, Aider, and any agent that follows
-the [AGENTS.md](https://agents.md/) convention without forking the methodology.
+Writing each skill once and generating per-runtime files keeps Company OS portable. It works in Claude Code, Cursor, Codex CLI and Gemini CLI through their generated files, and in Aider and any other agent that follows the [AGENTS.md](https://agents.md/) convention through `AGENTS.md` alone. Aider has no adapter of its own.
