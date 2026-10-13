@@ -102,14 +102,14 @@ Restore from a previous backup:
    ```
 2. If no backups exist, inform the user that backups are created automatically during major upgrades or with the `--backup` flag
 3. If backups exist, present them to the user with timestamps and versions
-4. After user selects a backup, restore by copying the backup files over current template files:
-   - `os/` (agents, skills, playbooks, hooks) and `.claude/agents/` — restore from backup
-   - `.claude/skills/` — restore from backup
-   - `.claude/hooks/` — restore from backup
-   - `tools/` — restore from backup
-   - `CLAUDE.md` — restore if present in backup
-5. Update `.company-os/version` to the backup's version (parse from the backup directory name)
-6. Regenerate the manifest by running install with `--force` flag or manually stamping
+4. After user selects a backup, restore by copying the backup files over current template files. The backup holds exactly these paths, so restore all of them that are present:
+   - `os/agents/`, `os/skills/`, `os/playbooks/`, `os/hooks/` (the source of truth)
+   - `.claude/agents/`, `.claude/skills/`, `.claude/hooks/`
+   - `tools/`
+   - `CLAUDE.md`
+5. The other runtime adapters (`AGENTS.md`, `GEMINI.md`, `.cursor/`, `.codex/`) are not in the backup because they are generated from `os/`. After restoring, run `bash tools/build/build.sh` to regenerate them so they match the restored `os/`
+6. Update `.company-os/version` to the backup's version (parse from the backup directory name)
+7. Regenerate the manifest by running install with `--force` flag or manually stamping
 
 What you will see:
 
