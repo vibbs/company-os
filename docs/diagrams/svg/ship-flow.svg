@@ -6,7 +6,7 @@
 #cos-ship-flow .f-orch{--a:#4f46e5;--a-soft:#eef0ff}#cos-ship-flow .f-product{--a:#7c3aed;--a-soft:#f4effe}#cos-ship-flow .f-eng{--a:#0f766e;--a-soft:#e6f5f3}#cos-ship-flow .f-qa{--a:#0369a1;--a-soft:#e8f4fb}#cos-ship-flow .f-growth{--a:#be185d;--a-soft:#fdf0f6}#cos-ship-flow .f-ops{--a:#b42318;--a-soft:#fdf1f0}#cos-ship-flow .f-gate{--a:#b45309;--a-soft:#fef6e7}#cos-ship-flow .f-neutral{--a:#4b5562;--a-soft:#f1f3f5}
 @media (prefers-color-scheme: dark){#cos-ship-flow{--bg:#0d1117;--surface:#151b23;--sunken:#10151c;--border:#3d444d;--border-soft:#2a3038;--text:#e6edf3;--text-2:#b1bac4;--text-3:#9198a1;--line:#7d8590;--shadow:#000000;--shadow-o:0.35;--solid:#e6edf3;--on-solid:#0d1117}#cos-ship-flow .f-orch{--a:#a5b4fc;--a-soft:rgba(129,140,248,0.16)}#cos-ship-flow .f-product{--a:#c4b5fd;--a-soft:rgba(167,139,250,0.16)}#cos-ship-flow .f-eng{--a:#5eead4;--a-soft:rgba(45,212,191,0.14)}#cos-ship-flow .f-qa{--a:#7dd3fc;--a-soft:rgba(56,189,248,0.14)}#cos-ship-flow .f-growth{--a:#f9a8d4;--a-soft:rgba(244,114,182,0.14)}#cos-ship-flow .f-ops{--a:#fca5a5;--a-soft:rgba(248,113,113,0.14)}#cos-ship-flow .f-gate{--a:#fbbf24;--a-soft:rgba(251,191,36,0.14)}#cos-ship-flow .f-neutral{--a:#b1bac4;--a-soft:rgba(177,186,196,0.12)}}
 #cos-ship-flow text{font-family:-apple-system, 'Segoe UI', Inter, Helvetica, Arial, sans-serif;fill:var(--text)}
-#cos-ship-flow .r-title{font-size:22px;font-weight:600}#cos-ship-flow .r-sub{font-size:14px;font-weight:400}#cos-ship-flow .r-h{font-size:14px;font-weight:600}#cos-ship-flow .r-hs{font-size:13px;font-weight:600}#cos-ship-flow .r-body{font-size:13px;font-weight:400}#cos-ship-flow .r-meta{font-size:12px;font-weight:400}#cos-ship-flow .r-badge{font-size:12px;font-weight:500}#cos-ship-flow .r-label{font-size:12px;font-weight:600;letter-spacing:0.04em}#cos-ship-flow .r-code{font-size:12px;font-weight:400;font-family:var(--mono)}#cos-ship-flow .r-codeh{font-size:13px;font-weight:600;font-family:var(--mono)}
+#cos-ship-flow .r-title{font-size:22px;font-weight:600}#cos-ship-flow .r-sub{font-size:14px;font-weight:400}#cos-ship-flow .r-h{font-size:14px;font-weight:600}#cos-ship-flow .r-hs{font-size:13px;font-weight:600}#cos-ship-flow .r-body{font-size:13px;font-weight:400}#cos-ship-flow .r-meta{font-size:12px;font-weight:400}#cos-ship-flow .r-badge{font-size:12px;font-weight:500}#cos-ship-flow .r-label{font-size:12px;font-weight:600;letter-spacing:0.04em}#cos-ship-flow .r-code{font-size:12px;font-weight:400;font-family:var(--mono)}#cos-ship-flow .r-codes{font-size:11px;font-weight:400;font-family:var(--mono)}#cos-ship-flow .r-codeh{font-size:13px;font-weight:600;font-family:var(--mono)}
 #cos-ship-flow .r-sub,#cos-ship-flow .r-body{fill:var(--text-2)}
 #cos-ship-flow .r-meta{fill:var(--text-3)}
 #cos-ship-flow .r-label,#cos-ship-flow .c-a{fill:var(--a)}
@@ -218,42 +218,42 @@
 <text x="79" y="861.5" class="r-badge c-on" text-anchor="middle">4</text>
 <text x="100" y="862" class="r-h">Release</text>
 <text x="904" y="862" class="r-meta" text-anchor="end">Orchestrator · QA &amp; Release</text>
-<rect x="68" y="888" width="200" height="76" rx="10" class="card" filter="url(#cos-ship-flow-sh)"/>
+<rect x="68" y="888" width="216" height="76" rx="10" class="card" filter="url(#cos-ship-flow-sh)"/>
 <rect x="76" y="900" width="3" height="52" rx="1.5" class="bar f-qa"/>
 <g class="f-qa">
 <text x="88" y="912" class="r-label">STEP 6</text>
 </g>
 <text x="88" y="932" class="r-hs">Release gate</text>
-<text x="88" y="950" class="r-meta">tests, scan, version bump</text>
-<path d="M268,926 L292,926" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
-<polygon points="304,915 315,926 304,937 293,926" class="tint f-gate" stroke-width="1.25"/>
-<path d="M315,926 L332,926" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
-<g class="f-orch"><polygon points="358,926 352,936.4 340,936.4 334,926 340,915.6 352,915.6" class="tint" stroke-width="1.25"/>
-<path d="M341.5,926.5 L344.8,929.8 L351,922.5" class="tick"/></g>
-<text x="314" y="904" class="r-code" text-anchor="middle">release</text>
-<path d="M358,926 L378,926" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
-<rect x="380" y="888" width="160" height="76" rx="10" class="card" filter="url(#cos-ship-flow-sh)"/>
-<rect x="388" y="900" width="3" height="52" rx="1.5" class="bar f-orch"/>
+<text x="88" y="950" class="r-meta">tests, scan, version bumped</text>
+<path d="M284,926 L308,926" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<polygon points="320,915 331,926 320,937 309,926" class="tint f-gate" stroke-width="1.25"/>
+<path d="M331,926 L348,926" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<g class="f-orch"><polygon points="374,926 368,936.4 356,936.4 350,926 356,915.6 368,915.6" class="tint" stroke-width="1.25"/>
+<path d="M357.5,926.5 L360.8,929.8 L367,922.5" class="tick"/></g>
+<text x="330" y="904" class="r-code" text-anchor="middle">release</text>
+<path d="M374,926 L394,926" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<rect x="396" y="888" width="160" height="76" rx="10" class="card" filter="url(#cos-ship-flow-sh)"/>
+<rect x="404" y="900" width="3" height="52" rx="1.5" class="bar f-orch"/>
 <g class="f-orch">
-<text x="400" y="912" class="r-label">STEP 7</text>
+<text x="416" y="912" class="r-label">STEP 7</text>
 </g>
-<text x="400" y="932" class="r-hs">Release summary</text>
-<path d="M540,926 L560,926" class="edge dotted" marker-end="url(#cos-ship-flow-ah)"/>
-<rect x="562" y="888" width="160" height="76" rx="10" class="card dotted" filter="url(#cos-ship-flow-sh)"/>
-<rect x="570" y="900" width="3" height="52" rx="1.5" class="bar f-orch"/>
+<text x="416" y="932" class="r-hs">Release summary</text>
+<path d="M556,926 L576,926" class="edge dotted" marker-end="url(#cos-ship-flow-ah)"/>
+<rect x="578" y="888" width="160" height="76" rx="10" class="card dotted" filter="url(#cos-ship-flow-sh)"/>
+<rect x="586" y="900" width="3" height="52" rx="1.5" class="bar f-orch"/>
 <g class="f-orch">
-<text x="582" y="912" class="r-label">STEP 7.5</text>
+<text x="598" y="912" class="r-label">STEP 7.5</text>
 </g>
-<text x="582" y="932" class="r-hs">Log AI cost</text>
-<text x="582" y="950" class="r-meta">advisory</text>
-<path d="M722,926 L742,926" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
-<rect x="744" y="888" width="160" height="76" rx="10" class="card" filter="url(#cos-ship-flow-sh)"/>
-<rect x="752" y="900" width="3" height="52" rx="1.5" class="bar f-orch"/>
+<text x="598" y="932" class="r-hs">Log AI cost</text>
+<text x="598" y="950" class="r-meta">advisory</text>
+<path d="M738,926 L758,926" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<rect x="760" y="888" width="144" height="76" rx="10" class="card" filter="url(#cos-ship-flow-sh)"/>
+<rect x="768" y="900" width="3" height="52" rx="1.5" class="bar f-orch"/>
 <g class="f-orch">
-<text x="764" y="912" class="r-label">STEP 8</text>
+<text x="780" y="912" class="r-label">STEP 8</text>
 </g>
-<text x="764" y="932" class="r-hs">What's next</text>
-<text x="764" y="950" class="r-meta">suggestions only</text>
+<text x="780" y="932" class="r-hs">What's next</text>
+<text x="780" y="950" class="r-meta">suggestions only</text>
 <path d="M828,776 L828,806 Q828,812 822,812 L58,812 Q52,812 52,818 L52,920 Q52,926 58,926 L66,926" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
 <rect x="40" y="1012" width="880" height="184" rx="10" class="card" filter="url(#cos-ship-flow-sh)"/>
 <g class="f-gate">

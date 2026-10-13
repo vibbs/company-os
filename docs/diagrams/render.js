@@ -37,7 +37,7 @@ function readRepoFacts() {
   }
 
   const toolScripts = listFiles(path.join(ROOT, 'tools'))
-    .filter((p) => p.endsWith('.sh') && !p.includes(`${path.sep}build${path.sep}`));
+    .filter((p) => p.endsWith('.sh') && !p.includes(`${path.sep}build${path.sep}`) && !p.includes(`${path.sep}lib${path.sep}`));
   const buildScripts = listFiles(path.join(ROOT, 'tools', 'build')).filter((p) => p.endsWith('.sh'));
 
   const validate = fs.readFileSync(path.join(ROOT, 'tools', 'artifact', 'validate.sh'), 'utf8');
@@ -124,6 +124,7 @@ const ROLES = {
   badge: { size: 12, weight: 500, k: 0.58 },
   label: { size: 12, weight: 600, k: 0.74, upper: true },
   code:  { size: 12, weight: 400, k: 0.62, mono: true },
+  codes: { size: 11, weight: 400, k: 0.62, mono: true },
   codeh: { size: 13, weight: 600, k: 0.64, mono: true },
 };
 
@@ -755,8 +756,8 @@ diagram(() => {
   band(b4, 148, 4, 'Release', 'Orchestrator · QA & Release');
   const ry4 = b4 + 56;
   const rcy = ry4 + 38;
-  node(X0, ry4, 200, 76, { step: 'Step 6', title: 'Release gate', meta: 'tests, scan, version bump', fam: 'qa' });
-  let rx = gate(X0 + 200, rcy, 'release') + 22;
+  node(X0, ry4, 216, 76, { step: 'Step 6', title: 'Release gate', meta: 'tests, scan, version bumped', fam: 'qa' });
+  let rx = gate(X0 + 216, rcy, 'release') + 22;
   d.edge([[rx - 22, rcy], [rx - 2, rcy]]);
   node(rx, ry4, 160, 76, { step: 'Step 7', title: 'Release summary', fam: 'orch' });
   rx += 160 + 22;
@@ -1158,19 +1159,20 @@ diagram(() => {
     subtitle: 'One command installs Company OS. Upgrades merge file by file and never touch your own work.',
     desc: 'Install: run the installer with curl; it auto-detects Claude Code, Cursor, Codex, Gemini CLI and Aider or takes --runtime; installs os/ and AGENTS.md always plus one adapter per runtime; never overwrites company.config.yaml, artifacts, tasks, cogs or agent memory; then run /setup and start with /ship, /gtm-sprint or /rapid-prototype. Upgrade: /upgrade-company-os check, preview (dry run), apply (backs up first on major versions), smart merge using manifest hashes (untouched files update, edited files are kept, files changed on both sides become conflicts), migrations and health check, rollback from a backup.',
   });
-  const col = (x, title, fam, steps) => {
-    d.label(x, 120, title, fam, 400);
+  const col = (x, colW, title, fam, steps) => {
+    d.label(x, 120, title, fam, colW - 32);
     let y = 136;
     const tops = [];
     steps.forEach((s, i) => {
       const cx = x + 14;
       const cardX = x + 44;
-      const cardW = 432 - 44;
+      const cardW = colW - 44;
       const inner = cardW - 40;
       // measure
       const bodyLines = s.body ? d.wrap(s.body, 'body', inner) : [];
       let h = 24 + 18;
-      if (s.code) h += 22;
+      const codeLines = [].concat(s.code || []);
+      h += codeLines.length * 22;
       h += bodyLines.length * 18;
       if (s.outcomes) h += s.outcomes.length * 30 + 4;
       h += 8;
@@ -1178,7 +1180,7 @@ diagram(() => {
       tops.push([cx, y + 22]);
       let ty = y + 28;
       d.text(cardX + 20, ty, s.title, { role: 'hs', maxW: inner });
-      if (s.code) { ty += 22; d.text(cardX + 20, ty, s.code, { role: 'code', maxW: inner }); }
+      codeLines.forEach((c) => { ty += 22; d.text(cardX + 20, ty, c, { role: s.smallCode ? 'codes' : 'code', maxW: inner }); });
       bodyLines.forEach((l) => { ty += 18; d.text(cardX + 20, ty, l, { role: 'body' }); });
       if (s.outcomes) {
         ty += 10;
@@ -1203,22 +1205,22 @@ diagram(() => {
     });
     return y;
   };
-  const y1 = col(40, 'Install (first time)', 'orch', [
-    { title: 'Run the installer', code: 'curl -fsSL <repo>/install.sh | bash', body: 'From your project root. Works in a new or an existing repo.' },
-    { title: 'Pick runtimes', code: '--runtime=claude,cursor | all | core', body: 'Default: auto-detects Claude Code, Cursor, Codex, Gemini CLI and Aider.' },
+  const y1 = col(40, 568, 'Install (first time)', 'orch', [
+    { title: 'Run the installer', smallCode: true, code: ['curl -fsSL \\', '  https://raw.githubusercontent.com/vibbs/company-os/main/install.sh \\', '  | bash -s -- --runtime=claude'], body: 'From your project root. Works in a new or an existing repo. Swap claude for cursor, codex, gemini, aider, all or core.' },
+    { title: 'Pick runtimes', code: '--runtime=claude,cursor', body: 'Combine runtimes with commas. Without the flag, the installer auto-detects Claude Code, Cursor, Codex, Gemini CLI and Aider.' },
     { title: 'Install files', body: 'os/ and AGENTS.md always. Adds .claude/, .cursor/, GEMINI.md or .codex/ for each runtime.' },
     { title: 'Keep your work', body: 'Never overwritten: company.config.yaml, artifacts/, tasks/, cogs/, .claude/agent-memory/.' },
     { title: 'Configure', code: '/setup', body: 'Fills in company.config.yaml, sets permissions, creates folders.' },
     { title: 'Start building', code: '/ship  ·  /gtm-sprint  ·  /rapid-prototype' },
   ]);
-  const y2 = col(488, 'Upgrade (later)', 'eng', [
+  const y2 = col(624, 312, 'Upgrade (later)', 'eng', [
     { title: 'Check', code: '/upgrade-company-os check', body: 'Or install.sh --check. Shows if a newer version exists.' },
     { title: 'Preview', code: '/upgrade-company-os preview', body: 'Runs install.sh --dry-run --force. Writes nothing.' },
     { title: 'Apply', code: '/upgrade-company-os apply', body: 'Backs up first on major versions (or with --backup) to .company-os/backup/.' },
     { title: 'Smart merge, file by file', body: 'Uses hashes in .company-os/manifest:',
       outcomes: [['untouched file', 'updated', 'eng'], ['you edited it', 'kept as is', 'orch'], ['both changed', 'conflict', 'gate']] },
     { title: 'Migrate and verify', body: 'Runs .company-os/migrations/, stamps the version, then health-check.sh.' },
-    { title: 'Roll back if needed', code: '/upgrade-company-os rollback', body: 'Restores .claude/, tools/ and CLAUDE.md from a backup.' },
+    { title: 'Roll back if needed', code: '/upgrade-company-os rollback', body: 'Restores os/, .claude/, tools/ and CLAUDE.md from a backup, then run build.sh to refresh the other adapters.' },
   ]);
   d.H = Math.max(y1, y2) + 48;
   return d;
