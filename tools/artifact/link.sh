@@ -75,8 +75,8 @@ parent: $PARENT_ID" "$CHILD_PATH"
 elif [[ "$CURRENT_PARENT" == "$PARENT_ID" ]]; then
   echo "  ℹ️  Child already has parent: $PARENT_ID (no change)"
 else
-  echo "  ERROR: Child already has a different parent: '$CURRENT_PARENT'. Cannot re-parent."
-  echo "  To change parent, manually update the parent field first."
+  echo "  ERROR: Child already has a different parent: '$CURRENT_PARENT'. Cannot re-parent." >&2
+  echo "  To change parent, manually update the parent field first." >&2
   exit 1
 fi
 
