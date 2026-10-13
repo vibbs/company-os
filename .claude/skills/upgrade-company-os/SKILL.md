@@ -105,9 +105,23 @@ Restore from a previous backup:
    - `.claude/agents/`, `.claude/skills/`, `.claude/hooks/`
    - `tools/`
    - `CLAUDE.md`
-5. The other runtime adapters (`AGENTS.md`, `GEMINI.md`, `.cursor/`, `.codex/`) are not in the backup because they are generated from `os/`. After restoring, run `bash tools/build/build.sh` to regenerate them so they match the restored `os/`
+
+   Copying over does not remove skills or agents that the newer version added. List the directories in `os/skills/` and `os/agents/` that are not in the backup, show them to the user, and delete them only if the user agrees (they may be the user's own).
+5. The other runtime adapters (`AGENTS.md`, `GEMINI.md`, `.cursor/`, `.codex/`) are not in the backup because they are generated from `os/`. Rebuild only the adapters this project already has, so the rollback does not add runtimes the user never installed:
+   ```bash
+   [ -d .claude ] && bash tools/build/build.sh --runtime=claude
+   [ -f AGENTS.md ] && bash tools/build/build.sh --runtime=agents
+   [ -f GEMINI.md ] && bash tools/build/build.sh --runtime=gemini
+   { [ -d .cursor ] || [ -f .cursorrules ]; } && bash tools/build/build.sh --runtime=cursor
+   [ -d .codex ] && bash tools/build/build.sh --runtime=codex
+   ```
+   Do not run `build.sh` with no arguments: it builds every adapter.
 6. Update `.company-os/version` to the backup's version (parse from the backup directory name)
-7. Regenerate the manifest by running install with `--force` flag or manually stamping
+7. Rebuild the manifest so the next upgrade compares against the restored version. Re-install that same version, passing only the runtimes the project already has (for example `claude,cursor`):
+   ```bash
+   bash install.sh --force --version <backup-version> --runtime <installed runtimes>
+   ```
+   (Without a local `install.sh`, the user runs the `curl ... | bash -s -- --force --version <backup-version> --runtime <...>` form in their terminal.) This re-applies the same files, so content does not change; any `.user`/`.new` pairs it reports for restored files are identical and can be deleted. Never run `install.sh --force` without `--version` here: it downloads and applies the latest release, which undoes the rollback.
 
 What you will see:
 
