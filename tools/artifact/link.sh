@@ -5,6 +5,8 @@
 # Inputs: parent artifact path + child artifact path
 # Outputs: updated frontmatter in both files with linkage + audit log entry
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
 PARENT_PATH="${1:-}"
 CHILD_PATH="${2:-}"

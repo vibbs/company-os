@@ -44,7 +44,7 @@ EOF
 
 # ─── Parse arguments ──────────────────────────────────────────────────────────
 PRD_PATH=""
-if [[ ${1:-} == "--help" ]]; then
+if [[ ${1:-} == "--help" || ${1:-} == "-h" ]]; then
   usage
 fi
 if [[ $# -gt 0 ]]; then

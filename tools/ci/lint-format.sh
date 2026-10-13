@@ -5,6 +5,8 @@
 # Inputs: optional --fix flag to auto-fix issues
 # Outputs: lint/format results, exit 0 if clean
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
 SCRIPT_DIR="$(dirname "$0")"
 CONFIG_FILE="$SCRIPT_DIR/../../company.config.yaml"

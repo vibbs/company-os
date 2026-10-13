@@ -5,6 +5,8 @@
 # Inputs: path to OpenAPI spec file (YAML or JSON)
 # Outputs: validation results, exit 0 if valid
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
 SPEC_PATH="${1:-}"
 

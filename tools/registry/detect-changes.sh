@@ -5,6 +5,8 @@
 # Inputs: optional date filter, optional directory filter
 # Outputs: structured report of new/modified files
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 BASE_DIR="$SCRIPT_DIR/../.."

@@ -5,6 +5,8 @@
 # Inputs: target URL, optional PRD ID, optional journey name
 # Outputs: exit 0 if pre-flight passes, exit 1 if URL unreachable or config missing
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/../.."

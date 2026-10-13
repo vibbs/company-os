@@ -12,6 +12,8 @@
 #   growth — all gates enforced (default)
 #   scale  — all gates enforced
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
 GATE_NAME="${1:-}"
 ARTIFACT_REF="${2:-}"

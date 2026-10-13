@@ -5,6 +5,8 @@
 # Inputs: path to content file, optional target platform
 # Outputs: publish confirmation or draft URL
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
 CONTENT_PATH="${1:-}"
 

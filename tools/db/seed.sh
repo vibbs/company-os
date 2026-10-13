@@ -5,6 +5,8 @@
 # Inputs: scenario name (empty, minimal, nominal, edge-cases, high-volume, error-states)
 # Outputs: exit 0 on success, exit 1 on failure
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/../.."

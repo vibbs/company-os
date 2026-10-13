@@ -5,6 +5,8 @@
 # Inputs: optional path to scan (default: current directory)
 # Outputs: list of potential secrets found, exit 0 if clean
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
 SCAN_PATH="${1:-.}"
 

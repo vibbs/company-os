@@ -5,6 +5,8 @@
 # Inputs: path to artifact markdown file, optional --strict flag for bidirectional checks
 # Outputs: exit 0 if valid, exit 1 with errors listed
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
 # Parse flags
 STRICT=false

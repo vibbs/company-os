@@ -10,15 +10,13 @@
 # ============================================================================
 
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
 FORMAT="table"
 case "${1:-}" in
   --json)     FORMAT="json" ;;
   --detected) FORMAT="detected" ;;
-  --help)
-    grep -E '^#' "$0" | sed 's/^# *//'
-    exit 0
-    ;;
 esac
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"

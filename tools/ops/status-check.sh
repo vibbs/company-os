@@ -48,7 +48,7 @@ EOF
 # ─── Parse arguments ────────────────────────────────────────────────────────────
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --help)
+    --help|-h)
       usage
       ;;
     --timeout)
