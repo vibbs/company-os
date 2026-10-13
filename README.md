@@ -1,367 +1,428 @@
 # Company OS
 
-A deterministic governance layer for AI-assisted SaaS delivery — built for Claude Code, with human-in-the-loop quality gates at every stage.
+Company OS adds a team of AI agents and a reviewed workflow (requirements, design, code, QA, launch) to your existing repo. It is for solo founders and small teams building SaaS products with Claude Code, Cursor, Codex CLI, Gemini CLI or Aider.
 
-`Multi-runtime` · `Human-in-the-loop` · `Document-first` · `v1.11.0`
+[Quickstart](#quickstart) · [Which flow?](#which-flow-should-i-use) · [Commands](#commands) · [How it works](#how-it-works) · [Install options](#install-options) · [Docs](#documentation) · [Glossary](#glossary)
 
-Runs natively in **Claude Code** and ships adapters for **Cursor**, **Codex CLI**, **Gemini CLI**, and any agent that follows the [AGENTS.md](https://agents.md/) convention. Authoring happens once; adapters are generated.
+![Company OS in your repo: agents decide what happens next, skills describe how to produce each document, tools run fixed checks, and artifacts are the handshake between them](docs/diagrams/svg/system-overview.svg)
 
-You stay in control. The system proposes — PRDs, RFCs, threat models, QA reports, launch briefs — you review and approve before anything advances. Enforced by shell scripts, not prompts.
-
----
-
-## What It Is / What It Isn't
-
-| Company OS is… | Company OS is not… |
-|---|---|
-| A structured workflow with enforced quality gates | An autonomous agent that ships code without your review |
-| A set of specialized AI team members you direct | A replacement for engineering judgment |
-| A document trail (PRDs, RFCs, QA reports) you own | A black box that makes decisions for you |
-| Human-in-the-loop by design — you approve every stage | A "give it a goal and walk away" system |
-| An overlay on your existing repo — never touches source | A platform you migrate your code into |
-
-Every workflow pauses for your review. The Orchestrator does not advance past a gate until you've seen the artifact and approved the transition. This is enforced by `check-gate.sh` — a shell script that verifies required artifacts exist and are in approved status before proceeding.
+You stay in control. Agents draft the documents and code; you review each one and approve before work moves to the next stage. Version 1.11.0, [MIT licensed](LICENSE).
 
 ---
 
-## Design Philosophy
+## Quickstart
 
-### Claude Code-native, multi-runtime via adapters
+You need `git` (the project must be a git repo), `curl`, and one AI coding runtime. Full prerequisites are in the [setup guide](.company-os/docs/SETUP.md#1-prerequisites).
 
-Company OS is authored in Claude Code's skill/agent/hook format — that's where you get the deepest integration (agent memory, JIT skill loading, hook-based validation, subagent delegation). The Claude Code experience is the flagship.
+**1. Install** from your project root:
 
-For users on Cursor, Codex CLI, Gemini CLI, Aider, or any AGENTS.md-compatible runtime, the system ships generated adapters: `AGENTS.md`, `GEMINI.md`, `.cursor/rules/`, `.codex/config.md`. Adapters expose the same skill catalog, agent personas, and tool scripts — what changes is how each runtime loads them. Regenerate with `bash tools/build/build.sh`.
+```bash
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash
+```
 
-You author once. The build step keeps every runtime in sync.
+Prefer to read the script first:
 
-### Every stage is a decision point, not a handoff
+```bash
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh -o install.sh
+less install.sh
+bash install.sh
+```
 
-The Orchestrator routes and delegates. It does not execute autonomously. After each major stage — PRD, RFC, implementation, QA, launch — artifacts are produced and presented for your review. You decide what happens next.
+**2. Start your runtime and run setup.** The installer detects which runtimes you have and adds files for each.
 
-Gates are enforced by `check-gate.sh`. The tool checks that required artifacts exist in approved status before allowing the next stage to begin. Your approval is the key that unlocks each stage. The system cannot skip stages on your behalf.
+| Runtime | What gets installed | What you type |
+|---------|---------------------|---------------|
+| Claude Code | `.claude/` (agents, skills, hooks, settings) | Run `claude`, then `/setup` |
+| Cursor | `.cursor/rules/*.mdc`, `.cursorrules` | Open the folder in Cursor, then ask: "run the setup skill" |
+| Codex CLI | `.codex/config.md` (Codex reads `AGENTS.md`) | Run `codex`, then ask: "run the setup skill" |
+| Gemini CLI | `GEMINI.md` | Run `gemini`, then ask: "run the setup skill" |
+| Aider | nothing extra; Aider reads `AGENTS.md` | Start Aider, then ask it to follow the setup skill in `AGENTS.md` |
 
-### Artifacts are the source of truth, not the byproduct
+Every install also gets the shared files: `os/`, `tools/`, `AGENTS.md`, `CLAUDE.md` and `company.config.yaml`.
 
-Most AI coding tools produce code. Company OS produces code AND a full paper trail: PRD → RFC → API contract → threat model → QA report → launch brief. Each artifact has YAML frontmatter with lineage links (parent, children, depends_on, blocks).
+`/setup` asks about your product and tech stack and fills in `company.config.yaml`. You can also hand it everything at once: a pasted config block, or a URL (`/setup https://yoursite.com`) to fill in what it can from your website. See [Configure with /setup](.company-os/docs/SETUP.md#4-configure-with-setup).
 
-For solopreneurs especially: six months from now, you can open `artifacts/rfcs/` and understand exactly what was built, why it was built that way, which tradeoffs were made, and which risks were flagged. The code tells you *what* — the artifacts tell you *why*.
+**3. Ship your first feature:**
+
+```text
+/ship Add password reset by email
+```
+
+`/ship` writes a plan, then pauses after each stage so you can approve, ask for changes, or stop. Outside Claude Code, ask the agent to "run the ship skill" instead.
+
+No AI runtime yet? `bash setup.sh` creates the folders and a blank `company.config.yaml` to fill in by hand. Stuck? See [Troubleshooting](.company-os/docs/TROUBLESHOOTING.md).
+
+### Most used commands
+
+| Command | What it does |
+|---------|--------------|
+| `/setup` | Configure Company OS for your project |
+| `/ship` | Take a feature from idea to release, pausing at every gate |
+| `/rapid-prototype` | Build a time-boxed proof of concept (4 hours, 1 day or 3 days) |
+| `/gtm-sprint` | Test market demand in 7, 14 or 21 days, no code required |
+| `/status` | See artifact counts, broken links and gate readiness (`--dashboard` for HTML) |
+| `/artifact-import` | Bring in PRDs, specs and plans you already have |
+| `/prd-writer` | Write a product requirements document on its own |
+| `/code-review` | Review a pull request or files section by section |
+| `/weekly-review` | Summarize what shipped, AI spend, risks and next priorities |
+| `/upgrade-company-os` | Check for, preview, apply or roll back updates |
+
+All 46 commands are listed under [Commands](#commands).
 
 ---
 
-## What You Get Out of the Box
+## Which flow should I use?
 
-### 9 Agents (6 top-level + 3 engineering sub-agents)
+![Three entry points: /gtm-sprint to validate demand, /rapid-prototype to prove the tech, /ship to build and launch, followed by an inbound feedback loop](docs/diagrams/svg/workflow-paths.svg)
+
+| Start with | When | You get | Time |
+|------------|------|---------|------|
+| `/gtm-sprint` | You are not sure anyone will pay | Ideal customer profile, interview notes, pain matrix, letters of intent, launch assets | 7, 14 or 21 days; no code |
+| `/rapid-prototype` | You need a demo or proof of concept | A mini-PRD (3 acceptance criteria at most) and a working demo; skips the RFC, security review and QA | 4 hours, 1 day or 3 days |
+| `/ship` | You know what to build | PRD, RFC, code, test plan, QA report and launch brief | One feature, every gate |
+
+Not sure? Describe your goal in plain words. The workflow router picks the right path, such as a bug fix, a refactor or one of the three above.
+
+---
+
+## Commands
+
+In **Claude Code**, every command below is a slash command: type `/` to see the list, or type the name (for example `/ship Add team invites`). In **Cursor, Codex CLI, Gemini CLI and Aider**, ask the agent to "run the *name* skill" (for example "run the prd-writer skill for team invites"); the catalog lives in `AGENTS.md`, `GEMINI.md` or `.cursor/rules/10-skills.mdc`. To search by keyword, run `./tools/registry/search-skill.sh <query>`.
+
+There are 64 skills in total. The 46 below are meant to be run directly; the other 18 are used by agents during a flow (for example `api-contract-designer` and `feature-flags` during `/ship`).
+
+<details open>
+<summary><strong>Getting started</strong> (6)</summary>
+
+| Command | Purpose | Arguments |
+|---------|---------|-----------|
+| `/setup` | Configures Company OS for your project: company.config.yaml, permissions and folders. | `[preset \| config block \| URL \| description]` |
+| `/status` | Shows a summary of project artifacts: counts by status, broken links and stage gate readiness. | `[prd \| rfc \| qa \| all \| --dashboard]` |
+| `/artifact-import` | Brings existing documents (PRDs, RFCs, API specs, test plans) into Company OS with frontmatter, a type and links. | `<file path or pasted content>` |
+| `/ingest` | Scans standards/ and artifacts/ for new or changed files and suggests updates to skills and config. | `[standards \| artifacts \| both]` |
+| `/upgrade-company-os` | Checks for, previews, applies or rolls back Company OS updates. | `[check \| preview \| apply \| rollback]` |
+| `/system-maintenance` | Audits and syncs Company OS documentation after structural changes. | — |
+
+</details>
+
+<details open>
+<summary><strong>Build & ship</strong> (6)</summary>
+
+| Command | Purpose | Arguments |
+|---------|---------|-----------|
+| `/ship` | Takes a feature from idea to release (PRD, RFC, code, QA, launch assets), pausing at each quality gate for your review. | `<what you want to build>` |
+| `/rapid-prototype` | Builds a time-boxed MVP (4 hours, 1 day or 3 days) for a proof of concept or demo, skipping the RFC, security review and full QA. | `<what you want to prototype>` |
+| `/gtm-sprint` | Runs a 7, 14 or 21 day go-to-market (GTM) sprint: customer interviews, positioning, landing page and distribution, with go/no-go checkpoints. | `[plan \| status \| gate-check] [7 \| 14 \| 21]` |
+| `/weekly-review` | Summarizes your week: what shipped, AI spend, support themes, security health and next priorities. | `[--save]` |
+| `/retrospective` | Reviews a shipped feature: traces it from PRD to launch, compares results to goals and records lessons. | `<PRD ID or feature name>` |
+| `/decision-memo-writer` | Writes a decision record with rationale, alternatives considered and consequences. | — |
+
+</details>
+
+<details>
+<summary><strong>Product</strong> (7)</summary>
+
+| Command | Purpose | Arguments |
+|---------|---------|-----------|
+| `/prd-writer` | Writes a product requirements document (PRD) with problem statement, acceptance criteria, success metrics and scope. | `<feature or problem to specify>` |
+| `/icp-positioning` | Defines your ideal customer profile (ICP) and how your product is positioned against alternatives. | `<product or market>` |
+| `/ux-research` | Plans lean user research: method choice, interview scripts, usability tests and journey maps. | — |
+| `/customer-conversations` | Prepares briefings before customer calls and records what you learned afterward. | `[prep <type> \| debrief \| patterns]` |
+| `/feedback-synthesizer` | Turns messy customer feedback into themes with supporting evidence and a ranked pain matrix. | — |
+| `/sprint-prioritizer` | Ranks features and work items by impact, effort and risk. | — |
+| `/market-intelligence` | Scans competitors, emerging technologies and market timing. | — |
+
+</details>
+
+<details>
+<summary><strong>Engineering</strong> (6)</summary>
+
+| Command | Purpose | Arguments |
+|---------|---------|-----------|
+| `/architecture-draft` | Writes a technical design doc (RFC) covering system boundaries, modules, data model and integrations. | `<PRD ID or feature to design>` |
+| `/code-review` | Reviews code in sections (architecture, quality, tests, performance) with interactive feedback. | `<PR number or file paths>` |
+| `/design-system` | Sets up and applies your visual design: tokens (colors, type, spacing), component guidance and UX patterns. | `[generate-tokens \| review \| reconfigure]` |
+| `/dev-environment` | Generates Docker Compose files, .env.example and dev scripts from your tech stack. | `[dev \| qa \| production \| reset]` |
+| `/seed-data` | Generates test seed data, fixtures and factories for normal, edge and empty scenarios. | `<PRD ID or entity name>` |
+| `/excalidraw` | Draws architecture, data flow, database (ERD) and system diagrams as Mermaid text and Excalidraw files. | `[architecture \| data-flow \| erd \| sequence \| journey \| system-overview]` |
+
+</details>
+
+<details>
+<summary><strong>Quality & release</strong> (4)</summary>
+
+| Command | Purpose | Arguments |
+|---------|---------|-----------|
+| `/test-plan-generator` | Generates a test plan from a PRD's acceptance criteria. | — |
+| `/dogfood` | Tests your product the way a real user would and logs issues with severity ratings. | `<app URL> [--prd <prd-id>]` |
+| `/release-readiness-gate` | Runs the final pass/fail checklist and gives a release verdict. | `<feature or release name>` |
+| `/experiment-framework` | Designs A/B experiments with sample size, guardrail metrics and results analysis. | — |
+
+</details>
+
+<details>
+<summary><strong>Growth</strong> (8)</summary>
+
+| Command | Purpose | Arguments |
+|---------|---------|-----------|
+| `/positioning-messaging` | Writes the product narrative and competitive differentiators for marketing and sales. | — |
+| `/landing-page-copy` | Writes conversion-focused landing page copy, section by section. | `<product, feature or campaign>` |
+| `/channel-playbook` | Creates a step-by-step marketing playbook for one acquisition channel such as LinkedIn, Twitter, email or Product Hunt. | — |
+| `/content-engine` | Plans a content program: editorial calendar, content briefs and ways to reuse one piece across formats. | — |
+| `/seo-topic-map` | Builds keyword clusters and an internal linking plan for search-driven content. | — |
+| `/email-lifecycle` | Designs email sequences, templates and send triggers for onboarding, transactional and retention emails. | — |
+| `/activation-onboarding` | Designs the first-run flow and experiments that get new users to their first moment of value. | — |
+| `/product-led-growth` | Designs self-serve growth: free tier, viral loops, referrals and in-product growth moments. | `<product or growth goal>` |
+
+</details>
+
+<details>
+<summary><strong>Ops & risk</strong> (9)</summary>
+
+| Command | Purpose | Arguments |
+|---------|---------|-----------|
+| `/threat-modeling` | Analyzes data flows for security threats and proposes mitigations. | `[--quick]` |
+| `/security-posture` | Summarizes open threats, scan status, compliance gaps and manual checkpoints into one security snapshot. | `[--full \| --quick \| --delta]` |
+| `/privacy-data-handling` | Defines how personal data is retained, accessed and deleted. | — |
+| `/compliance-readiness` | Checks your readiness for a lightweight SOC 2 security audit and lists the gaps. | — |
+| `/tos-privacy-drafting` | Drafts outlines of your Terms of Service and Privacy Policy. | — |
+| `/incident-response` | Creates incident runbooks, post-mortem templates and incident records. | — |
+| `/support-operations` | Designs customer support: FAQs, response-time tiers (SLAs), escalation paths and a feedback loop to product. | — |
+| `/pricing-unit-economics` | Analyzes pricing and unit economics: customer acquisition cost (CAC) versus lifetime value (LTV). | — |
+| `/token-cost-ledger` | Tracks AI token usage and spend: logs entries, reports, checks budget and shows cost per feature. | `[log \| report \| budget-check \| feature-cost]` |
+
+</details>
+
+---
+
+## How it works
+
+### Three layers
+
+| Layer | What it is | Lives in |
+|-------|------------|----------|
+| **Agents** | AI roles that decide what happens next: route, delegate, approve | `os/agents/` (9 agents) |
+| **Skills** | Written procedures, templates and checklists for producing one kind of document or result | `os/skills/` (64 skills) |
+| **Tools** | Shell scripts that run one fixed check or action, with no AI reasoning | `tools/` (33 scripts) |
+
+Agents use skills to know what to produce and run tools to act. Skills may recommend a tool but never run one. Artifacts (the documents agents save under `artifacts/`) are the handshake between all three. More detail is in [Concepts](.company-os/docs/CONCEPTS.md#the-three-layers).
+
+### Agents
+
+Six top-level agents plus three engineering sub-agents. The Orchestrator and the Engineering lead run on a stronger reasoning model (`opus`); the rest use `sonnet`. You can change this per agent with `models:` in `company.config.yaml` (Claude Code only).
 
 | Agent | Role |
 |-------|------|
-| **Orchestrator** | Routes tasks, enforces gates, approves releases |
-| **Product** | Discovery, PRDs, prioritization, scope control |
-| **Engineering** | Staff Engineer — architecture, decomposition, delegation, code review |
-| **Engineering: Backend** | Sub-agent — API endpoints, data models, business logic, background jobs |
-| **Engineering: Frontend** | Sub-agent — UI components, responsive design, instrumentation, user docs |
-| **Engineering: DevOps** | Sub-agent — deployment, observability, feature flags, dev environment |
-| **QA & Release** | Test plans, quality gates, release readiness |
-| **Growth** | Launch strategy, SEO, activation, email lifecycle |
-| **Ops & Risk** | Security, compliance, incidents, legal, finance |
+| Orchestrator | Routes objectives, enforces gates, approves releases |
+| Product | Discovery, PRDs, prioritization, scope control |
+| Engineering | Staff engineer: architecture, task breakdown, delegation, code review |
+| Engineering: Backend | API endpoints, data models, business logic, background jobs |
+| Engineering: Frontend | UI components, responsive layouts, analytics events, user docs |
+| Engineering: DevOps | Deployment pipelines, monitoring, feature flags, environments |
+| QA & Release | Test plans, QA reports, release readiness verdict |
+| Growth | Positioning, landing pages, channels, SEO, onboarding |
+| Ops & Risk | Security, privacy, compliance, pricing, legal drafts, incidents |
 
-### 64 Skills
+<details>
+<summary>Show every agent with its model and skills</summary>
 
-| Category | Skills |
-|----------|--------|
-| Orchestration | workflow-router, ship, status, decision-memo-writer, conflict-resolver, ingest, system-maintenance, artifact-import, setup, upgrade-company-os, rapid-prototype, token-cost-ledger, weekly-review, retrospective |
-| Product | icp-positioning, prd-writer, sprint-prioritizer, feedback-synthesizer, discovery-validation, ux-research, market-intelligence, customer-conversations |
-| Engineering | architecture-draft, api-contract-designer, background-jobs, multi-tenancy, implementation-decomposer, code-review, seed-data, deployment-strategy, instrumentation, feature-flags, user-docs, mobile-readiness, dev-environment, ai-engineering, design-system, observability-baseline, resilience-testing, excalidraw |
-| QA / Release | test-plan-generator, api-tester-playbook, release-readiness-gate, perf-benchmark-checklist, dogfood, test-intelligence, experiment-framework |
-| Growth | positioning-messaging, landing-page-copy, seo-topic-map, channel-playbook, activation-onboarding, email-lifecycle, content-engine, product-led-growth, gtm-sprint |
-| Risk / Legal | threat-modeling, privacy-data-handling, compliance-readiness, pricing-unit-economics, tos-privacy-drafting, incident-response, support-operations, security-posture |
+![Agent org chart: each agent, the model it runs on and the skills it owns](docs/diagrams/svg/agent-org.svg)
 
-### 31 Tool Scripts
+</details>
 
-| Tool | Purpose |
-|------|---------|
-| `validate.sh` | Checks artifact frontmatter + reference integrity |
-| `promote.sh` | Enforces lifecycle ordering (draft → review → approved) |
-| `link.sh` | Links parent/child artifacts bidirectionally |
-| `check-gate.sh` | Stage gate checks (prd-to-rfc, rfc-to-impl, impl-to-qa, release) |
-| `version-bump.sh` | Stage-aware app version bumping with changelog + git tags |
-| `smoke-test.sh` | Smoke tests against deployed environment (auto-resolves URL) |
-| `pre-deploy.sh` | Pre-deployment validation gate (8 checks incl. version) |
-| `secrets-scan.sh` | Secret detection in codebase |
-| `token-ledger.sh` | AI token cost logging to COGS ledger |
-| `posture-check.sh` | Security posture health check (findings, scan freshness, policy) |
-| `dashboard.sh` | Project dashboard with artifact graph, gate readiness, open risks, cost snapshot |
+### The ship flow
 
-See [SETUP.md](.company-os/docs/SETUP.md) for the full list across all 10 tool categories.
+![The /ship pipeline: Orchestrator routes the objective, Product writes the PRD, Engineering writes the RFC while Ops & Risk reviews security, Engineering builds, QA reports, Growth prepares launch, Orchestrator approves the release](docs/diagrams/svg/ship-flow.svg)
 
-### Stage-Aware Gates
+`/ship` runs eight stages: plan, PRD, RFC, security review, build, QA, launch prep and release. After the build, it gives you start commands, service URLs and seed data so you can try the feature yourself before QA. The [stage-by-stage table](.company-os/docs/CONCEPTS.md#the-ship-flow) shows what you check at each pause.
 
-Company OS reads `company.stage` from `company.config.yaml` and adjusts enforcement:
+### Stage-aware gates
 
-| Stage | Gate Behavior |
-|-------|--------------|
-| `idea` | All gates advisory — warnings only, move fast |
-| `mvp` | Core gates enforced (prd-to-rfc, rfc-to-impl) |
-| `growth` | All gates enforced |
-| `scale` | All gates enforced + stricter release bars |
+A gate is a scripted check (`tools/artifact/check-gate.sh`) that must pass before work moves on. How strict gates are depends on `company.stage` in `company.config.yaml`:
 
-Start permissive, tighten as you scale. The system adapts without reconfiguration.
+![Stage-aware gates: at idea every gate only warns; at mvp the PRD and RFC gates block; at growth and scale every gate blocks](docs/diagrams/svg/stage-gates.svg)
 
----
+| Stage | Means | Gate behavior |
+|-------|-------|---------------|
+| `idea` | Exploring; no real users | Every gate only warns |
+| `mvp` | First version with early users | `prd-to-rfc` and `rfc-to-impl` block; `impl-to-qa` and `release` warn |
+| `growth` | Paying customers, growing | Every gate blocks |
+| `scale` | Established product, larger team | Every gate blocks |
 
-## How It Works
+If `stage` is empty, gates behave as `growth`. Start permissive and tighten as you grow by changing one line.
 
-### Three-Layer Architecture
+### Artifacts
 
-```
-┌─────────────────────────────────────────────┐
-│  Agents (Authority Layer)                    │
-│  .claude/agents/                             │
-│  Route, decide, delegate. Never build.       │
-├─────────────────────────────────────────────┤
-│  Skills (Procedural Layer)                   │
-│  .claude/skills/                             │
-│  Advise, produce artifacts. Templates &      │
-│  checklists agents follow.                   │
-├─────────────────────────────────────────────┤
-│  Tools (Execution Layer)                     │
-│  tools/                                      │
-│  Execute deterministic actions. Shell scripts │
-│  that validate, promote, link, gate.         │
-└─────────────────────────────────────────────┘
-```
+![Artifact lineage: status moves from draft to review to approved; each artifact links to its parent and children through frontmatter; validate, link, promote and check-gate enforce the rules](docs/diagrams/svg/artifact-lineage.svg)
 
-The dependency rule is strict: Agents depend on Skills for reasoning, Skills depend on Tools for execution. Tools never contain AI reasoning — they are deterministic shell scripts. This separation means enforcement cannot be soft-talked out of.
+Every artifact starts with a YAML header (frontmatter) holding its `id`, `type`, `title`, `status`, `created` and `author`, plus optional links (`parent`, `children`, `depends_on`, `blocks`). Status moves `draft` → `review` → `approved` → `archived`. Four scripts in `tools/artifact/` keep this honest: `validate.sh` (add `--all` to check everything), `link.sh`, `promote.sh` and `check-gate.sh`. Six months from now, `artifacts/` tells you what was built, why, and which risks were accepted.
 
-### Multi-Agent Orchestration
+### Hooks (Claude Code only)
 
-Company OS agents are **Claude Code subagents** — each one is a specialized AI with its own system prompt, skills, and tools. When you give an objective, the Orchestrator spawns the right agent for each stage:
+Three hooks run automatically and cost no tokens. The two artifact hooks need `jq`.
 
-```
-You: "Build Stripe billing for Acme"
- │
- ├─→ Orchestrator reads objective, spawns Product Agent
- │     └─→ Product Agent writes PRD using prd-writer skill
- │
- ├─→ Orchestrator checks prd-to-rfc gate, spawns Engineering Agent
- │     └─→ Engineering Agent writes RFC + API contract
- │
- ├─→ Orchestrator spawns Ops & Risk Agent (in parallel with Engineering)
- │     └─→ Ops & Risk runs threat model on the RFC
- │
- ├─→ Engineering Agent implements code, runs tests
- │
- ├─→ Orchestrator checks impl-to-qa gate, spawns QA Agent
- │     └─→ QA Agent writes test plan, runs validation
- │
- └─→ Orchestrator checks release gate, spawns Growth Agent
-       └─→ Growth Agent writes launch brief
-```
+| Hook | When | What it does |
+|------|------|--------------|
+| `session-start.sh` | A session starts | Shows company, stage, tech stack, branch and recent lessons |
+| `pre-promote-validate.sh` | Before `promote.sh` runs | Validates the artifact and blocks the promotion if it is invalid |
+| `post-write-artifact-check.sh` | After a file in `artifacts/` is written | Warns if the YAML header is missing |
 
-Each agent only sees the skills relevant to its role. The Orchestrator never writes code — it only routes, delegates, and enforces gates. Artifacts produced by one agent become inputs to the next, creating a full audit trail from idea to shipped product.
+### Feature support by runtime
 
-### Ship Flow
-
-Every feature follows this enforced path:
-
-```
-Objective → Orchestrator → Product Agent (PRD)
-                              │
-                    ── prd-to-rfc gate ──
-                              │
-                        Engineering Agent (RFC + API Contract)
-                              │
-                    ── rfc-to-impl gate ──
-                              │
-                    ┌─────────┴─────────┐
-              Ops & Risk Agent     Engineering Agent
-              (Threat Model)       (Implementation)
-                    │                    │
-                    └─────────┬─────────┘
-                    ── impl-to-qa gate ──
-                              │
-                        QA Agent (Test Plan + QA Report)
-                              │
-                    ── release gate ──
-                              │
-                    Growth Agent (Launch Brief)
-                              │
-                    Orchestrator Approves Release
-```
-
-Run `/ship` to kick off the full pipeline. Gates are enforced by `tools/artifact/check-gate.sh` — you can't skip stages. After implementation, a **Seed & Verify** step presents start commands, service URLs, and seed data so you can test what was built before handing off to QA.
+| Feature | Claude Code | Cursor, Codex CLI, Gemini CLI, Aider |
+|---------|-------------|--------------------------------------|
+| Agents, skills, tools, artifacts, gates | Yes | Yes (skills are read from the catalog in `AGENTS.md`, `GEMINI.md` or `.cursor/rules/`) |
+| Slash commands such as `/ship` | Yes | No: ask the agent to "run the ship skill" |
+| Automatic hooks | Yes | No |
+| Per-agent memory (`.claude/agent-memory/`) | Yes | No |
+| Per-agent model choice (`models:` in config) | Yes | No: the runtime uses its own model setting |
 
 ---
 
 ## Why Company OS
 
-### 1. Deterministic enforcement, not prompts
-Rules are shell scripts, not instructions. `check-gate.sh`, `validate.sh`, and `promote.sh` cannot be argued with, hallucinated around, or accidentally skipped.
-
-### 2. Artifact lineage as source of truth
-Every artifact carries YAML frontmatter with `id`, `parent`, `children`, `depends_on`, and `blocks`. The Orchestrator traces this graph to verify prerequisites before advancing — no manual tracking required.
-
-### 3. Stage-aware progressive gates
-At `idea` stage, gates are advisory. At `growth` stage, they're enforced. The same `company.config.yaml` drives this — you set `company.stage` once, the system adjusts.
-
-### 4. Overlay model — never touches your source
-Company OS installs into `.claude/`, `tools/`, and `company.config.yaml`. It does not modify your source directories, existing CI, or git history. Uninstall is a directory removal.
-
-### 5. Config-driven adaptation
-`company.config.yaml` drives agent behavior: tech stack, API conventions, branching strategy, model selection per agent, COGS budget, design archetype, experiment settings. No prompt editing required to adapt the system to your project.
-
-### 6. Cost consciousness built in
-The COGS ledger (`cogs/ai-ledger/`) tracks AI token spend as a first-class business cost. Token costs are published transparently in [TOKEN_COSTS.md](.company-os/docs/TOKEN_COSTS.md). The system uses model routing (opus for reasoning, sonnet for templates) to minimize spend.
+- **Checks are scripts, not prompts.** Gates, validation and status changes run as shell scripts with exit codes, so they behave the same in every runtime and every session.
+- **You approve every stage.** The flow pauses after each artifact. Nothing reaches the next stage without your go-ahead (or, at `idea` stage, without you seeing the warning).
+- **The paper trail is the product.** PRDs, RFCs, threat models and QA reports are linked documents in your repo, so decisions survive past the chat session.
+- **Configuration, not prompt editing.** `company.config.yaml` sets your tech stack, API conventions, branching, models and budgets; agents read it before they act.
+- **Costs are visible.** AI token spend is tracked as COGS in `cogs/ai-ledger/`, and the per-session overhead is published in [Token costs](.company-os/docs/TOKEN_COSTS.md).
+- **It sits beside your code.** Company OS adds its own folders and files. It does not modify your application code, existing CI or git history.
 
 ---
 
-## Install
+## Install options
 
-Company OS is an **overlay** — it adds its own files alongside your code and never touches your source. Works with new projects, existing repos, and monorepos. If you already have a runtime configured (e.g., `.claude/settings.json`), the installer smart-merges — your existing permissions, agents, and skills are preserved.
+Pass flags after `bash -s --` when piping, or directly to `bash install.sh`. Run `bash install.sh --help` for the same list.
 
-### Prerequisites
-
-- **Git** — Company OS uses git for artifact audit trails (`git init` if you don't have one)
-- **An AI coding agent** — Claude Code, Cursor, Codex CLI, Gemini CLI, or any [AGENTS.md](https://agents.md/)-compatible agent
-- **python3** (optional) — Used by the installer to smart-merge `.claude/settings.json` if you install the Claude adapter
+| Flag | What it does |
+|------|--------------|
+| `--runtime <names>` | Runtimes to install adapters for (default `auto`). Values: `claude`, `cursor`, `codex`, `gemini`, `aider`, `all`, `auto`, `core`. Combine with commas: `--runtime claude,cursor` (or `--runtime=claude,cursor`). `auto` detects installed runtimes; `all` installs every adapter; `core` installs shared files only. |
+| `--force` | Update existing Company OS files (keeps your config and edits) |
+| `--branch <name>` | Use a specific branch (default `main`) |
+| `--version <X.Y.Z>` | Install a specific release, for example `--version 1.11.0` |
+| `--dry-run` | Preview what would change without writing anything |
+| `--check` | Check whether an upgrade is available (run from an existing install) |
+| `--changelog` | Show the changelog since the installed version (run from an existing install) |
+| `--backup` | Back up Company OS files before upgrading (automatic for major upgrades) |
+| `-h`, `--help` | Show help |
 
 ```bash
-cd my-project   # or: mkdir my-project && cd my-project
-curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash
+# Claude Code and Cursor only
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --runtime claude,cursor
+
+# Pin a release instead of tracking main
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --version 1.11.0
 ```
 
-By default the installer **auto-detects** which agent CLIs are installed locally and only installs adapters for those. Pin the runtime explicitly with `--runtime`:
+Add a runtime later with `./tools/registry/install-runtime.sh <runtime>`. See what is installed with `./tools/registry/list-runtimes.sh`. If you already have `.claude/settings.json`, the installer merges the Company OS permissions into it and adds the hooks if you have none (this needs `python3`).
+
+### What gets installed
+
+| Path | What it is |
+|------|------------|
+| `os/` | Source of truth for skills and agents |
+| `tools/` | Tool scripts by category, plus `build/` and `lib/` |
+| `AGENTS.md`, `CLAUDE.md` | Instructions for the runtimes |
+| `company.config.yaml` | Your settings |
+| `.company-os/` | Version, install manifest, backups and the user docs |
+| `.claude/`, `.cursor/` and `.cursorrules`, `.codex/`, `GEMINI.md` | Runtime adapters, only for the runtimes you install |
+| `artifacts/`, `standards/`, `seeds/` | Empty working folders for your documents, reference standards and test data |
+
+The full tree is in [Where things live](.company-os/docs/CONCEPTS.md#where-things-live).
+
+![Install and upgrade: install.sh detects your runtimes, installs os/, AGENTS.md and the matching adapters; /upgrade-company-os checks, previews, applies or rolls back](docs/diagrams/svg/install-upgrade.svg)
+
+### Updating
+
+Check your installed version in `.company-os/version`. In Claude Code:
+
+```text
+/upgrade-company-os            # check for updates
+/upgrade-company-os preview    # preview changes
+/upgrade-company-os apply      # run the upgrade
+/upgrade-company-os rollback   # restore from backup
+```
+
+From a terminal:
 
 ```bash
-# Claude Code adapter only
-curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --runtime=claude
-
-# Cursor only
-curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --runtime=cursor
-
-# All adapters (Claude + Cursor + Codex + Gemini + Aider)
-curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --runtime=all
-
-# Core only (os/ + AGENTS.md — no runtime-specific adapter)
-curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --runtime=core
-```
-
-Add a runtime later with `./tools/registry/install-runtime.sh <runtime>`, or see what's installed with `./tools/registry/list-runtimes.sh`.
-
-### After Install
-
-Open Claude Code and run the setup wizard:
-
-```bash
-claude
-> /setup
-```
-
-Three input modes:
-
-| Mode | How | Best for |
-|------|-----|----------|
-| **Interactive** | `/setup` | First-timers — guided step-by-step |
-| **Express** | `/setup` + config block | Power users — paste everything at once |
-| **Auto-Extract** | `/setup https://yoursite.com` | Fastest — extracts from your website or text |
-
-Then build your first feature:
-
-```
-> Build [feature] for [product]
-```
-
----
-
-## Key Commands
-
-| Command | What It Does |
-|---------|-------------|
-| `/setup` | Configure Company OS for your project |
-| `/ship` | Full ship flow — PRD → RFC → implementation → QA → release |
-| `/status` | Project health dashboard — artifacts, statuses, gate readiness |
-| `/artifact-import` | Import existing PRDs, RFCs, specs from external sources |
-| `/ingest` | Sync new standards/artifacts into the system |
-| `/system-maintenance` | Audit and fix documentation after structural changes |
-| `/dev-environment` | Generate Docker Compose + dev scripts from tech stack config |
-| `/upgrade-company-os` | Check for updates, preview changes, upgrade, or rollback |
-| `/rapid-prototype` | Time-boxed PoC (4h/1d/3d) — skips RFC and QA gates |
-| `/token-cost-ledger` | Log AI token spend to COGS ledger |
-| `/design-system` | Configure design archetype and generate visual tokens |
-| `/weekly-review` | Weekly operating summary — shipped, spend, risks, priorities |
-| `/retrospective` | Post-ship retro — trace lineage, evaluate metrics, capture lessons |
-
----
-
-## Content Model
-
-| Category | Location | Author | Purpose |
-|----------|----------|--------|---------|
-| Configuration | `company.config.yaml` | User | Tech stack, API standards, conventions |
-| Imports | `imports/` | User | Transient staging for `/artifact-import` |
-| Standards | `standards/` | User | Permanent reference docs agents read continuously |
-| Session Work | `tasks/` | Agent | Task tracking + accumulated learning |
-| Deliverables | `artifacts/` | Agent | Lifecycle-managed outputs with audit trail |
-| COGS Ledger | `cogs/ai-ledger/` | Agent | AI token spend tracking as business cost |
-
----
-
-## Token Costs
-
-Company OS adds minimal overhead to Claude Code usage:
-
-| What | Additional Tokens |
-|------|------------------|
-| Per session (CLAUDE.md auto-loaded) | ~1,900 |
-| Per agent spawn (skills preloaded) | ~3,000–16,000 |
-| Full feature (idea → shipped) | ~160,000–220,000 total |
-
-See [TOKEN_COSTS.md](.company-os/docs/TOKEN_COSTS.md) for detailed breakdowns.
-
----
-
-## Customization
-
-- **Add skills**: Create `.claude/skills/<name>/SKILL.md`
-- **Add agents**: Create `.claude/agents/<name>.md`
-- **Add tools**: Create `tools/<category>/<name>.sh`
-- **Modify artifact types**: Update `tools/artifact/validate.sh`
-- **Change stage gates**: Update `tools/artifact/check-gate.sh`
-
-After structural changes, run `/system-maintenance` to keep documentation in sync.
-
-Full reference: [SETUP](.company-os/docs/SETUP.md) | [FAQ](.company-os/docs/FAQ.md) | [Roadmap](.company-os/docs/ROADMAP.md)
-
----
-
-## Updating
-
-Company OS uses semantic versioning. Check your installed version in `.company-os/version`.
-
-### From Inside Claude Code
-
-```
-> /upgrade-company-os            # check for updates
-> /upgrade-company-os preview    # preview changes
-> /upgrade-company-os apply      # run the upgrade
-> /upgrade-company-os rollback   # restore from backup
-```
-
-### From Terminal
-
-```bash
-# Quick upgrade (preserves your config, permissions, and custom content)
+# Preview, then apply
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --force --dry-run
 curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --force
-
-# Preview first
-curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --dry-run --force
 ```
 
-Conflicts (you modified + template changed) are saved to `.company-os/conflicts/` for manual resolution. Major version upgrades automatically create a backup.
+Upgrades keep your config, permissions, artifacts and agent memory. If you edited a Company OS file that the upgrade replaces, both your copy (`.user`) and the new one (`.new`) are saved in `.company-os/conflicts/` so you can merge them. Major upgrades create a backup automatically.
 
-See [SETUP.md](.company-os/docs/SETUP.md) for all upgrade flags and options.
+### Uninstalling
+
+There is no uninstall script. Delete the files the installer added and keep the folders that hold your own work (`artifacts/`, `standards/`, `tasks/`, `seeds/`, `cogs/`, `.claude/agent-memory/`). If you had your own `CLAUDE.md`, `.claude/settings.json` or `tools/` before installing, remove only the Company OS parts. The [FAQ](.company-os/docs/FAQ.md#how-do-i-uninstall-company-os) has the exact list.
+
+---
+
+## Customizing
+
+**Edit `os/`, then run `bash tools/build/build.sh`.** Files in `.claude/agents/`, `.claude/skills/`, `.cursor/`, `.codex/`, `AGENTS.md` and `GEMINI.md` are generated adapters; the build overwrites hand edits to them.
+
+![Multi-runtime build: os/skills and os/agents are validated, then build.sh generates .claude/, AGENTS.md, GEMINI.md, .cursor/rules and .codex/](docs/diagrams/svg/multi-runtime-build.svg)
+
+| To | Do this |
+|----|---------|
+| Change or add a skill | Edit or create `os/skills/<name>/SKILL.md`, then run the build |
+| Change or add an agent | Edit or create `os/agents/<name>.md`, then run the build |
+| Add a tool | Create `tools/<category>/<name>.sh` |
+| Add an artifact type | Update `tools/artifact/validate.sh` |
+| Change gate rules | Update `tools/artifact/check-gate.sh` |
+| Teach agents your house rules | Add documents to `standards/`, then run `/ingest` |
+
+After structural changes, run `/system-maintenance` to keep the docs in sync. Step-by-step guides are in [Customizing](.company-os/docs/CUSTOMIZING.md); the frontmatter schema is in [SKILL_SCHEMA.md](docs/contributing/SKILL_SCHEMA.md).
+
+---
+
+## Token costs
+
+Company OS adds an instruction file to every session (about 3,450 tokens in Claude Code) and each agent loads its own skills when it starts. A full `/ship` run is an estimated 250,000 to 400,000 tokens. Per-runtime and per-agent numbers, and ways to cut them, are in [Token costs](.company-os/docs/TOKEN_COSTS.md). Log real spend with `/token-cost-ledger`.
+
+---
+
+## Documentation
+
+| Guide | Read it when |
+|-------|--------------|
+| [Setup](.company-os/docs/SETUP.md) | Installing and shipping your first feature (about 10 minutes) |
+| [Concepts](.company-os/docs/CONCEPTS.md) | You want to understand agents, artifacts, gates and runtimes |
+| [Config reference](.company-os/docs/CONFIG_REFERENCE.md) | You are editing `company.config.yaml` |
+| [Customizing](.company-os/docs/CUSTOMIZING.md) | You want to change skills, add agents or teach your standards |
+| [Troubleshooting](.company-os/docs/TROUBLESHOOTING.md) | Something failed |
+| [FAQ](.company-os/docs/FAQ.md) | Cost, runtimes, upgrading, uninstalling, and deep dives |
+| [Token costs](.company-os/docs/TOKEN_COSTS.md) | You want to estimate or reduce AI spend |
+| [Roadmap](.company-os/docs/ROADMAP.md) | You want to know what is planned |
+| [Changelog](.company-os/docs/CHANGELOG.md) | You are upgrading |
+| [Skill schema](docs/contributing/SKILL_SCHEMA.md) | You are writing a skill or agent |
+| [Diagrams](docs/diagrams/README.md) | You want to regenerate the diagrams on this page |
+
+Found a bug or have a question? [Open an issue](https://github.com/vibbs/company-os/issues).
+
+---
+
+## Glossary
+
+| Term | Meaning |
+|------|---------|
+| **Agent** | An AI role that decides what happens next, such as Product or QA & Release |
+| **Skill** | A written procedure with templates and checklists; in Claude Code you run it as `/name` |
+| **Tool** | A shell script in `tools/` that performs one fixed action, with no AI reasoning |
+| **Artifact** | A document an agent produces, saved under `artifacts/` with a YAML header |
+| **Gate** | A scripted check that must pass before work moves to the next stage |
+| **Stage** | Your company's maturity (`idea`, `mvp`, `growth`, `scale`); it decides which gates block |
+| **Runtime** | The AI coding tool you work in: Claude Code, Cursor, Codex CLI, Gemini CLI or Aider |
+| **Adapter** | The runtime-specific files generated from `os/`; never edit them by hand |
+| **PRD / RFC** | Product requirements document / technical design doc ("request for comments") |
+| **COGS** | Cost of goods sold; Company OS tracks AI token spend as COGS |
+
+The full glossary is in [Concepts](.company-os/docs/CONCEPTS.md#glossary).
 
 ---
 
 ## License
 
-MIT
+[MIT](LICENSE)
