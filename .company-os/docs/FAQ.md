@@ -86,7 +86,7 @@ The top five: git not initialized, `jq` or `python3` missing, a hook blocking a 
 
 Not on install: the installer only adds its own files and merges into `CLAUDE.md` and `.claude/settings.json`.
 
-Agents write application code only when you ask them to build something, for example with `/ship` or `/rapid-prototype`, and `/ship` pauses for your approval at each stage.
+Agents write application code only when you ask them to build something, for example with `/ship` or `/rapid-prototype`, and `/ship` pauses for your approval at each gate.
 
 ---
 
@@ -152,32 +152,32 @@ This applies to error responses. When `i18n.enabled` is true in config, the same
 
 ### 3. How does Company OS enforce UI/UX consistency?
 
-**Coverage: Gap (user-provided input, not a generated skill)**
+**Coverage: Partial (a design-system skill plus your own brand input)**
 
 #### What Company OS does today
 
-- The `positioning-messaging` skill defines brand tone and voice guidelines. The `landing-page-copy` skill inherits these for all marketing content.
-- There is no design system skill — and intentionally so. Design systems, brand guidelines, component libraries, and Figma integrations are company-specific artifacts that you bring, not something an AI agent generates from scratch.
+- The `/design-system` skill sets up and applies your visual design. The first run asks a few questions and picks one of six design archetypes (`linear`, `attio`, `notion`, `figma`, `things3`, `framer`), saved as `design.archetype` in `company.config.yaml`.
+- `/design-system generate-tokens` writes `standards/brand/design-tokens.md`: colors, type, spacing and radius from the archetype, with your `design.overrides` applied. `/design-system review` audits UI code against those tokens.
+- Every product also follows `standards/brand/ux-baseline.md`: empty states, loading, errors, forms and accessibility. The Frontend sub-agent loads the skill before it builds UI.
+- The `positioning-messaging` skill defines brand tone and voice. The `landing-page-copy` skill inherits it for marketing content.
 
-#### What you need to bring
+#### What you bring
 
-Place these in `standards/brand/`:
-- Brand guidelines (visual identity, logo usage, color palette)
-- Design tokens (colors, typography, spacing, border-radius)
+Your own brand material overrides the archetype defaults. Place it in `standards/brand/`:
+- Brand guidelines (visual identity, logo usage, color palette). `standards/brand/brand-guidelines.md` is a template you can fill in.
+- Your own design tokens, if you already have them
 - Component library documentation or Figma links
-- Tone of voice guide (if not captured in positioning-messaging output)
 
 #### Recommended workflow
 
-1. Export your brand guidelines and design tokens to `standards/brand/`
-2. Run `/ingest` to sync into the skill system
-3. When agents create PRDs, they'll reference your brand standards for visual requirements
-4. When agents design architecture, they'll consider component reuse from your library
-5. All marketing content inherits your tone/voice from the messaging framework
+1. Run `/design-system` and pick an archetype (or run it from `/setup`)
+2. Add your brand material to `standards/brand/` and run `/ingest`
+3. Run `/design-system generate-tokens` to produce the project token file
+4. Build UI; run `/design-system review` before release
 
-#### Why this isn't a skill
+#### What it does not do
 
-Design systems are deeply company-specific. A generic "create a design system" skill would produce exactly the kind of generic AI output you're trying to avoid. Your brand guidelines are **input** to the system, not output from it — same way API specs and compliance docs go in `standards/`.
+It does not design screens or create a component library or Figma file for you. The archetypes are starting points; your brand guidelines are the input that makes the result yours.
 
 ---
 
@@ -300,7 +300,7 @@ There is no separate observability artifact in the release gate. The `check-gate
 
 ---
 
-### 7. How do agents communicate and coordinate without human handholding?
+### 7. How do agents communicate and coordinate?
 
 **Coverage: Covered (this is a core strength)**
 
@@ -327,25 +327,24 @@ Product Agent → PRD artifact → Engineering Agent → RFC artifact → QA Age
 
 **Stage gates are the handoff checkpoints.** When the Engineering Agent finishes an RFC, it can't proceed to implementation until the Orchestrator verifies `check-gate.sh rfc-to-impl` passes. This ensures the previous agent delivered quality work before the next agent starts.
 
-**Artifact validation** (`validate.sh`) ensures no orphaned references — if an RFC claims a parent PRD, that PRD must exist. If a PRD lists child RFCs, those RFCs must exist. Bidirectional consistency is enforced.
+**Artifact validation** (`validate.sh`) ensures no orphaned references — if an RFC claims a parent PRD, that PRD must exist. If a PRD lists child RFCs, those RFCs must exist. Bidirectional consistency (parent lists child and child names parent) is enforced with `validate.sh --strict`.
 
 **Conflict resolution** — when agents disagree (Product wants feature A, Engineering flags feasibility concerns), the `conflict-resolver` skill provides structured tradeoff analysis with scoring, recommendations, and documented dissenting views.
 
 #### What the flow looks like for "Build feature X"
 
-1. Orchestrator receives objective, consults workflow router
-2. Workflow router plans: PRD → RFC → Threat Model (parallel) → Implementation → QA → Release
-3. Orchestrator delegates to Product Agent → PRD produced, validated, promoted
-4. Orchestrator runs `check-gate.sh prd-to-rfc` → passes
-5. Orchestrator delegates to Engineering Agent → RFC produced, validated, promoted
-6. Orchestrator runs `check-gate.sh rfc-to-impl` → passes
-7. Engineering implements while Ops & Risk reviews security (parallel)
-8. QA produces test plan and QA report
-9. Orchestrator runs `check-gate.sh release` → all artifacts exist and approved
-10. Growth Agent produces launch brief
-11. Orchestrator approves release
+1. Orchestrator receives the objective, consults the workflow router and shows you the plan
+2. Workflow router plans: PRD → RFC → Implementation → QA → Release, with the launch brief, threat model and test plan in parallel
+3. Orchestrator delegates to Product Agent → PRD produced, validated, promoted to review
+4. Orchestrator runs `check-gate.sh prd-to-rfc` → you approve the PRD
+5. Growth Agent drafts the launch brief in parallel once the PRD is approved
+6. Orchestrator delegates to Engineering Agent → RFC produced; Ops & Risk writes the threat model alongside it
+7. Orchestrator runs `check-gate.sh rfc-to-impl` → you approve the RFC
+8. Engineering implements while QA writes the test plan; `check-gate.sh impl-to-qa` → you approve
+9. User docs, seed and verify (you try the feature), then QA produces the QA report
+10. Orchestrator runs `check-gate.sh release` → all required artifacts exist and are approved → you give the final go
 
-At each step, the gate blocks progression until prerequisites are met. No human intervention needed for the flow itself — you intervene at `review` stages when promoting artifacts.
+Agents hand off through artifacts; you approve at each pause. The gates block progression until the prerequisites are met.
 
 #### Known limitation
 

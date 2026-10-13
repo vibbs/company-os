@@ -232,9 +232,9 @@ Six top-level agents plus three engineering sub-agents. The Orchestrator and the
 
 ### The ship flow
 
-![The /ship pipeline: Orchestrator routes the objective, Product writes the PRD, Engineering writes the RFC while Ops & Risk reviews security, Engineering builds, QA reports, Growth prepares launch, Orchestrator approves the release](.company-os/docs/diagrams/ship-flow.svg)
+![The /ship pipeline: the Orchestrator plans; Product writes the PRD while Growth drafts the launch brief in parallel; Engineering writes the RFC while Ops & Risk models threats; Engineering builds while QA writes the test plan; then docs, seed and verify, and the QA report; then the release gate, release summary and what next](.company-os/docs/diagrams/ship-flow.svg)
 
-`/ship` runs eight steps: plan, PRD, RFC, security review, build, QA, launch prep and release. After the build, it gives you start commands, service URLs and seed data so you can try the feature yourself before QA. The [stage-by-stage table](.company-os/docs/CONCEPTS.md#the-ship-flow) shows what you check at each pause.
+`/ship` runs its steps in four phases: plan, build (PRD, RFC, implementation), verify (docs, seed and verify, QA report) and release. Some steps run in parallel: Growth drafts the launch brief once the PRD is approved, Ops & Risk writes the threat model alongside the RFC, and QA writes the test plan once the RFC is approved. After the build, it gives you start commands, service URLs and seed data so you can try the feature yourself before QA. The [step-by-step table](.company-os/docs/CONCEPTS.md#the-ship-flow) shows what you check at each pause.
 
 ### Stage-aware gates
 

@@ -177,20 +177,24 @@ The stage also sets app versioning: `idea` and `mvp` stay on `0.x.x`; `1.0.0` co
 
 ## The ship flow
 
-![Ship flow: Orchestrator routes the objective; Product writes the PRD; Engineering writes the RFC while Ops & Risk reviews security and QA plans tests; Engineering builds; QA reports; Growth prepares launch; the Orchestrator approves the release](diagrams/ship-flow.svg)
+![Ship flow: the Orchestrator plans; Product writes the PRD while Growth drafts the launch brief in parallel; Engineering writes the RFC while Ops & Risk models threats; Engineering builds while QA writes the test plan; then docs, seed and verify, and the QA report; then the release gate, release summary and what next](diagrams/ship-flow.svg)
 
-`/ship <what you want to build>` runs the whole pipeline. It shows a plan first, then pauses after each stage. At each pause you see the artifact, its location, and the gate result. Reply `approve` to continue, describe a change to rerun the stage, or `stop` to resume later.
+`/ship <what you want to build>` runs the whole pipeline. It shows a plan first, then pauses at each gate. At each pause you see the artifact, its location, and the gate result. Reply `approve` to continue, describe a change to rerun the step, or `stop` to resume later.
 
-| # | Stage | Who | Output | Your job at the pause |
-|---|-------|-----|--------|-----------------------|
-| 1 | Route the objective | Orchestrator | Execution plan | Confirm the plan, or trim stages you do not need |
-| 2 | Requirements | Product | PRD in `artifacts/prds/` | Check the problem, scope and acceptance criteria. This is the cheapest place to change your mind. |
-| 3 | Technical design | Engineering | RFC and API contract in `artifacts/rfcs/` | Check the data model, API shape and anything that is hard to undo |
-| 4 | Security review | Ops & Risk | Threat model in `artifacts/security-reviews/` | Read the top risks and accept or ask for mitigations |
-| 5 | Build | Engineering + sub-agents | Code; CI tools run; test plan in `artifacts/test-plans/` | Try it: the flow gives you start commands, URLs and seed data |
-| 6 | Quality check | QA & Release | QA report in `artifacts/qa-reports/` | Read failures and decide fix-now or ship-with-known-issue |
-| 7 | Launch prep | Growth | Launch brief in `artifacts/launch-briefs/` | Edit the copy so it sounds like you |
-| 8 | Release | Orchestrator | Release readiness verdict | Give the final go. Optionally log the session's AI cost (`/token-cost-ledger`). |
+The step numbers below are the ones in the diagram and in the `ship` skill.
+
+| Step | What happens | Who | Output | Your job at the pause |
+|------|--------------|-----|--------|-----------------------|
+| 1–4 | Plan: load config, list existing artifacts, classify the objective, plan who does what | Orchestrator | Execution plan | Confirm the plan, or trim steps you do not need |
+| 5 | Requirements | Product | PRD in `artifacts/prds/` | Check the problem, scope and acceptance criteria. This is the cheapest place to change your mind. |
+| 5, in parallel | Launch brief, drafted once the PRD is approved | Growth | Launch brief in `artifacts/launch-briefs/` | Edit the copy so it sounds like you |
+| 5 | Technical design | Engineering | RFC and API contract in `artifacts/rfcs/` | Check the data model, API shape and anything that is hard to undo |
+| 5, in parallel | Security review, alongside the RFC | Ops & Risk | Threat model in `artifacts/security-reviews/` | Read the top risks and accept or ask for mitigations |
+| 5 | Build, with the test plan written in parallel | Engineering + sub-agents, QA | Code; CI tools run; test plan in `artifacts/test-plans/` | Review the implementation gate result |
+| 5.7–5.8 | User docs, then seed and verify | Frontend, Engineering | Docs and tours; start commands, URLs and seed data | Try the feature yourself |
+| — | Quality check | QA & Release | QA report in `artifacts/qa-reports/` | Read failures and decide fix-now or ship-with-known-issue |
+| 6 | Release gate: tests, scan, pre-deploy checks, version bump | Orchestrator, QA & Release | Release readiness verdict | Give the final go |
+| 7–8 | Release summary, optional AI cost logging (`/token-cost-ledger`), what to do next | Orchestrator | Summary and suggestions | Nothing required |
 
 Optional steps run only when they apply: discovery validation for novel features, dogfooding (testing as a real user), and experiment review for features behind an A/B test.
 

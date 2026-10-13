@@ -108,7 +108,7 @@ For example:
 /ship Team management: org admins can invite, remove and change roles of team members
 ```
 
-`/ship` pauses after each stage. Your job at each pause is described in [CONCEPTS.md](CONCEPTS.md#the-ship-flow). In Cursor, Codex, Gemini or Aider, ask the agent to "run the ship skill for ..." instead of typing the slash command.
+`/ship` pauses at each gate. Your job at each pause is described in [CONCEPTS.md](CONCEPTS.md#the-ship-flow). In Cursor, Codex, Gemini or Aider, ask the agent to "run the ship skill for ..." instead of typing the slash command.
 
 ## 7. Next steps
 
