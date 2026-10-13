@@ -308,6 +308,7 @@ Company OS manages your app's version as part of `/ship`:
 - Your app gets its own `CHANGELOG.md`. Entries are drafted during `/ship` and stamped at release.
 - Each release gets a `v<version>` git tag.
 - The release gate and `tools/deploy/pre-deploy.sh` check that the version was bumped.
+- The bump check compares against `.previous-version`, a one-line file that `version-bump.sh` writes with the version it replaced. Commit it. Without that file the gate checks only that the version is valid semver.
 
 `/setup` initializes this for you. To bump by hand:
 

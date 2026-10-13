@@ -73,6 +73,8 @@ Pick the mode that suits you:
 | Express | `/setup` followed by a filled-in block (see [CONFIG_REFERENCE.md](CONFIG_REFERENCE.md#express-setup-template)) | Power users. No back-and-forth. |
 | Auto-extract | `/setup https://yourproduct.com`, or `/setup` plus a pasted pitch, brief, or Notion export | Fastest. The wizard fills what it can and asks only about the gaps. |
 
+Expect about 5 minutes for the interactive mode and under a minute for express. It ends with a "Setup Complete" summary of your company, stack, permissions and folders, plus suggested next steps. The [setup skill](../../os/skills/setup/SKILL.md#at-a-glance) has the details.
+
 The most important field is `company.stage` (`idea`, `mvp`, `growth`, or `scale`). It sets how strictly quality checks block you; see [stages and gates](CONCEPTS.md#stages-and-gates).
 
 No AI runtime yet? Run `bash setup.sh` to create the folders and a blank config, then edit `company.config.yaml` by hand using [CONFIG_REFERENCE.md](CONFIG_REFERENCE.md).
@@ -108,7 +110,16 @@ For example:
 /ship Team management: org admins can invite, remove and change roles of team members
 ```
 
-`/ship` pauses at each gate. Your job at each pause is described in [CONCEPTS.md](CONCEPTS.md#the-ship-flow). In Cursor, Codex, Gemini or Aider, ask the agent to "run the ship skill for ..." instead of typing the slash command.
+`/ship` first shows a plan to confirm, then pauses at each gate with a prompt like this:
+
+```text
+Stage complete: PRD
+  Artifact: PRD-0007 "Team invitations"  (artifacts/prds/PRD-0007-team-invitations.md)
+  Gate prd-to-rfc: PASS
+Review the artifact and approve to continue, or request changes?
+```
+
+Reply `approve` to continue, describe a change to rerun the step, or `stop` to resume later. Your job at each pause is described in [CONCEPTS.md](CONCEPTS.md#the-ship-flow). In Cursor, Codex, Gemini or Aider, ask the agent to "run the ship skill for ..." instead of typing the slash command.
 
 ## 7. Next steps
 

@@ -282,9 +282,9 @@
 <g class="f-orch"><polygon points="897,1076 892.5,1083.8 883.5,1083.8 879,1076 883.5,1068.2 892.5,1068.2" class="tint" stroke-width="1.25"/>
 <path d="M883.5,1076.5 L886.8,1079.8 L893,1072.5" class="tick"/></g>
 <path d="M828,1114 L828,1136 Q828,1142 822,1142 L146,1142 Q140,1142 140,1136 L140,1116" class="edge dashed" marker-end="url(#cos-ship-flow-ah)"/>
-<rect x="280.5" y="1132" width="407" height="18" rx="4" class="lbg-card"/>
-<text x="484" y="1145.5" class="r-meta" text-anchor="middle">f. Changes requested: the agent iterates with your feedback</text>
-<text x="64" y="1178" class="r-body">e. Approved: promote.sh marks the artifact approved and the next stage starts.</text>
+<rect x="274" y="1132" width="420" height="18" rx="4" class="lbg-card"/>
+<text x="484" y="1145.5" class="r-meta" text-anchor="middle">If you request changes, the agent iterates with your feedback</text>
+<text x="64" y="1178" class="r-body">If you approve, promote.sh marks the artifact approved and the next step starts.</text>
 <rect x="42" y="1216" width="22" height="16" rx="4" class="card"/>
 <text x="74" y="1228" class="r-meta">step</text>
 <path d="M131,1215 H141 L146,1220 V1233 H131 Z" class="card"/>

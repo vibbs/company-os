@@ -796,8 +796,8 @@ diagram(() => {
   });
   const last = 64 + 4 * (lw + lg);
   d.edge([[last + lw / 2, ly + 52], [last + lw / 2, ly + 80], [64 + lw / 2, ly + 80], [64 + lw / 2, ly + 54]], { style: 'dashed' });
-  d.edgeLabel((64 + last + lw) / 2, ly + 80, 'f. Changes requested: the agent iterates with your feedback', { bg: 'lbg-card' });
-  d.text(64, ly + 116, 'e. Approved: promote.sh marks the artifact approved and the next stage starts.', { role: 'body', maxW: 840 });
+  d.edgeLabel((64 + last + lw) / 2, ly + 80, 'If you request changes, the agent iterates with your feedback', { bg: 'lbg-card' });
+  d.text(64, ly + 116, 'If you approve, promote.sh marks the artifact approved and the next step starts.', { role: 'body', maxW: 840 });
 
   d.legend(40, 1224, [
     { kind: 'step', label: 'step' },
@@ -1233,7 +1233,7 @@ diagram(() => {
     height: 860,
     title: 'Where to start',
     subtitle: 'Three entry points, from cheapest to most complete. Then the feedback loop keeps you shipping.',
-    desc: 'Entry points: /gtm-sprint validates demand in 7, 14 or 21 days with no code; /rapid-prototype proves the tech in 4 hours, 1 day or 3 days and skips RFC, security review and QA; /ship builds and launches with every gate. Not sure: describe the goal and the workflow-router skill picks one of 10 paths. Feedback loop: customer-conversations, feedback-synthesizer (scores candidates: over 15 go to /ship, 8 to 15 to /discovery-validation, under 8 monitor), sprint-prioritizer, prd-writer, /ship, users of the shipped product, back to customer-conversations.',
+    desc: 'Entry points: /gtm-sprint validates demand in 7, 14 or 21 days with no code; /rapid-prototype proves the tech in 4 hours, 1 day or 3 days and skips RFC, security review and QA; /ship builds and launches with every gate. Not sure: describe the goal and the workflow-router skill picks one of 10 paths. Feedback loop: customer-conversations, feedback-synthesizer (scores candidates: over 15 go to /ship, 8 to 15 to the discovery-validation skill, under 8 monitor), sprint-prioritizer, prd-writer, /ship, users of the shipped product, back to customer-conversations.',
   });
   const entries = [
     { fam: 'growth', cmd: '/gtm-sprint', what: 'Validate demand', time: '7, 14 or 21 days · no code',
@@ -1301,7 +1301,7 @@ diagram(() => {
   d.edge([[40 + nw / 2, bot - 2], [40 + nw / 2, top + nh + 2]]);
   // Score note under the synthesizer
   const sx = 40 + nw + gx + nw / 2;
-  const note = 'Score: over 15 → /ship · 8 to 15 → /discovery-validation · under 8 → monitor';
+  const note = 'Score: over 15 → /ship · 8 to 15 → discovery-validation · under 8 → monitor';
   const noteW = textWidth(note, 'meta') + 28;
   const nY = top + nh + 14;
   d.add(`<path d="M${sx},${top + nh} V${nY}" class="edge dotted"/>`);
