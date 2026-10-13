@@ -1,0 +1,179 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="cos-stage-gates" width="960" height="784" viewBox="0 0 960 784" role="img" aria-labelledby="cos-stage-gates-title cos-stage-gates-desc">
+<title id="cos-stage-gates-title">Which gates block, by company stage</title>
+<desc id="cos-stage-gates-desc">Matrix of four gates by four stages. idea: all gates advisory. mvp: prd-to-rfc and rfc-to-impl enforced, impl-to-qa and release advisory. growth and scale: all enforced. The AI safety check inside the release gate follows the same pattern as release. Advisory prints warnings and exits 0. Enforced prints failures and exits 1. No stage set means growth; an unknown stage is enforced.</desc>
+<style>
+#cos-stage-gates{--bg:#f6f8fa;--surface:#ffffff;--sunken:#f6f8fa;--border:#d1d9e0;--border-soft:#e4e9ee;--text:#1f2328;--text-2:#4b5562;--text-3:#606a76;--line:#8c959f;--shadow:#1f2328;--shadow-o:0.07;--solid:#24292f;--on-solid:#ffffff;--mono:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+#cos-stage-gates .f-orch{--a:#4f46e5;--a-soft:#eef0ff}#cos-stage-gates .f-product{--a:#7c3aed;--a-soft:#f4effe}#cos-stage-gates .f-eng{--a:#0f766e;--a-soft:#e6f5f3}#cos-stage-gates .f-qa{--a:#0369a1;--a-soft:#e8f4fb}#cos-stage-gates .f-growth{--a:#be185d;--a-soft:#fdf0f6}#cos-stage-gates .f-ops{--a:#b42318;--a-soft:#fdf1f0}#cos-stage-gates .f-gate{--a:#b45309;--a-soft:#fef6e7}#cos-stage-gates .f-neutral{--a:#4b5562;--a-soft:#f1f3f5}
+@media (prefers-color-scheme: dark){#cos-stage-gates{--bg:#0d1117;--surface:#151b23;--sunken:#10151c;--border:#3d444d;--border-soft:#2a3038;--text:#e6edf3;--text-2:#b1bac4;--text-3:#9198a1;--line:#7d8590;--shadow:#000000;--shadow-o:0.35;--solid:#e6edf3;--on-solid:#0d1117}#cos-stage-gates .f-orch{--a:#a5b4fc;--a-soft:rgba(129,140,248,0.16)}#cos-stage-gates .f-product{--a:#c4b5fd;--a-soft:rgba(167,139,250,0.16)}#cos-stage-gates .f-eng{--a:#5eead4;--a-soft:rgba(45,212,191,0.14)}#cos-stage-gates .f-qa{--a:#7dd3fc;--a-soft:rgba(56,189,248,0.14)}#cos-stage-gates .f-growth{--a:#f9a8d4;--a-soft:rgba(244,114,182,0.14)}#cos-stage-gates .f-ops{--a:#fca5a5;--a-soft:rgba(248,113,113,0.14)}#cos-stage-gates .f-gate{--a:#fbbf24;--a-soft:rgba(251,191,36,0.14)}#cos-stage-gates .f-neutral{--a:#b1bac4;--a-soft:rgba(177,186,196,0.12)}}
+#cos-stage-gates text{font-family:-apple-system, 'Segoe UI', Inter, Helvetica, Arial, sans-serif;fill:var(--text)}
+#cos-stage-gates .r-title{font-size:22px;font-weight:600}#cos-stage-gates .r-sub{font-size:14px;font-weight:400}#cos-stage-gates .r-h{font-size:14px;font-weight:600}#cos-stage-gates .r-hs{font-size:13px;font-weight:600}#cos-stage-gates .r-body{font-size:13px;font-weight:400}#cos-stage-gates .r-meta{font-size:12px;font-weight:400}#cos-stage-gates .r-badge{font-size:12px;font-weight:500}#cos-stage-gates .r-label{font-size:12px;font-weight:600;letter-spacing:0.04em}#cos-stage-gates .r-code{font-size:12px;font-weight:400;font-family:var(--mono)}#cos-stage-gates .r-codeh{font-size:13px;font-weight:600;font-family:var(--mono)}
+#cos-stage-gates .r-sub,#cos-stage-gates .r-body{fill:var(--text-2)}
+#cos-stage-gates .r-meta{fill:var(--text-3)}
+#cos-stage-gates .r-label,#cos-stage-gates .c-a{fill:var(--a)}
+#cos-stage-gates .c-2{fill:var(--text-2)}#cos-stage-gates .c-3{fill:var(--text-3)}#cos-stage-gates .c-on{fill:var(--on-solid)}
+#cos-stage-gates .panel{fill:var(--bg);stroke:var(--border)}
+#cos-stage-gates .card{fill:var(--surface);stroke:var(--border)}
+#cos-stage-gates .sunken{fill:var(--sunken);stroke:var(--border-soft)}
+#cos-stage-gates .tint{fill:var(--a-soft);stroke:var(--a)}
+#cos-stage-gates .tint-soft{fill:var(--a-soft);stroke:none}
+#cos-stage-gates .bar{fill:var(--a)}
+#cos-stage-gates .chip{fill:var(--sunken);stroke:var(--border)}
+#cos-stage-gates .solid{fill:var(--solid);stroke:var(--solid)}
+#cos-stage-gates .fold{fill:var(--border-soft);stroke:var(--border)}
+#cos-stage-gates .rule{stroke:var(--border-soft);fill:none}
+#cos-stage-gates .edge{fill:none;stroke:var(--line);stroke-width:1.25}
+#cos-stage-gates .ah{fill:var(--line)}
+#cos-stage-gates .dashed{stroke-dasharray:5 4}
+#cos-stage-gates .dotted{stroke-dasharray:1.5 3;stroke-linecap:round}
+#cos-stage-gates .lbg{fill:var(--bg)}#cos-stage-gates .lbg-card{fill:var(--surface)}
+#cos-stage-gates .shadow{flood-color:var(--shadow);flood-opacity:var(--shadow-o)}
+#cos-stage-gates .tick{fill:none;stroke:var(--a);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+</style>
+<defs>
+<filter id="cos-stage-gates-sh" x="-5%" y="-5%" width="110%" height="130%"><feDropShadow dx="0" dy="1" stdDeviation="1.5" class="shadow"/></filter>
+<marker id="cos-stage-gates-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M1,1.5 L9,5 L1,8.5 Z" class="ah"/></marker>
+</defs>
+<rect x="0.5" y="0.5" width="959" height="783" rx="16" class="panel"/>
+<text x="40" y="52" class="r-title">Which gates block, by company stage</text>
+<text x="40" y="78" class="r-sub">check-gate.sh reads company.stage. Early stages warn; later stages block.</text>
+<rect x="40" y="112" width="880" height="420" rx="10" class="card" filter="url(#cos-stage-gates-sh)"/>
+<rect x="40.5" y="112.5" width="879" height="60" rx="10" class="sunken"/>
+<rect x="40.5" y="162" width="879" height="10" class="sunken" style="stroke:none"/>
+<text x="64" y="138" class="r-hs">Gate</text>
+<text x="64" y="156" class="r-meta">what it checks</text>
+<text x="493" y="138" class="r-codeh" text-anchor="middle">idea</text>
+<text x="493" y="156" class="r-meta" text-anchor="middle">everything warns</text>
+<text x="615" y="138" class="r-codeh" text-anchor="middle">mvp</text>
+<text x="615" y="156" class="r-meta" text-anchor="middle">core gates block</text>
+<text x="737" y="138" class="r-codeh" text-anchor="middle">growth</text>
+<text x="737" y="156" class="r-meta" text-anchor="middle">all gates block</text>
+<text x="859" y="138" class="r-codeh" text-anchor="middle">scale</text>
+<text x="859" y="156" class="r-meta" text-anchor="middle">all gates block</text>
+<line x1="40" y1="172" x2="920" y2="172" class="rule"/>
+<text x="64" y="198" class="r-codeh">prd-to-rfc</text>
+<text x="64" y="216" class="r-meta">PRD is approved and has acceptance criteria.</text>
+<rect x="453" y="196" width="80" height="24" rx="12" class="tint dashed f-gate"/>
+<g class="f-gate">
+<text x="493" y="212.2" class="r-badge c-a" text-anchor="middle">Advisory</text>
+</g>
+<rect x="575" y="196" width="80" height="24" rx="12" class="solid"/>
+<g>
+<text x="615" y="212.2" class="r-badge c-on" text-anchor="middle">Enforced</text>
+</g>
+<rect x="697" y="196" width="80" height="24" rx="12" class="solid"/>
+<g>
+<text x="737" y="212.2" class="r-badge c-on" text-anchor="middle">Enforced</text>
+</g>
+<rect x="819" y="196" width="80" height="24" rx="12" class="solid"/>
+<g>
+<text x="859" y="212.2" class="r-badge c-on" text-anchor="middle">Enforced</text>
+</g>
+<line x1="56" y1="244" x2="904" y2="244" class="rule"/>
+<text x="64" y="270" class="r-codeh">rfc-to-impl</text>
+<text x="64" y="288" class="r-meta">RFC is approved and its parent PRD is approved.</text>
+<rect x="453" y="268" width="80" height="24" rx="12" class="tint dashed f-gate"/>
+<g class="f-gate">
+<text x="493" y="284.2" class="r-badge c-a" text-anchor="middle">Advisory</text>
+</g>
+<rect x="575" y="268" width="80" height="24" rx="12" class="solid"/>
+<g>
+<text x="615" y="284.2" class="r-badge c-on" text-anchor="middle">Enforced</text>
+</g>
+<rect x="697" y="268" width="80" height="24" rx="12" class="solid"/>
+<g>
+<text x="737" y="284.2" class="r-badge c-on" text-anchor="middle">Enforced</text>
+</g>
+<rect x="819" y="268" width="80" height="24" rx="12" class="solid"/>
+<g>
+<text x="859" y="284.2" class="r-badge c-on" text-anchor="middle">Enforced</text>
+</g>
+<line x1="56" y1="316" x2="904" y2="316" class="rule"/>
+<text x="64" y="342" class="r-codeh">impl-to-qa</text>
+<text x="64" y="360" class="r-meta">RFC is approved and a test plan exists. Seed data</text>
+<text x="64" y="376" class="r-meta">catalog is a hint only.</text>
+<rect x="453" y="340" width="80" height="24" rx="12" class="tint dashed f-gate"/>
+<g class="f-gate">
+<text x="493" y="356.2" class="r-badge c-a" text-anchor="middle">Advisory</text>
+</g>
+<rect x="575" y="340" width="80" height="24" rx="12" class="tint dashed f-gate"/>
+<g class="f-gate">
+<text x="615" y="356.2" class="r-badge c-a" text-anchor="middle">Advisory</text>
+</g>
+<rect x="697" y="340" width="80" height="24" rx="12" class="solid"/>
+<g>
+<text x="737" y="356.2" class="r-badge c-on" text-anchor="middle">Enforced</text>
+</g>
+<rect x="819" y="340" width="80" height="24" rx="12" class="solid"/>
+<g>
+<text x="859" y="356.2" class="r-badge c-on" text-anchor="middle">Enforced</text>
+</g>
+<line x1="56" y1="388" x2="904" y2="388" class="rule"/>
+<text x="64" y="414" class="r-codeh">release</text>
+<text x="64" y="432" class="r-meta">PRD, RFC and QA report approved; security review</text>
+<text x="64" y="448" class="r-meta">exists; app version is valid semver and was bumped.</text>
+<rect x="453" y="412" width="80" height="24" rx="12" class="tint dashed f-gate"/>
+<g class="f-gate">
+<text x="493" y="428.2" class="r-badge c-a" text-anchor="middle">Advisory</text>
+</g>
+<rect x="575" y="412" width="80" height="24" rx="12" class="tint dashed f-gate"/>
+<g class="f-gate">
+<text x="615" y="428.2" class="r-badge c-a" text-anchor="middle">Advisory</text>
+</g>
+<rect x="697" y="412" width="80" height="24" rx="12" class="solid"/>
+<g>
+<text x="737" y="428.2" class="r-badge c-on" text-anchor="middle">Enforced</text>
+</g>
+<rect x="819" y="412" width="80" height="24" rx="12" class="solid"/>
+<g>
+<text x="859" y="428.2" class="r-badge c-on" text-anchor="middle">Enforced</text>
+</g>
+<line x1="56" y1="460" x2="904" y2="460" class="rule"/>
+<text x="64" y="486" class="r-meta">↳</text>
+<text x="80" y="486" class="r-codeh">AI safety (bar 10)</text>
+<text x="80" y="504" class="r-meta">Part of release. Only when ai.llm_provider is</text>
+<text x="80" y="520" class="r-meta">set and the RFC covers AI.</text>
+<rect x="453" y="484" width="80" height="24" rx="12" class="tint dashed f-gate"/>
+<g class="f-gate">
+<text x="493" y="500.2" class="r-badge c-a" text-anchor="middle">Advisory</text>
+</g>
+<rect x="575" y="484" width="80" height="24" rx="12" class="tint dashed f-gate"/>
+<g class="f-gate">
+<text x="615" y="500.2" class="r-badge c-a" text-anchor="middle">Advisory</text>
+</g>
+<rect x="697" y="484" width="80" height="24" rx="12" class="solid"/>
+<g>
+<text x="737" y="500.2" class="r-badge c-on" text-anchor="middle">Enforced</text>
+</g>
+<rect x="819" y="484" width="80" height="24" rx="12" class="solid"/>
+<g>
+<text x="859" y="500.2" class="r-badge c-on" text-anchor="middle">Enforced</text>
+</g>
+<line x1="432" y1="124" x2="432" y2="520" class="rule"/>
+<line x1="554" y1="124" x2="554" y2="520" class="rule"/>
+<line x1="676" y1="124" x2="676" y2="520" class="rule"/>
+<line x1="798" y1="124" x2="798" y2="520" class="rule"/>
+<rect x="40" y="564" width="280" height="136" rx="10" class="card" filter="url(#cos-stage-gates-sh)"/>
+<rect x="60" y="578" width="80" height="24" rx="12" class="tint dashed f-gate"/>
+<g class="f-gate">
+<text x="100" y="594.2" class="r-badge c-a" text-anchor="middle">Advisory</text>
+</g>
+<text x="60" y="626" class="r-body">Failures print as warnings.</text>
+<text x="60" y="644" class="r-body">Exit code 0. Work continues.</text>
+<text x="60" y="684" class="r-code">GATE ADVISORY ... not blocking</text>
+<rect x="340" y="564" width="280" height="136" rx="10" class="card" filter="url(#cos-stage-gates-sh)"/>
+<rect x="360" y="578" width="80" height="24" rx="12" class="solid"/>
+<g>
+<text x="400" y="594.2" class="r-badge c-on" text-anchor="middle">Enforced</text>
+</g>
+<text x="360" y="626" class="r-body">Failures print with details.</text>
+<text x="360" y="644" class="r-body">Exit code 1. Fix and re-run.</text>
+<text x="360" y="684" class="r-code">GATE FAILED</text>
+<rect x="640" y="564" width="280" height="136" rx="10" class="card" filter="url(#cos-stage-gates-sh)"/>
+<text x="660" y="594" class="r-hs">Set your stage</text>
+<text x="660" y="618" class="r-body">In company.config.yaml.</text>
+<text x="660" y="636" class="r-body">Not set: treated as growth.</text>
+<text x="660" y="654" class="r-body">Unknown value: enforced.</text>
+<text x="660" y="684" class="r-code">company.stage: mvp</text>
+<text x="40" y="728" class="r-meta">Source: tools/artifact/check-gate.sh. Run it yourself: ./tools/artifact/check-gate.sh &lt;gate&gt; &lt;artifact&gt;</text>
+<text x="920" y="766" class="r-meta" text-anchor="end">Company OS · generated by docs/diagrams/render.js</text>
+</svg>

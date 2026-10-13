@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="cos-multi-runtime-build" width="960" height="848" viewBox="0 0 960 848" role="img" aria-labelledby="cos-multi-runtime-build-title cos-multi-runtime-build-desc">
+<title id="cos-multi-runtime-build-title">One source, every runtime</title>
+<desc id="cos-multi-runtime-build-desc">Source files in os/ (64 skills, 9 agents) and CLAUDE.md feed tools/build/build.sh, which runs five builders: build-claude.sh writes .claude/skills and .claude/agents for Claude Code; build-agents-md.sh writes AGENTS.md for Codex, Aider and other AGENTS.md readers; build-gemini.sh writes GEMINI.md for Gemini CLI; build-cursor.sh writes .cursor/rules and .cursorrules for Cursor; build-codex.sh writes .codex/config.md for Codex CLI. build.sh --check validates without writing. .claude/hooks, settings.json and agent-memory are hand-maintained, not generated.</desc>
+<style>
+#cos-multi-runtime-build{--bg:#f6f8fa;--surface:#ffffff;--sunken:#f6f8fa;--border:#d1d9e0;--border-soft:#e4e9ee;--text:#1f2328;--text-2:#4b5562;--text-3:#606a76;--line:#8c959f;--shadow:#1f2328;--shadow-o:0.07;--solid:#24292f;--on-solid:#ffffff;--mono:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+#cos-multi-runtime-build .f-orch{--a:#4f46e5;--a-soft:#eef0ff}#cos-multi-runtime-build .f-product{--a:#7c3aed;--a-soft:#f4effe}#cos-multi-runtime-build .f-eng{--a:#0f766e;--a-soft:#e6f5f3}#cos-multi-runtime-build .f-qa{--a:#0369a1;--a-soft:#e8f4fb}#cos-multi-runtime-build .f-growth{--a:#be185d;--a-soft:#fdf0f6}#cos-multi-runtime-build .f-ops{--a:#b42318;--a-soft:#fdf1f0}#cos-multi-runtime-build .f-gate{--a:#b45309;--a-soft:#fef6e7}#cos-multi-runtime-build .f-neutral{--a:#4b5562;--a-soft:#f1f3f5}
+@media (prefers-color-scheme: dark){#cos-multi-runtime-build{--bg:#0d1117;--surface:#151b23;--sunken:#10151c;--border:#3d444d;--border-soft:#2a3038;--text:#e6edf3;--text-2:#b1bac4;--text-3:#9198a1;--line:#7d8590;--shadow:#000000;--shadow-o:0.35;--solid:#e6edf3;--on-solid:#0d1117}#cos-multi-runtime-build .f-orch{--a:#a5b4fc;--a-soft:rgba(129,140,248,0.16)}#cos-multi-runtime-build .f-product{--a:#c4b5fd;--a-soft:rgba(167,139,250,0.16)}#cos-multi-runtime-build .f-eng{--a:#5eead4;--a-soft:rgba(45,212,191,0.14)}#cos-multi-runtime-build .f-qa{--a:#7dd3fc;--a-soft:rgba(56,189,248,0.14)}#cos-multi-runtime-build .f-growth{--a:#f9a8d4;--a-soft:rgba(244,114,182,0.14)}#cos-multi-runtime-build .f-ops{--a:#fca5a5;--a-soft:rgba(248,113,113,0.14)}#cos-multi-runtime-build .f-gate{--a:#fbbf24;--a-soft:rgba(251,191,36,0.14)}#cos-multi-runtime-build .f-neutral{--a:#b1bac4;--a-soft:rgba(177,186,196,0.12)}}
+#cos-multi-runtime-build text{font-family:-apple-system, 'Segoe UI', Inter, Helvetica, Arial, sans-serif;fill:var(--text)}
+#cos-multi-runtime-build .r-title{font-size:22px;font-weight:600}#cos-multi-runtime-build .r-sub{font-size:14px;font-weight:400}#cos-multi-runtime-build .r-h{font-size:14px;font-weight:600}#cos-multi-runtime-build .r-hs{font-size:13px;font-weight:600}#cos-multi-runtime-build .r-body{font-size:13px;font-weight:400}#cos-multi-runtime-build .r-meta{font-size:12px;font-weight:400}#cos-multi-runtime-build .r-badge{font-size:12px;font-weight:500}#cos-multi-runtime-build .r-label{font-size:12px;font-weight:600;letter-spacing:0.04em}#cos-multi-runtime-build .r-code{font-size:12px;font-weight:400;font-family:var(--mono)}#cos-multi-runtime-build .r-codeh{font-size:13px;font-weight:600;font-family:var(--mono)}
+#cos-multi-runtime-build .r-sub,#cos-multi-runtime-build .r-body{fill:var(--text-2)}
+#cos-multi-runtime-build .r-meta{fill:var(--text-3)}
+#cos-multi-runtime-build .r-label,#cos-multi-runtime-build .c-a{fill:var(--a)}
+#cos-multi-runtime-build .c-2{fill:var(--text-2)}#cos-multi-runtime-build .c-3{fill:var(--text-3)}#cos-multi-runtime-build .c-on{fill:var(--on-solid)}
+#cos-multi-runtime-build .panel{fill:var(--bg);stroke:var(--border)}
+#cos-multi-runtime-build .card{fill:var(--surface);stroke:var(--border)}
+#cos-multi-runtime-build .sunken{fill:var(--sunken);stroke:var(--border-soft)}
+#cos-multi-runtime-build .tint{fill:var(--a-soft);stroke:var(--a)}
+#cos-multi-runtime-build .tint-soft{fill:var(--a-soft);stroke:none}
+#cos-multi-runtime-build .bar{fill:var(--a)}
+#cos-multi-runtime-build .chip{fill:var(--sunken);stroke:var(--border)}
+#cos-multi-runtime-build .solid{fill:var(--solid);stroke:var(--solid)}
+#cos-multi-runtime-build .fold{fill:var(--border-soft);stroke:var(--border)}
+#cos-multi-runtime-build .rule{stroke:var(--border-soft);fill:none}
+#cos-multi-runtime-build .edge{fill:none;stroke:var(--line);stroke-width:1.25}
+#cos-multi-runtime-build .ah{fill:var(--line)}
+#cos-multi-runtime-build .dashed{stroke-dasharray:5 4}
+#cos-multi-runtime-build .dotted{stroke-dasharray:1.5 3;stroke-linecap:round}
+#cos-multi-runtime-build .lbg{fill:var(--bg)}#cos-multi-runtime-build .lbg-card{fill:var(--surface)}
+#cos-multi-runtime-build .shadow{flood-color:var(--shadow);flood-opacity:var(--shadow-o)}
+#cos-multi-runtime-build .tick{fill:none;stroke:var(--a);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+</style>
+<defs>
+<filter id="cos-multi-runtime-build-sh" x="-5%" y="-5%" width="110%" height="130%"><feDropShadow dx="0" dy="1" stdDeviation="1.5" class="shadow"/></filter>
+<marker id="cos-multi-runtime-build-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M1,1.5 L9,5 L1,8.5 Z" class="ah"/></marker>
+</defs>
+<rect x="0.5" y="0.5" width="959" height="847" rx="16" class="panel"/>
+<text x="40" y="52" class="r-title">One source, every runtime</text>
+<text x="40" y="78" class="r-sub">Edit os/. Run tools/build/build.sh. Each runtime gets its own generated adapter.</text>
+<rect x="312" y="120" width="272" height="72" rx="10" class="card" filter="url(#cos-multi-runtime-build-sh)"/>
+<rect x="320" y="132" width="3" height="48" rx="1.5" class="bar f-orch"/>
+<text x="336" y="146" class="r-codeh">tools/build/build.sh</text>
+<text x="336" y="166" class="r-code">--runtime=&lt;name&gt;  ·  --check</text>
+<g class="f-neutral">
+<text x="624" y="228" class="r-label">GENERATED · DO NOT EDIT</text>
+</g>
+<g class="f-orch">
+<text x="40" y="228" class="r-label">SOURCE · EDIT HERE</text>
+</g>
+<rect x="344" y="260" width="240" height="40" rx="8" class="sunken"/>
+<text x="360" y="285" class="r-code">build-claude.sh</text>
+<path d="M328,280 L342,280" class="edge"/>
+<path d="M586,280 L622,280" class="edge" marker-end="url(#cos-multi-runtime-build-ah)"/>
+<rect x="624" y="248" width="296" height="64" rx="10" class="card" filter="url(#cos-multi-runtime-build-sh)"/>
+<text x="644" y="274" class="r-codeh">.claude/skills/ + agents/</text>
+<text x="644" y="294" class="r-body">Claude Code</text>
+<rect x="344" y="340" width="240" height="40" rx="8" class="sunken"/>
+<text x="360" y="365" class="r-code">build-agents-md.sh</text>
+<path d="M328,360 L342,360" class="edge"/>
+<path d="M586,360 L622,360" class="edge" marker-end="url(#cos-multi-runtime-build-ah)"/>
+<rect x="624" y="328" width="296" height="64" rx="10" class="card" filter="url(#cos-multi-runtime-build-sh)"/>
+<text x="644" y="354" class="r-codeh">AGENTS.md</text>
+<text x="644" y="374" class="r-body">Codex, Aider, any AGENTS.md reader</text>
+<rect x="344" y="420" width="240" height="40" rx="8" class="sunken"/>
+<text x="360" y="445" class="r-code">build-gemini.sh</text>
+<path d="M328,440 L342,440" class="edge"/>
+<path d="M586,440 L622,440" class="edge" marker-end="url(#cos-multi-runtime-build-ah)"/>
+<rect x="624" y="408" width="296" height="64" rx="10" class="card" filter="url(#cos-multi-runtime-build-sh)"/>
+<text x="644" y="434" class="r-codeh">GEMINI.md</text>
+<text x="644" y="454" class="r-body">Gemini CLI</text>
+<rect x="344" y="500" width="240" height="40" rx="8" class="sunken"/>
+<text x="360" y="525" class="r-code">build-cursor.sh</text>
+<path d="M328,520 L342,520" class="edge"/>
+<path d="M586,520 L622,520" class="edge" marker-end="url(#cos-multi-runtime-build-ah)"/>
+<rect x="624" y="488" width="296" height="64" rx="10" class="card" filter="url(#cos-multi-runtime-build-sh)"/>
+<text x="644" y="514" class="r-codeh">.cursor/rules/ + .cursorrules</text>
+<text x="644" y="534" class="r-body">Cursor</text>
+<rect x="344" y="580" width="240" height="40" rx="8" class="sunken"/>
+<text x="360" y="605" class="r-code">build-codex.sh</text>
+<path d="M328,600 L342,600" class="edge"/>
+<path d="M586,600 L622,600" class="edge" marker-end="url(#cos-multi-runtime-build-ah)"/>
+<rect x="624" y="568" width="296" height="64" rx="10" class="card" filter="url(#cos-multi-runtime-build-sh)"/>
+<text x="644" y="594" class="r-codeh">.codex/config.md</text>
+<text x="644" y="614" class="r-body">Codex CLI</text>
+<path d="M328,192 V600" class="edge"/>
+<path d="M328,280 h14" class="edge" marker-end="url(#cos-multi-runtime-build-ah)"/>
+<path d="M328,360 h14" class="edge" marker-end="url(#cos-multi-runtime-build-ah)"/>
+<path d="M328,440 h14" class="edge" marker-end="url(#cos-multi-runtime-build-ah)"/>
+<path d="M328,520 h14" class="edge" marker-end="url(#cos-multi-runtime-build-ah)"/>
+<path d="M328,600 h14" class="edge" marker-end="url(#cos-multi-runtime-build-ah)"/>
+<rect x="40" y="248" width="232" height="384" rx="10" class="card" filter="url(#cos-multi-runtime-build-sh)"/>
+<rect x="48" y="260" width="3" height="360" rx="1.5" class="bar f-orch"/>
+<rect x="64" y="268" width="184" height="44" rx="8" class="sunken"/>
+<text x="80" y="287" class="r-codeh">os/skills/</text>
+<text x="80" y="304" class="r-meta">64 skills</text>
+<rect x="64" y="324" width="184" height="44" rx="8" class="sunken"/>
+<text x="80" y="343" class="r-codeh">os/agents/</text>
+<text x="80" y="360" class="r-meta">9 agents</text>
+<rect x="64" y="380" width="184" height="44" rx="8" class="sunken"/>
+<text x="80" y="399" class="r-codeh">CLAUDE.md</text>
+<text x="80" y="416" class="r-meta">project rules</text>
+<text x="64" y="456" class="r-body">Both os/ and the</text>
+<text x="64" y="474" class="r-body">generated files are</text>
+<text x="64" y="492" class="r-body">committed, so a fresh</text>
+<text x="64" y="510" class="r-body">clone works without a</text>
+<text x="64" y="528" class="r-body">build.</text>
+<line x1="64" y1="560" x2="248" y2="560" class="rule"/>
+<text x="64" y="586" class="r-meta">After editing, run:</text>
+<text x="64" y="608" class="r-code">bash tools/build/build.sh</text>
+<path d="M274,288 L286,288 Q292,288 292,282 L292,162 Q292,156 298,156 L310,156" class="edge" marker-end="url(#cos-multi-runtime-build-ah)"/>
+<rect x="40" y="672" width="288" height="120" rx="10" class="card" filter="url(#cos-multi-runtime-build-sh)"/>
+<text x="60" y="700" class="r-hs">Check before you commit</text>
+<text x="60" y="722" class="r-code">bash tools/build/build.sh --check</text>
+<text x="60" y="748" class="r-body">Runs validate-skill.sh and</text>
+<text x="60" y="766" class="r-body">validate-agent.sh without writing</text>
+<text x="60" y="784" class="r-body">files.</text>
+<rect x="336" y="672" width="288" height="120" rx="10" class="card" filter="url(#cos-multi-runtime-build-sh)"/>
+<text x="356" y="700" class="r-hs">Add a runtime later</text>
+<text x="356" y="722" class="r-code">tools/registry/install-runtime.sh</text>
+<text x="356" y="748" class="r-body">list-runtimes.sh shows what is</text>
+<text x="356" y="766" class="r-body">detected and installed.</text>
+<rect x="632" y="672" width="288" height="120" rx="10" class="card" filter="url(#cos-multi-runtime-build-sh)"/>
+<text x="652" y="700" class="r-hs">Hand-maintained (not generated)</text>
+<text x="652" y="722" class="r-code">.claude/hooks/ + settings.json</text>
+<text x="652" y="748" class="r-body">Plus .claude/agent-memory/. Claude</text>
+<text x="652" y="766" class="r-body">Code only.</text>
+<text x="920" y="830" class="r-meta" text-anchor="end">Company OS · generated by docs/diagrams/render.js</text>
+</svg>
