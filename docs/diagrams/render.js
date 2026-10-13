@@ -36,8 +36,14 @@ function readRepoFacts() {
     agents[fm.name] = fm;
   }
 
-  const toolScripts = listFiles(path.join(ROOT, 'tools'))
-    .filter((p) => p.endsWith('.sh') && !p.includes(`${path.sep}build${path.sep}`) && !p.includes(`${path.sep}lib${path.sep}`));
+  // Exclude tools/build/ and tools/lib/ by repo-relative path, so a clone that
+  // sits under any folder named build or lib still counts correctly.
+  const toolsDir = path.join(ROOT, 'tools');
+  const toolScripts = listFiles(toolsDir)
+    .filter((p) => {
+      const top = path.relative(toolsDir, p).split(path.sep)[0];
+      return p.endsWith('.sh') && top !== 'build' && top !== 'lib';
+    });
   const buildScripts = listFiles(path.join(ROOT, 'tools', 'build')).filter((p) => p.endsWith('.sh'));
 
   const validate = fs.readFileSync(path.join(ROOT, 'tools', 'artifact', 'validate.sh'), 'utf8');
