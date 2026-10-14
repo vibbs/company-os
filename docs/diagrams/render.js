@@ -1163,7 +1163,7 @@ diagram(() => {
     height: 100,
     title: 'Install once, upgrade safely',
     subtitle: 'One command installs Company OS. Upgrades merge file by file and never touch your own work.',
-    desc: 'Install: run the installer with curl; it auto-detects Claude Code, Cursor, Codex, Gemini CLI and Aider or takes --runtime; installs os/ and AGENTS.md always plus one adapter per runtime; never overwrites company.config.yaml, artifacts, tasks, cogs or agent memory; then run /setup and start with /ship, /gtm-sprint or /rapid-prototype. Upgrade: /upgrade-company-os check, preview (dry run), apply (backs up first on major versions), smart merge using manifest hashes (untouched files update, edited files are kept, files changed on both sides become conflicts), migrations and health check, rollback from a backup.',
+    desc: 'Install: run the installer with curl; it auto-detects Claude Code, Cursor, Codex, Gemini CLI and Aider or takes --runtime; installs os/ and AGENTS.md always plus one adapter per runtime; never overwrites company.config.yaml, artifacts, tasks, cogs or agent memory; then run /setup and start with /ship, /gtm-sprint or /rapid-prototype. Upgrade: /upgrade-company-os check, preview (dry run), apply (backs up first on major versions, with --backup, or when the install has no manifest), three-way merge using manifest hashes of the template you last received (template changed only: updated; you edited, template unchanged: kept; both changed: conflict copies saved with a timestamp if one already exists), your existing runtime adapters kept, installs from 1.11 or earlier preview only until --force saves .user copies, migrations and health check, rollback from a backup.',
   });
   const col = (x, colW, title, fam, steps) => {
     d.label(x, 120, title, fam, colW - 32);
@@ -1221,10 +1221,10 @@ diagram(() => {
   ]);
   const y2 = col(624, 312, 'Upgrade (later)', 'eng', [
     { title: 'Check', code: '/upgrade-company-os check', body: 'Or install.sh --check. Shows if a newer version exists.' },
-    { title: 'Preview', code: '/upgrade-company-os preview', body: 'Runs install.sh --dry-run --force. Writes nothing.' },
-    { title: 'Apply', code: '/upgrade-company-os apply', body: 'Backs up first on major versions (or with --backup) to .company-os/backup/.' },
-    { title: 'Smart merge, file by file', body: 'Uses hashes in .company-os/manifest:',
-      outcomes: [['untouched file', 'updated', 'eng'], ['you edited it', 'kept as is', 'orch'], ['both changed', 'conflict', 'gate']] },
+    { title: 'Preview', code: '/upgrade-company-os preview', body: 'Downloads the installer to a temp folder and runs it with --dry-run --force. Writes nothing.' },
+    { title: 'Apply', code: '/upgrade-company-os apply', body: 'Backs up first to .company-os/backup/ on major versions, with --backup, or with no manifest. Keeps the runtimes you already have.' },
+    { title: 'Smart merge, file by file', body: 'Compares your file with the template you last got (hashes in .company-os/manifest):',
+      outcomes: [['template changed', 'updated', 'eng'], ['only you edited', 'kept', 'orch'], ['both changed', 'conflict', 'gate']] },
     { title: 'Migrate and verify', body: 'Runs .company-os/migrations/, stamps the version, then health-check.sh.' },
     { title: 'Roll back if needed', code: '/upgrade-company-os rollback', body: 'Restores os/, .claude/, tools/ and CLAUDE.md from a backup, then run build.sh to refresh the other adapters.' },
   ]);

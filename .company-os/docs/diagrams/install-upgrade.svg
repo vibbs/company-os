@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" id="cos-install-upgrade" width="960" height="1038" viewBox="0 0 960 1038" role="img" aria-labelledby="cos-install-upgrade-title cos-install-upgrade-desc">
+<svg xmlns="http://www.w3.org/2000/svg" id="cos-install-upgrade" width="960" height="1128" viewBox="0 0 960 1128" role="img" aria-labelledby="cos-install-upgrade-title cos-install-upgrade-desc">
 <title id="cos-install-upgrade-title">Install once, upgrade safely</title>
-<desc id="cos-install-upgrade-desc">Install: run the installer with curl; it auto-detects Claude Code, Cursor, Codex, Gemini CLI and Aider or takes --runtime; installs os/ and AGENTS.md always plus one adapter per runtime; never overwrites company.config.yaml, artifacts, tasks, cogs or agent memory; then run /setup and start with /ship, /gtm-sprint or /rapid-prototype. Upgrade: /upgrade-company-os check, preview (dry run), apply (backs up first on major versions), smart merge using manifest hashes (untouched files update, edited files are kept, files changed on both sides become conflicts), migrations and health check, rollback from a backup.</desc>
+<desc id="cos-install-upgrade-desc">Install: run the installer with curl; it auto-detects Claude Code, Cursor, Codex, Gemini CLI and Aider or takes --runtime; installs os/ and AGENTS.md always plus one adapter per runtime; never overwrites company.config.yaml, artifacts, tasks, cogs or agent memory; then run /setup and start with /ship, /gtm-sprint or /rapid-prototype. Upgrade: /upgrade-company-os check, preview (dry run), apply (backs up first on major versions, with --backup, or when the install has no manifest), three-way merge using manifest hashes of the template you last received (template changed only: updated; you edited, template unchanged: kept; both changed: conflict copies saved with a timestamp if one already exists), your existing runtime adapters kept, installs from 1.11 or earlier preview only until --force saves .user copies, migrations and health check, rollback from a backup.</desc>
 <style>
 #cos-install-upgrade{--bg:#f6f8fa;--surface:#ffffff;--sunken:#f6f8fa;--border:#d1d9e0;--border-soft:#e4e9ee;--text:#1f2328;--text-2:#4b5562;--text-3:#606a76;--line:#8c959f;--shadow:#1f2328;--shadow-o:0.07;--solid:#24292f;--on-solid:#ffffff;--mono:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
 #cos-install-upgrade .f-orch{--a:#4f46e5;--a-soft:#eef0ff}#cos-install-upgrade .f-product{--a:#7c3aed;--a-soft:#f4effe}#cos-install-upgrade .f-eng{--a:#0f766e;--a-soft:#e6f5f3}#cos-install-upgrade .f-qa{--a:#0369a1;--a-soft:#e8f4fb}#cos-install-upgrade .f-growth{--a:#be185d;--a-soft:#fdf0f6}#cos-install-upgrade .f-ops{--a:#b42318;--a-soft:#fdf1f0}#cos-install-upgrade .f-gate{--a:#b45309;--a-soft:#fef6e7}#cos-install-upgrade .f-neutral{--a:#4b5562;--a-soft:#f1f3f5}
@@ -33,7 +33,7 @@
 <filter id="cos-install-upgrade-sh" x="-5%" y="-5%" width="110%" height="130%"><feDropShadow dx="0" dy="1" stdDeviation="1.5" class="shadow"/></filter>
 <marker id="cos-install-upgrade-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M1,1.5 L9,5 L1,8.5 Z" class="ah"/></marker>
 </defs>
-<rect x="0.5" y="0.5" width="959" height="1037" rx="16" class="panel"/>
+<rect x="0.5" y="0.5" width="959" height="1127" rx="16" class="panel"/>
 <text x="40" y="52" class="r-title">Install once, upgrade safely</text>
 <text x="40" y="78" class="r-sub">One command installs Company OS. Upgrades merge file by file and never touch your own work.</text>
 <g class="f-orch">
@@ -99,52 +99,57 @@
 <text x="688" y="186" class="r-code">/upgrade-company-os check</text>
 <text x="688" y="204" class="r-body">Or install.sh --check. Shows if</text>
 <text x="688" y="222" class="r-body">a newer version exists.</text>
-<rect x="668" y="258" width="268" height="108" rx="10" class="card" filter="url(#cos-install-upgrade-sh)"/>
+<rect x="668" y="258" width="268" height="144" rx="10" class="card" filter="url(#cos-install-upgrade-sh)"/>
 <text x="688" y="286" class="r-hs">Preview</text>
 <text x="688" y="308" class="r-code">/upgrade-company-os preview</text>
-<text x="688" y="326" class="r-body">Runs install.sh --dry-run</text>
-<text x="688" y="344" class="r-body">--force. Writes nothing.</text>
-<rect x="668" y="380" width="268" height="126" rx="10" class="card" filter="url(#cos-install-upgrade-sh)"/>
-<text x="688" y="408" class="r-hs">Apply</text>
-<text x="688" y="430" class="r-code">/upgrade-company-os apply</text>
-<text x="688" y="448" class="r-body">Backs up first on major</text>
-<text x="688" y="466" class="r-body">versions (or with --backup) to</text>
-<text x="688" y="484" class="r-body">.company-os/backup/.</text>
-<rect x="668" y="520" width="268" height="180" rx="10" class="card" filter="url(#cos-install-upgrade-sh)"/>
-<text x="688" y="548" class="r-hs">Smart merge, file by file</text>
-<text x="688" y="566" class="r-body">Uses hashes in</text>
-<text x="688" y="584" class="r-body">.company-os/manifest:</text>
-<text x="688" y="609" class="r-body">untouched file</text>
-<path d="M807,605 L835,605" class="edge" marker-end="url(#cos-install-upgrade-ah)"/>
-<rect x="839" y="594" width="64" height="22" rx="11" class="tint f-eng"/>
+<text x="688" y="326" class="r-body">Downloads the installer to a</text>
+<text x="688" y="344" class="r-body">temp folder and runs it with</text>
+<text x="688" y="362" class="r-body">--dry-run --force. Writes</text>
+<text x="688" y="380" class="r-body">nothing.</text>
+<rect x="668" y="416" width="268" height="162" rx="10" class="card" filter="url(#cos-install-upgrade-sh)"/>
+<text x="688" y="444" class="r-hs">Apply</text>
+<text x="688" y="466" class="r-code">/upgrade-company-os apply</text>
+<text x="688" y="484" class="r-body">Backs up first to</text>
+<text x="688" y="502" class="r-body">.company-os/backup/ on major</text>
+<text x="688" y="520" class="r-body">versions, with --backup, or</text>
+<text x="688" y="538" class="r-body">with no manifest. Keeps the</text>
+<text x="688" y="556" class="r-body">runtimes you already have.</text>
+<rect x="668" y="592" width="268" height="198" rx="10" class="card" filter="url(#cos-install-upgrade-sh)"/>
+<text x="688" y="620" class="r-hs">Smart merge, file by file</text>
+<text x="688" y="638" class="r-body">Compares your file with the</text>
+<text x="688" y="656" class="r-body">template you last got (hashes</text>
+<text x="688" y="674" class="r-body">in .company-os/manifest):</text>
+<text x="688" y="699" class="r-body">template changed</text>
+<path d="M820,695 L848,695" class="edge" marker-end="url(#cos-install-upgrade-ah)"/>
+<rect x="852" y="684" width="64" height="22" rx="11" class="tint f-eng"/>
 <g class="f-eng">
-<text x="871" y="609.2" class="r-meta c-a" text-anchor="middle">updated</text>
+<text x="884" y="699.2" class="r-meta c-a" text-anchor="middle">updated</text>
 </g>
-<text x="688" y="639" class="r-body">you edited it</text>
-<path d="M807,635 L835,635" class="edge" marker-end="url(#cos-install-upgrade-ah)"/>
-<rect x="839" y="624" width="84" height="22" rx="11" class="tint f-orch"/>
+<text x="688" y="729" class="r-body">only you edited</text>
+<path d="M820,725 L848,725" class="edge" marker-end="url(#cos-install-upgrade-ah)"/>
+<rect x="852" y="714" width="43" height="22" rx="11" class="tint f-orch"/>
 <g class="f-orch">
-<text x="881" y="639.2" class="r-meta c-a" text-anchor="middle">kept as is</text>
+<text x="873.5" y="729.2" class="r-meta c-a" text-anchor="middle">kept</text>
 </g>
-<text x="688" y="669" class="r-body">both changed</text>
-<path d="M807,665 L835,665" class="edge" marker-end="url(#cos-install-upgrade-ah)"/>
-<rect x="839" y="654" width="70" height="22" rx="11" class="tint f-gate"/>
+<text x="688" y="759" class="r-body">both changed</text>
+<path d="M820,755 L848,755" class="edge" marker-end="url(#cos-install-upgrade-ah)"/>
+<rect x="852" y="744" width="70" height="22" rx="11" class="tint f-gate"/>
 <g class="f-gate">
-<text x="874" y="669.2" class="r-meta c-a" text-anchor="middle">conflict</text>
+<text x="887" y="759.2" class="r-meta c-a" text-anchor="middle">conflict</text>
 </g>
-<rect x="668" y="714" width="268" height="104" rx="10" class="card" filter="url(#cos-install-upgrade-sh)"/>
-<text x="688" y="742" class="r-hs">Migrate and verify</text>
-<text x="688" y="760" class="r-body">Runs .company-os/migrations/,</text>
-<text x="688" y="778" class="r-body">stamps the version, then</text>
-<text x="688" y="796" class="r-body">health-check.sh.</text>
-<rect x="668" y="832" width="268" height="144" rx="10" class="card" filter="url(#cos-install-upgrade-sh)"/>
-<text x="688" y="860" class="r-hs">Roll back if needed</text>
-<text x="688" y="882" class="r-code">/upgrade-company-os rollback</text>
-<text x="688" y="900" class="r-body">Restores os/, .claude/, tools/</text>
-<text x="688" y="918" class="r-body">and CLAUDE.md from a backup,</text>
-<text x="688" y="936" class="r-body">then run build.sh to refresh</text>
-<text x="688" y="954" class="r-body">the other adapters.</text>
-<line x1="638" y1="158" x2="638" y2="854" class="rule" style="stroke:var(--border)"/>
+<rect x="668" y="804" width="268" height="104" rx="10" class="card" filter="url(#cos-install-upgrade-sh)"/>
+<text x="688" y="832" class="r-hs">Migrate and verify</text>
+<text x="688" y="850" class="r-body">Runs .company-os/migrations/,</text>
+<text x="688" y="868" class="r-body">stamps the version, then</text>
+<text x="688" y="886" class="r-body">health-check.sh.</text>
+<rect x="668" y="922" width="268" height="144" rx="10" class="card" filter="url(#cos-install-upgrade-sh)"/>
+<text x="688" y="950" class="r-hs">Roll back if needed</text>
+<text x="688" y="972" class="r-code">/upgrade-company-os rollback</text>
+<text x="688" y="990" class="r-body">Restores os/, .claude/, tools/</text>
+<text x="688" y="1008" class="r-body">and CLAUDE.md from a backup,</text>
+<text x="688" y="1026" class="r-body">then run build.sh to refresh</text>
+<text x="688" y="1044" class="r-body">the other adapters.</text>
+<line x1="638" y1="158" x2="638" y2="944" class="rule" style="stroke:var(--border)"/>
 <g class="f-eng"><circle cx="638" cy="158" r="12" class="tint" stroke-width="1.25"/></g>
 <g class="f-eng">
 <text x="638" y="162" class="r-badge c-a" text-anchor="middle">1</text>
@@ -153,21 +158,21 @@
 <g class="f-eng">
 <text x="638" y="284" class="r-badge c-a" text-anchor="middle">2</text>
 </g>
-<g class="f-eng"><circle cx="638" cy="402" r="12" class="tint" stroke-width="1.25"/></g>
+<g class="f-eng"><circle cx="638" cy="438" r="12" class="tint" stroke-width="1.25"/></g>
 <g class="f-eng">
-<text x="638" y="406" class="r-badge c-a" text-anchor="middle">3</text>
+<text x="638" y="442" class="r-badge c-a" text-anchor="middle">3</text>
 </g>
-<g class="f-eng"><circle cx="638" cy="542" r="12" class="tint" stroke-width="1.25"/></g>
+<g class="f-eng"><circle cx="638" cy="614" r="12" class="tint" stroke-width="1.25"/></g>
 <g class="f-eng">
-<text x="638" y="546" class="r-badge c-a" text-anchor="middle">4</text>
+<text x="638" y="618" class="r-badge c-a" text-anchor="middle">4</text>
 </g>
-<g class="f-eng"><circle cx="638" cy="736" r="12" class="tint" stroke-width="1.25"/></g>
+<g class="f-eng"><circle cx="638" cy="826" r="12" class="tint" stroke-width="1.25"/></g>
 <g class="f-eng">
-<text x="638" y="740" class="r-badge c-a" text-anchor="middle">5</text>
+<text x="638" y="830" class="r-badge c-a" text-anchor="middle">5</text>
 </g>
-<g class="f-eng"><circle cx="638" cy="854" r="12" class="tint" stroke-width="1.25"/></g>
+<g class="f-eng"><circle cx="638" cy="944" r="12" class="tint" stroke-width="1.25"/></g>
 <g class="f-eng">
-<text x="638" y="858" class="r-badge c-a" text-anchor="middle">6</text>
+<text x="638" y="948" class="r-badge c-a" text-anchor="middle">6</text>
 </g>
-<text x="920" y="1020" class="r-meta" text-anchor="end">Company OS · generated by docs/diagrams/render.js</text>
+<text x="920" y="1110" class="r-meta" text-anchor="end">Company OS · generated by docs/diagrams/render.js</text>
 </svg>
