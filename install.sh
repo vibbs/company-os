@@ -6,8 +6,11 @@
 # Smart-merges with existing Claude Code setups — preserves user permissions,
 # custom agents/skills, and project-specific CLAUDE.md content.
 #
-# Supports manifest-based conflict detection: auto-updates unmodified files,
-# protects user edits, and flags conflicts when both sides changed.
+# Merges each template file three ways against a manifest of template hashes:
+# files you did not edit are updated, files you edited are kept (with --force,
+# replaced after your copy is saved under .company-os/conflicts/). Guides in
+# .company-os/docs/ belong to the template: a version upgrade refreshes them
+# and saves an edited one next to it as <name>.user.
 #
 # Usage:
 #   curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash
@@ -22,13 +25,17 @@
 #                Default: auto on a fresh install; on an upgrade, the adapters
 #                the project already has.
 #   --force      Also update files you edited (your copies are saved under
-#                .company-os/conflicts/); default: keep them
+#                .company-os/conflicts/); default: keep them. Guides in
+#                .company-os/docs/ are refreshed on any version upgrade, with
+#                or without --force (an edited one is saved as <name>.user)
 #   --branch     Use a specific branch (default: main)
 #   --version    Install a specific version (e.g., --version 1.2.0)
 #   --dry-run    Preview what would change without applying
 #   --check      Check if an upgrade is available (compares with the install here)
 #   --changelog  Show changelog since installed version
-#   --backup     Create backup before upgrading (auto-enabled for major upgrades)
+#   --backup     Create backup before upgrading (automatic for major upgrades
+#                and for installs without a trusted manifest: none, or one
+#                written by an installer before 1.12.0)
 #   --help       Show this help message
 #
 # Environment:
@@ -85,14 +92,19 @@ Flags:
                                no runtime-specific adapter
                      Any other value is an error; nothing is written.
   --force            Also update Company OS files you edited; your copies are saved
-                     under .company-os/conflicts/ (config and artifacts are never touched)
+                     under .company-os/conflicts/ (config and artifacts are never
+                     touched). Without it, files you edited are kept.
+                     Guides in .company-os/docs/ are refreshed on any version upgrade,
+                     with or without --force: an edited guide is first saved next to
+                     it as <name>.user.
   --branch <name>    Use a specific branch (default: main)
   --version <X.Y.Z>  Install a specific release, e.g. --version 1.12.0
   --dry-run          Preview what would change without writing anything
   --check            Check whether an upgrade is available
   --changelog        Show the changelog since the installed version
   --backup           Back up Company OS files before upgrading (automatic for major
-                     upgrades and for installs without a manifest)
+                     upgrades and for installs without a trusted manifest: none, or
+                     one written by an installer before 1.12.0)
   -h, --help         Show this help
 
 Environment:

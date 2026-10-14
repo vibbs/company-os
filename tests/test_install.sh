@@ -345,6 +345,12 @@ assert_contains "$OUT" "'all' cannot be combined"
 assert_eq "" "$(ls -A "$P" | grep -v '^.git$' || true)" "a bad --runtime writes nothing"
 assert_exit 0 bash "$INSTALL" --help
 assert_contains "$OUT" "Or use one of these on its own"
+# Header and --help describe what an upgrade does with edited files.
+assert_contains "$OUT" "Guides in .company-os/docs/ are refreshed on any version upgrade"
+assert_contains "$OUT" "it as <name>.user."
+assert_contains "$OUT" "without a trusted manifest"
+assert_contains "$(sed -n '2,45p' "$INSTALL")" "or without --force (an edited one is saved as <name>.user)"
+assert_contains "$(sed -n '2,45p' "$INSTALL")" "installs without a trusted manifest"
 
 # An empty COMPANY_OS_SOURCE is ignored: the installer goes to GitHub. A fake
 # curl that always fails stands in for the network.
