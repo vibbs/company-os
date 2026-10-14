@@ -216,4 +216,17 @@ assert_contains "$OUT" "GATE PASSED"
 # The test never touched the real repository.
 assert_file_missing "$REPO_ROOT/artifacts/prds/PRD-001.md"
 
+# --- setup.sh --cleanup removes only Company OS copies of the old root guides ---
+C="$(make_tmp)"; cd "$C"
+printf '# FAQ\nmy own FAQ\n' > FAQ.md
+printf '# Token Cost Reference\n\nUse Company OS.\n' > TOKEN_COSTS.md
+printf '# Setup Guide — AI Agentic Company OS\n' > SETUP_COMPANY_OS.md
+printf '# Mine\n' > README.md
+assert_exit 0 bash "$REPO_ROOT/.company-os/setup.sh" --cleanup
+assert_contains "$OUT" "Kept     FAQ.md"
+assert_eq "yes" "$([ -f FAQ.md ] && echo yes || echo no)" "user's own FAQ.md survives --cleanup"
+assert_eq "no" "$([ -f TOKEN_COSTS.md ] && echo yes || echo no)" "Company OS TOKEN_COSTS.md copy removed"
+assert_eq "no" "$([ -f SETUP_COMPANY_OS.md ] && echo yes || echo no)" "Company OS SETUP_COMPANY_OS.md copy removed"
+assert_eq "yes" "$([ -f README.md ] && echo yes || echo no)" "README.md untouched"
+
 finish

@@ -90,8 +90,20 @@ if [[ "${1:-}" == "--cleanup" ]]; then
   echo "Removing example artifacts and standards (the guides in .company-os/docs/ are kept)..."
   echo ""
   REMOVED=0
+  # A root FAQ.md, TOKEN_COSTS.md or SETUP_COMPANY_OS.md may be the user's own.
+  # Delete one only when it is the old Company OS copy.
+  is_company_os_copy() {
+    case "$1" in
+      FAQ.md) [ "$(head -n 1 "$1")" = "# FAQ — AI Agentic Company OS" ] ;;
+      SETUP_COMPANY_OS.md) [ "$(head -n 1 "$1")" = "# Setup Guide — AI Agentic Company OS" ] ;;
+      TOKEN_COSTS.md) [ "$(head -n 1 "$1")" = "# Token Cost Reference" ] && head -n 5 "$1" | grep -q "Company OS" ;;
+      *) return 0 ;;
+    esac
+  }
   for f in TOKEN_COSTS.md FAQ.md SETUP_COMPANY_OS.md artifacts/prds/PRD-EXAMPLE-001-notifications.md artifacts/rfcs/RFC-EXAMPLE-001-notification-system.md standards/api/example-api-conventions.md standards/coding/example-coding-standards.md; do
-    if [ -f "$f" ]; then
+    if [ -f "$f" ] && ! is_company_os_copy "$f"; then
+      echo -e "  ${YELLOW}Kept${NC}     $f (not a Company OS copy)"
+    elif [ -f "$f" ]; then
       rm "$f"
       echo -e "  ${RED}Removed${NC}  $f"
       REMOVED=$((REMOVED + 1))
@@ -102,7 +114,7 @@ if [[ "${1:-}" == "--cleanup" ]]; then
   echo -e "${GREEN}Done!${NC} Removed $REMOVED template files."
   echo ""
   echo -e "${YELLOW}You may also want to:${NC}"
-  echo "  - Replace README.md with your project README"
+  echo "  - Replace README.md with your project README (only if it is still the Company OS template one)"
   exit 0
 fi
 
