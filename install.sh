@@ -800,6 +800,7 @@ save_conflict_copies() {  # save_conflict_copies <src_file> <dst_file> <with_new
 
 merge_template_file() {  # merge_template_file <src_file> <dst_file>
   local src="$1" dst="$2" inc base disk
+  MERGE_NOTE="your edits; template changed"
   inc=$(file_hash "$src")
   if [ ! -e "$dst" ] && [ ! -L "$dst" ]; then
     if [ "$DRY_RUN" = false ]; then
@@ -810,9 +811,17 @@ merge_template_file() {  # merge_template_file <src_file> <dst_file>
     MERGE_RESULT=added
     return
   fi
+  if [ -L "$dst" ]; then
+    # A symlink (e.g. AGENTS.md -> CLAUDE.md): writing would change its target.
+    MERGE_NOTE="a symlink; left as is so its target is not overwritten"
+    echo "$dst ($MERGE_NOTE)" >> "$HELD_LOG"
+    MERGE_RESULT=held
+    return
+  fi
   if [ ! -f "$dst" ]; then
-    # Something else (a folder, a broken link) is in the way: leave it alone.
-    echo "$dst (not a regular file)" >> "$HELD_LOG"
+    # Something else (a folder) is in the way: leave it alone.
+    MERGE_NOTE="not a regular file; left as is"
+    echo "$dst ($MERGE_NOTE)" >> "$HELD_LOG"
     MERGE_RESULT=held
     return
   fi
@@ -926,7 +935,7 @@ merge_file() {
     conflict) UPDATED=$((UPDATED + 1)); CONFLICTS=$((CONFLICTS + 1))
               echo -e "  ${YELLOW}Updated${NC}  $dst_file (your copy saved under .company-os/conflicts/)" ;;
     kept)     SKIPPED=$((SKIPPED + 1)); KEPT_EDITS=$((KEPT_EDITS + 1)); echo -e "  ${BLUE}Kept${NC}     $dst_file (your edits)" ;;
-    held)     SKIPPED=$((SKIPPED + 1)); KEPT_EDITS=$((KEPT_EDITS + 1)); echo -e "  ${BLUE}Kept${NC}     $dst_file (your edits; template changed)" ;;
+    held)     SKIPPED=$((SKIPPED + 1)); KEPT_EDITS=$((KEPT_EDITS + 1)); echo -e "  ${BLUE}Kept${NC}     $dst_file ($MERGE_NOTE)" ;;
     *)        SKIPPED=$((SKIPPED + 1)) ;;
   esac
 }
@@ -1017,20 +1026,27 @@ if "hooks" not in dst and "hooks" in src:
 else:
     hooks_added = False
 
+total_added = added_allow + added_deny
+if total_added == 0 and not hooks_added:
+    print("UNCHANGED")
+    exit(0)
+
 # Write merged result
 with open(dst_path, "w") as f:
     json.dump(dst, f, indent=2)
     f.write("\n")
 
 # Report
-total_added = added_allow + added_deny
 total_preserved = preserved_allow + preserved_deny
 hooks_msg = ", hooks added" if hooks_added else ""
 print(f"added {total_added} rules, preserved {total_preserved} custom{hooks_msg}")
 PYEOF
   ) || true
 
-  if [ -n "$result" ]; then
+  if [ "$result" = "UNCHANGED" ]; then
+    echo -e "  ${DIM}Exists${NC}   .claude/settings.json (already has the Company OS rules)"
+    SKIPPED=$((SKIPPED + 1))
+  elif [ -n "$result" ]; then
     echo -e "  ${GREEN}Merged${NC}   .claude/settings.json ($result)"
     MERGED=$((MERGED + 1))
   else
@@ -1298,6 +1314,11 @@ if [ -d "$SRC/.company-os/docs" ]; then
       DOCS_ADDED=$((DOCS_ADDED + 1))
       continue
     fi
+    if [ -L "$doc_dst" ]; then
+      echo "$doc_dst (a symlink; left as is so its target is not overwritten)" >> "$HELD_LOG"
+      DOCS_HELD=$((DOCS_HELD + 1))
+      continue
+    fi
     doc_disk=$(file_hash "$doc_dst")
     if [ "$doc_disk" = "$doc_inc" ]; then
       record_manifest "$doc_inc" "$doc_dst"
@@ -1400,6 +1421,20 @@ if [ "$DRY_RUN" = false ]; then
       fi
     fi
   done
+
+  # Keep upgrade backups and conflict copies out of commits (idempotent).
+  GITIGNORE_ADDED=0
+  for ignore_line in ".company-os/backup/" ".company-os/conflicts/"; do
+    if [ ! -f .gitignore ] || ! grep -qxF "$ignore_line" .gitignore; then
+      if [ -s .gitignore ] && [ -n "$(tail -c 1 .gitignore)" ]; then echo "" >> .gitignore; fi
+      if [ "$GITIGNORE_ADDED" -eq 0 ]; then echo "# Company OS upgrade backups and conflict copies" >> .gitignore; fi
+      echo "$ignore_line" >> .gitignore
+      GITIGNORE_ADDED=$((GITIGNORE_ADDED + 1))
+    fi
+  done
+  if [ "$GITIGNORE_ADDED" -gt 0 ]; then
+    echo -e "  ${GREEN}Updated${NC}  .gitignore (ignores .company-os/backup/ and .company-os/conflicts/)"
+  fi
 
   # Create tasks files if missing
   if [ ! -f "tasks/todo.md" ]; then
@@ -1610,6 +1645,7 @@ if [ "$IS_EXISTING_INSTALL" = false ] && [ "$DRY_RUN" = false ]; then
     echo -e "       ${DIM}./tools/registry/install-runtime.sh <runtime>${NC}"
     echo ""
   fi
+  echo -e "  ${DIM}Guide: ${NC}${BOLD}.company-os/docs/SETUP.md${NC}"
   echo -e "  ${DIM}Tip: ${NC}${DIM}see installed/available runtimes with: ${NC}${BOLD}./tools/registry/list-runtimes.sh${NC}"
   echo ""
 

@@ -23,7 +23,7 @@ make_next() {  # make_next <dir> <version>
   cp -R "$BASE_SRC" "$1"
   echo "$2" > "$1/.company-os/version"
   local f
-  for f in .company-os/docs/FAQ.md os/agents/engineering.md .claude/agents/engineering.md os/agents/growth.md; do
+  for f in .company-os/docs/FAQ.md os/agents/engineering.md .claude/agents/engineering.md os/agents/growth.md AGENTS.md; do
     printf '\ntemplate change in %s\n' "$2" >> "$1/$f"
   done
 }
@@ -64,6 +64,8 @@ P="$(new_project claude)"
 run_install "$P" --runtime claude
 assert_contains "$OUT" "Using local archive (COMPANY_OS_SOURCE): $T/src.tgz"
 assert_not_contains "$OUT" "Downloading from github.com"
+assert_contains "$OUT" "Created  AGENTS.md"
+assert_contains "$OUT" "Guide: .company-os/docs/SETUP.md"
 for f in .claude/skills/ship/SKILL.md .claude/agents/orchestrator.md .claude/hooks/session-start.sh \
          .claude/settings.json os/skills/ship/SKILL.md os/agents/orchestrator.md AGENTS.md CLAUDE.md \
          company.config.yaml tools/lib/config.sh tools/lib/usage.sh tools/artifact/validate.sh \
@@ -90,6 +92,25 @@ assert_exit 0 bash -c 'cd "$1" && bash tools/build/build.sh --check' _ "$P"
 # Links inside the installed guides resolve within the installed project.
 DOCS_BROKEN="$(LINKS_ROOT="$P" check_links $(find "$P/.company-os/docs" -name '*.md' | sort))"
 assert_eq "" "$DOCS_BROKEN" "broken links in installed .company-os/docs"
+
+# Backups and conflict copies stay out of git; adding the lines is idempotent.
+assert_eq "1" "$(grep -cxF '.company-os/backup/' "$P/.gitignore" 2>/dev/null || true)" ".gitignore ignores backups"
+assert_eq "1" "$(grep -cxF '.company-os/conflicts/' "$P/.gitignore" 2>/dev/null || true)" ".gitignore ignores conflict copies"
+
+# A same-version re-run that changes nothing suggests no commit.
+SETTINGS_BEFORE="$(cksum < "$P/.claude/settings.json")"
+run_install "$P"
+assert_contains "$OUT" "Already installed"
+assert_not_contains "$OUT" "Commit the upgrade"
+assert_eq "$SETTINGS_BEFORE" "$(cksum < "$P/.claude/settings.json")" "settings.json not rewritten when nothing is added"
+assert_eq "1" "$(grep -cxF '.company-os/backup/' "$P/.gitignore" 2>/dev/null || true)" ".gitignore lines not duplicated"
+
+# build.sh in an installed project rebuilds only the adapters it has.
+assert_exit 0 bash -c 'cd "$1" && bash tools/build/build.sh' _ "$P"
+assert_contains "$OUT" "Building the adapters this project has"
+for f in .cursor .cursorrules GEMINI.md .codex; do
+  assert_file_missing "$P/$f" "build.sh adds no adapter the project did not have ($f)"
+done
 
 # --- --check ---
 run_install "$P" --check
@@ -182,6 +203,17 @@ for f in .cursor .cursorrules GEMINI.md .codex; do
   assert_file_missing "$R/$f" "upgrade adds no adapter the project did not have ($f)"
 done
 assert_contains "$(cat "$R/.claude/agents/engineering.md")" "template change in $NEXT1" ".claude adapter upgraded"
+
+# --- A symlinked template file is never written through ---
+Y="$(new_project symlink)"
+run_install "$Y" --runtime claude
+rm -f "$Y/AGENTS.md"
+ln -s CLAUDE.md "$Y/AGENTS.md"
+CLAUDE_BEFORE="$(cksum < "$Y/CLAUDE.md")"
+COMPANY_OS_SOURCE="$T/next1" run_install "$Y" --force
+[ -L "$Y/AGENTS.md" ] || assert_eq "symlink" "regular file" "AGENTS.md is still a symlink"
+assert_eq "$CLAUDE_BEFORE" "$(cksum < "$Y/CLAUDE.md")" "symlink target CLAUDE.md not overwritten"
+assert_contains "$OUT" "AGENTS.md (a symlink; left as is"
 
 # --- Stamped install without a manifest: a plain upgrade keeps edits, and the
 # --force it advises then saves them (the kept file is recorded as "unknown") ---
