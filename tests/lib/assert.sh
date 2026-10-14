@@ -21,7 +21,8 @@
 #   make_tmp      prints a new temporary directory, removed when the test exits
 #                 (all of them live under $TEST_TMP)
 #
-# Bash 3.2 compatible. Sets REPO_ROOT to the repository root.
+# Bash 3.2 compatible. Sets REPO_ROOT to the repository root, NO_COLOR=1, and
+# puts the running bash first in PATH.
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 export NO_COLOR=1
@@ -88,6 +89,13 @@ assert_exit() {
 TEST_TMP="$(mktemp -d "${TMPDIR:-/tmp}/cos-test.XXXXXX")"
 TEST_TMP="$(cd "$TEST_TMP" && pwd -P)"
 trap 'rm -rf "$TEST_TMP"' EXIT
+
+# Scripts the tests start with `bash ...` or `#!/usr/bin/env bash` run under
+# the same bash as the test, so `/bin/bash tests/run.sh` checks every tool
+# under bash 3.2 even when a newer bash comes first in PATH.
+mkdir -p "$TEST_TMP/bin"
+ln -s "$BASH" "$TEST_TMP/bin/bash"
+export PATH="$TEST_TMP/bin:$PATH"
 
 make_tmp() {
   mktemp -d "$TEST_TMP/t.XXXXXX"

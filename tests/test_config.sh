@@ -55,7 +55,7 @@ assert_eq "" "$(cfg_get "" "$F")" "empty key prints empty"
 assert_eq "growth" "$(CONFIG_FILE="$F" cfg_get company.stage)" "CONFIG_FILE override"
 
 # --- CRLF line endings ---
-sed 's/$/\r/' "$F" > "$T/crlf.yaml"
+awk '{ printf "%s\r\n", $0 }' "$F" > "$T/crlf.yaml"
 assert_eq "growth" "$(cfg_get company.stage "$T/crlf.yaml")" "CRLF: bare value"
 assert_eq "Acme # Inc" "$(cfg_get company.name "$T/crlf.yaml")" "CRLF: quoted value"
 assert_eq "Prisma" "$(cfg_get tech_stack.database.orm "$T/crlf.yaml")" "CRLF: nested key"
