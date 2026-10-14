@@ -6,8 +6,11 @@
 # Smart-merges with existing Claude Code setups — preserves user permissions,
 # custom agents/skills, and project-specific CLAUDE.md content.
 #
-# Supports manifest-based conflict detection: auto-updates unmodified files,
-# protects user edits, and flags conflicts when both sides changed.
+# Merges each template file three ways against a manifest of template hashes:
+# files you did not edit are updated, files you edited are kept (with --force,
+# replaced after your copy is saved under .company-os/conflicts/). Guides in
+# .company-os/docs/ belong to the template: a version upgrade refreshes them
+# and saves an edited one next to it as <name>.user.
 #
 # Usage:
 #   curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash
@@ -15,18 +18,24 @@
 #   curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --runtime claude,cursor
 #
 # Flags:
-#   --runtime    Runtimes to install adapters for: auto | all | core |
-#                claude | cursor | codex | gemini | aider (comma-separated list).
+#   --runtime    Runtimes to install adapters for: auto, all or core on its
+#                own, or a comma-separated list of claude, cursor, codex,
+#                gemini, aider (e.g. claude,cursor). Any other value stops the
+#                installer before it writes anything.
 #                Default: auto on a fresh install; on an upgrade, the adapters
 #                the project already has.
 #   --force      Also update files you edited (your copies are saved under
-#                .company-os/conflicts/); default: keep them
+#                .company-os/conflicts/); default: keep them. Guides in
+#                .company-os/docs/ are refreshed on any version upgrade, with
+#                or without --force (an edited one is saved as <name>.user)
 #   --branch     Use a specific branch (default: main)
 #   --version    Install a specific version (e.g., --version 1.2.0)
 #   --dry-run    Preview what would change without applying
 #   --check      Check if an upgrade is available (compares with the install here)
 #   --changelog  Show changelog since installed version
-#   --backup     Create backup before upgrading (auto-enabled for major upgrades)
+#   --backup     Create backup before upgrading (automatic for major upgrades
+#                and for installs without a trusted manifest: none, or one
+#                written by an installer before 1.12.0)
 #   --help       Show this help message
 #
 # Environment:
@@ -48,6 +57,7 @@ SHOW_CHANGELOG=false
 BACKUP=false
 TARGET_VERSION=""
 RUNTIME_SPEC=""        # raw value passed to --runtime; resolved below
+RUNTIME_GIVEN=false
 
 # --- Parse flags ---
 while [[ $# -gt 0 ]]; do
@@ -59,8 +69,8 @@ while [[ $# -gt 0 ]]; do
     --check)         CHECK_ONLY=true; shift ;;
     --changelog)     SHOW_CHANGELOG=true; shift ;;
     --backup)        BACKUP=true; shift ;;
-    --runtime=*)     RUNTIME_SPEC="${1#*=}"; shift ;;
-    --runtime)       [[ $# -ge 2 ]] || { echo "ERROR: --runtime requires a value" >&2; exit 1; }; RUNTIME_SPEC="$2"; shift 2 ;;
+    --runtime=*)     RUNTIME_SPEC="${1#*=}"; RUNTIME_GIVEN=true; shift ;;
+    --runtime)       [[ $# -ge 2 ]] || { echo "ERROR: --runtime requires a value" >&2; exit 1; }; RUNTIME_SPEC="$2"; RUNTIME_GIVEN=true; shift 2 ;;
     --help|-h)
       cat <<HELP
 Company OS installer and upgrader
@@ -73,21 +83,28 @@ Usage:
 Flags:
   --runtime <names>  Runtimes to install adapters for. Default: auto on a fresh
                      install; on an upgrade, the adapters the project already has.
-                     Values: claude | cursor | codex | gemini | aider | all | auto | core
-                     Combine with commas: --runtime claude,cursor (or --runtime=claude,cursor)
+                     Names: claude | cursor | codex | gemini | aider
+                     Combine names with commas: --runtime claude,cursor (or --runtime=claude,cursor)
+                     Or use one of these on its own (not in a list):
                        auto  → detect installed agent CLIs/dirs and install for those
                        all   → install every adapter
                        core  → shared files only (os/, tools/, AGENTS.md, CLAUDE.md, config);
                                no runtime-specific adapter
+                     Any other value is an error; nothing is written.
   --force            Also update Company OS files you edited; your copies are saved
-                     under .company-os/conflicts/ (config and artifacts are never touched)
+                     under .company-os/conflicts/ (config and artifacts are never
+                     touched). Without it, files you edited are kept.
+                     Guides in .company-os/docs/ are refreshed on any version upgrade,
+                     with or without --force: an edited guide is first saved next to
+                     it as <name>.user.
   --branch <name>    Use a specific branch (default: main)
   --version <X.Y.Z>  Install a specific release, e.g. --version 1.12.0
   --dry-run          Preview what would change without writing anything
   --check            Check whether an upgrade is available
   --changelog        Show the changelog since the installed version
   --backup           Back up Company OS files before upgrading (automatic for major
-                     upgrades and for installs without a manifest)
+                     upgrades and for installs without a trusted manifest: none, or
+                     one written by an installer before 1.12.0)
   -h, --help         Show this help
 
 Environment:
@@ -122,6 +139,36 @@ HELP
   esac
 done
 
+# --- Validate --runtime before anything else runs ---
+# auto, all and core are valid only as the whole value; a comma-separated list
+# may hold only concrete runtime names. RUNTIME_LIST is the validated list.
+runtime_spec_error() {
+  echo "ERROR: $1" >&2
+  echo "Valid --runtime values: auto, all or core on its own, or a comma-separated list of" >&2
+  echo "claude, cursor, codex, gemini, aider (e.g. --runtime claude,cursor)." >&2
+  exit 1
+}
+RUNTIME_LIST=""
+if [ "$RUNTIME_GIVEN" = true ]; then
+  case "$RUNTIME_SPEC" in
+    auto|all|core) ;;
+    "") runtime_spec_error "--runtime requires a value" ;;
+    *)
+      rest="$RUNTIME_SPEC,"
+      while [ -n "$rest" ]; do
+        name="${rest%%,*}"
+        rest="${rest#*,}"
+        case "$name" in
+          claude|cursor|codex|gemini|aider) RUNTIME_LIST="$RUNTIME_LIST $name" ;;
+          "") runtime_spec_error "empty runtime name in --runtime $RUNTIME_SPEC" ;;
+          auto|all|core) runtime_spec_error "'$name' cannot be combined with other names; use --runtime $name on its own" ;;
+          *) runtime_spec_error "unknown runtime '$name' in --runtime $RUNTIME_SPEC" ;;
+        esac
+      done
+      ;;
+  esac
+fi
+
 # --- Existing install in this directory ---
 # Read before choosing runtimes: an upgrade keeps the adapters the project has.
 LOCAL_VERSION="unknown"
@@ -133,14 +180,23 @@ fi
 [ -n "$LOCAL_VERSION" ] || LOCAL_VERSION="unknown"
 
 # The manifest from the last install (read-only during this run). Only a
-# manifest with "<hash>  <path>" lines counts.
+# manifest with "<hash>  <path>" lines whose first line carries
+# MANIFEST_MARKER counts. Installers before 1.12.0 wrote manifests
+# without it that hashed the files on disk after install, user edits
+# included, so such a manifest can make an edit look unedited. It is not
+# used as a merge base: the run takes the no-manifest path instead.
+MANIFEST_MARKER="manifest (hashes of the template copies)"
 MANIFEST_FILE=""
+OLD_MANIFEST=""
 for m in .company-os/manifest .company-os-manifest; do
   if [ -f "$m" ] && grep -Eq '^[0-9a-f]{8,}  ' "$m" 2>/dev/null; then
-    MANIFEST_FILE="$m"
-    break
+    case "$(head -n 1 "$m")" in
+      *"$MANIFEST_MARKER"*) MANIFEST_FILE="$m"; break ;;
+    esac
+    [ -n "$OLD_MANIFEST" ] || OLD_MANIFEST="$m"
   fi
 done
+[ -z "$MANIFEST_FILE" ] || OLD_MANIFEST=""
 
 # Company OS files present (any version, stamped or not)?
 COS_PRESENT=false
@@ -238,8 +294,8 @@ case "${RUNTIME_SPEC:-}" in
     RUNTIME_MODE="core"
     ;;
   *)
-    # Comma- or space-separated list
-    RUNTIMES="$(echo "$RUNTIME_SPEC" | tr ',' ' ')"
+    # Comma-separated list of runtime names (validated above)
+    RUNTIMES="$RUNTIME_LIST"
     RUNTIME_MODE="custom"
     ;;
 esac
@@ -374,7 +430,7 @@ generate_manifest() {
   local version="$1" tmp=".company-os/manifest.tmp" path
   mkdir -p .company-os
   {
-    echo "# Company OS v$version manifest (hashes of the template copies)"
+    echo "# Company OS v$version $MANIFEST_MARKER"
     echo "# Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
     awk '!seen[substr($0, index($0, "  ") + 2)]++' "$MANIFEST_NEW"
     if [ -n "$MANIFEST_FILE" ]; then
@@ -511,6 +567,11 @@ if [ "$LEGACY" = true ]; then
   echo -e "  ${YELLOW}Existing Company OS install without a version stamp${NC} (detected version: $LEGACY_VERSION)"
   echo -e "  ${DIM}It has no version stamp or manifest (installs from 1.9 to 1.11 recorded neither), so the${NC}"
   echo -e "  ${DIM}installer cannot tell which files you edited. It treats every file that differs as edited.${NC}"
+  echo ""
+elif [ "$NO_MANIFEST_UPGRADE" = true ] && [ -n "$OLD_MANIFEST" ]; then
+  echo -e "  ${YELLOW}Existing Company OS install with a manifest from an older installer${NC} ($OLD_MANIFEST)"
+  echo -e "  ${DIM}That manifest may record your edits as template files, so it is not used: files that${NC}"
+  echo -e "  ${DIM}differ are treated as edited, and a backup is made first.${NC}"
   echo ""
 elif [ "$NO_MANIFEST_UPGRADE" = true ]; then
   echo -e "  ${YELLOW}Existing Company OS install without a manifest${NC} — files that differ are treated as edited"

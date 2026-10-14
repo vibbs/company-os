@@ -43,7 +43,7 @@ From your project root:
 curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash
 ```
 
-To choose runtimes yourself, add `-s -- --runtime=<name>` after `bash`. Use one name or several separated by commas (`claude`, `cursor`, `codex`, `gemini`, `aider`, `all` or `core`):
+To choose runtimes yourself, add `-s -- --runtime=<name>` after `bash`. Use one name or several separated by commas (`claude`, `cursor`, `codex`, `gemini`, `aider`), or `all` or `core` on its own:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --runtime=cursor

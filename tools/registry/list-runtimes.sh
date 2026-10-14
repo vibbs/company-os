@@ -15,9 +15,20 @@ usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
 FORMAT="table"
 case "${1:-}" in
+  "")         ;;
   --json)     FORMAT="json" ;;
   --detected) FORMAT="detected" ;;
+  *)
+    echo "ERROR: Unknown argument: $1" >&2
+    echo "Usage: ./tools/registry/list-runtimes.sh [--json|--detected]" >&2
+    exit 1
+    ;;
 esac
+if [ $# -gt 1 ]; then
+  echo "ERROR: Unexpected argument: $2" >&2
+  echo "Usage: ./tools/registry/list-runtimes.sh [--json|--detected]" >&2
+  exit 1
+fi
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"

@@ -5,7 +5,7 @@
 # Source this file. Provides:
 #   skill_source_dir            -> echoes the directory adapters should read skills from
 #   skill_list                  -> echoes one skill directory name per line
-#   skill_file <name>           -> echoes the absolute path to <name>'s SKILL.md
+#   skill_file <name>           -> echoes the repo-relative path to <name>'s SKILL.md
 # ============================================================================
 
 # Source of truth is os/skills/ (.claude/skills/ is generated from it).

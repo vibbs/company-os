@@ -229,6 +229,31 @@ COMPANY_OS_SOURCE="$T/next1" run_install "$N" --force
 assert_contains "$(cat "$N/.company-os/conflicts/os/agents/growth.md.user" 2>/dev/null)" "no-manifest edit" "--force then saves the edit"
 assert_contains "$(cat "$N/os/agents/growth.md")" "template change in $NEXT1" "--force then applies the template change"
 
+# --- A manifest written by an older installer (1.4 to 1.8) hashed the files
+# on disk after install, so it can record an edit as if it were the template
+# copy. It is not trusted: the run takes the no-manifest path (backup, edits
+# kept, .user copies on --force) ---
+O="$(new_project old-manifest)"
+run_install "$O" --runtime claude
+printf '\nold-manifest edit\n' >> "$O/os/agents/growth.md"
+printf '# Company OS v1.8.0 manifest\n# Generated: 2026-03-01T00:00:00Z\n%s  os/agents/growth.md\n' \
+  "$(sha "$O/os/agents/growth.md")" > "$O/.company-os/manifest"
+COMPANY_OS_SOURCE="$T/next1" run_install "$O"
+assert_contains "$OUT" "manifest from an older installer"
+assert_contains "$(cat "$O/os/agents/growth.md")" "old-manifest edit" "edit recorded by an old manifest is kept"
+assert_eq "1" "$(ls "$O/.company-os/backup" 2>/dev/null | wc -l | tr -d ' ')" "backup taken for an old manifest"
+assert_eq "unknown" "$(manifest_entry "$O" os/agents/growth.md)" "kept file recorded without a known base"
+COMPANY_OS_SOURCE="$T/next1" run_install "$O" --force
+assert_contains "$(cat "$O/.company-os/conflicts/os/agents/growth.md.user" 2>/dev/null)" "old-manifest edit" "--force saves the edit"
+# The same for the pre-1.4 root manifest .company-os-manifest.
+O2="$(new_project old-root-manifest)"
+run_install "$O2" --runtime claude
+rm -f "$O2/.company-os/manifest"
+printf '\nroot-manifest edit\n' >> "$O2/os/agents/growth.md"
+printf '# Company OS v1.3.0 manifest\n%s  os/agents/growth.md\n' "$(sha "$O2/os/agents/growth.md")" > "$O2/.company-os-manifest"
+COMPANY_OS_SOURCE="$T/next1" run_install "$O2" --force
+assert_contains "$(cat "$O2/.company-os/conflicts/os/agents/growth.md.user" 2>/dev/null)" "root-manifest edit" "old root manifest: --force saves the edit"
+
 # --- Legacy install: Company OS files but no version stamp and no manifest
 # (every install made from main between 1.9.0 and 1.11.x) ---
 L="$(new_project legacy)"
@@ -306,6 +331,26 @@ assert_contains "$OUT" "does not look like Company OS"
 assert_exit 1 bash -c 'cd "$1" && COMPANY_OS_SOURCE="$1" bash "$2" --runtime core </dev/null' _ "$T/unpacked/company-os-test" "$INSTALL"
 assert_contains "$OUT" "points at this directory"
 assert_eq "" "$(ls -A "$P" | grep -v '^.git$' || true)" "failed local installs write nothing"
+
+# --runtime: every listed name must be a runtime; auto, all and core only on
+# their own. A bad value stops the installer before it writes anything.
+for bad in claud claude,all core,cursor claude, ""; do
+  assert_exit 1 bash -c 'cd "$1" && bash "$2" --runtime "$3" </dev/null' _ "$P" "$INSTALL" "$bad"
+  assert_contains "$OUT" "claude, cursor, codex, gemini, aider" "--runtime '$bad' lists the valid values"
+done
+assert_exit 1 bash -c 'cd "$1" && bash "$2" --runtime=claud </dev/null' _ "$P" "$INSTALL"
+assert_contains "$OUT" "unknown runtime 'claud'"
+assert_exit 1 bash -c 'cd "$1" && bash "$2" --runtime claude,all </dev/null' _ "$P" "$INSTALL"
+assert_contains "$OUT" "'all' cannot be combined"
+assert_eq "" "$(ls -A "$P" | grep -v '^.git$' || true)" "a bad --runtime writes nothing"
+assert_exit 0 bash "$INSTALL" --help
+assert_contains "$OUT" "Or use one of these on its own"
+# Header and --help describe what an upgrade does with edited files.
+assert_contains "$OUT" "Guides in .company-os/docs/ are refreshed on any version upgrade"
+assert_contains "$OUT" "it as <name>.user."
+assert_contains "$OUT" "without a trusted manifest"
+assert_contains "$(sed -n '2,45p' "$INSTALL")" "or without --force (an edited one is saved as <name>.user)"
+assert_contains "$(sed -n '2,45p' "$INSTALL")" "installs without a trusted manifest"
 
 # An empty COMPANY_OS_SOURCE is ignored: the installer goes to GitHub. A fake
 # curl that always fails stands in for the network.

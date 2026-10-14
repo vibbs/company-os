@@ -2,7 +2,7 @@
 # ============================================================================
 # build-agents-md.sh — Generate AGENTS.md (multi-runtime instruction file)
 # ============================================================================
-# Reads CLAUDE.md, skills, agents, and config and emits AGENTS.md at the
+# Reads CLAUDE.md, os/skills, os/agents and tools/ and emits AGENTS.md at the
 # repo root. AGENTS.md is the cross-runtime standard adopted by Codex, Aider,
 # and a growing list of other agentic tools.
 #
@@ -37,7 +37,7 @@ VERSION="$(cat .company-os/version 2>/dev/null || echo "unknown")"
 cat > "$TMP" <<EOF
 # AGENTS.md
 
-<!-- GENERATED FILE — do not edit by hand. Source: .claude/ + CLAUDE.md -->
+<!-- GENERATED FILE — do not edit by hand. Source: os/ + CLAUDE.md -->
 <!-- Regenerate with: bash tools/build/build-agents-md.sh -->
 
 This file is the runtime-neutral instruction layer for **Company OS** v${VERSION}.
@@ -178,12 +178,30 @@ Deterministic shell scripts. Safe to invoke directly. All live under `tools/`.
 
 EOF
 
-find tools -mindepth 2 -maxdepth 3 -type f -name "*.sh" 2>/dev/null | sort | while read -r tool; do
+# Shared helpers are sourced by other scripts, never run, so they are listed
+# apart from the runnable tools.
+is_helper() {
+  case "$1" in
+    tools/lib/*|tools/build/lib-*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+HELPERS=""
+TOOL_COUNT=0
+while IFS= read -r tool; do
+  if is_helper "$tool"; then
+    HELPERS="$HELPERS, \`$tool\`"
+    continue
+  fi
+  TOOL_COUNT=$((TOOL_COUNT + 1))
   # First non-comment description line, falling back to the path
   desc="$(grep -m1 -E '^# [A-Z]' "$tool" 2>/dev/null | sed 's/^# *//' || true)"
   if [ -z "$desc" ]; then desc="(no description)"; fi
   echo "- \`$tool\` — $desc" >> "$TMP"
-done
+done < <(find tools -mindepth 2 -maxdepth 3 -type f -name "*.sh" 2>/dev/null | sort)
+if [ -n "$HELPERS" ]; then
+  printf '\nShared helpers, sourced by the scripts above (do not run them): %s\n' "${HELPERS#, }" >> "$TMP"
+fi
 
 # ----------------------------------------------------------------------------
 # Workflow shortcuts
@@ -232,5 +250,4 @@ trap - EXIT
 # Output summary
 SKILL_COUNT=$(skill_list | wc -l | tr -d ' ')
 AGENT_COUNT=$(agent_list | wc -l | tr -d ' ')
-TOOL_COUNT=$(find tools -mindepth 2 -maxdepth 3 -type f -name "*.sh" 2>/dev/null | wc -l | tr -d ' ')
 echo "✓ Wrote $OUT  (${SKILL_COUNT} skills, ${AGENT_COUNT} agents, ${TOOL_COUNT} tools)"

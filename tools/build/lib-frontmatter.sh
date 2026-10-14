@@ -8,6 +8,7 @@
 #   fm_extract <file>            -> echoes frontmatter block (between --- markers)
 #   fm_field <file> <key>        -> echoes value of a top-level scalar field
 #   fm_list <file> <key>         -> echoes lines under a YAML list field (one per line)
+#   fm_top_keys <file>           -> echoes each top-level key of the frontmatter (one per line)
 #   fm_body <file>               -> echoes the Markdown body (everything after the second ---)
 # ============================================================================
 
@@ -52,6 +53,11 @@ fm_list() {
           print
         }
       '
+}
+
+# Echoes each top-level key (unindented "key:" lines) of the frontmatter.
+fm_top_keys() {
+  fm_extract "$1" | sed -n 's/^\([A-Za-z0-9_][A-Za-z0-9_-]*\):.*/\1/p'
 }
 
 # Echoes the Markdown body (everything after the closing `---`).

@@ -385,16 +385,12 @@ Deterministic shell scripts. Safe to invoke directly. All live under `tools/`.
 - `tools/artifact/link.sh` — Tool: Artifact Linker
 - `tools/artifact/promote.sh` — Tool: Artifact Promote
 - `tools/artifact/validate.sh` — Tool: Artifact Validate
-- `tools/build/build-agents-md.sh` — Reads CLAUDE.md, skills, agents, and config and emits AGENTS.md at the
+- `tools/build/build-agents-md.sh` — Reads CLAUDE.md, os/skills, os/agents and tools/ and emits AGENTS.md at the
 - `tools/build/build-claude.sh` — Claude Code is now treated as one runtime adapter among several. This script
 - `tools/build/build-codex.sh` — Codex CLI reads AGENTS.md natively. This script ensures AGENTS.md is fresh
 - `tools/build/build-cursor.sh` — Emits:
 - `tools/build/build-gemini.sh` — Gemini CLI reads GEMINI.md (its own convention) — same payload as AGENTS.md
 - `tools/build/build.sh` — Regenerates every runtime adapter (Claude Code, Cursor, Codex, Gemini,
-- `tools/build/lib-agent-index.sh` — Source this file. Provides:
-- `tools/build/lib-frontmatter.sh` — Source this file; do not execute directly.
-- `tools/build/lib-markers.sh` — Source this file; do not execute directly.
-- `tools/build/lib-skill-index.sh` — Source this file. Provides:
 - `tools/build/validate-agent.sh` — Usage:
 - `tools/build/validate-skill.sh` — Usage:
 - `tools/ci/lint-format.sh` — Tool: T-CI-02 Lint/Format
@@ -403,8 +399,6 @@ Deterministic shell scripts. Safe to invoke directly. All live under `tools/`.
 - `tools/db/migration-check.sh` — Tool: T-DB-01 Migration Check
 - `tools/db/seed.sh` — Tool: Seed Data Runner
 - `tools/deploy/pre-deploy.sh` — Tool: T-DEPLOY-01 Pre-Deploy Validation
-- `tools/lib/config.sh` — Shared helper (sourced, not run): read values from company.config.yaml.
-- `tools/lib/usage.sh` — Shared helper (sourced, not run): print a script's header comment as --help text.
 - `tools/ops/dashboard.sh` — Tool: T-OPS-04 Static Dashboard Generator
 - `tools/ops/status-check.sh` — Tool: T-OPS-01 Status Check
 - `tools/ops/support-faq-check.sh` — Tool: T-OPS-02 Support FAQ Coverage Check
@@ -426,6 +420,8 @@ Deterministic shell scripts. Safe to invoke directly. All live under `tools/`.
 - `tools/security/sast.sh` — Tool: T-SEC-03 Basic SAST (Static Application Security Testing)
 - `tools/security/secrets-scan.sh` — Tool: T-SEC-02 Secrets Scan
 - `tools/versioning/version-bump.sh` — Tool: App Version Bump
+
+Shared helpers, sourced by the scripts above (do not run them): `tools/build/lib-agent-index.sh`, `tools/build/lib-frontmatter.sh`, `tools/build/lib-markers.sh`, `tools/build/lib-skill-index.sh`, `tools/lib/config.sh`, `tools/lib/usage.sh`
 
 ---
 

@@ -13,6 +13,13 @@ assert_not_contains "$OUT" "[warn]"
 assert_exit 1 bash tools/build/build.sh --strict
 assert_contains "$OUT" "--strict only applies to --check"
 
+# --- AGENTS.md names its real source and lists only runnable tools ---
+AGENTS_MD="$(cat AGENTS.md)"
+assert_contains "$AGENTS_MD" "Source: os/ + CLAUDE.md"
+assert_not_contains "$AGENTS_MD" "Source: .claude/"
+assert_eq "" "$(grep -E '^- `tools/(lib/|build/lib-)' AGENTS.md || true)" "sourced helpers are not listed as runnable tools"
+assert_contains "$AGENTS_MD" "Shared helpers, sourced by the scripts above (do not run them): \`tools/build/lib-agent-index.sh\`"
+
 # --- Fresh build into a temporary copy matches the committed adapters ---
 B="$(make_tmp)"
 mkdir -p "$B/.claude"
@@ -114,5 +121,50 @@ assert_contains "$OUT" "valid with 1 warning(s)" "spaced-comments: exactly one w
 assert_contains "$OUT" "[warn] tests/fixtures/skills/spaced-comments/SKILL.md: 'user-invokable' is a deprecated spelling"
 assert_exit 1 bash tools/build/validate-skill.sh --strict tests/fixtures/skills/spaced-comments/SKILL.md
 assert_exit 2 bash tools/build/validate-skill.sh tests/fixtures/skills/missing/SKILL.md
+# An unknown top-level field (a typo) is a warning, so --strict fails on it.
+assert_exit 0 bash tools/build/validate-skill.sh tests/fixtures/skills/typo-field/SKILL.md
+assert_contains "$OUT" "[warn] tests/fixtures/skills/typo-field/SKILL.md: unknown top-level field 'user-invocabel'"
+assert_contains "$OUT" "valid with 1 warning(s)" "typo-field: exactly one warning"
+assert_exit 1 bash tools/build/validate-skill.sh --strict tests/fixtures/skills/typo-field/SKILL.md
+assert_exit 0 bash tools/build/validate-agent.sh tests/fixtures/agents/typo-agent.md
+assert_contains "$OUT" "[warn] tests/fixtures/agents/typo-agent.md: unknown top-level field 'modle'"
+assert_exit 1 bash tools/build/validate-agent.sh --strict tests/fixtures/agents/typo-agent.md
+# Top-level fields Claude Code documents are accepted without a warning.
+assert_exit 0 bash tools/build/validate-skill.sh --strict tests/fixtures/skills/claude-fields/SKILL.md
+assert_not_contains "$OUT" "[warn]" "documented Claude Code skill fields: no warning"
+assert_exit 0 bash tools/build/validate-agent.sh --strict tests/fixtures/agents/claude-agent.md
+assert_not_contains "$OUT" "[warn]" "documented Claude Code agent fields: no warning"
+# A legacy top-level user-invokable gets the deprecation warning only.
+assert_exit 0 bash tools/build/validate-skill.sh "$B/os/skills/legacy-top/SKILL.md"
+assert_contains "$OUT" "valid with 1 warning(s)" "legacy-top: deprecation warning only"
+
+# --- Gemini and Codex builds regenerate AGENTS.md first, so a changed skill
+# reaches GEMINI.md even when only that adapter is built ---
+X="$(make_tmp)"
+cp -R "$G/." "$X/"
+sed -i.bak 's/^description: .*/description: Freshly edited ship description for the build test./' "$X/os/skills/ship/SKILL.md"
+rm -f "$X/os/skills/ship/SKILL.md.bak"
+assert_exit 0 bash "$X/tools/build/build.sh" --runtime=gemini
+assert_contains "$(cat "$X/GEMINI.md")" "Freshly edited ship description" "build.sh --runtime=gemini picks up an os/ skill change"
+sed -i.bak 's/^description: .*/description: Second edit of the ship description for the codex build./' "$X/os/skills/ship/SKILL.md"
+rm -f "$X/os/skills/ship/SKILL.md.bak"
+assert_exit 0 bash "$X/tools/build/build-codex.sh"
+assert_contains "$(cat "$X/AGENTS.md")" "Second edit of the ship description" "build-codex.sh refreshes AGENTS.md"
+
+# --- install-runtime.sh: names are checked before anything is built ---
+I="$(make_tmp)"
+cp -R "$G/." "$I/"
+rm -f "$I/AGENTS.md"
+assert_exit 1 bash "$I/tools/registry/install-runtime.sh" claud
+assert_contains "$OUT" "Unknown runtime: claud"
+assert_contains "$OUT" "claude, cursor, codex, gemini, aider"
+assert_exit 1 bash "$I/tools/registry/install-runtime.sh" claude,all
+assert_contains "$OUT" "'all' cannot be combined"
+assert_exit 1 bash "$I/tools/registry/install-runtime.sh" agents
+assert_file_missing "$I/AGENTS.md" "a rejected runtime builds nothing"
+assert_exit 0 bash "$I/tools/registry/install-runtime.sh" aider
+assert_file_exists "$I/AGENTS.md" "aider gets AGENTS.md"
+assert_exit 0 bash "$I/tools/registry/install-runtime.sh" --help
+assert_not_contains "$OUT" "does NOT touch"
 
 finish

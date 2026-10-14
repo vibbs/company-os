@@ -4,6 +4,7 @@
 # ============================================================================
 # Gemini CLI reads GEMINI.md (its own convention) — same payload as AGENTS.md
 # but with a Gemini-specific header pointing at its activate_skill flow.
+# Rebuilds AGENTS.md first, then copies its body.
 #
 # Usage:
 #   bash tools/build/build-gemini.sh
@@ -17,10 +18,10 @@ usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 
-# Ensure AGENTS.md is fresh
-if [ ! -f AGENTS.md ] || [ AGENTS.md -ot CLAUDE.md ]; then
-  bash tools/build/build-agents-md.sh >/dev/null
-fi
+# Rebuild AGENTS.md first: it is built from os/skills, os/agents, tools/ and
+# CLAUDE.md, and a timestamp check on CLAUDE.md alone missed changes to the
+# others. The rebuild is quick, so it always runs.
+bash tools/build/build-agents-md.sh >/dev/null
 
 OUT="GEMINI.md"
 TMP="$(mktemp)"

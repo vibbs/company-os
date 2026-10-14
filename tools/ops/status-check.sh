@@ -3,7 +3,7 @@
 # Description: Checks health of one or more HTTP endpoints (status code, response time, SSL)
 # Usage: ./tools/ops/status-check.sh [--timeout <ms>] [--expected-status <code>] [--verbose] <url> [<url> ...]
 # Inputs: one or more URLs to check
-# Outputs: health report per URL, exit 0=healthy 1=degraded 2=down
+# Outputs: health report per URL, exit 0=healthy 1=degraded 2=down 64=usage error
 #
 # Checks the health of one or more HTTP endpoints.
 #
@@ -22,6 +22,7 @@
 #   0  All endpoints healthy
 #   1  One or more endpoints degraded (slow response or unexpected status)
 #   2  One or more endpoints down (connection failed)
+#   64 Usage error (unknown option, missing value, or no URL given)
 set -euo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
 
@@ -43,12 +44,12 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --help|-h) usage_print_header "${BASH_SOURCE[0]}"; exit 0 ;;
     --timeout)
-      [[ $# -ge 2 ]] || { echo "ERROR: --timeout requires a value" >&2; exit 1; }
+      [[ $# -ge 2 ]] || { echo "ERROR: --timeout requires a value" >&2; exit 64; }
       TIMEOUT_MS="$2"
       shift 2
       ;;
     --expected-status)
-      [[ $# -ge 2 ]] || { echo "ERROR: --expected-status requires a value" >&2; exit 1; }
+      [[ $# -ge 2 ]] || { echo "ERROR: --expected-status requires a value" >&2; exit 64; }
       EXPECTED_STATUS="$2"
       shift 2
       ;;
@@ -59,7 +60,7 @@ while [[ $# -gt 0 ]]; do
     -*)
       echo "Unknown option: $1" >&2
       echo "Run with --help for usage." >&2
-      exit 2
+      exit 64
       ;;
     *)
       URLS+=("$1")
@@ -72,7 +73,7 @@ done
 if [[ ${#URLS[@]} -eq 0 ]]; then
   echo "ERROR: No URLs provided." >&2
   echo "Run with --help for usage." >&2
-  exit 2
+  exit 64
 fi
 
 # Convert timeout from milliseconds to seconds for curl (supports decimals)

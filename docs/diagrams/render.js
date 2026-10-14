@@ -8,8 +8,11 @@
 //
 // Zero dependencies (Node 18+). Output is deterministic: running it twice
 // produces byte-identical files. Counts (skills, agents, tools, artifact types)
-// and each agent's skills are read from the repo at render time, so the
-// diagrams cannot drift from os/ and tools/.
+// and each agent's skills are read from the repo at render time, so those
+// cannot drift from os/ and tools/. Not derived, written by hand in the
+// workflow diagram: the "10 paths" the workflow-router picks from, the "7
+// conversation types" of customer-conversations, and the feedback-synthesizer
+// score thresholds (15 and 8). Update them here when those skills change.
 
 'use strict';
 

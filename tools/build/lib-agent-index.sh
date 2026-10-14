@@ -5,7 +5,7 @@
 # Source this file. Provides:
 #   agent_source_dir            -> echoes the directory adapters should read agents from
 #   agent_list                  -> echoes one agent name per line
-#   agent_file <name>           -> echoes the absolute path to <name>'s .md file
+#   agent_file <name>           -> echoes the repo-relative path to <name>'s .md file
 # ============================================================================
 
 agent_source_dir() {
