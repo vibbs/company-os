@@ -122,7 +122,7 @@ Combining both analyses, here's the merged priority stack organized by strategic
 |------|--------|-----------|
 | **Simplify first-run experience** | Both | Quick-start presets for common stacks. Reduce mandatory config. Time-to-value < 15 min. |
 | **"Ship in a day" showcase** | Internal | Build and publish a real product using Company OS end-to-end. Proof > documentation. |
-| **Lightweight mode UX** | External | `/prototype` exists but "fast mode" needs to feel obviously fast. Stage=idea should be frictionless. |
+| **Lightweight mode UX** | External | `/rapid-prototype` exists but "fast mode" needs to feel obviously fast. Stage=idea should be frictionless. |
 
 ### TIER 1 — Business Machine (transforms SDLC tool into company tool)
 

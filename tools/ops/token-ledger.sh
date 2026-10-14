@@ -4,7 +4,28 @@
 # Usage: ./tools/ops/token-ledger.sh <subcommand> [options]
 # Inputs: token usage data (flags or interactive), company.config.yaml for budget
 # Outputs: JSONL ledger entries, summary reports, CSV exports
+#
+# Tracks AI token costs as COGS.
+#
+# Subcommands:
+#   log             Add a ledger entry
+#   summary         Show cost totals (daily/weekly/monthly)
+#   feature-cost    Show total cost for a specific feature (PRD/RFC)
+#   export          Export ledger to CSV
+#   budget          Show current month spend vs budget
+#
+# Run ./tools/ops/token-ledger.sh <subcommand> --help for subcommand options.
+#
+# Examples:
+#   ./tools/ops/token-ledger.sh log --model claude-sonnet-4-20250514 --input-tokens 10000 --output-tokens 3000
+#   ./tools/ops/token-ledger.sh summary --period monthly
+#   ./tools/ops/token-ledger.sh feature-cost PRD-001
+#   ./tools/ops/token-ledger.sh budget
+#
+# Data: cogs/ai-ledger/entries.jsonl
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/config.sh"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
 
 # ─── Paths ────────────────────────────────────────────────────────────────────
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -24,45 +45,14 @@ RESET='\033[0m'
 
 # ─── Usage ────────────────────────────────────────────────────────────────────
 usage() {
-  cat <<EOF
-Usage: $(basename "$0") <subcommand> [options]
-
-Track AI token costs as COGS.
-
-Subcommands:
-  log             Add a ledger entry
-  summary         Show cost totals (daily/weekly/monthly)
-  feature-cost    Show total cost for a specific feature (PRD/RFC)
-  export          Export ledger to CSV
-  budget          Show current month spend vs budget
-
-Run $(basename "$0") <subcommand> --help for subcommand-specific options.
-
-Examples:
-  $(basename "$0") log --model claude-sonnet-4-20250514 --input-tokens 10000 --output-tokens 3000
-  $(basename "$0") summary --period monthly
-  $(basename "$0") feature-cost PRD-001
-  $(basename "$0") budget
-
-Data: $LEDGER_FILE
-EOF
+  usage_print_header "${BASH_SOURCE[0]}"
   exit 0
 }
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 
 read_config() {
-  local key="$1"
-  local value=""
-  if [[ -f "$CONFIG_FILE" ]]; then
-    value=$(grep -v '^ *#' "$CONFIG_FILE" 2>/dev/null \
-      | grep "${key}:" | head -1 \
-      | sed "s/.*${key}: *//" \
-      | sed 's/ *#.*//' \
-      | tr -d '"' | tr -d "'" \
-      | xargs) || true
-  fi
-  echo "$value"
+  cfg_get "ai.$1"
 }
 
 ensure_ledger_dir() {

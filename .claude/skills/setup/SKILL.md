@@ -1,13 +1,29 @@
 ---
 name: setup
-description: Interactive setup wizard for Company OS. Configures company.config.yaml, generates .claude/settings.json with tech-stack-specific permissions, and scaffolds directories. Supports three modes — interactive wizard, express config block, or auto-extract from a URL/unstructured text.
-user-invokable: true
-argument-hint: "[preset | config block | URL | unstructured description]"
+description: "Configures Company OS for your project: company.config.yaml, permissions and folders. Use the first time you open a repo; accepts a preset, a pasted config block, or a URL to auto-fill."
+user-invocable: true
+argument-hint: "[preset | config block | URL | description]"
 ---
 
 # Setup Wizard
 
 Interactive setup skill for Company OS. Works on both new (greenfield) and existing projects. Company OS is an **overlay** — it adds its own files alongside your code and never touches your source.
+
+## At a Glance
+
+- **What it does**: asks about your company and tech stack, then configures Company OS for your project.
+- **Three ways to run it**: answer questions (interactive), paste a filled-in config block (express), or give a URL or description and confirm what it infers (auto-extract).
+- **Files it writes**: `company.config.yaml`, `.claude/settings.json` (permissions for your stack; Claude Code only), and the `artifacts/`, `tasks/` and related folders. It never edits your source code.
+- **Time**: about 5 minutes interactive, under 1 minute in express mode.
+- **Safe to rerun**: existing config and settings are merged, not overwritten.
+- **Done when**: you see the "Setup Complete" summary with next steps (usually `/ship` or `/gtm-sprint`).
+- **Note**: the `## Design` block inside Step 5.7 is part of the express template, not a separate step.
+
+## When to Use
+
+- The first time you open a repo with Company OS installed.
+- When you change your tech stack, company stage or platform targets and want the config and permissions to match.
+- Not needed for day-to-day work once `company.config.yaml` is filled in.
 
 ## Modes
 
@@ -382,11 +398,11 @@ If user selects Custom, walk through each agent:
 
 After selection, update both:
 1. `company.config.yaml` `models:` section with the chosen values
-2. Each `.claude/agents/*.md` frontmatter `model:` field to match
+2. Each `os/agents/*.md` frontmatter `model:` field to match. Edit `os/agents/`, not `.claude/agents/` (that folder is generated), then run `bash tools/build/build.sh` to regenerate the adapters
 
 ### Step 5.7: Design & Brand
 
-Configure the product's design archetype — the visual and UX personality that drives all frontend implementation. This step uses the same procedure defined in the **design-system** skill (S-ENG-12). Refer to `.claude/skills/design-system/SKILL.md` Step 1 for the full wizard flow.
+Configure the product's design archetype — the visual and UX personality that drives all frontend implementation. This step uses the same procedure defined in the **design-system** skill (S-ENG-12). Refer to `os/skills/design-system/SKILL.md` Step 1 for the full wizard flow.
 
 **Summary of the flow:**
 
@@ -434,6 +450,8 @@ Configure the product's design archetype — the visual and UX personality that 
 Write the complete config file with all gathered values. Preserve the comment structure from the template. Leave uncollected optional fields as `""`.
 
 ### Step 7: Generate / Merge `.claude/settings.json`
+
+**Claude Code only.** Run this step only when the Claude Code adapter is installed (the `.claude/` folder exists) or you are running inside Claude Code. In Cursor, Codex, Gemini CLI or Aider without a `.claude/` folder, skip it and say "Skipped .claude/settings.json (Claude Code is not installed)". Do not create a `.claude/` folder for other runtimes.
 
 **If `.claude/settings.json` already exists:**
 1. Read and parse the existing file
@@ -577,23 +595,22 @@ If user removes a category, note it but don't delete skills (they're harmless if
 
 ### Step 10: Template Documentation Cleanup (Optional)
 
-Ask: "Would you like to clean up template documentation files? These explain Company OS itself and aren't needed for daily operation."
+Ask: "Would you like to clean up template example files? This removes the example artifacts and standards and, if it is still the Company OS template README, replaces it. Your own README.md, FAQ.md and similar files are never touched. The Company OS guides in `.company-os/docs/` stay."
 
 | File | Purpose | Recommendation |
 |------|---------|----------------|
-| `README.md` | Describes Company OS template | **Replace** with a project-specific README |
-| `.company-os/docs/TOKEN_COSTS.md` | Token cost reference for adopters | **Remove** (reference only) |
-| `.company-os/docs/FAQ.md` | Company OS capability FAQ | **Remove** (reference only) |
-| `.company-os/docs/SETUP.md` | Setup guide for template | **Remove** after setup complete |
-| `setup.sh` | One-time scaffolding script | **Remove** after first run |
+| `README.md` | Describes Company OS template | **Replace** with a project-specific README, but only when its first heading is `# Company OS` (the template copy). Otherwise it is the user's own README: keep it and say so |
+| `.company-os/docs/` | Company OS guides (SETUP, CONCEPTS, CONFIG_REFERENCE, CUSTOMIZING, TROUBLESHOOTING, FAQ, TOKEN_COSTS, ROADMAP, CHANGELOG, SKILL_SCHEMA) and the `diagrams/` they embed | **Keep.** Other files link to them and they cost no tokens unless read |
+| `.company-os/setup.sh` | Bash fallback for setup (installed with Company OS) | **Keep.** Upgrades refresh it |
+| `TOKEN_COSTS.md`, `FAQ.md`, `SETUP_COMPANY_OS.md` (repo root) | Old copies of guides that now live in `.company-os/docs/`. Present only in projects set up before 1.12.0 | **Remove** only when the file is the Company OS copy: its first line is `# FAQ — AI Agentic Company OS`, `# Setup Guide — AI Agentic Company OS`, or `# Token Cost Reference` (with "Company OS" in the first five lines). Any other file with these names is the user's own: keep it and say so. `bash .company-os/setup.sh --cleanup` applies the same rule |
 | `artifacts/prds/PRD-EXAMPLE-001-notifications.md` | Example PRD artifact | **Remove** after reviewing |
 | `artifacts/rfcs/RFC-EXAMPLE-001-notification-system.md` | Example RFC artifact | **Remove** after reviewing |
 | `standards/api/example-api-conventions.md` | Example API standards | **Remove** after reviewing |
 | `standards/coding/example-coding-standards.md` | Example coding standards | **Remove** after reviewing |
 
 If user confirms:
-1. Delete `.company-os/docs/TOKEN_COSTS.md`, `.company-os/docs/FAQ.md`, `.company-os/docs/SETUP.md`, `setup.sh`, example artifacts, and example standards
-2. Replace `README.md` with a minimal project README:
+1. Delete the legacy root files above (only the Company OS copies), example artifacts, and example standards. List any root file you kept because it is not a Company OS copy
+2. Replace `README.md` with a minimal project README only if it is the template README (first heading `# Company OS`); otherwise leave it and say "README.md is your own, so I left it":
    ```
    # {company.product}
    {company.description}
@@ -611,7 +628,7 @@ Files that are **always kept** (operationally required):
 
 1. Run `./tools/registry/health-check.sh` — verify all skills discoverable
 2. Validate `company.config.yaml` is well-formed YAML
-3. Validate `.claude/settings.json` is well-formed JSON
+3. If Step 7 ran, validate `.claude/settings.json` is well-formed JSON
 4. Print setup summary:
 
 ```
@@ -627,7 +644,7 @@ Files that are **always kept** (operationally required):
 - Hosting: {hosting}, CI: {ci}
 
 ### Permissions
-- .claude/settings.json configured with {N} allow rules, {M} deny rules
+- .claude/settings.json configured with {N} allow rules, {M} deny rules (or "skipped: Claude Code not installed")
 - Tech stack: {language} permissions included
 
 ### Directories

@@ -1,6 +1,7 @@
 ---
 name: pricing-unit-economics
-description: Performs CAC/LTV analysis and pricing model validation. Use when setting initial pricing, evaluating pricing changes, or assessing unit economics health.
+description: "Analyzes pricing and unit economics: customer acquisition cost (CAC) versus lifetime value (LTV). Use when setting prices, changing them or checking financial health."
+user-invocable: true
 ---
 
 # Pricing & Unit Economics

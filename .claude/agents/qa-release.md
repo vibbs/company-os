@@ -1,6 +1,6 @@
 ---
 name: qa-release
-description: Manages quality gates, test planning, regression confidence, and release readiness. Use when testing, creating test plans, or evaluating release readiness.
+description: Plans and runs quality checks: test plans, QA reports and the final release readiness verdict. Use when testing a feature, writing a test plan or deciding whether it is ready to release.
 tools: Read, Grep, Glob, Bash, Write
 model: sonnet
 memory: project

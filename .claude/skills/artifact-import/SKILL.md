@@ -1,13 +1,19 @@
 ---
 name: artifact-import
-description: Imports existing documents (PRDs, RFCs, API specs, test plans) into Company OS with proper frontmatter, type classification, and artifact linking. Use when bringing external documents into the artifact system.
-user-invokable: true
-argument-hint: "[path/to/file or paste content inline]"
+description: Brings existing documents (PRDs, RFCs, API specs, test plans) into Company OS with frontmatter, a type and links. Use when you already have docs outside this repo.
+user-invocable: true
+argument-hint: "<file path or pasted content>"
 ---
 
 # Artifact Import
 
 Imports pre-existing documents from external sources (Google Docs, Notion, Confluence, local files, or inline-pasted content) into the Company OS artifact system with proper frontmatter, classification, and linking.
+
+## When to Use
+
+- You already have PRDs, RFCs, API specs or test plans in Google Docs, Notion, Confluence or local files.
+- You want the stage gates in `/ship` to recognise that earlier work.
+- Not needed for new work: the other skills create artifacts with the right frontmatter.
 
 ## Input Modes
 
@@ -17,6 +23,48 @@ Imports pre-existing documents from external sources (Google Docs, Notion, Confl
 
 If both modes are present, process both. If neither, prompt the user:
 > "No files found in `imports/` and no document content provided. Either export your docs as Markdown and place them in `imports/`, or paste the content directly."
+
+## What You Will See
+
+Before: a plain Markdown file you placed in `imports/`.
+
+```markdown
+# User Authentication
+
+## Problem
+Users cannot sign in with a work email.
+```
+
+After: the same text, with frontmatter added and the file moved to `artifacts/prds/PRD-001-user-authentication.md`.
+
+```markdown
+---
+id: PRD-001
+type: prd
+title: "User Authentication"
+status: review
+created: 2026-10-13
+author: imported
+parent: null
+children: []
+depends_on: []
+blocks: []
+tags: [imported]
+---
+
+# User Authentication
+
+## Problem
+Users cannot sign in with a work email.
+```
+
+If the type is unclear, you will be asked one question and should answer with the type:
+
+```text
+I think `auth-notes.md` is an RFC, but it could also be a test plan. Which type should I assign?
+```
+
+Reply `rfc` or `test-plan`. Imported files start at `review` status. You promote them to `approved` after checking them.
 
 ## Procedure
 

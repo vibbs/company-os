@@ -5,23 +5,30 @@
 # Inputs: search query (keyword, skill name, category)
 # Outputs: matching skill files with name and description
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
 QUERY="${1:-}"
-SKILLS_DIR="$(dirname "$0")/../../.claude/skills"
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+if [ -d "$ROOT/os/skills" ]; then
+  SKILLS_DIR="$ROOT/os/skills"
+else
+  SKILLS_DIR="$ROOT/.claude/skills"
+fi
 
 if [[ -z "$QUERY" ]]; then
-  echo "ERROR: No search query provided"
-  echo "Usage: ./tools/registry/search-skill.sh <query>"
-  echo ""
-  echo "Examples:"
-  echo "  ./tools/registry/search-skill.sh prd"
-  echo "  ./tools/registry/search-skill.sh 'api contract'"
-  echo "  ./tools/registry/search-skill.sh engineering"
+  echo "ERROR: No search query provided" >&2
+  echo "Usage: ./tools/registry/search-skill.sh <query>" >&2
+  echo "" >&2
+  echo "Examples:" >&2
+  echo "  ./tools/registry/search-skill.sh prd" >&2
+  echo "  ./tools/registry/search-skill.sh 'api contract'" >&2
+  echo "  ./tools/registry/search-skill.sh engineering" >&2
   exit 1
 fi
 
 if [[ ! -d "$SKILLS_DIR" ]]; then
-  echo "ERROR: Skills directory not found at $SKILLS_DIR"
+  echo "ERROR: Skills directory not found at $SKILLS_DIR" >&2
   exit 1
 fi
 
@@ -38,11 +45,11 @@ for skill_dir in "$SKILLS_DIR"/*/; do
   DIR_NAME=$(basename "$skill_dir")
   if grep -il "$QUERY" "$SKILL_FILE" > /dev/null 2>&1 || echo "$DIR_NAME" | grep -iq "$QUERY"; then
     # Extract metadata from frontmatter
-    NAME=$(sed -n '/^---$/,/^---$/p' "$SKILL_FILE" | grep "^name:" | sed 's/name: *//' | tr -d '"')
-    DESC=$(sed -n '/^---$/,/^---$/p' "$SKILL_FILE" | grep "^description:" | sed 's/description: *//' | tr -d '"')
+    NAME=$(sed -n '/^---$/,/^---$/p' "$SKILL_FILE" | { grep "^name:" || true; } | sed 's/name: *//' | tr -d '"')
+    DESC=$(sed -n '/^---$/,/^---$/p' "$SKILL_FILE" | { grep "^description:" || true; } | sed 's/description: *//' | tr -d '"')
 
-    # Try to extract category from Reference section in body
-    CATEGORY=$(grep -A1 "Category" "$SKILL_FILE" | grep -v "Category" | sed 's/.*\*\*: *//' | head -1)
+    # Category comes from the "- **Category**: X" line in the Reference section
+    CATEGORY=$({ grep -m1 '^- \*\*Category\*\*:' "$SKILL_FILE" || true; } | sed 's/.*\*\*Category\*\*: *//')
 
     echo ""
     echo "  $NAME"

@@ -12,7 +12,7 @@ blocks: []
 tags: [notifications, cross-cutting, example]
 ---
 
-> **EXAMPLE ARTIFACT** — This is a reference artifact showing proper Company OS format. Delete it after reviewing, or use it as a template for your first RFC. Run `bash setup.sh --cleanup` to remove all example files.
+> **EXAMPLE ARTIFACT** — This is a reference artifact showing proper Company OS format. Delete it after reviewing, or use it as a template for your first RFC. Run `bash .company-os/setup.sh --cleanup` to remove all example files.
 
 # RFC: Notification System
 

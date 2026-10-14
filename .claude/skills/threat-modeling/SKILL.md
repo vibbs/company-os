@@ -1,7 +1,8 @@
 ---
 name: threat-modeling
-description: Performs data flow threat analysis with structured mitigations. Use when assessing security threats for new features, architecture changes, or compliance reviews.
-argument-hint: "[optional: --quick]"
+description: Analyzes data flows for security threats and proposes mitigations. Use when assessing a new feature, an architecture change or a compliance review.
+user-invocable: true
+argument-hint: "[--quick]"
 ---
 
 # Threat Modeling

@@ -1,7 +1,7 @@
 ---
 name: feature-flags
-description: Designs feature flag strategy, progressive discovery patterns, and per-feature flag specifications for safe rollouts and organic product learning.
-user-invokable: false
+description: Designs a feature flag strategy and per-feature flag specs for safe rollouts. Use when releasing a feature gradually or planning flag cleanup.
+user-invocable: false
 ---
 
 # Feature Flags

@@ -1,12 +1,24 @@
 #!/usr/bin/env bash
-set -euo pipefail
-
-# ─── App Version Bump Tool ──────────────────────────────────────────────────────
-# Detects the app version file, bumps it by the specified type, updates CHANGELOG.md,
-# and creates a git tag. Stage-aware: idea/mvp stay at v0.x.x.
-#
+# Tool: App Version Bump
+# Description: Detects the app version file, bumps it, updates CHANGELOG.md and creates a git tag
 # Usage: ./tools/versioning/version-bump.sh <major|minor|patch> [--dry-run] [--no-tag]
-# ─────────────────────────────────────────────────────────────────────────────────
+# Inputs: package.json, pyproject.toml or VERSION; company.config.yaml (company.stage)
+# Outputs: bumped version file, CHANGELOG.md entry, git tag (unless --no-tag)
+#
+# Options:
+#   major       Bump major version (breaking changes)
+#   minor       Bump minor version (new features)
+#   patch       Bump patch version (bug fixes)
+#   --dry-run   Show what would change without modifying files
+#   --no-tag    Skip git tag creation
+#   -h, --help  Show this help
+#
+# Stage-aware:
+#   idea/mvp stages: version stays at 0.x.x (major bumps become minor)
+#   growth/scale stages: full semver (warns if still at 0.x.x)
+set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/config.sh"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
 
 # ─── Colors ──────────────────────────────────────────────────────────────────────
 RED='\033[0;31m'
@@ -26,32 +38,18 @@ for arg in "$@"; do
     major|minor|patch) BUMP_TYPE="$arg" ;;
     --dry-run) DRY_RUN=true ;;
     --no-tag) NO_TAG=true ;;
-    -h|--help)
-      echo "Usage: ./tools/versioning/version-bump.sh <major|minor|patch> [--dry-run] [--no-tag]"
-      echo ""
-      echo "Options:"
-      echo "  major      Bump major version (breaking changes)"
-      echo "  minor      Bump minor version (new features)"
-      echo "  patch      Bump patch version (bug fixes)"
-      echo "  --dry-run  Show what would change without modifying files"
-      echo "  --no-tag   Skip git tag creation"
-      echo ""
-      echo "Stage-aware:"
-      echo "  idea/mvp stages: version stays at 0.x.x (major bumps become minor)"
-      echo "  growth/scale stages: full semver (warns if still at 0.x.x)"
-      exit 0
-      ;;
+    -h|--help) usage_print_header "${BASH_SOURCE[0]}"; exit 0 ;;
     *)
-      echo -e "${RED}ERROR: Unknown argument: $arg${RESET}"
-      echo "Usage: ./tools/versioning/version-bump.sh <major|minor|patch> [--dry-run] [--no-tag]"
+      echo -e "${RED}ERROR: Unknown argument: $arg${RESET}" >&2
+      echo "Usage: ./tools/versioning/version-bump.sh <major|minor|patch> [--dry-run] [--no-tag]" >&2
       exit 1
       ;;
   esac
 done
 
 if [[ -z "$BUMP_TYPE" ]]; then
-  echo -e "${RED}ERROR: Bump type required (major, minor, or patch)${RESET}"
-  echo "Usage: ./tools/versioning/version-bump.sh <major|minor|patch> [--dry-run] [--no-tag]"
+  echo -e "${RED}ERROR: Bump type required (major, minor, or patch)${RESET}" >&2
+  echo "Usage: ./tools/versioning/version-bump.sh <major|minor|patch> [--dry-run] [--no-tag]" >&2
   exit 1
 fi
 
@@ -62,11 +60,9 @@ cd "$PROJECT_ROOT"
 # ─── Read company stage ─────────────────────────────────────────────────────────
 COMPANY_STAGE="growth"  # Default: full enforcement
 CONFIG_FILE="$PROJECT_ROOT/company.config.yaml"
-if [[ -f "$CONFIG_FILE" ]]; then
-  STAGE_VALUE=$(grep "^  stage:" "$CONFIG_FILE" | sed 's/.*stage: *//' | tr -d '"' | tr -d "'" | sed 's/ *#.*//' || true)
-  if [[ -n "$STAGE_VALUE" ]]; then
-    COMPANY_STAGE="$STAGE_VALUE"
-  fi
+STAGE_VALUE="$(cfg_get company.stage)"
+if [[ -n "$STAGE_VALUE" ]]; then
+  COMPANY_STAGE="$STAGE_VALUE"
 fi
 
 # ─── Detect version file ────────────────────────────────────────────────────────
@@ -130,20 +126,20 @@ detect_version_file() {
 }
 
 if ! detect_version_file; then
-  echo -e "${RED}ERROR: No app version file found.${RESET}"
-  echo "Expected one of:"
-  echo "  - package.json with \"version\" field"
-  echo "  - pyproject.toml with version field"
-  echo "  - VERSION file (plain text)"
-  echo ""
-  echo "Run /setup to initialize app versioning, or create a VERSION file:"
-  echo "  echo '0.1.0' > VERSION"
+  echo -e "${RED}ERROR: No app version file found.${RESET}" >&2
+  echo "Expected one of:" >&2
+  echo "  - package.json with \"version\" field" >&2
+  echo "  - pyproject.toml with version field" >&2
+  echo "  - VERSION file (plain text)" >&2
+  echo "" >&2
+  echo "Run /setup to initialize app versioning, or create a VERSION file:" >&2
+  echo "  echo '0.1.0' > VERSION" >&2
   exit 1
 fi
 
 # ─── Parse current version ──────────────────────────────────────────────────────
 if ! [[ "$CURRENT_VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]]; then
-  echo -e "${RED}ERROR: Current version '$CURRENT_VERSION' is not valid semver (expected MAJOR.MINOR.PATCH)${RESET}"
+  echo -e "${RED}ERROR: Current version '$CURRENT_VERSION' is not valid semver (expected MAJOR.MINOR.PATCH)${RESET}" >&2
   exit 1
 fi
 

@@ -1,7 +1,7 @@
 ---
 name: design-system
-description: Reads configured design archetype and UX baseline to produce project-specific design tokens, component guidance, and UX patterns. Use when building UI components, reviewing design consistency, or configuring design preferences for the first time.
-user-invokable: true
+description: "Sets up and applies your visual design: tokens (colors, type, spacing), component guidance and UX patterns. Use when building UI or choosing a design style for the first time."
+user-invocable: true
 argument-hint: "[generate-tokens | review | reconfigure]"
 ---
 

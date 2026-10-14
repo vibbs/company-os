@@ -1,6 +1,6 @@
 ---
 name: product
-description: Handles discovery, PRD creation, prioritization, and scope control. Use when defining what to build, analyzing user feedback, or prioritizing features.
+description: Turns ideas and feedback into product requirements: discovery, PRDs, prioritization and scope control. Use when defining what to build, analyzing user feedback or ranking features.
 tools: Read, Grep, Glob, Bash, Write
 model: sonnet
 memory: project

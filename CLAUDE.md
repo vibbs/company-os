@@ -2,17 +2,23 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+> **Multi-runtime note:** Company OS now ships adapters for other agentic runtimes. `AGENTS.md`, `GEMINI.md`, `.cursor/rules/`, and `.codex/config.md` are **generated** from this file plus `.claude/`. Regenerate after any change to skills, agents, or this file: `bash tools/build/build.sh`.
+
 ## Company OS Overview
 
 This is an **AI Agentic Company OS** — a template project system for building SaaS products with AI-assisted agents, skills, and tools. Users fork this repo, configure `company.config.yaml`, and use the agent system to go from idea → PRD → architecture → implementation → release.
 
 ### Three-Layer Architecture
 
-| Layer | Location | Purpose |
-|-------|----------|---------|
-| **Agents** (Authority) | `.claude/agents/` | Choose what happens next. Route, decide, delegate. |
-| **Skills** (Procedural) | `.claude/skills/` | Advise + produce artifacts. Procedures, templates, checklists. |
-| **Tools** (Execution) | `tools/` | Execute fixed, deterministic actions. Shell scripts. |
+| Layer | Authoring source | Claude Code adapter | Purpose |
+|-------|------------------|---------------------|---------|
+| **Agents** (Authority) | `os/agents/` | `.claude/agents/` (generated) | Choose what happens next. Route, decide, delegate. |
+| **Skills** (Procedural) | `os/skills/` | `.claude/skills/` (generated) | Advise + produce artifacts. Procedures, templates, checklists. |
+| **Tools** (Execution) | `tools/` | `tools/` (shared) | Execute fixed, deterministic actions. Shell scripts. |
+
+**Source of truth is `os/`.** When editing a skill or agent, edit the file under `os/` and run `bash tools/build/build.sh` — this regenerates `.claude/`, `.cursor/`, `AGENTS.md`, `GEMINI.md`, and `.codex/` from the same authored content. Both `os/` and the generated adapters are committed (so cloning works without a build step), but `os/` is what you edit.
+
+Claude Code's hook files (`.claude/hooks/`), settings (`.claude/settings.json`), and agent memory (`.claude/agent-memory/`) are Claude-specific and live directly under `.claude/` — they are *not* generated.
 
 ### Dependency Rules
 - Agents depend on Skills for *how to think / what to produce*
@@ -41,14 +47,16 @@ Run `/ship` to kick off the full pipeline. It reads your tech stack from `compan
 Run `/gtm-sprint` for time-boxed go-to-market validation (7/14/21 days). Unlike `/ship` which builds software, GTM Sprint validates **market demand** and builds **distribution** — no code required. Sequences: ICP → Mom-Test interviews → pain synthesis → LOI commitments → positioning → landing page → directory blitz → community engagement → retrospective. Includes quantified decision gates (e.g., "<3 LOIs by Day 6 → double interview volume"). Best for idea-stage validation, MVP launches, and repositioning sprints.
 
 ### First-Time Setup
-For new projects or existing repos, run `/setup` to configure Company OS interactively. The wizard fills in `company.config.yaml`, generates `.claude/settings.json` with tech-stack-specific permissions, and scaffolds directories. Alternatively, run `bash setup.sh` for a non-interactive scaffold.
+For new projects or existing repos, run `/setup` to configure Company OS interactively. The wizard fills in `company.config.yaml`, generates `.claude/settings.json` with tech-stack-specific permissions, and scaffolds directories. Alternatively, run `bash .company-os/setup.sh` for a non-interactive scaffold.
 
 ### Upgrading
 Run `/upgrade-company-os` to check for updates, preview changes, upgrade, or rollback. The installer uses semantic versioning and manifest-based conflict detection to safely update template files without losing user customizations. Run `/upgrade-company-os check` to see release notes.
 
 ### Key Files
 - `company.config.yaml` — company-specific tech stack, API standards, conventions. **Read this first in every session.**
-- `setup.sh` — bash setup fallback for scaffolding directories and template config
+- `tests/run.sh` — the test suite (config, tool help, artifacts, build, diagrams, docs, install). Run `bash tests/run.sh` (and `/bin/bash tests/run.sh` on macOS) before committing tool or installer changes. CI (`.github/workflows/ci.yml`) runs `build.sh --check --strict`, `render.js --check` and the suite on Linux and macOS.
+- `CONTRIBUTING.md`, `SECURITY.md` — contributor workflow and private vulnerability reporting
+- `.company-os/setup.sh` — bash setup fallback for scaffolding directories and template config (installed with Company OS; run it from the project root)
 - `imports/` — **transient** staging for `/artifact-import` (files are classified, moved to `artifacts/`, then deleted)
 - `standards/` — **permanent** reference docs agents read continuously (stays in place after `/ingest`)
 - `standards/brand/archetypes/` — design archetype reference files (visual tokens, UX patterns per archetype). Run `/design-system` to configure.
@@ -66,7 +74,7 @@ Run `/upgrade-company-os` to check for updates, preview changes, upgrade, or rol
 Avoid reading these directories during normal operations — they're loaded-on-demand by specific skills and reading them wastes tokens:
 - `.company-os/` — internal system metadata (version, manifest, migrations, docs). Only read by `/upgrade-company-os` and `system-maintenance`.
 - `standards/brand/archetypes/` — design token reference files. Only read by `/design-system`.
-- `cogs/*/entries.jsonl` — raw COGS ledger data. Only read by `/token-cost`.
+- `cogs/*/entries.jsonl` — raw COGS ledger data. Only read by `/token-cost-ledger`.
 
 ### Artifact Lineage & Enforcement
 Every artifact has YAML frontmatter. Required fields: `id`, `type`, `title`, `status` (draft/review/approved/archived), `created`, `author`. Optional lineage fields: `parent`, `children`, `depends_on`, `blocks`. Always maintain these links when creating or updating artifacts.
@@ -117,7 +125,7 @@ Always read `company.config.yaml` before making technical recommendations. If th
 - Never mark a task complete without proving it works
 - Diff behavior between main and your changes when relevant
 - Ask yourself: "Would a staff engineer approve this?"
-- Run tests, check logs, demonstrate correctness
+- Run tests, check logs, demonstrate correctness (`bash tests/run.sh`, `bash tools/build/build.sh --check --strict`)
 
 ### 5. Demand Elegance (Balanced)
 - For non-trivial changes: pause and ask "is there a more elegant way?"
@@ -135,7 +143,7 @@ Always read `company.config.yaml` before making technical recommendations. If th
 - After ANY change to the Company OS structure (skills, agents, tools, artifact types, stage gates):
   run the `system-maintenance` skill to audit and update all documentation
 - Trigger conditions: new/deleted/renamed skill, agent, or tool; modified validate.sh or check-gate.sh
-- Documentation files that must stay in sync: CLAUDE.md, .company-os/docs/SETUP.md, all agent .md files
+- Documentation files that must stay in sync: CLAUDE.md, .company-os/docs/ (SETUP, CONCEPTS, CONFIG_REFERENCE, CUSTOMIZING, TROUBLESHOOTING), all agent .md files
 - This is not optional — stale docs cause cascading confusion for agents and users
 
 ### 8. Git Discipline

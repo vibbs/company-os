@@ -1,6 +1,7 @@
 ---
 name: implementation-decomposer
-description: Breaks a PRD or RFC into small, well-scoped implementation tasks suitable for individual pull requests. Use when translating product requirements into engineering work items.
+description: Breaks a PRD or RFC into small tasks that each fit one pull request. Use when turning requirements into engineering work items.
+user-invocable: false
 ---
 
 # Implementation Decomposer

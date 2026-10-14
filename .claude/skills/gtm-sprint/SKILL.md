@@ -1,11 +1,19 @@
 ---
 name: gtm-sprint
-description: Time-boxed go-to-market sprint that sequences customer validation, positioning, launch, and distribution over 7-21 days. Use when validating market demand, launching an MVP, or running a structured GTM push.
-user-invokable: true
-argument-hint: "plan | status | gate-check"
+description: "Runs a 7, 14 or 21 day go-to-market (GTM) sprint: customer interviews, positioning, landing page and distribution, with go/no-go checkpoints. Use to test demand or launch an MVP."
+user-invocable: true
+argument-hint: "[plan | status | gate-check] [7 | 14 | 21]"
 ---
 
 # GTM Sprint
+
+## When to Use
+
+- Pre-product validation: "Do people actually want this?"
+- MVP launch: "We built it, now how do we get users?"
+- New market entry: "We're expanding to a new segment"
+- Repositioning: "Our current positioning isn't working"
+- Any time the user says: "go to market", "GTM", "launch plan", "validate market", "find customers"
 
 ## Reference
 - **ID**: S-GRO-09
@@ -17,24 +25,46 @@ argument-hint: "plan | status | gate-check"
 
 ## Purpose
 
-Orchestrates a time-boxed go-to-market sprint that sequences validation, commitment, launch, and distribution into a structured daily cadence with quantified decision gates. Unlike `/ship` (which builds software) or `/prototype` (which proves technical feasibility), `/gtm-sprint` validates **market demand** and builds **distribution** — no code required.
+Orchestrates a time-boxed go-to-market sprint that sequences validation, commitment, launch, and distribution into a structured daily cadence with quantified decision gates. Unlike `/ship` (which builds software) or `/rapid-prototype` (which proves technical feasibility), `/gtm-sprint` validates **market demand** and builds **distribution** — no code required.
 
 Inspired by the 100x GTM Playbook methodology: validate with interviews, secure commitments (LOIs), build launch assets, activate distribution channels, and measure traction — all within a fixed sprint window.
-
-## When to Use
-
-- Pre-product validation: "Do people actually want this?"
-- MVP launch: "We built it, now how do we get users?"
-- New market entry: "We're expanding to a new segment"
-- Repositioning: "Our current positioning isn't working"
-- Any time the user says: "go to market", "GTM", "launch plan", "validate market", "find customers"
 
 ## When NOT to Use
 
 - Building software features -> use `/ship`
-- Technical proof-of-concept -> use `/prototype`
+- Technical proof-of-concept -> use `/rapid-prototype`
 - Single-channel optimization -> use `/channel-playbook` directly
 - Post-launch growth optimization -> use individual growth skills directly
+
+## What You Will See
+
+`/gtm-sprint plan 14` produces a plan like this (excerpt). Each day lists tasks, the skill to use and the output.
+
+```text
+GTM Sprint Plan: Acme Invoices, 14 days, stage: idea
+
+Day 0  Prep: lock ICP and outreach
+  - Finalize ICP (role, company size, budget, current workaround)
+  - Build a 100-name prospect list; book 15+ calls for Days 1-2
+  - Skill: icp-positioning        Output: ICP artifact, prospect list
+Day 1  Pain discovery: Mom-Test interviews (10+, 15 min each)
+  - Skill: customer-conversations prep mom-test
+  - Output: 10+ CONV- artifacts
+Day 2  Insights: synthesize pain data
+  - Skill: feedback-synthesizer   Output: Pain Matrix
+  Gate: Interview Volume (>= 15 completed)
+```
+
+`/gtm-sprint gate-check` evaluates one gate and tells you what to do next:
+
+```text
+Gate: Interview Volume (Day 2)   Metric: completed interviews
+Threshold: >= 15   Actual: 11   Result: FAIL (advisory at stage idea)
+Corrective action: extend Days 1-2 by 1-2 days and increase outreach volume.
+Adjust the plan, override the gate, or pause the sprint?
+```
+
+Answer with `adjust`, `override` or `pause`. Gates are advisory at `idea` stage and enforced at `growth` and `scale`.
 
 ## Modes
 

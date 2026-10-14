@@ -5,16 +5,16 @@
 # Inputs: optional migration directory path
 # Outputs: migration validation results
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/config.sh"
 
 SCRIPT_DIR="$(dirname "$0")"
 CONFIG_FILE="$SCRIPT_DIR/../../company.config.yaml"
 MIGRATION_DIR="${1:-}"
 
 # Read ORM from config
-ORM=""
-if [[ -f "$CONFIG_FILE" ]]; then
-  ORM=$(grep "orm:" "$CONFIG_FILE" | sed 's/.*orm: *//' | tr -d '"' | tr -d "'" | xargs)
-fi
+ORM="$(cfg_get tech_stack.orm)"
 
 echo "ORM: ${ORM:-not configured}"
 echo "Migration Dir: ${MIGRATION_DIR:-auto-detect}"

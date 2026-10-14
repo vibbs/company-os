@@ -1,8 +1,8 @@
 ---
 name: token-cost-ledger
-description: Tracks AI token usage and costs as COGS. Logs entries, generates reports, monitors budget, shows per-feature cost. Use when reviewing AI spend, logging session costs, or checking budget status.
-user-invokable: true
-argument-hint: "log | report | budget-check | feature-cost"
+description: "Tracks AI token usage and spend: logs entries, reports, checks budget and shows cost per feature. Use when reviewing AI spend or logging a session's cost."
+user-invocable: true
+argument-hint: "[log | report | budget-check | feature-cost]"
 ---
 
 # Token Cost Ledger
@@ -141,7 +141,7 @@ Reference ranges for planning (based on Claude Opus/Sonnet pricing):
 | Flow | Typical Input Tokens | Typical Output Tokens | Estimated Cost |
 |------|---------------------|-----------------------|---------------|
 | `/ship` (full) | 150-300K | 30-60K | $3-8 |
-| `/prototype` | 50-100K | 15-30K | $1-3 |
+| `/rapid-prototype` | 50-100K | 15-30K | $1-3 |
 | `/code-review` | 30-80K | 10-20K | $0.50-2 |
 | `/status` | 10-30K | 5-10K | $0.20-0.50 |
 | Single skill | 20-50K | 5-15K | $0.30-1 |

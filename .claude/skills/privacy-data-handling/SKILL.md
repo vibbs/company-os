@@ -1,6 +1,7 @@
 ---
 name: privacy-data-handling
-description: Defines data retention policies, access controls, and deletion procedures. Use when establishing or auditing how personal and sensitive data is stored, accessed, and removed.
+description: Defines how personal data is retained, accessed and deleted. Use when setting up or auditing data handling.
+user-invocable: true
 ---
 
 # Privacy & Data Handling

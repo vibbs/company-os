@@ -11,6 +11,82 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [Unreleased]
+
+---
+
+## [1.12.0] - 2026-10-14
+
+**Upgrade notes:**
+- **Commit or back up your project before upgrading.**
+- **Upgrading from 1.11 or earlier:** those installs have no version stamp or manifest, so the installer cannot tell which files you edited. It always makes a backup first (`.company-os/backup/`). Without `--force` it only shows what would change. With `--force` it saves each file that differs from the new template to `.company-os/conflicts/<path>.user` (edited guides: `.company-os/docs/<name>.user`), then replaces it.
+- **Your edits from now on:** an upgrade keeps a file you edited when the template did not change it. When both changed, a plain upgrade keeps yours and lists it; `--force` saves `<path>.user` (yours) and `<path>.new` (template) under `.company-os/conflicts/` and installs the template copy. Symlinked files are never written through. A copy is never overwritten: a later one gets a timestamp suffix.
+- **Guides are the exception:** `.company-os/docs/` belongs to the template. On a version upgrade (with or without `--force`), a guide you edited that the template also changed is saved next to it as `.company-os/docs/<name>.user`, then replaced.
+- Edit skills and agents in `os/`, then run `bash tools/build/build.sh`. The build replaces hand edits to the `.claude/skills/` and `.claude/agents/` files it generates. Your own files are kept, with a notice: a skill or agent you created only under `.claude/` (move it to `os/`), and extra files inside a generated skill folder. In an installed project the build only rebuilds the adapters the project already has (`--runtime=all` builds every one).
+- Upgrades without `--runtime` keep the adapters the project already has. Installing Cursor, Codex, Gemini or Aider needs 1.12.0 or later.
+- `setup.sh` is now `.company-os/setup.sh` and is installed with Company OS.
+- Field rename: use `user-invocable`. The old `user-invokable` still works (the build writes the new name and the validator warns).
+- Pinned installs (`--version 1.12.0`) need the `v1.12.0` release tag on GitHub.
+
+### Added
+- **Multi-runtime support.** Company OS now runs in Claude Code, Cursor, Codex CLI, Gemini CLI and Aider.
+  - Generated adapters `AGENTS.md` (Codex, Aider, other AGENTS.md runtimes), `GEMINI.md`, `.cursor/rules/*.mdc` plus legacy `.cursorrules`, and `.codex/config.md`
+  - A runtime-neutral skill and agent schema (`tools/build/schema/`) with `validate-skill.sh` and `validate-agent.sh`, run by `build.sh --check`
+  - `os/` is the single authoring source (`os/skills/`, `os/agents/`, `os/playbooks/`, `os/hooks/`); `tools/build/build.sh` regenerates every adapter, including `.claude/`
+  - `install.sh --runtime auto|all|core|claude|cursor|codex|gemini|aider` (comma-separated lists allowed; `auto` detects installed runtimes), plus `tools/registry/list-runtimes.sh` and `tools/registry/install-runtime.sh` to inspect and add adapters after install
+- **New user docs** in `.company-os/docs/`: `CONCEPTS.md` (glossary, layers, artifacts, stage-aware gates, ship flow with your job at each gate), `CONFIG_REFERENCE.md` (every config section marked required or optional), `CUSTOMIZING.md` (edit `os/`, then build) and `TROUBLESHOOTING.md`
+- **SVG diagrams** in `.company-os/docs/diagrams/` (system overview, agent org chart, ship flow, stage gates, artifact lineage, multi-runtime build, install and upgrade, workflow paths), embedded in the docs and installed with them
+- **FAQ "Getting started" block**: cost, choosing a runtime, use without Claude Code, manual uninstall, customizing, upgrading, stages, troubleshooting
+- **Tool hardening**: every tool script answers `-h` / `--help`; `validate.sh --all` checks every artifact; config is read through one helper (`tools/lib/config.sh`, `cfg_get`); `setup.sh --help`
+- **Test suite and CI**: `bash tests/run.sh` runs seven test files (config, tool help, artifacts, build, diagrams, docs, install) under bash 3.2 or newer; `.github/workflows/ci.yml` runs strict validation, the diagram check and the suite on Linux and macOS
+- **Local-source install**: `COMPANY_OS_SOURCE=<dir or .tar.gz> bash install.sh` installs from a local checkout or archive, with no network
+- **Contributor docs**: `CONTRIBUTING.md`, `SECURITY.md` (how to report a vulnerability) and a pull request template
+- `build.sh --check --strict` fails on warnings; validators print ASCII markers when output is not a terminal
+- Review-first upgrade path (download to a temporary folder, read, then run), and short "When to use" blocks placed before the metadata in six user-facing skills (`artifact-import`, `gtm-sprint`, `setup`, `ship`, `status`, `upgrade-company-os`); other skills already had one
+
+### Changed
+- `SETUP.md` is now a short quickstart (prerequisites, install, pick your runtime, `/setup`, verify, first `/ship`); reference material moved to the new docs above
+- Skill and agent descriptions rewritten in plain language; key user-facing skills gained an overview and sample output
+- Claude-only skill fields (`user-invocable`, `disable-model-invocation`, `argument-hint`) now live under `runtimes.claude:` in `os/skills/`; the build lifts them to the top level of the generated `.claude/` copy
+- Authoring schema moved from `docs/superpowers/SCHEMA.md` to `.company-os/docs/SKILL_SCHEMA.md` (installed with the docs); the portability design spec moved to `docs/design/` and is marked Implemented
+- `TOKEN_COSTS.md` re-measured for this release, with always-on cost per runtime; `ROADMAP.md` refreshed with a collapsed Shipped list
+- `install.sh` treats `.company-os/docs/` as template-owned: upgrades refresh it (recursively, including `diagrams/`), saving edited copies as `<name>.user`, and the manifest now records these files
+- `install.sh` merges file by file against a manifest of template hashes (three-way: your copy, the template copy you last got, the new template copy), so user edits are kept or saved, never overwritten silently. The Company OS section of `CLAUDE.md` gets the same check
+- `install.sh` upgrades without `--runtime` use the adapters already in the project, not the runtimes found on the machine; `build.sh` without `--runtime` does the same in an installed project
+- `install.sh` adds `.company-os/backup/` and `.company-os/conflicts/` to the project `.gitignore`, and points to `.company-os/docs/SETUP.md` after a fresh install
+- `setup.sh` moved to `.company-os/setup.sh` and is installed with Company OS, so `bash .company-os/setup.sh` works in installed projects
+- `install.sh --help` lists `--runtime` in its header, adds examples and the docs link
+
+### Fixed
+- Upgrading an install from 1.11 or earlier (no version stamp, no manifest) no longer overwrites edited files silently or stamps a version over old files: it backs up first, previews without `--force`, and saves `.user` copies with `--force`
+- The manifest records template hashes instead of the files on disk, so a plain re-run no longer makes a later `--force` overwrite your edits silently
+- `build.sh` no longer deletes skills or agents that exist only under `.claude/`, or your files inside a generated skill folder; it removes only files it generated itself (listed in `.claude/.generated-by-company-os`)
+- A same-version re-install that changes nothing no longer rewrites `.claude/settings.json` or suggests committing an upgrade
+- Conflict and `.user` copies no longer overwrite an earlier copy you have not merged; the installer's temp-folder cleanup quotes its path; a same-version re-run suggests "re-install" instead of "upgrade x → x"
+- Upgrade conflict copies are saved under `.company-os/conflicts/<relative path>`; before, files with the same name in different folders overwrote each other
+- The build's field lift and the validators handle CRLF line endings and commented keys
+- Help text for every tool now comes from its header comment (`tools/lib/usage.sh`), so `--help` cannot drift from the script
+- `link.sh` adds `children`/`depends_on` when the field is missing, edits only the first frontmatter block for every change including setting `parent:` (body lines such as `id:` or `parent:` are left alone), and appends to block-style lists (`children:` then `  - ID`) in block style without duplicates
+- `render.js --help` prints usage instead of writing SVGs; the installer says so when a download fails
+- `/setup` and `setup.sh` no longer create `.claude/settings.json` for Cursor, Codex, Gemini or Aider installs; it is written only when `.claude/` exists (or with `setup.sh --claude`)
+- The skill field is now spelled `user-invocable`, the name Claude Code reads. With the old `user-invokable` spelling, the 18 helper skills marked `false` still showed in the `/` menu. The old spelling still works: the build writes it out as `user-invocable` and the validator warns
+- Installs now include the reference standards skills read (`standards/brand/archetypes/`, `ux-baseline.md`, `standards/ops/*` SOPs, `security-posture.md` and others), copied only when missing; before, `/design-system` and the inbound loop pointed at files that were not there
+- Diagrams and the skill schema now ship inside `.company-os/docs/`, so their links work in installed projects
+- Docs used command names that do not exist: `/prototype` is `/rapid-prototype` and `/token-cost` is `/token-cost-ledger`
+- Tool scripts no longer abort silently on an unmatched `grep`, reject missing flag values and unknown flags, and send errors to stderr
+- `check-gate.sh` exits 2 when the artifact path does not exist
+- Stale counts in the docs (now 64 skills, 9 agents, 33 tool scripts)
+- `install.sh --check` and `--changelog` read the incoming version and changelog from `.company-os/` (they moved in v1.9.0), so they no longer report "unknown"; older template layouts still work
+- `/upgrade-company-os rollback` now restores `os/`, rebuilds only the adapters the project already has, and pins any reinstall to the backup version (a plain `--force` re-applied the latest release)
+- `/setup` writes agent models to `os/agents/` and rebuilds, not to the generated `.claude/agents/`
+- `/system-maintenance` audits the current docs (`CONCEPTS.md`, `CUSTOMIZING.md`, README) from `os/` and checks count drift
+- `setup.sh --cleanup` and the `/setup` cleanup option keep the guides in `.company-os/docs/` (other files link to them) and remove only the example artifacts and standards
+- `pre-deploy.sh` check 6 no longer crashes under macOS `/bin/bash` 3.2 (`${ORM,,}` replaced)
+- The installer's commit hint lists only the paths it installed (it named `.claude` even on Cursor-only installs), and "Next steps" shows a block for every installed runtime
+- Cursor: the skill catalog rule (`10-skills.mdc`) is now Agent-Requested, so Cursor can pull it into any task, not only work in `artifacts/`, `standards/` or `docs/`
+- `cfg_get` matches exact key paths only and handles CRLF config files; `tools/build/*.sh` and the validators answer `--help` instead of running
+- `validate.sh` rejects unknown flags; `version-bump.sh` sends errors to stderr; `--since`, `--dir`, `--prd`, `--journey`, `--timeout` and `--expected-status` report a missing value
+
 ## [1.11.0] - 2026-05-27
 
 ### Added
@@ -88,7 +164,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 ### Added
 - **COGS Token Cost Ledger** — Track AI token costs as Cost of Goods Sold. New `cogs/ai-ledger/` directory with JSONL append-only ledger, git-trackable cost history, and per-feature cost attribution
 - **Token Ledger tool** (`tools/ops/token-ledger.sh`, T-OPS-03) — 5 subcommands: `log` (append entry with auto-cost calculation), `summary` (daily/weekly/monthly totals by category/model/agent), `feature-cost` (total cost to build a feature by PRD ID), `export` (JSONL→CSV), `budget` (spend vs budget with projected EOM)
-- **Token Cost Ledger skill** (`/token-cost`, S-OPS-08) — User-invokable with `log | report | budget-check | feature-cost` argument hints. Routes to tool, adds optimization suggestions and unit economics cross-references
+- **Token Cost Ledger skill** (`/token-cost-ledger`, S-OPS-08) — User-invokable with `log | report | budget-check | feature-cost` argument hints. Routes to tool, adds optimization suggestions and unit economics cross-references
 - **Token Cost Tracking standard** (`standards/ops/token-cost-tracking.md`) — Model cost rates (Claude, GPT, Gemini), cost categories, budget framework by stage, feature cost attribution rules, alert thresholds, optimization playbook, COGS expansion guide
 - **Ship flow Step 7.5: Token Cost Logging** — Advisory (non-blocking) step after release summary. Suggests logging session cost with auto-populated `--feature` flag from the ship flow's PRD ID
 - **Context Optimization section** in CLAUDE.md — Behavioral guidance to avoid reading `.company-os/`, `standards/brand/archetypes/`, and `cogs/*/entries.jsonl` during normal operations (loaded-on-demand by specific skills only)
@@ -129,7 +205,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - **Test Intelligence skill** (`test-intelligence`) — Flaky test detection, coverage scoring, test pyramid balance, mutation testing guidance. New `tools/qa/test-health.sh`
 - **Resilience Testing skill** (`resilience-testing`) — Failure mode catalogs, circuit breaker testing, latency injection, blast radius analysis. New `tools/qa/resilience-test.sh`
 - **Support Operations skill** (`support-operations`) — FAQ generation, SLA tiers, escalation paths, de-escalation scripts, support-to-product feedback pipeline. New `support:` config section, `standards/ops/support-runbook.md`, `tools/ops/support-faq-check.sh`
-- **Rapid Prototype skill** (`/prototype`) — Time-boxed MVP prototyping (4h/1d/3d sprints) for proof-of-concept and investor demos. Skips RFC, security review, and full QA
+- **Rapid Prototype skill** (`/rapid-prototype`) — Time-boxed MVP prototyping (4h/1d/3d sprints) for proof-of-concept and investor demos. Skips RFC, security review, and full QA
 - **Release gate Bar 10: AI Safety** — Prompt injection protection, output filtering, cost guardrails, bias assessment. Triggers only when `ai.llm_provider` is set. Advisory in idea/mvp, enforced in growth/scale
 - **Ship flow Step 5.95: Experiment Review** — Verifies experiment specs for features behind experiment flags (advisory, does not block)
 - **Workflow Router: Prototype/Demo** — New classification type for time-boxed PoCs, routes to rapid-prototype skill

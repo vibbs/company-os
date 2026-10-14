@@ -1,6 +1,7 @@
 ---
 name: mobile-readiness
-description: Defines responsive web design patterns and React Native/Expo mobile architecture ensuring all products work on every screen size. Use when building mobile-first web UIs, planning native mobile apps, or adding PWA support.
+description: Defines responsive web patterns and a React Native/Expo plan so the product works on every screen. Use when building mobile-first UI or planning a native or PWA app.
+user-invocable: false
 ---
 
 # Mobile Readiness

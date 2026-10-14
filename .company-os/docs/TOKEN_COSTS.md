@@ -1,114 +1,114 @@
 # Token Cost Reference
 
-This document details the token overhead of running Company OS with Claude Code. Use it to estimate costs before adopting the system.
+What Company OS adds to your AI token usage, and how to reduce it. Use it to estimate cost before you adopt the system.
 
-All estimates use the approximation: **~4 characters = 1 token** (for mixed markdown/YAML content).
+All figures are measured from the files in this release at **about 4 characters per token** (typical for Markdown and YAML). Platform figures (what your runtime sends anyway) are estimates. To track what your sessions actually cost, use `/token-cost-ledger`, which logs spend to `cogs/ai-ledger/`.
 
-> **Note**: This is template documentation — a reference for evaluating Company OS before adoption. After setup, you can safely remove this file with `bash setup.sh --cleanup` or during `/setup`.
-
----
-
-## Baseline: What Claude Code Always Sends
-
-Every Claude Code session — with or without Company OS — includes a system prompt with tool schemas, behavioral rules, and environment info. This is **not** Company OS overhead; it's the platform cost.
-
-| Component | Estimated Tokens |
-|-----------|-----------------|
-| Claude Code system prompt (tool schemas, rules, environment) | ~10,000-12,000 |
-| MCP tool definitions (if configured) | ~500 |
-| Installed skill registry descriptions | ~800-1,000 |
-| **Platform baseline** | **~11,000-13,000** |
-
-This baseline exists whether you use Company OS or a blank project.
+> This is reference documentation for evaluating Company OS. It costs no tokens unless an agent reads it, and setup cleanup keeps it. Delete it by hand if you do not want it.
 
 ---
 
-## Company OS Overhead
+## At a glance
 
-### Main Session (auto-loaded every session)
-
-| File | Characters | Tokens |
-|------|-----------|--------|
-| `CLAUDE.md` | 7,586 | ~1,897 |
-| **Company OS delta** | | **~1,897** |
-
-`company.config.yaml` (~457 tokens) is read on-demand by agents, not auto-loaded.
-
-### Per-Agent Context (loaded when an agent is spawned)
-
-Each agent gets its own context window with the agent definition + all preloaded skills from its `skills:` list.
-
-| Agent | Agent File | Skills Preloaded | Total Tokens |
-|-------|-----------|-----------------|-------------|
-| **Orchestrator** | 907 | workflow-router (1,198), decision-memo-writer (356), release-readiness-gate (1,430), ingest (1,296), system-maintenance (962), artifact-import (1,888), setup (2,826) | **10,863** |
-| **Engineering** | 723 | architecture-draft (1,366), api-contract-designer (1,208), background-jobs (370), multi-tenancy (406), implementation-decomposer (470), observability-baseline (484), code-review (~2,800), seed-data (~1,800), deployment-strategy (~500), instrumentation (~500), feature-flags (~500), user-docs (~500), mobile-readiness (~500) | **~12,127** |
-| **QA & Release** | 545 | test-plan-generator (454), api-tester-playbook (469), release-readiness-gate (1,430), perf-benchmark-checklist (437), code-review (~2,800), seed-data (~1,800), dogfood (~2,200) | **~10,135** |
-| **Ops & Risk** | 612 | threat-modeling (439), privacy-data-handling (486), compliance-readiness (481), pricing-unit-economics (487), tos-privacy-drafting (616), incident-response (~500) | **~3,621** |
-| **Growth** | 571 | positioning-messaging (408), landing-page-copy (514), seo-topic-map (484), channel-playbook (507), activation-onboarding (472), email-lifecycle (~500) | **~3,456** |
-| **Product** | 544 | icp-positioning (366), prd-writer (1,380), sprint-prioritizer (439), feedback-synthesizer (380), discovery-validation (~470) | **~3,579** |
-
-Each spawned agent also receives a smaller Claude Code system prompt (~6,000-8,000 tokens).
-
-**Note**: Engineering is now the heaviest agent (~12,127 tokens) due to its 13 preloaded skills, followed by the Orchestrator (~10,863) and QA & Release (~10,135). The Engineering agent's weight reflects its broad scope: architecture, API design, deployment, instrumentation, feature flags, mobile readiness, and documentation. The Orchestrator includes large setup and artifact-import procedures (rarely needed after initial setup). The QA agent includes code-review, seed-data, and dogfood skills for comprehensive quality assurance. For day-to-day feature work, consider trimming skills from agent `skills:` lists that aren't needed for the current flow — each skill saves 350-2,800 tokens per agent spawn.
+| What you do | Extra tokens from Company OS | Notes |
+|-------------|------------------------------|-------|
+| Any Claude Code session | ~3,450 per session | `CLAUDE.md`, loaded automatically |
+| Start one agent (Claude Code) | ~6,200 to ~32,200 per start | Agent instructions plus every skill in its `skills:` list; see [per-agent table](#per-agent-context-claude-code) |
+| One feature through `/ship` | roughly 250,000 to 400,000 in total (input plus output) | Estimate; see [scenario](#scenario-one-feature-through-ship) |
+| `/rapid-prototype` | well under a full `/ship` | Skips the design doc, security review, QA and launch stages |
+| `/gtm-sprint` | about 23,000 to 25,000 of context each time the Growth or Product agent starts, spread over many short sessions | No engineering agents involved |
 
 ---
 
-## Realistic Scenario: "Build a Feature End-to-End"
+## Always-on cost by runtime
 
-User sends a 15,000-token goal message describing a feature with detailed requirements.
+Each runtime loads a Company OS instruction file at the start of every session. Pick the row for your runtime.
 
-### First API call (main session)
+| Runtime | File loaded every session | Characters | Tokens (approx.) |
+|---------|---------------------------|-----------|------------------|
+| Claude Code | `CLAUDE.md` | 13,851 | ~3,450 |
+| Codex CLI, Aider, other AGENTS.md runtimes | `AGENTS.md` | 28,998 | ~7,250 |
+| Gemini CLI | `GEMINI.md` | 29,265 | ~7,300 |
+| Cursor | `.cursor/rules/00-company-os.mdc` (always applied) | 1,610 | ~400 |
+| Cursor, when a task needs a skill (Cursor requests the rule by its description) | `.cursor/rules/10-skills.mdc` (skill catalog) | 14,574 | ~3,650 |
+| Cursor, legacy single-file mode | `.cursorrules` | 18,613 | ~4,650 |
+
+`AGENTS.md` and `GEMINI.md` are larger than `CLAUDE.md` because they carry the full skill and agent catalog inline: those runtimes have no separate skill loader. `company.config.yaml` (~2,090 tokens) is read by agents when needed, not loaded every session.
+
+Every runtime also sends its own system prompt and tool definitions. For Claude Code that is roughly 11,000 to 13,000 tokens per session whether or not Company OS is installed. That platform baseline is not Company OS overhead.
+
+---
+
+## Per-agent context (Claude Code)
+
+When Claude Code starts an agent, the agent gets its own context: its instruction file plus the full text of every skill in its `skills:` list. Each agent start also carries a smaller platform system prompt (roughly 6,000 to 8,000 tokens).
+
+| Agent | Agent file | Skills preloaded | Total |
+|-------|-----------:|-----------------:|------:|
+| Orchestrator | ~1,780 | 15 | **~32,200** |
+| QA & Release | ~1,610 | 9 | **~19,700** |
+| Growth | ~1,430 | 9 | **~18,300** |
+| Engineering (staff) | ~3,050 | 6 | **~16,500** |
+| Product | ~1,500 | 8 | **~15,600** |
+| Ops & Risk | ~1,490 | 9 | **~15,200** |
+| Engineering: Frontend | ~1,910 | 4 | **~13,800** |
+| Engineering: DevOps | ~1,690 | 5 | **~13,300** |
+| Engineering: Backend | ~1,460 | 4 | **~6,200** |
+
+The largest skills are `setup` (~7,700, Orchestrator), `ship` (~4,900, Orchestrator), `gtm-sprint` (~4,300, Growth), `ai-engineering` (~4,000, Engineering), `design-system` (~3,900, Frontend), `excalidraw` (~3,500, Engineering) and `code-review` (~3,400, Engineering and QA).
+
+The Orchestrator is the heaviest agent because it carries the one-time `setup` and `artifact-import` procedures plus the `ship` flow. Engineering is lighter than in earlier versions: the staff engineer keeps six skills and hands domain work to the Backend, Frontend and DevOps sub-agents, which each load only their own skills.
+
+Other runtimes do not start separate agents. The agent "acts as" the role in the same session, and reads skill files only when it needs them.
+
+---
+
+## Scenario: one feature through `/ship`
+
+You send a goal of about 15,000 tokens describing a feature in detail.
+
+### First call (main session)
 
 | Component | Tokens |
 |-----------|--------|
 | Claude Code platform baseline | ~11,000 |
-| CLAUDE.md (auto-loaded) | ~1,897 |
+| `CLAUDE.md` | ~3,450 |
 | Your message | ~15,000 |
-| **Total first call** | **~27,897** |
+| **Total first call** | **~29,450** |
 
-### Agent delegation chain
+### Agent starts
 
-| Step | Input Tokens | Output Tokens |
-|------|-------------|--------------|
-| Orchestrator routes the goal | ~24,000 | ~2,000-3,000 |
-| Product Agent produces PRD | ~18,000 | ~5,000-10,000 |
-| Engineering Agent produces RFC | ~20,000 | ~5,000-10,000 |
-| Ops & Risk Agent reviews | ~16,000 | ~2,000-4,000 |
-| QA Agent produces test plan | ~18,000 | ~3,000-5,000 |
-| Tool calls, file reads/writes | ~10,000-30,000 | ~5,000-10,000 |
+| Step | Context at start (platform + agent) | Output |
+|------|-------------------------------------|--------|
+| Orchestrator routes the goal and plans | ~39,000 plus your message | ~2,000 to 3,000 |
+| Product writes the PRD | ~23,000 | ~5,000 to 10,000 |
+| Engineering writes the RFC | ~24,000 | ~5,000 to 10,000 |
+| Ops & Risk reviews security | ~22,000 | ~2,000 to 4,000 |
+| Engineering sub-agents build (Backend, Frontend, DevOps) | ~13,000 to ~21,000 each | depends on the feature |
+| QA writes the test plan and QA report | ~27,000 | ~3,000 to 5,000 |
+| Growth writes the launch brief | ~25,000 | ~2,000 to 4,000 |
+| Tool calls, file reads and writes | ~10,000 to 30,000 | ~5,000 to 10,000 |
 
-### Estimated total for one feature through the full ship flow
-
-**~160,000-220,000 tokens** (input + output combined)
-
-For a 10-feature milestone: **~1.6M-2.2M tokens** (with some efficiency from context reuse within sessions).
+Adding these up gives **roughly 250,000 to 400,000 tokens** for one feature, input and output combined. The range is wide because the build stage depends on the feature, and agents often make several calls within one stage. Prompt caching in your runtime can lower the billed cost of repeated context considerably.
 
 ---
 
-## Company OS vs Plain Claude Code
+## Company OS versus plain Claude Code
 
-| Metric | Plain Claude Code | With Company OS | Delta |
-|--------|------------------|-----------------|-------|
-| Main session overhead | ~11,000 (platform) | ~12,897 (+CLAUDE.md) | **+1,897** |
-| Agent spawn overhead | ~6,000-8,000 (platform) | ~9,000-24,000 (+skills) | **+3,000-16,000** |
-| Structure and enforcement | None — you prompt manually | 9 agents, 62 skills, 31 tools, stage gates, artifact validation | Included in delta |
-
-The cost of Company OS is ~1,897 tokens per session + ~3,000-16,000 tokens per agent spawn. In exchange, you get structured workflows, enforced quality gates, and consistent artifact production.
+| Metric | Plain Claude Code | With Company OS | Difference |
+|--------|-------------------|-----------------|------------|
+| Session overhead | ~11,000 (platform) | ~14,450 | **+~3,450** |
+| Agent start overhead | ~6,000 to 8,000 (platform) | ~12,000 to ~40,000 | **+~6,200 to ~32,200** |
+| What you get | You prompt manually | Agents, skills, tools, stage gates and artifact validation | Included in the difference |
 
 ---
 
-## How to Reduce Costs
+## How to reduce costs
 
-1. **Trim unused skills**: Remove skills from agent `skills:` lists that you don't use. Each skill saves 350-2,800 tokens per agent spawn.
-
-2. **Trim phase-specific Engineering skills**: The Engineering agent now loads 13 skills (~12,127 tokens) — the heaviest agent. Several skills are phase-specific and can be removed when not needed: `deployment-strategy` (only needed at deploy time), `mobile-readiness` (only needed if targeting mobile platforms), `user-docs` (only needed when producing end-user documentation), `instrumentation` (only needed when adding telemetry). Removing all four saves ~2,000 tokens per Engineering spawn.
-
-3. **Use `model: haiku` for lightweight agents**: Set `model: haiku` in agent frontmatter for agents doing simple routing or review. Haiku is significantly cheaper per token.
-
-4. **Reduce orchestrator hops**: For simple tasks, invoke the target agent directly instead of routing through the Orchestrator (saves one agent spawn).
-
-5. **Slim the Orchestrator after setup**: Remove `setup` and `artifact-import` from the Orchestrator's skills list after initial project setup — saves ~4,700 tokens per Orchestrator spawn.
-
-6. **Consolidate small skills**: If you only use parts of a skill, merge the relevant procedures into the agent body and remove the skill reference.
-
-7. **Skip unnecessary gates**: For prototyping (stage: `idea` or `mvp`), you can simplify the ship flow by skipping intermediate agents. The system is designed to scale up as your project matures.
+1. **Trim unused skills.** Remove skills you do not use from an agent's `skills:` list in `os/agents/<agent>.md`, then run `bash tools/build/build.sh`. Each removed skill saves its size on every start of that agent (roughly 500 to 7,700 tokens).
+2. **Slim the Orchestrator after setup.** Removing `setup` and `artifact-import` from the Orchestrator once your project is configured saves about 9,800 tokens per Orchestrator start.
+3. **Trim phase-specific sub-agent skills.** For example, drop `mobile-readiness` from Frontend if you do not target mobile, or `resilience-testing` from DevOps until you need failure testing.
+4. **Use cheaper models where reasoning is light.** Set `models:` in `company.config.yaml` and the matching `model:` in `os/agents/<agent>.md` (Claude Code only). `haiku` is much cheaper per token than `sonnet` or `opus`.
+5. **Skip the router for small tasks.** Ask the target agent directly instead of going through the Orchestrator; that saves one agent start.
+6. **Merge small skills.** If an agent only uses part of a skill, move those steps into the agent body and drop the skill from its list.
+7. **Use a lighter flow.** For early ideas, `/rapid-prototype` or `/gtm-sprint` costs far less than `/ship`, and `company.stage: idea` keeps gates advisory.

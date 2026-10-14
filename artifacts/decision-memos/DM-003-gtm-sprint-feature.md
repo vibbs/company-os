@@ -11,7 +11,7 @@ author: Claude
 
 ## Context
 
-Company OS had strong individual GTM building blocks (ICP positioning, customer conversations, feedback synthesis, positioning, landing page copy, channel playbooks) but lacked a **coordinating workflow** that sequences them into a time-boxed go-to-market push. Users at the `idea` stage had no clear starting point — `/ship` builds software, `/prototype` proves technical feasibility, but neither validates market demand.
+Company OS had strong individual GTM building blocks (ICP positioning, customer conversations, feedback synthesis, positioning, landing page copy, channel playbooks) but lacked a **coordinating workflow** that sequences them into a time-boxed go-to-market push. Users at the `idea` stage had no clear starting point — `/ship` builds software, `/rapid-prototype` proves technical feasibility, but neither validates market demand.
 
 ## Trigger
 
@@ -50,7 +50,7 @@ Add a comprehensive GTM Sprint feature (v1.10.0) consisting of:
 - Workflow Router has 10 classification types (was 9)
 - New `loi` artifact type in validate.sh
 - Company OS now has a clear answer for "I have an idea but haven't validated it yet" — run `/gtm-sprint` first, then `/ship` to build
-- The three workflow entry points are now: `/gtm-sprint` (validate market) → `/prototype` (prove technical feasibility) → `/ship` (build and launch)
+- The three workflow entry points are now: `/gtm-sprint` (validate market) → `/rapid-prototype` (prove technical feasibility) → `/ship` (build and launch)
 
 ## Success Criteria
 

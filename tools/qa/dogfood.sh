@@ -5,6 +5,9 @@
 # Inputs: target URL, optional PRD ID, optional journey name
 # Outputs: exit 0 if pre-flight passes, exit 1 if URL unreachable or config missing
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/config.sh"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/../.."
@@ -20,10 +23,12 @@ API_ONLY=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --prd)
+      [[ $# -ge 2 ]] || { echo "ERROR: --prd requires a value" >&2; exit 1; }
       PRD_ID="$2"
       shift 2
       ;;
     --journey)
+      [[ $# -ge 2 ]] || { echo "ERROR: --journey requires a value" >&2; exit 1; }
       JOURNEY="$2"
       shift 2
       ;;
@@ -32,8 +37,8 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     -*)
-      echo "ERROR: Unknown flag: $1"
-      echo "Usage: ./tools/qa/dogfood.sh <url> [--prd <prd-id>] [--journey <name>] [--api-only]"
+      echo "ERROR: Unknown flag: $1" >&2
+      echo "Usage: ./tools/qa/dogfood.sh <url> [--prd <prd-id>] [--journey <name>] [--api-only]" >&2
       exit 1
       ;;
     *)
@@ -103,8 +108,8 @@ HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --connect-timeout 10 --max-
 HTTP_STATUS="${HTTP_STATUS:-000}"
 
 if [[ "$HTTP_STATUS" == "000" ]]; then
-  echo "ERROR: Cannot reach $URL (connection failed or timed out)"
-  echo "Make sure the application is running before dogfooding"
+  echo "ERROR: Cannot reach $URL (connection failed or timed out)" >&2
+  echo "Make sure the application is running before dogfooding" >&2
   exit 1
 elif [[ "$HTTP_STATUS" -ge 500 ]]; then
   echo "WARNING: $URL returned HTTP $HTTP_STATUS (server error)"
@@ -119,10 +124,7 @@ echo "Detecting product type..."
 
 # Extract framework from config
 extract_config() {
-  local KEY="$1"
-  if [[ -f "$CONFIG_FILE" ]]; then
-    grep "^  ${KEY}:" "$CONFIG_FILE" 2>/dev/null | sed "s/.*${KEY}: *//" | tr -d '"' | tr -d "'" || true
-  fi
+  cfg_get "tech_stack.$1"
 }
 
 FRAMEWORK=$(extract_config "framework")
@@ -192,7 +194,11 @@ fi
 if [[ "$PRODUCT_TYPE" == "web-app" ]]; then
   echo ""
   echo "Checking browser automation..."
-  BROWSER_SKILL="$PROJECT_ROOT/.claude/skills/agent-browser"
+  if [[ -d "$PROJECT_ROOT/os/skills/agent-browser" ]]; then
+    BROWSER_SKILL="$PROJECT_ROOT/os/skills/agent-browser"
+  else
+    BROWSER_SKILL="$PROJECT_ROOT/.claude/skills/agent-browser"
+  fi
   if [[ -d "$BROWSER_SKILL" ]]; then
     echo "OK: agent-browser skill found locally"
   else

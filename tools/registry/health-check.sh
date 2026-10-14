@@ -5,9 +5,19 @@
 # Inputs: none
 # Outputs: health report for all skills
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
-SKILLS_DIR="$(dirname "$0")/../../.claude/skills"
-AGENTS_DIR="$(dirname "$0")/../../.claude/agents"
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+
+# Prefer the neutral source-of-truth (os/) over the Claude adapter (.claude/).
+if [ -d "$ROOT/os/skills" ]; then
+  SKILLS_DIR="$ROOT/os/skills"
+  AGENTS_DIR="$ROOT/os/agents"
+else
+  SKILLS_DIR="$ROOT/.claude/skills"
+  AGENTS_DIR="$ROOT/.claude/agents"
+fi
 
 echo "Skill Registry Health Check"
 echo "==========================="
@@ -49,28 +59,29 @@ for skill_dir in "$SKILLS_DIR"/*/; do
   done
 
   # Check name matches directory name
-  SKILL_NAME=$(echo "$FRONTMATTER" | grep "^name:" | sed 's/name: *//' | tr -d '"')
+  SKILL_NAME=$(echo "$FRONTMATTER" | { grep "^name:" || true; } | sed 's/name: *//' | tr -d '"')
   if [[ "$SKILL_NAME" != "$DIR_NAME" ]]; then
     echo "⚠️  $DIR_NAME: Frontmatter name '$SKILL_NAME' doesn't match directory name"
     WARNINGS=$((WARNINGS + 1))
   fi
 
-  # Check for skeleton markers (unfleshed skills)
-  if grep -q "<!-- TODO" "$SKILL_FILE" 2>/dev/null; then
+  # Check for skeleton markers (unfleshed skills). Plain "<!-- TODO" text can
+  # appear in a skill's own instructions, so only a dedicated marker counts.
+  if grep -q "<!-- SKELETON" "$SKILL_FILE" 2>/dev/null; then
     echo "📝 $DIR_NAME: Skeleton (needs authoring) — $SKILL_NAME"
   fi
 
   # Check for invalid frontmatter fields (non-official)
-  for field in "id" "category" "inputs" "outputs" "output_schema" "recommended_tools" "used_by" "allowed-tools"; do
+  for field in "category" "inputs" "outputs" "output_schema" "recommended_tools" "used_by" "allowed-tools"; do
     if echo "$FRONTMATTER" | grep -q "^${field}:"; then
       echo "⚠️  $DIR_NAME: Non-official frontmatter field '$field' (move to markdown body)"
       WARNINGS=$((WARNINGS + 1))
     fi
   done
 
-  # Check for common misspelling of user-invokable
-  if echo "$FRONTMATTER" | grep -q "^user-invocable:"; then
-    echo "⚠️  $DIR_NAME: Misspelled field 'user-invocable' — should be 'user-invokable'"
+  # Claude Code reads 'user-invocable'; the legacy spelling has no effect there
+  if echo "$FRONTMATTER" | grep -q "^user-invokable:"; then
+    echo "⚠️  $DIR_NAME: Legacy field 'user-invokable' — Claude Code reads 'user-invocable' (rebuild with tools/build/build.sh)"
     WARNINGS=$((WARNINGS + 1))
   fi
 
@@ -127,8 +138,7 @@ for agent_file in "$AGENTS_DIR"/*.md; do
   if echo "$AGENT_FM" | grep -q "^memory: project"; then
     MEMORY_DIR="$(dirname "$0")/../../.claude/agent-memory/$AGENT_NAME"
     if [[ ! -f "$MEMORY_DIR/MEMORY.md" ]]; then
-      echo "⚠️  $AGENT_NAME: Has memory: project but no MEMORY.md at .claude/agent-memory/$AGENT_NAME/"
-      AGENT_WARNINGS=$((AGENT_WARNINGS + 1))
+      echo "ℹ️  $AGENT_NAME: No MEMORY.md yet at .claude/agent-memory/$AGENT_NAME/ (created on first use)"
     fi
   fi
 done

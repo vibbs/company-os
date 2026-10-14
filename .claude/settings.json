@@ -49,7 +49,7 @@
       "Bash(gh *)",
       "Bash(git push *)",
       "Bash(git push)",
-      "Bash(bash -n setup.sh)",
+      "Bash(bash -n .company-os/setup.sh)",
       "Skill(system-maintenance)",
       "Skill(system-maintenance:*)"
     ],

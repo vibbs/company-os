@@ -1,8 +1,8 @@
 ---
 name: rapid-prototype
-description: Time-boxed MVP prototyping methodology for proof-of-concept and investor demos. Skips RFC, security review, and full QA for speed. Use when validating ideas quickly or preparing demos.
-user-invokable: true
-argument-hint: "describe what you want to prototype"
+description: Builds a time-boxed MVP (4 hours, 1 day or 3 days) for a proof of concept or demo, skipping the RFC, security review and full QA. Use to validate an idea fast.
+user-invocable: true
+argument-hint: "<what you want to prototype>"
 ---
 
 # Rapid Prototype
@@ -13,7 +13,7 @@ argument-hint: "describe what you want to prototype"
 - **Category**: Orchestration
 - **Inputs**: objective description, company.config.yaml
 - **Outputs**: mini-PRD, working prototype, demo script
-- **Used by**: User (directly via /prototype), Orchestrator Agent
+- **Used by**: User (directly via /rapid-prototype), Orchestrator Agent
 - **Tool scripts**: ./tools/artifact/validate.sh, ./tools/db/seed.sh
 
 ## Purpose

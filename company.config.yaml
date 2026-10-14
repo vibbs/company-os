@@ -5,18 +5,29 @@
 # Every agent, skill, and tool reads from this file to adapt behavior
 # to your specific company, tech stack, and conventions.
 #
-# Instructions:
-#   1. Fill in every field relevant to your project
-#   2. Leave fields blank ("") if not yet decided — agents will prompt you
-#   3. See .company-os/docs/SETUP.md for detailed guidance on each section
+# Easiest: run /setup instead of editing by hand. It fills this file for you.
+#
+# Instructions (if you do edit by hand):
+#   1. Required: the `company` and `tech_stack` sections
+#   2. Recommended: `api` and `conventions`
+#   3. Everything under "Optional sections below" can wait until you need it
+#   4. Leave fields blank ("") if not yet decided — agents will prompt you
+#   5. Field-by-field guide: .company-os/docs/CONFIG_REFERENCE.md
 # ============================================================================
+
+# --- Required sections ---
 
 company:
   name: ""                    # Your company or project name
   product: ""                 # Product name
   description: ""             # One-line product description
   domain: ""                  # Primary domain (e.g., acme.com)
-  stage: ""                    # idea | mvp | growth | scale
+  stage: ""                   # idea | mvp | growth | scale
+  # Stage sets how strictly quality gates block you:
+  #   idea   — exploring, no real users: every gate only warns
+  #   mvp    — first version, early users: PRD and design gates block
+  #   growth — paying customers: every gate blocks (also used when blank)
+  #   scale  — established product, larger team: every gate blocks
 
 tech_stack:
   language: ""                # TypeScript | Python | Go | Rust | Java
@@ -29,6 +40,8 @@ tech_stack:
   search: ""                  # Elasticsearch | Meilisearch | Typesense | none
   hosting: ""                 # Vercel | AWS | GCP | Fly.io | Railway
   ci: ""                      # GitHub Actions | GitLab CI | CircleCI
+
+# --- Recommended sections ---
 
 api:
   style: ""                   # REST | GraphQL | gRPC | tRPC
@@ -47,6 +60,8 @@ conventions:
   formatter: ""               # Prettier | Biome | Black | gofmt
   monorepo: false             # true | false
   monorepo_tool: ""           # Turborepo | Nx | pnpm workspaces | none
+
+# --- Optional sections below: ignore until a feature needs them ---
 
 architecture:
   multi_tenant: false         # true | false
@@ -116,7 +131,10 @@ design:
   overrides: {}               # optional token overrides (e.g., { accent: "#FF6B00" })
 
 models:
+  # Claude Code only. Other runtimes ignore this and use their own model setting.
   # Which Claude model each agent uses. Options: opus | sonnet | haiku
+  # To change by hand, also update `model:` in os/agents/<agent>.md and run
+  # bash tools/build/build.sh
   # Opus = strongest reasoning (architecture, routing). Sonnet = fast + capable (templates, checklists).
   # Presets: cost-optimized (default below) | all-opus | all-sonnet | custom
   orchestrator: "opus"        # Routing, gating, release approval — needs strongest reasoning

@@ -5,6 +5,8 @@
 # Inputs: experiment ID (optional -- if omitted, lists all)
 # Outputs: experiment status summary to stdout
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/../.."
@@ -26,7 +28,7 @@ if [[ -n "$EXPERIMENT_ID" ]]; then
   # Show specific experiment
   FOUND=$(grep -rl "^id: *${EXPERIMENT_ID} *$" "$EXPERIMENTS_DIR" --include="*.md" 2>/dev/null | head -1 || true)
   if [[ -z "$FOUND" ]]; then
-    echo "ERROR: Experiment '$EXPERIMENT_ID' not found in $EXPERIMENTS_DIR"
+    echo "ERROR: Experiment '$EXPERIMENT_ID' not found in $EXPERIMENTS_DIR" >&2
     exit 1
   fi
   echo "=== Experiment: $EXPERIMENT_ID ==="

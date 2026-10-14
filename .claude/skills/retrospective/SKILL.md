@@ -1,8 +1,8 @@
 ---
 name: retrospective
-description: Post-ship retrospective — traces artifact lineage from PRD to launch, evaluates success metrics, captures lessons learned, and produces a structured retro document.
-user-invokable: true
-argument-hint: "<prd-id or feature name>"
+description: "Reviews a shipped feature: traces it from PRD to launch, compares results to goals and records lessons. Use after a release."
+user-invocable: true
+argument-hint: "<PRD ID or feature name>"
 ---
 
 # Retrospective

@@ -5,6 +5,8 @@
 # Inputs: optional date filter, optional directory filter
 # Outputs: structured report of new/modified files
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 BASE_DIR="$SCRIPT_DIR/../.."
@@ -18,16 +20,18 @@ DIR_FILTER="all"
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --since)
+      [[ $# -ge 2 ]] || { echo "ERROR: --since requires a value" >&2; exit 1; }
       SINCE="$2"
       shift 2
       ;;
     --dir)
+      [[ $# -ge 2 ]] || { echo "ERROR: --dir requires a value" >&2; exit 1; }
       DIR_FILTER="$2"
       shift 2
       ;;
     *)
-      echo "ERROR: Unknown argument: $1"
-      echo "Usage: ./tools/registry/detect-changes.sh [--since YYYY-MM-DD] [--dir standards|artifacts|all]"
+      echo "ERROR: Unknown argument: $1" >&2
+      echo "Usage: ./tools/registry/detect-changes.sh [--since YYYY-MM-DD] [--dir standards|artifacts|all]" >&2
       exit 1
       ;;
   esac
@@ -35,7 +39,7 @@ done
 
 # Validate dir filter
 if [[ "$DIR_FILTER" != "all" && "$DIR_FILTER" != "standards" && "$DIR_FILTER" != "artifacts" ]]; then
-  echo "ERROR: --dir must be 'standards', 'artifacts', or 'all'"
+  echo "ERROR: --dir must be 'standards', 'artifacts', or 'all'" >&2
   exit 1
 fi
 
@@ -64,7 +68,7 @@ if [[ -n "$SINCE" ]]; then
   # Validate date format
   if ! date -j -f "%Y-%m-%d" "$SINCE" "+%s" > /dev/null 2>&1 && \
      ! date -d "$SINCE" "+%s" > /dev/null 2>&1; then
-    echo "ERROR: Invalid date format: '$SINCE' (expected YYYY-MM-DD)"
+    echo "ERROR: Invalid date format: '$SINCE' (expected YYYY-MM-DD)" >&2
     exit 1
   fi
 

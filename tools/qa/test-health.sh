@@ -5,6 +5,8 @@
 # Inputs: command (list = show recent reports, analyze = run basic analysis)
 # Outputs: test health summary to stdout
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/../.."
@@ -183,11 +185,11 @@ case "$COMMAND" in
     cmd_analyze
     ;;
   *)
-    echo "Usage: $0 [list|analyze]"
-    echo ""
-    echo "  list     List recent test health reports in artifacts/qa-reports/"
-    echo "  analyze  Run basic test suite analysis (counts, pyramid, flaky patterns)"
-    echo ""
+    echo "Usage: $0 [list|analyze]" >&2
+    echo "" >&2
+    echo "  list     List recent test health reports in artifacts/qa-reports/" >&2
+    echo "  analyze  Run basic test suite analysis (counts, pyramid, flaky patterns)" >&2
+    echo "" >&2
     exit 1
     ;;
 esac

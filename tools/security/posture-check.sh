@@ -5,7 +5,20 @@
 # Usage: ./tools/security/posture-check.sh [--json | --brief]
 # Inputs: artifacts/security-reviews/, standards/security/security-posture.md
 # Outputs: posture report to stdout, exit 0=healthy exit 1=issues found
+#
+# Checks project security posture against standards/security/security-posture.md.
+#
+# Flags:
+#   --brief     One-line summary only
+#   --json      Machine-readable JSON output
+#   -h, --help  Show this help
+#
+# Exit codes:
+#   0  Posture healthy (no open CRITICAL findings)
+#   1  Issues found (CRITICAL findings or missing standard)
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/config.sh"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/../.."
@@ -19,20 +32,7 @@ for arg in "$@"; do
   case "$arg" in
     --json) OUTPUT_MODE="json" ;;
     --brief) OUTPUT_MODE="brief" ;;
-    --help|-h)
-      echo "Usage: ./tools/security/posture-check.sh [--json | --brief]"
-      echo ""
-      echo "Checks project security posture against standards/security/security-posture.md"
-      echo ""
-      echo "Flags:"
-      echo "  --brief    One-line summary only"
-      echo "  --json     Machine-readable JSON output"
-      echo ""
-      echo "Exit codes:"
-      echo "  0  Posture healthy (no open CRITICAL findings)"
-      echo "  1  Issues found (CRITICAL findings or missing standard)"
-      exit 0
-      ;;
+    --help|-h) usage_print_header "${BASH_SOURCE[0]}"; exit 0 ;;
   esac
 done
 
@@ -58,10 +58,7 @@ else
 fi
 
 # --- Check company stage ---
-STAGE=""
-if [[ -f "$CONFIG_FILE" ]]; then
-  STAGE=$(grep "^  stage:" "$CONFIG_FILE" 2>/dev/null | head -1 | sed 's/.*: *"\{0,1\}\([^"]*\)"\{0,1\}/\1/' | tr -d '[:space:]') || true
-fi
+STAGE="$(cfg_get company.stage)"
 
 # --- Scan security reviews ---
 if [[ -d "$SECURITY_REVIEWS_DIR" ]]; then

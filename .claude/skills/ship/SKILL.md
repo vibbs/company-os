@@ -1,13 +1,31 @@
 ---
 name: ship
-description: Kick off the full ship flow for a feature or objective. Routes through the Orchestrator to produce PRD, RFC, implementation, QA, and launch artifacts with gate checks at every stage.
-user-invokable: true
-argument-hint: "describe what you want to build"
+description: Takes a feature from idea to release (PRD, RFC, code, QA, launch assets), pausing at each quality gate for your review. Use to build and ship something end to end.
+user-invocable: true
+argument-hint: "<what you want to build>"
 ---
 
 # Ship
 
 The primary entry point for the canonical ship flow. Takes an objective from idea through PRD, RFC, implementation, QA, and release -- with quality gates enforced at every stage transition.
+
+## At a Glance
+
+- **You give it**: one sentence describing what to build.
+- **You get**: a PRD (product requirements document), an RFC (technical design), working code, a QA report and launch assets, each saved under `artifacts/`.
+- **You stay in control**: the flow pauses at every quality gate (a check that must pass before the next stage). Nothing moves on until you approve.
+- **Order**: plan (steps 1 to 4), then build one stage at a time with a pause after each (step 5), then try it yourself with seed data (5.8), then release check and summary (6 to 8).
+- **Optional steps** (labelled below) run only when they apply, such as discovery for novel features or dogfooding.
+- **Time**: a small feature takes one session. Larger ones can be resumed; finished artifacts are never redone.
+- **Need it faster?** Use `/rapid-prototype`. **Need market proof first?** Use `/gtm-sprint`.
+
+## When to Use
+
+- User wants to build a new feature end-to-end
+- User wants to ship an improvement or enhancement
+- User wants the full orchestrated pipeline with quality gates
+
+**Alternative**: For time-boxed proofs-of-concept or investor demos, use `/rapid-prototype` instead. It skips RFC, security, QA, and growth stages for maximum speed.
 
 ## Reference
 
@@ -18,13 +36,22 @@ The primary entry point for the canonical ship flow. Takes an objective from ide
 - **Used by**: User (directly), Orchestrator Agent
 - **Tool scripts**: ./tools/artifact/validate.sh, ./tools/artifact/check-gate.sh, ./tools/artifact/promote.sh, ./tools/artifact/link.sh, ./tools/ci/run-tests.sh, ./tools/ci/lint-format.sh, ./tools/security/dependency-scan.sh
 
-## When to Use
+## What You Will See
 
-- User wants to build a new feature end-to-end
-- User wants to ship an improvement or enhancement
-- User wants the full orchestrated pipeline with quality gates
+After you confirm the plan, the flow pauses at the end of each stage with a prompt like this:
 
-**Alternative**: For time-boxed proofs-of-concept or investor demos, use `/prototype` instead. It skips RFC, security, QA, and growth stages for maximum speed.
+```text
+Stage complete: PRD
+  Artifact: PRD-0007 "Team invitations"  (artifacts/prds/PRD-0007-team-invitations.md)
+  Status:   review
+  Gate prd-to-rfc: PASS (acceptance criteria present, success metrics present)
+
+Review the artifact and approve to continue, or request changes?
+```
+
+- To continue, reply `approve` (or `looks good`). The artifact becomes `approved` and the next stage starts.
+- To change something, reply with what to fix (for example `add an export-to-CSV requirement`). The same stage reruns and the gate is checked again.
+- To stop, reply `stop`. Everything produced so far stays in `artifacts/`. Run `/ship` again later and it resumes from the next missing stage.
 
 ## Procedure
 
@@ -55,7 +82,7 @@ Scan `artifacts/` for any artifacts related to this objective:
 
 If related artifacts exist, resume the flow from the next missing stage. Do not re-produce artifacts that already exist and are approved.
 
-### Step 2.5: Discovery Validation (New Features Only)
+### Step 2.5: Discovery Validation (Optional, New Features Only)
 
 For objectives classified as **New Feature**, run the Discovery Validation skill (via Product Agent) before proceeding to PRD:
 

@@ -6,7 +6,18 @@
 # Usage: ./tools/ops/dashboard.sh [--html] [--out <path>] [--period <monthly|all>]
 # Inputs: artifacts/ directory, cogs/ai-ledger/entries.jsonl, company.config.yaml
 # Outputs: Markdown or HTML dashboard (stdout or --out path)
+#
+# Generates a static project dashboard with artifact status, gate readiness,
+# artifact graph, open risks, and cost snapshot.
+#
+# Flags:
+#   --html                   Output as self-contained HTML (default: Markdown)
+#   --out <path>             Write to file instead of stdout
+#   --period <monthly|all>   Cost ledger period (default: monthly)
+#   -h, --help               Show this help
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/config.sh"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/../.."
@@ -22,34 +33,26 @@ PERIOD="monthly"
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --html) HTML_MODE=true; shift ;;
-    --out) OUT_FILE="$2"; shift 2 ;;
-    --period) PERIOD="$2"; shift 2 ;;
-    --help|-h)
-      echo "Usage: ./tools/ops/dashboard.sh [--html] [--out <path>] [--period <monthly|all>]"
-      echo ""
-      echo "Generates a static project dashboard with artifact status, gate readiness,"
-      echo "artifact graph, open risks, and cost snapshot."
-      echo ""
-      echo "Flags:"
-      echo "  --html              Output as self-contained HTML (default: Markdown)"
-      echo "  --out <path>        Write to file instead of stdout"
-      echo "  --period <monthly|all>  Cost ledger period (default: monthly)"
-      exit 0
+    --out)
+      [[ $# -ge 2 ]] || { echo "ERROR: --out requires a path" >&2; exit 1; }
+      OUT_FILE="$2"; shift 2 ;;
+    --period)
+      [[ $# -ge 2 ]] || { echo "ERROR: --period requires a value (monthly or all)" >&2; exit 1; }
+      PERIOD="$2"; shift 2 ;;
+    --help|-h) usage_print_header "${BASH_SOURCE[0]}"; exit 0 ;;
+    *)
+      echo "ERROR: Unknown flag: $1" >&2
+      echo "Usage: ./tools/ops/dashboard.sh [--html] [--out <path>] [--period <monthly|all>]" >&2
+      echo "Run with --help for details." >&2
+      exit 1
       ;;
-    *) shift ;;
   esac
 done
 
 # --- Read config ---
-COMPANY_NAME=""
-COMPANY_STAGE=""
-COST_BUDGET=""
-
-if [[ -f "$CONFIG_FILE" ]]; then
-  COMPANY_NAME=$(grep "^  name:" "$CONFIG_FILE" 2>/dev/null | head -1 | sed 's/.*: *"\{0,1\}\([^"]*\)"\{0,1\}/\1/' | tr -d '[:space:]') || true
-  COMPANY_STAGE=$(grep "^  stage:" "$CONFIG_FILE" 2>/dev/null | head -1 | sed 's/.*: *"\{0,1\}\([^"]*\)"\{0,1\}/\1/' | tr -d '[:space:]') || true
-  COST_BUDGET=$(grep "cost_budget_monthly:" "$CONFIG_FILE" 2>/dev/null | head -1 | sed 's/.*: *"\{0,1\}\([^"]*\)"\{0,1\}/\1/' | tr -d '[:space:]') || true
-fi
+COMPANY_NAME="$(cfg_get company.name)"
+COMPANY_STAGE="$(cfg_get company.stage)"
+COST_BUDGET="$(cfg_get ai.cost_budget_monthly)"
 
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M')
 
@@ -419,7 +422,7 @@ if [[ -f "$LEDGER_FILE" ]]; then
     fi
   fi
 else
-  append "*No cost data found. Run /token-cost to log your first entry.*"
+  append "*No cost data found. Run /token-cost-ledger to log your first entry.*"
 fi
 
 append ""

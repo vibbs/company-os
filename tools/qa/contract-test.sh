@@ -5,6 +5,8 @@
 # Inputs: OpenAPI spec path, optional base URL (auto-resolved from .env if omitted)
 # Outputs: contract test results
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/../.."
@@ -54,8 +56,8 @@ SPEC_PATH="${1:-}"
 BASE_URL="${2:-$(resolve_app_url "$PROJECT_ROOT")}"
 
 if [[ -z "$SPEC_PATH" ]]; then
-  echo "ERROR: No spec path provided"
-  echo "Usage: ./tools/qa/contract-test.sh <spec-path> [base-url]"
+  echo "ERROR: No spec path provided" >&2
+  echo "Usage: ./tools/qa/contract-test.sh <spec-path> [base-url]" >&2
   exit 1
 fi
 

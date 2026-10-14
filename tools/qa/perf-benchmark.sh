@@ -5,14 +5,16 @@
 # Inputs: target URL, optional concurrency (default: 10), optional duration (default: 30s)
 # Outputs: performance metrics (latency, throughput, error rate)
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
 URL="${1:-}"
 CONCURRENCY="${2:-10}"
 DURATION="${3:-30s}"
 
 if [[ -z "$URL" ]]; then
-  echo "ERROR: No URL provided"
-  echo "Usage: ./tools/qa/perf-benchmark.sh <url> [concurrent-users] [duration]"
+  echo "ERROR: No URL provided" >&2
+  echo "Usage: ./tools/qa/perf-benchmark.sh <url> [concurrent-users] [duration]" >&2
   exit 1
 fi
 

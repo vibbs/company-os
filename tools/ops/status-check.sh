@@ -4,7 +4,26 @@
 # Usage: ./tools/ops/status-check.sh [--timeout <ms>] [--expected-status <code>] [--verbose] <url> [<url> ...]
 # Inputs: one or more URLs to check
 # Outputs: health report per URL, exit 0=healthy 1=degraded 2=down
+#
+# Checks the health of one or more HTTP endpoints.
+#
+# Options:
+#   --timeout <ms>            Connection timeout in milliseconds (default: 5000)
+#   --expected-status <code>  Expected HTTP status code (default: 200)
+#   --verbose                 Show additional details (headers, redirect chain)
+#   -h, --help                Show this help message
+#
+# Examples:
+#   ./tools/ops/status-check.sh https://example.com
+#   ./tools/ops/status-check.sh --timeout 3000 --expected-status 200 https://api.example.com/health
+#   ./tools/ops/status-check.sh --verbose https://app.example.com https://api.example.com
+#
+# Exit codes:
+#   0  All endpoints healthy
+#   1  One or more endpoints degraded (slow response or unexpected status)
+#   2  One or more endpoints down (connection failed)
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
 
 # ─── Defaults ───────────────────────────────────────────────────────────────────
 TIMEOUT_MS=5000
@@ -19,43 +38,17 @@ YELLOW='\033[0;33m'
 BOLD='\033[1m'
 RESET='\033[0m'
 
-# ─── Usage ──────────────────────────────────────────────────────────────────────
-usage() {
-  cat <<EOF
-Usage: $(basename "$0") [OPTIONS] <url> [<url> ...]
-
-Check the health of one or more HTTP endpoints.
-
-Options:
-  --timeout <ms>           Connection timeout in milliseconds (default: 5000)
-  --expected-status <code> Expected HTTP status code (default: 200)
-  --verbose                Show additional details (headers, redirect chain)
-  --help                   Show this help message
-
-Examples:
-  $(basename "$0") https://example.com
-  $(basename "$0") --timeout 3000 --expected-status 200 https://api.example.com/health
-  $(basename "$0") --verbose https://app.example.com https://api.example.com
-
-Exit Codes:
-  0  All endpoints healthy
-  1  One or more endpoints degraded (slow response or unexpected status)
-  2  One or more endpoints down (connection failed)
-EOF
-  exit 0
-}
-
 # ─── Parse arguments ────────────────────────────────────────────────────────────
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --help)
-      usage
-      ;;
+    --help|-h) usage_print_header "${BASH_SOURCE[0]}"; exit 0 ;;
     --timeout)
+      [[ $# -ge 2 ]] || { echo "ERROR: --timeout requires a value" >&2; exit 1; }
       TIMEOUT_MS="$2"
       shift 2
       ;;
     --expected-status)
+      [[ $# -ge 2 ]] || { echo "ERROR: --expected-status requires a value" >&2; exit 1; }
       EXPECTED_STATUS="$2"
       shift 2
       ;;
@@ -77,9 +70,9 @@ done
 
 # Show usage if no URLs provided
 if [[ ${#URLS[@]} -eq 0 ]]; then
-  echo "Error: No URLs provided." >&2
-  echo ""
-  usage
+  echo "ERROR: No URLs provided." >&2
+  echo "Run with --help for usage." >&2
+  exit 2
 fi
 
 # Convert timeout from milliseconds to seconds for curl (supports decimals)

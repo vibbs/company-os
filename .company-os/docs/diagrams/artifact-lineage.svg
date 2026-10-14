@@ -1,0 +1,231 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="cos-artifact-lineage" width="960" height="1024" viewBox="0 0 960 1024" role="img" aria-labelledby="cos-artifact-lineage-title cos-artifact-lineage-desc">
+<title id="cos-artifact-lineage-title">Artifacts: lineage, status, and enforcement</title>
+<desc id="cos-artifact-lineage-desc">Every artifact moves draft, review, approved, and can be archived from any state; promote.sh enforces the order. Lineage example: ICP is parent of PRD; PRD is parent of RFC and launch brief; RFC is parent of security review, test plan, test data, and QA report; QA report depends on test plan. Frontmatter requires id, type, title, status, created, author; optional parent, children, depends_on, blocks. Enforcement chain: validate.sh, link.sh, promote.sh, check-gate.sh. Claude Code hooks: session-start.sh, pre-promote-validate.sh, post-write-artifact-check.sh. Types: prd, rfc, test-plan, qa-report, launch-brief, security-review, decision-memo, test-data, icp, market-intelligence, research, sprint-plan, feedback-report, experiment, diagram, loi.</desc>
+<style>
+#cos-artifact-lineage{--bg:#f6f8fa;--surface:#ffffff;--sunken:#f6f8fa;--border:#d1d9e0;--border-soft:#e4e9ee;--text:#1f2328;--text-2:#4b5562;--text-3:#606a76;--line:#8c959f;--shadow:#1f2328;--shadow-o:0.07;--solid:#24292f;--on-solid:#ffffff;--mono:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+#cos-artifact-lineage .f-orch{--a:#4f46e5;--a-soft:#eef0ff}#cos-artifact-lineage .f-product{--a:#7c3aed;--a-soft:#f4effe}#cos-artifact-lineage .f-eng{--a:#0f766e;--a-soft:#e6f5f3}#cos-artifact-lineage .f-qa{--a:#0369a1;--a-soft:#e8f4fb}#cos-artifact-lineage .f-growth{--a:#be185d;--a-soft:#fdf0f6}#cos-artifact-lineage .f-ops{--a:#b42318;--a-soft:#fdf1f0}#cos-artifact-lineage .f-gate{--a:#b45309;--a-soft:#fef6e7}#cos-artifact-lineage .f-neutral{--a:#4b5562;--a-soft:#f1f3f5}
+@media (prefers-color-scheme: dark){#cos-artifact-lineage{--bg:#0d1117;--surface:#151b23;--sunken:#10151c;--border:#3d444d;--border-soft:#2a3038;--text:#e6edf3;--text-2:#b1bac4;--text-3:#9198a1;--line:#7d8590;--shadow:#000000;--shadow-o:0.35;--solid:#e6edf3;--on-solid:#0d1117}#cos-artifact-lineage .f-orch{--a:#a5b4fc;--a-soft:rgba(129,140,248,0.16)}#cos-artifact-lineage .f-product{--a:#c4b5fd;--a-soft:rgba(167,139,250,0.16)}#cos-artifact-lineage .f-eng{--a:#5eead4;--a-soft:rgba(45,212,191,0.14)}#cos-artifact-lineage .f-qa{--a:#7dd3fc;--a-soft:rgba(56,189,248,0.14)}#cos-artifact-lineage .f-growth{--a:#f9a8d4;--a-soft:rgba(244,114,182,0.14)}#cos-artifact-lineage .f-ops{--a:#fca5a5;--a-soft:rgba(248,113,113,0.14)}#cos-artifact-lineage .f-gate{--a:#fbbf24;--a-soft:rgba(251,191,36,0.14)}#cos-artifact-lineage .f-neutral{--a:#b1bac4;--a-soft:rgba(177,186,196,0.12)}}
+#cos-artifact-lineage text{font-family:-apple-system, 'Segoe UI', Inter, Helvetica, Arial, sans-serif;fill:var(--text)}
+#cos-artifact-lineage .r-title{font-size:22px;font-weight:600}#cos-artifact-lineage .r-sub{font-size:14px;font-weight:400}#cos-artifact-lineage .r-h{font-size:14px;font-weight:600}#cos-artifact-lineage .r-hs{font-size:13px;font-weight:600}#cos-artifact-lineage .r-body{font-size:13px;font-weight:400}#cos-artifact-lineage .r-meta{font-size:12px;font-weight:400}#cos-artifact-lineage .r-badge{font-size:12px;font-weight:500}#cos-artifact-lineage .r-label{font-size:12px;font-weight:600;letter-spacing:0.04em}#cos-artifact-lineage .r-code{font-size:12px;font-weight:400;font-family:var(--mono)}#cos-artifact-lineage .r-codes{font-size:11px;font-weight:400;font-family:var(--mono)}#cos-artifact-lineage .r-codeh{font-size:13px;font-weight:600;font-family:var(--mono)}
+#cos-artifact-lineage .r-sub,#cos-artifact-lineage .r-body{fill:var(--text-2)}
+#cos-artifact-lineage .r-meta{fill:var(--text-3)}
+#cos-artifact-lineage .r-label,#cos-artifact-lineage .c-a{fill:var(--a)}
+#cos-artifact-lineage .c-2{fill:var(--text-2)}#cos-artifact-lineage .c-3{fill:var(--text-3)}#cos-artifact-lineage .c-on{fill:var(--on-solid)}
+#cos-artifact-lineage .panel{fill:var(--bg);stroke:var(--border)}
+#cos-artifact-lineage .card{fill:var(--surface);stroke:var(--border)}
+#cos-artifact-lineage .sunken{fill:var(--sunken);stroke:var(--border-soft)}
+#cos-artifact-lineage .tint{fill:var(--a-soft);stroke:var(--a)}
+#cos-artifact-lineage .tint-soft{fill:var(--a-soft);stroke:none}
+#cos-artifact-lineage .bar{fill:var(--a)}
+#cos-artifact-lineage .chip{fill:var(--sunken);stroke:var(--border)}
+#cos-artifact-lineage .solid{fill:var(--solid);stroke:var(--solid)}
+#cos-artifact-lineage .fold{fill:var(--border-soft);stroke:var(--border)}
+#cos-artifact-lineage .rule{stroke:var(--border-soft);fill:none}
+#cos-artifact-lineage .edge{fill:none;stroke:var(--line);stroke-width:1.25}
+#cos-artifact-lineage .ah{fill:var(--line)}
+#cos-artifact-lineage .dashed{stroke-dasharray:5 4}
+#cos-artifact-lineage .dotted{stroke-dasharray:1.5 3;stroke-linecap:round}
+#cos-artifact-lineage .lbg{fill:var(--bg)}#cos-artifact-lineage .lbg-card{fill:var(--surface)}
+#cos-artifact-lineage .shadow{flood-color:var(--shadow);flood-opacity:var(--shadow-o)}
+#cos-artifact-lineage .tick{fill:none;stroke:var(--a);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+</style>
+<defs>
+<filter id="cos-artifact-lineage-sh" x="-5%" y="-5%" width="110%" height="130%"><feDropShadow dx="0" dy="1" stdDeviation="1.5" class="shadow"/></filter>
+<marker id="cos-artifact-lineage-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M1,1.5 L9,5 L1,8.5 Z" class="ah"/></marker>
+</defs>
+<rect x="0.5" y="0.5" width="959" height="1023" rx="16" class="panel"/>
+<text x="40" y="52" class="r-title">Artifacts: lineage, status, and enforcement</text>
+<text x="40" y="78" class="r-sub">16 artifact types share one frontmatter format. Four tools keep them honest.</text>
+<rect x="40" y="112" width="880" height="112" rx="10" class="card" filter="url(#cos-artifact-lineage-sh)"/>
+<g class="f-gate">
+<text x="64" y="142" class="r-label">STATUS LIFECYCLE</text>
+</g>
+<rect x="64" y="164" width="78" height="32" rx="16" class="chip"/>
+<text x="103" y="185" class="r-codeh" text-anchor="middle">draft</text>
+<rect x="264" y="164" width="86" height="32" rx="16" class="chip"/>
+<text x="307" y="185" class="r-codeh" text-anchor="middle">review</text>
+<path d="M144,180 L262,180" class="edge" marker-end="url(#cos-artifact-lineage-ah)"/>
+<rect x="164" y="152" width="78" height="18" rx="4" class="lbg-card"/>
+<text x="203" y="165.5" class="r-meta" text-anchor="middle">promote.sh</text>
+<rect x="464" y="164" width="103" height="32" rx="16" class="solid"/>
+<text x="515.5" y="185" class="r-codeh c-on" text-anchor="middle">approved</text>
+<path d="M352,180 L462,180" class="edge" marker-end="url(#cos-artifact-lineage-ah)"/>
+<rect x="365" y="152" width="84" height="18" rx="4" class="lbg-card"/>
+<text x="407" y="165.5" class="r-meta" text-anchor="middle">you approve</text>
+<rect x="712" y="164" width="103" height="32" rx="16" class="chip dashed"/>
+<text x="763.5" y="185" class="r-codeh" text-anchor="middle">archived</text>
+<path d="M569,180 L710,180" class="edge dashed" marker-end="url(#cos-artifact-lineage-ah)"/>
+<rect x="587" y="152" width="105" height="18" rx="4" class="lbg-card"/>
+<text x="639.5" y="165.5" class="r-meta" text-anchor="middle">from any state</text>
+<text x="64" y="216" class="r-meta">promote.sh refuses to skip a step and runs validate.sh before every promotion.</text>
+<rect x="40" y="256" width="568" height="380" rx="10" class="card" filter="url(#cos-artifact-lineage-sh)"/>
+<g class="f-gate">
+<text x="64" y="286" class="r-label">LINEAGE: PARENT TO CHILD</text>
+</g>
+<path d="M74,308 H194 L208,322 V346 A10,10 0 0 1 198,356 H74 A10,10 0 0 1 64,346 V318 A10,10 0 0 1 74,308 Z" class="card" filter="url(#cos-artifact-lineage-sh)"/>
+<path d="M194,308 V319 Q194,322 197,322 H208 Z" class="fold"/>
+<rect x="72" y="320" width="3" height="24" rx="1.5" class="bar f-growth"/>
+<text x="84" y="329" class="r-hs">ICP</text>
+<text x="84" y="346" class="r-code">icp</text>
+<path d="M242,308 H362 L376,322 V346 A10,10 0 0 1 366,356 H242 A10,10 0 0 1 232,346 V318 A10,10 0 0 1 242,308 Z" class="card" filter="url(#cos-artifact-lineage-sh)"/>
+<path d="M362,308 V319 Q362,322 365,322 H376 Z" class="fold"/>
+<rect x="240" y="320" width="3" height="24" rx="1.5" class="bar f-product"/>
+<text x="252" y="329" class="r-hs">PRD</text>
+<text x="252" y="346" class="r-code">prd</text>
+<path d="M410,308 H530 L544,322 V346 A10,10 0 0 1 534,356 H410 A10,10 0 0 1 400,346 V318 A10,10 0 0 1 410,308 Z" class="card" filter="url(#cos-artifact-lineage-sh)"/>
+<path d="M530,308 V319 Q530,322 533,322 H544 Z" class="fold"/>
+<rect x="408" y="320" width="3" height="24" rx="1.5" class="bar f-eng"/>
+<text x="420" y="329" class="r-hs">RFC</text>
+<text x="420" y="346" class="r-code">rfc</text>
+<path d="M210,332 L230,332" class="edge" marker-end="url(#cos-artifact-lineage-ah)"/>
+<path d="M378,332 L398,332" class="edge" marker-end="url(#cos-artifact-lineage-ah)"/>
+<path d="M242,396 H362 L376,410 V434 A10,10 0 0 1 366,444 H242 A10,10 0 0 1 232,434 V406 A10,10 0 0 1 242,396 Z" class="card" filter="url(#cos-artifact-lineage-sh)"/>
+<path d="M362,396 V407 Q362,410 365,410 H376 Z" class="fold"/>
+<rect x="240" y="408" width="3" height="24" rx="1.5" class="bar f-growth"/>
+<text x="252" y="417" class="r-hs">Launch brief</text>
+<text x="252" y="434" class="r-code">launch-brief</text>
+<path d="M304,358 L304,394" class="edge" marker-end="url(#cos-artifact-lineage-ah)"/>
+<path d="M442,384 H566 L580,398 V422 A10,10 0 0 1 570,432 H442 A10,10 0 0 1 432,422 V394 A10,10 0 0 1 442,384 Z" class="card" filter="url(#cos-artifact-lineage-sh)"/>
+<path d="M566,384 V395 Q566,398 569,398 H580 Z" class="fold"/>
+<rect x="440" y="396" width="3" height="24" rx="1.5" class="bar f-ops"/>
+<text x="452" y="405" class="r-hs">Security review</text>
+<text x="452" y="422" class="r-code">security-review</text>
+<path d="M416,408 L430,408" class="edge" marker-end="url(#cos-artifact-lineage-ah)"/>
+<path d="M442,446 H566 L580,460 V484 A10,10 0 0 1 570,494 H442 A10,10 0 0 1 432,484 V456 A10,10 0 0 1 442,446 Z" class="card" filter="url(#cos-artifact-lineage-sh)"/>
+<path d="M566,446 V457 Q566,460 569,460 H580 Z" class="fold"/>
+<rect x="440" y="458" width="3" height="24" rx="1.5" class="bar f-qa"/>
+<text x="452" y="467" class="r-hs">Test plan</text>
+<text x="452" y="484" class="r-code">test-plan</text>
+<path d="M416,470 L430,470" class="edge" marker-end="url(#cos-artifact-lineage-ah)"/>
+<path d="M442,508 H566 L580,522 V546 A10,10 0 0 1 570,556 H442 A10,10 0 0 1 432,546 V518 A10,10 0 0 1 442,508 Z" class="card" filter="url(#cos-artifact-lineage-sh)"/>
+<path d="M566,508 V519 Q566,522 569,522 H580 Z" class="fold"/>
+<rect x="440" y="520" width="3" height="24" rx="1.5" class="bar f-qa"/>
+<text x="452" y="529" class="r-hs">QA report</text>
+<text x="452" y="546" class="r-code">qa-report</text>
+<path d="M416,532 L430,532" class="edge" marker-end="url(#cos-artifact-lineage-ah)"/>
+<path d="M442,570 H566 L580,584 V608 A10,10 0 0 1 570,618 H442 A10,10 0 0 1 432,608 V580 A10,10 0 0 1 442,570 Z" class="card" filter="url(#cos-artifact-lineage-sh)"/>
+<path d="M566,570 V581 Q566,584 569,584 H580 Z" class="fold"/>
+<rect x="440" y="582" width="3" height="24" rx="1.5" class="bar f-eng"/>
+<text x="452" y="591" class="r-hs">Test data</text>
+<text x="452" y="608" class="r-code">test-data</text>
+<path d="M416,594 L430,594" class="edge" marker-end="url(#cos-artifact-lineage-ah)"/>
+<path d="M416,358 V594" class="edge"/>
+<path d="M582,532 L588,532 Q592,532 592,528 L592,474 Q592,470 588,470 L582,470" class="edge dashed" marker-end="url(#cos-artifact-lineage-ah)"/>
+<text x="64" y="500" class="r-meta">Other types link the same way:</text>
+<rect x="64" y="512" width="117" height="24" rx="12" class="chip"/>
+<g>
+<text x="122.5" y="528.2" class="r-code" text-anchor="middle">decision-memo</text>
+</g>
+<rect x="189" y="512" width="162" height="24" rx="12" class="chip"/>
+<g>
+<text x="270" y="528.2" class="r-code" text-anchor="middle">market-intelligence</text>
+</g>
+<rect x="64" y="544" width="80" height="24" rx="12" class="chip"/>
+<g>
+<text x="104" y="560.2" class="r-code" text-anchor="middle">research</text>
+</g>
+<rect x="152" y="544" width="102" height="24" rx="12" class="chip"/>
+<g>
+<text x="203" y="560.2" class="r-code" text-anchor="middle">sprint-plan</text>
+</g>
+<rect x="262" y="544" width="132" height="24" rx="12" class="chip"/>
+<g>
+<text x="328" y="560.2" class="r-code" text-anchor="middle">feedback-report</text>
+</g>
+<rect x="64" y="576" width="95" height="24" rx="12" class="chip"/>
+<g>
+<text x="111.5" y="592.2" class="r-code" text-anchor="middle">experiment</text>
+</g>
+<rect x="167" y="576" width="73" height="24" rx="12" class="chip"/>
+<g>
+<text x="203.5" y="592.2" class="r-code" text-anchor="middle">diagram</text>
+</g>
+<rect x="248" y="576" width="43" height="24" rx="12" class="chip"/>
+<g>
+<text x="269.5" y="592.2" class="r-code" text-anchor="middle">loi</text>
+</g>
+<rect x="632" y="256" width="288" height="380" rx="10" class="card" filter="url(#cos-artifact-lineage-sh)"/>
+<g class="f-gate">
+<text x="656" y="286" class="r-label">FRONTMATTER</text>
+</g>
+<rect x="648" y="300" width="256" height="304" rx="8" class="sunken"/>
+<text x="662" y="324" class="r-code">---</text>
+<text x="662" y="348" class="r-code">id: PRD-042</text>
+<text x="662" y="372" class="r-code">type: prd</text>
+<text x="662" y="396" class="r-code">title: Faster checkout</text>
+<text x="662" y="420" class="r-code">status: review</text>
+<text x="662" y="444" class="r-code">created: 2026-10-13</text>
+<text x="662" y="468" class="r-code">author: product</text>
+<text x="662" y="492" class="r-code">parent: ICP-001</text>
+<text x="662" y="516" class="r-code">children: [RFC-042]</text>
+<text x="662" y="540" class="r-code">depends_on: []</text>
+<text x="662" y="564" class="r-code">blocks: []</text>
+<text x="662" y="588" class="r-code">---</text>
+<path d="M840,334 h4 V472 h-4" class="edge"/>
+<text x="850" y="407" class="r-meta">required</text>
+<path d="M840,478 h4 V568 h-4" class="edge"/>
+<text x="850" y="527" class="r-meta">optional</text>
+<g class="f-neutral">
+<text x="40" y="672" class="r-label">ENFORCEMENT CHAIN (RUN IN THIS ORDER)</text>
+</g>
+<rect x="40" y="688" width="202" height="108" rx="10" class="card" filter="url(#cos-artifact-lineage-sh)"/>
+<rect x="48" y="700" width="3" height="84" rx="1.5" class="bar f-neutral"/>
+<text x="64" y="716" class="r-codeh">validate.sh</text>
+<text x="64" y="740" class="r-body">Checks frontmatter and</text>
+<text x="64" y="758" class="r-body">that every referenced</text>
+<text x="64" y="776" class="r-body">artifact exists.</text>
+<rect x="266" y="688" width="202" height="108" rx="10" class="card" filter="url(#cos-artifact-lineage-sh)"/>
+<rect x="274" y="700" width="3" height="84" rx="1.5" class="bar f-neutral"/>
+<text x="290" y="716" class="r-codeh">link.sh</text>
+<text x="290" y="740" class="r-body">Writes parent and</text>
+<text x="290" y="758" class="r-body">child links into both</text>
+<text x="290" y="776" class="r-body">files.</text>
+<path d="M242,742 L264,742" class="edge" marker-end="url(#cos-artifact-lineage-ah)"/>
+<rect x="492" y="688" width="202" height="108" rx="10" class="card" filter="url(#cos-artifact-lineage-sh)"/>
+<rect x="500" y="700" width="3" height="84" rx="1.5" class="bar f-neutral"/>
+<text x="516" y="716" class="r-codeh">promote.sh</text>
+<text x="516" y="740" class="r-body">Moves status forward</text>
+<text x="516" y="758" class="r-body">one step at a time.</text>
+<path d="M468,742 L490,742" class="edge" marker-end="url(#cos-artifact-lineage-ah)"/>
+<rect x="718" y="688" width="202" height="108" rx="10" class="card" filter="url(#cos-artifact-lineage-sh)"/>
+<rect x="726" y="700" width="3" height="84" rx="1.5" class="bar f-neutral"/>
+<text x="742" y="716" class="r-codeh">check-gate.sh</text>
+<text x="742" y="740" class="r-body">Checks a stage gate.</text>
+<text x="742" y="758" class="r-body">Strictness depends on</text>
+<text x="742" y="776" class="r-body">company.stage.</text>
+<path d="M694,742 L716,742" class="edge" marker-end="url(#cos-artifact-lineage-ah)"/>
+<g class="f-neutral">
+<text x="40" y="832" class="r-label">CLAUDE CODE HOOKS (RUN AUTOMATICALLY)</text>
+</g>
+<rect x="40" y="848" width="288" height="116" rx="10" class="card" filter="url(#cos-artifact-lineage-sh)"/>
+<rect x="60" y="864" width="97" height="22" rx="11" class="chip"/>
+<g>
+<text x="108.5" y="879.2" class="r-meta" text-anchor="middle">SessionStart</text>
+</g>
+<text x="60" y="908" class="r-code">session-start.sh</text>
+<text x="60" y="928" class="r-body">Loads company, stage, branch,</text>
+<text x="60" y="946" class="r-body">lessons.</text>
+<rect x="336" y="848" width="288" height="116" rx="10" class="card" filter="url(#cos-artifact-lineage-sh)"/>
+<rect x="356" y="864" width="84" height="22" rx="11" class="chip"/>
+<g>
+<text x="398" y="879.2" class="r-meta" text-anchor="middle">PreToolUse</text>
+</g>
+<text x="356" y="908" class="r-code">pre-promote-validate.sh</text>
+<text x="356" y="928" class="r-body">Blocks promoting an invalid</text>
+<text x="356" y="946" class="r-body">artifact.</text>
+<rect x="632" y="848" width="288" height="116" rx="10" class="card" filter="url(#cos-artifact-lineage-sh)"/>
+<rect x="652" y="864" width="90" height="22" rx="11" class="chip"/>
+<g>
+<text x="697" y="879.2" class="r-meta" text-anchor="middle">PostToolUse</text>
+</g>
+<text x="652" y="908" class="r-code">post-write-artifact-check.sh</text>
+<text x="652" y="928" class="r-body">Warns when an artifact lacks</text>
+<text x="652" y="946" class="r-body">frontmatter.</text>
+<path d="M46,979 H56 L61,984 V997 H46 Z" class="card"/>
+<text x="74" y="992" class="r-meta">artifact</text>
+<path d="M152,988 L178,988" class="edge" marker-end="url(#cos-artifact-lineage-ah)"/>
+<text x="186" y="992" class="r-meta">parent to child</text>
+<path d="M311,988 L337,988" class="edge dashed" marker-end="url(#cos-artifact-lineage-ah)"/>
+<text x="345" y="992" class="r-meta">depends_on</text>
+<text x="920" y="1006" class="r-meta" text-anchor="end">Company OS · generated by docs/diagrams/render.js</text>
+</svg>

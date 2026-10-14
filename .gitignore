@@ -26,11 +26,11 @@ __pycache__/
 *.pyc
 vendor/
 
-# Build output
-dist/
-build/
-.next/
-out/
+# Build output (anchored to root — does NOT match tools/build/)
+/dist/
+/build/
+/.next/
+/out/
 
 # Logs (but keep artifacts/.audit-log/ which is intentional)
 *.log

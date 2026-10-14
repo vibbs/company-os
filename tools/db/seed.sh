@@ -5,6 +5,9 @@
 # Inputs: scenario name (empty, minimal, nominal, edge-cases, high-volume, error-states)
 # Outputs: exit 0 on success, exit 1 on failure
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/config.sh"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/../.."
@@ -22,7 +25,7 @@ for arg in "$@"; do
     --dry-run) DRY_RUN=true ;;
     --list) LIST=true ;;
     --all) SCENARIO="all" ;;
-    -*) echo "ERROR: Unknown flag: $arg"; exit 1 ;;
+    -*) echo "ERROR: Unknown flag: $arg" >&2; exit 1 ;;
     *) SCENARIO="$arg" ;;
   esac
 done
@@ -31,10 +34,7 @@ VALID_SCENARIOS=("empty" "minimal" "nominal" "edge-cases" "high-volume" "error-s
 
 # --- Helper: extract value from company.config.yaml ---
 extract_config() {
-  local KEY="$1"
-  if [[ -f "$CONFIG_FILE" ]]; then
-    grep "^  ${KEY}:" "$CONFIG_FILE" 2>/dev/null | sed "s/.*${KEY}: *//" | tr -d '"' | tr -d "'" || true
-  fi
+  cfg_get "tech_stack.$1"
 }
 
 # --- Helper: detect tech stack from project files ---
@@ -83,9 +83,9 @@ fi
 
 # --- Validate scenario ---
 if [[ -z "$SCENARIO" ]]; then
-  echo "ERROR: No scenario specified"
-  echo "Usage: ./tools/db/seed.sh [--reset] [--dry-run] [--list] <scenario>"
-  echo "Run with --list to see available scenarios"
+  echo "ERROR: No scenario specified" >&2
+  echo "Usage: ./tools/db/seed.sh [--reset] [--dry-run] [--list] <scenario>" >&2
+  echo "Run with --list to see available scenarios" >&2
   exit 1
 fi
 
@@ -98,8 +98,8 @@ if [[ "$SCENARIO" != "all" ]]; then
     fi
   done
   if [[ "$FOUND" == "false" ]]; then
-    echo "ERROR: Invalid scenario: '$SCENARIO'"
-    echo "Valid scenarios: ${VALID_SCENARIOS[*]}"
+    echo "ERROR: Invalid scenario: '$SCENARIO'" >&2
+    echo "Valid scenarios: ${VALID_SCENARIOS[*]}" >&2
     exit 1
   fi
 fi
@@ -123,8 +123,8 @@ echo ""
 SEEDS_DIR="$PROJECT_ROOT/seeds"
 
 if [[ ! -d "$SEEDS_DIR" ]]; then
-  echo "ERROR: No seeds/ directory found at project root"
-  echo "Run /seed-data to generate seed files first"
+  echo "ERROR: No seeds/ directory found at project root" >&2
+  echo "Run /seed-data to generate seed files first" >&2
   exit 1
 fi
 
@@ -264,16 +264,16 @@ for CURRENT_SCENARIO in "${SCENARIOS_TO_RUN[@]}"; do
               sqlite3 "${DATABASE_URL:-db.sqlite}" < "$SCENARIO_FILE"
               ;;
             *)
-              echo "ERROR: Cannot determine how to execute SQL for database: ${DATABASE:-unknown}"
-              echo "Set DATABASE_URL or configure tech_stack.database in company.config.yaml"
+              echo "ERROR: Cannot determine how to execute SQL for database: ${DATABASE:-unknown}" >&2
+              echo "Set DATABASE_URL or configure tech_stack.database in company.config.yaml" >&2
               exit 1
               ;;
           esac
         fi
       else
-        echo "ERROR: No seed file found for scenario '$CURRENT_SCENARIO' and language '$LANGUAGE'"
-        echo "Looked for: $SCENARIO_FILE"
-        echo "Run /seed-data to generate seed files"
+        echo "ERROR: No seed file found for scenario '$CURRENT_SCENARIO' and language '$LANGUAGE'" >&2
+        echo "Looked for: $SCENARIO_FILE" >&2
+        echo "Run /seed-data to generate seed files" >&2
         exit 1
       fi
       ;;

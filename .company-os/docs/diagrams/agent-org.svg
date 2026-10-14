@@ -1,0 +1,476 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="cos-agent-org" width="960" height="1418" viewBox="0 0 960 1418" role="img" aria-labelledby="cos-agent-org-title cos-agent-org-desc">
+<title id="cos-agent-org-title">Who does what: the agent organization</title>
+<desc id="cos-agent-org-desc">Org chart of 9 agents. Orchestrator at the top; Product, Engineering, QA &amp; Release, Growth, and Ops &amp; Risk below it; Engineering delegates to Backend, Frontend, and DevOps sub-agents through the Task tool. Each agent lists its model, whether it has project memory, and its skills. Orchestrator: workflow-router, ship, status, decision-memo-writer, release-readiness-gate, ingest, system-maintenance, artifact-import, setup, upgrade-company-os, rapid-prototype, token-cost-ledger, conflict-resolver, weekly-review, retrospective. Product: icp-positioning, prd-writer, sprint-prioritizer, feedback-synthesizer, discovery-validation, ux-research, market-intelligence, customer-conversations. Engineering (Staff): architecture-draft, implementation-decomposer, code-review, conflict-resolver, ai-engineering, excalidraw. Backend: api-contract-designer, background-jobs, multi-tenancy, seed-data. Frontend: design-system, mobile-readiness, instrumentation, user-docs. DevOps: deployment-strategy, observability-baseline, feature-flags, dev-environment, resilience-testing. QA &amp; Release: test-plan-generator, api-tester-playbook, release-readiness-gate, perf-benchmark-checklist, code-review, seed-data, dogfood, experiment-framework, test-intelligence. Growth: positioning-messaging, landing-page-copy, seo-topic-map, channel-playbook, activation-onboarding, email-lifecycle, content-engine, product-led-growth, gtm-sprint. Ops &amp; Risk: threat-modeling, privacy-data-handling, compliance-readiness, pricing-unit-economics, tos-privacy-drafting, incident-response, support-operations, token-cost-ledger, security-posture.</desc>
+<style>
+#cos-agent-org{--bg:#f6f8fa;--surface:#ffffff;--sunken:#f6f8fa;--border:#d1d9e0;--border-soft:#e4e9ee;--text:#1f2328;--text-2:#4b5562;--text-3:#606a76;--line:#8c959f;--shadow:#1f2328;--shadow-o:0.07;--solid:#24292f;--on-solid:#ffffff;--mono:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+#cos-agent-org .f-orch{--a:#4f46e5;--a-soft:#eef0ff}#cos-agent-org .f-product{--a:#7c3aed;--a-soft:#f4effe}#cos-agent-org .f-eng{--a:#0f766e;--a-soft:#e6f5f3}#cos-agent-org .f-qa{--a:#0369a1;--a-soft:#e8f4fb}#cos-agent-org .f-growth{--a:#be185d;--a-soft:#fdf0f6}#cos-agent-org .f-ops{--a:#b42318;--a-soft:#fdf1f0}#cos-agent-org .f-gate{--a:#b45309;--a-soft:#fef6e7}#cos-agent-org .f-neutral{--a:#4b5562;--a-soft:#f1f3f5}
+@media (prefers-color-scheme: dark){#cos-agent-org{--bg:#0d1117;--surface:#151b23;--sunken:#10151c;--border:#3d444d;--border-soft:#2a3038;--text:#e6edf3;--text-2:#b1bac4;--text-3:#9198a1;--line:#7d8590;--shadow:#000000;--shadow-o:0.35;--solid:#e6edf3;--on-solid:#0d1117}#cos-agent-org .f-orch{--a:#a5b4fc;--a-soft:rgba(129,140,248,0.16)}#cos-agent-org .f-product{--a:#c4b5fd;--a-soft:rgba(167,139,250,0.16)}#cos-agent-org .f-eng{--a:#5eead4;--a-soft:rgba(45,212,191,0.14)}#cos-agent-org .f-qa{--a:#7dd3fc;--a-soft:rgba(56,189,248,0.14)}#cos-agent-org .f-growth{--a:#f9a8d4;--a-soft:rgba(244,114,182,0.14)}#cos-agent-org .f-ops{--a:#fca5a5;--a-soft:rgba(248,113,113,0.14)}#cos-agent-org .f-gate{--a:#fbbf24;--a-soft:rgba(251,191,36,0.14)}#cos-agent-org .f-neutral{--a:#b1bac4;--a-soft:rgba(177,186,196,0.12)}}
+#cos-agent-org text{font-family:-apple-system, 'Segoe UI', Inter, Helvetica, Arial, sans-serif;fill:var(--text)}
+#cos-agent-org .r-title{font-size:22px;font-weight:600}#cos-agent-org .r-sub{font-size:14px;font-weight:400}#cos-agent-org .r-h{font-size:14px;font-weight:600}#cos-agent-org .r-hs{font-size:13px;font-weight:600}#cos-agent-org .r-body{font-size:13px;font-weight:400}#cos-agent-org .r-meta{font-size:12px;font-weight:400}#cos-agent-org .r-badge{font-size:12px;font-weight:500}#cos-agent-org .r-label{font-size:12px;font-weight:600;letter-spacing:0.04em}#cos-agent-org .r-code{font-size:12px;font-weight:400;font-family:var(--mono)}#cos-agent-org .r-codes{font-size:11px;font-weight:400;font-family:var(--mono)}#cos-agent-org .r-codeh{font-size:13px;font-weight:600;font-family:var(--mono)}
+#cos-agent-org .r-sub,#cos-agent-org .r-body{fill:var(--text-2)}
+#cos-agent-org .r-meta{fill:var(--text-3)}
+#cos-agent-org .r-label,#cos-agent-org .c-a{fill:var(--a)}
+#cos-agent-org .c-2{fill:var(--text-2)}#cos-agent-org .c-3{fill:var(--text-3)}#cos-agent-org .c-on{fill:var(--on-solid)}
+#cos-agent-org .panel{fill:var(--bg);stroke:var(--border)}
+#cos-agent-org .card{fill:var(--surface);stroke:var(--border)}
+#cos-agent-org .sunken{fill:var(--sunken);stroke:var(--border-soft)}
+#cos-agent-org .tint{fill:var(--a-soft);stroke:var(--a)}
+#cos-agent-org .tint-soft{fill:var(--a-soft);stroke:none}
+#cos-agent-org .bar{fill:var(--a)}
+#cos-agent-org .chip{fill:var(--sunken);stroke:var(--border)}
+#cos-agent-org .solid{fill:var(--solid);stroke:var(--solid)}
+#cos-agent-org .fold{fill:var(--border-soft);stroke:var(--border)}
+#cos-agent-org .rule{stroke:var(--border-soft);fill:none}
+#cos-agent-org .edge{fill:none;stroke:var(--line);stroke-width:1.25}
+#cos-agent-org .ah{fill:var(--line)}
+#cos-agent-org .dashed{stroke-dasharray:5 4}
+#cos-agent-org .dotted{stroke-dasharray:1.5 3;stroke-linecap:round}
+#cos-agent-org .lbg{fill:var(--bg)}#cos-agent-org .lbg-card{fill:var(--surface)}
+#cos-agent-org .shadow{flood-color:var(--shadow);flood-opacity:var(--shadow-o)}
+#cos-agent-org .tick{fill:none;stroke:var(--a);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+</style>
+<defs>
+<filter id="cos-agent-org-sh" x="-5%" y="-5%" width="110%" height="130%"><feDropShadow dx="0" dy="1" stdDeviation="1.5" class="shadow"/></filter>
+<marker id="cos-agent-org-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M1,1.5 L9,5 L1,8.5 Z" class="ah"/></marker>
+</defs>
+<rect x="0.5" y="0.5" width="959" height="1417" rx="16" class="panel"/>
+<text x="40" y="52" class="r-title">Who does what: the agent organization</text>
+<text x="40" y="78" class="r-sub">9 agents. The Orchestrator routes work; each agent owns a set of skills.</text>
+<rect x="72" y="112" width="848" height="152" rx="10" class="card" filter="url(#cos-agent-org-sh)"/>
+<rect x="80" y="124" width="3" height="128" rx="1.5" class="bar f-orch"/>
+<text x="96" y="140" class="r-h">Orchestrator</text>
+<text x="96" y="160" class="r-body">Routes work, enforces gates,</text>
+<text x="96" y="178" class="r-body">and approves releases.</text>
+<rect x="96" y="192" width="43" height="22" rx="11" class="chip"/>
+<g>
+<text x="117.5" y="207.2" class="r-meta" text-anchor="middle">opus</text>
+</g>
+<rect x="145" y="192" width="77" height="22" rx="11" class="tint f-orch"/>
+<g class="f-orch">
+<text x="183.5" y="207.2" class="r-meta c-a" text-anchor="middle">15 skills</text>
+</g>
+<line x1="312" y1="126" x2="312" y2="250" class="rule"/>
+<rect x="328" y="128" width="132" height="24" rx="12" class="chip"/>
+<g>
+<text x="394" y="144.2" class="r-code" text-anchor="middle">workflow-router</text>
+</g>
+<rect x="468" y="128" width="50" height="24" rx="12" class="chip"/>
+<g>
+<text x="493" y="144.2" class="r-code" text-anchor="middle">ship</text>
+</g>
+<rect x="526" y="128" width="65" height="24" rx="12" class="chip"/>
+<g>
+<text x="558.5" y="144.2" class="r-code" text-anchor="middle">status</text>
+</g>
+<rect x="599" y="128" width="169" height="24" rx="12" class="chip"/>
+<g>
+<text x="683.5" y="144.2" class="r-code" text-anchor="middle">decision-memo-writer</text>
+</g>
+<rect x="328" y="160" width="184" height="24" rx="12" class="chip dashed"/>
+<g>
+<text x="420" y="176.2" class="r-code" text-anchor="middle">release-readiness-gate</text>
+</g>
+<rect x="520" y="160" width="65" height="24" rx="12" class="chip"/>
+<g>
+<text x="552.5" y="176.2" class="r-code" text-anchor="middle">ingest</text>
+</g>
+<rect x="593" y="160" width="154" height="24" rx="12" class="chip"/>
+<g>
+<text x="670" y="176.2" class="r-code" text-anchor="middle">system-maintenance</text>
+</g>
+<rect x="755" y="160" width="132" height="24" rx="12" class="chip"/>
+<g>
+<text x="821" y="176.2" class="r-code" text-anchor="middle">artifact-import</text>
+</g>
+<rect x="328" y="192" width="58" height="24" rx="12" class="chip"/>
+<g>
+<text x="357" y="208.2" class="r-code" text-anchor="middle">setup</text>
+</g>
+<rect x="394" y="192" width="154" height="24" rx="12" class="chip"/>
+<g>
+<text x="471" y="208.2" class="r-code" text-anchor="middle">upgrade-company-os</text>
+</g>
+<rect x="556" y="192" width="132" height="24" rx="12" class="chip"/>
+<g>
+<text x="622" y="208.2" class="r-code" text-anchor="middle">rapid-prototype</text>
+</g>
+<rect x="696" y="192" width="147" height="24" rx="12" class="chip dashed"/>
+<g>
+<text x="769.5" y="208.2" class="r-code" text-anchor="middle">token-cost-ledger</text>
+</g>
+<rect x="328" y="224" width="147" height="24" rx="12" class="chip dashed"/>
+<g>
+<text x="401.5" y="240.2" class="r-code" text-anchor="middle">conflict-resolver</text>
+</g>
+<rect x="483" y="224" width="117" height="24" rx="12" class="chip"/>
+<g>
+<text x="541.5" y="240.2" class="r-code" text-anchor="middle">weekly-review</text>
+</g>
+<rect x="608" y="224" width="117" height="24" rx="12" class="chip"/>
+<g>
+<text x="666.5" y="240.2" class="r-code" text-anchor="middle">retrospective</text>
+</g>
+<rect x="72" y="280" width="848" height="120" rx="10" class="card" filter="url(#cos-agent-org-sh)"/>
+<rect x="80" y="292" width="3" height="96" rx="1.5" class="bar f-product"/>
+<text x="96" y="308" class="r-h">Product</text>
+<text x="96" y="328" class="r-body">Discovery, PRDs, and</text>
+<text x="96" y="346" class="r-body">prioritization.</text>
+<rect x="96" y="360" width="57" height="22" rx="11" class="chip"/>
+<g>
+<text x="124.5" y="375.2" class="r-meta" text-anchor="middle">sonnet</text>
+</g>
+<rect x="159" y="360" width="57" height="22" rx="11" class="chip"/>
+<g>
+<text x="187.5" y="375.2" class="r-meta" text-anchor="middle">memory</text>
+</g>
+<rect x="222" y="360" width="70" height="22" rx="11" class="tint f-product"/>
+<g class="f-product">
+<text x="257" y="375.2" class="r-meta c-a" text-anchor="middle">8 skills</text>
+</g>
+<line x1="312" y1="294" x2="312" y2="386" class="rule"/>
+<rect x="328" y="296" width="132" height="24" rx="12" class="chip"/>
+<g>
+<text x="394" y="312.2" class="r-code" text-anchor="middle">icp-positioning</text>
+</g>
+<rect x="468" y="296" width="95" height="24" rx="12" class="chip"/>
+<g>
+<text x="515.5" y="312.2" class="r-code" text-anchor="middle">prd-writer</text>
+</g>
+<rect x="571" y="296" width="154" height="24" rx="12" class="chip"/>
+<g>
+<text x="648" y="312.2" class="r-code" text-anchor="middle">sprint-prioritizer</text>
+</g>
+<rect x="328" y="328" width="169" height="24" rx="12" class="chip"/>
+<g>
+<text x="412.5" y="344.2" class="r-code" text-anchor="middle">feedback-synthesizer</text>
+</g>
+<rect x="505" y="328" width="169" height="24" rx="12" class="chip"/>
+<g>
+<text x="589.5" y="344.2" class="r-code" text-anchor="middle">discovery-validation</text>
+</g>
+<rect x="682" y="328" width="102" height="24" rx="12" class="chip"/>
+<g>
+<text x="733" y="344.2" class="r-code" text-anchor="middle">ux-research</text>
+</g>
+<rect x="328" y="360" width="162" height="24" rx="12" class="chip"/>
+<g>
+<text x="409" y="376.2" class="r-code" text-anchor="middle">market-intelligence</text>
+</g>
+<rect x="498" y="360" width="184" height="24" rx="12" class="chip"/>
+<g>
+<text x="590" y="376.2" class="r-code" text-anchor="middle">customer-conversations</text>
+</g>
+<rect x="72" y="416" width="848" height="108" rx="10" class="card" filter="url(#cos-agent-org-sh)"/>
+<rect x="80" y="428" width="3" height="84" rx="1.5" class="bar f-eng"/>
+<text x="96" y="444" class="r-h">Engineering (Staff)</text>
+<text x="96" y="464" class="r-body">Architecture, task breakdown,</text>
+<text x="96" y="482" class="r-body">code review.</text>
+<rect x="96" y="496" width="43" height="22" rx="11" class="chip"/>
+<g>
+<text x="117.5" y="511.2" class="r-meta" text-anchor="middle">opus</text>
+</g>
+<rect x="145" y="496" width="57" height="22" rx="11" class="chip"/>
+<g>
+<text x="173.5" y="511.2" class="r-meta" text-anchor="middle">memory</text>
+</g>
+<rect x="208" y="496" width="70" height="22" rx="11" class="tint f-eng"/>
+<g class="f-eng">
+<text x="243" y="511.2" class="r-meta c-a" text-anchor="middle">6 skills</text>
+</g>
+<line x1="312" y1="430" x2="312" y2="510" class="rule"/>
+<rect x="328" y="442" width="154" height="24" rx="12" class="chip"/>
+<g>
+<text x="405" y="458.2" class="r-code" text-anchor="middle">architecture-draft</text>
+</g>
+<rect x="490" y="442" width="206" height="24" rx="12" class="chip"/>
+<g>
+<text x="593" y="458.2" class="r-code" text-anchor="middle">implementation-decomposer</text>
+</g>
+<rect x="704" y="442" width="102" height="24" rx="12" class="chip dashed"/>
+<g>
+<text x="755" y="458.2" class="r-code" text-anchor="middle">code-review</text>
+</g>
+<rect x="328" y="474" width="147" height="24" rx="12" class="chip dashed"/>
+<g>
+<text x="401.5" y="490.2" class="r-code" text-anchor="middle">conflict-resolver</text>
+</g>
+<rect x="483" y="474" width="125" height="24" rx="12" class="chip"/>
+<g>
+<text x="545.5" y="490.2" class="r-code" text-anchor="middle">ai-engineering</text>
+</g>
+<rect x="616" y="474" width="95" height="24" rx="12" class="chip"/>
+<g>
+<text x="663.5" y="490.2" class="r-code" text-anchor="middle">excalidraw</text>
+</g>
+<rect x="112" y="540" width="808" height="108" rx="10" class="card" filter="url(#cos-agent-org-sh)"/>
+<rect x="120" y="552" width="3" height="84" rx="1.5" class="bar f-eng"/>
+<text x="136" y="568" class="r-h">Backend</text>
+<text x="136" y="588" class="r-body">APIs, data models,</text>
+<text x="136" y="606" class="r-body">background jobs.</text>
+<rect x="136" y="620" width="57" height="22" rx="11" class="chip"/>
+<g>
+<text x="164.5" y="635.2" class="r-meta" text-anchor="middle">sonnet</text>
+</g>
+<rect x="199" y="620" width="70" height="22" rx="11" class="tint f-eng"/>
+<g class="f-eng">
+<text x="234" y="635.2" class="r-meta c-a" text-anchor="middle">4 skills</text>
+</g>
+<line x1="312" y1="554" x2="312" y2="634" class="rule"/>
+<rect x="328" y="582" width="177" height="24" rx="12" class="chip"/>
+<g>
+<text x="416.5" y="598.2" class="r-code" text-anchor="middle">api-contract-designer</text>
+</g>
+<rect x="513" y="582" width="132" height="24" rx="12" class="chip"/>
+<g>
+<text x="579" y="598.2" class="r-code" text-anchor="middle">background-jobs</text>
+</g>
+<rect x="653" y="582" width="117" height="24" rx="12" class="chip"/>
+<g>
+<text x="711.5" y="598.2" class="r-code" text-anchor="middle">multi-tenancy</text>
+</g>
+<rect x="778" y="582" width="87" height="24" rx="12" class="chip dashed"/>
+<g>
+<text x="821.5" y="598.2" class="r-code" text-anchor="middle">seed-data</text>
+</g>
+<rect x="112" y="664" width="808" height="108" rx="10" class="card" filter="url(#cos-agent-org-sh)"/>
+<rect x="120" y="676" width="3" height="84" rx="1.5" class="bar f-eng"/>
+<text x="136" y="692" class="r-h">Frontend</text>
+<text x="136" y="712" class="r-body">UI, user docs,</text>
+<text x="136" y="730" class="r-body">instrumentation.</text>
+<rect x="136" y="744" width="57" height="22" rx="11" class="chip"/>
+<g>
+<text x="164.5" y="759.2" class="r-meta" text-anchor="middle">sonnet</text>
+</g>
+<rect x="199" y="744" width="70" height="22" rx="11" class="tint f-eng"/>
+<g class="f-eng">
+<text x="234" y="759.2" class="r-meta c-a" text-anchor="middle">4 skills</text>
+</g>
+<line x1="312" y1="678" x2="312" y2="758" class="rule"/>
+<rect x="328" y="706" width="117" height="24" rx="12" class="chip"/>
+<g>
+<text x="386.5" y="722.2" class="r-code" text-anchor="middle">design-system</text>
+</g>
+<rect x="453" y="706" width="140" height="24" rx="12" class="chip"/>
+<g>
+<text x="523" y="722.2" class="r-code" text-anchor="middle">mobile-readiness</text>
+</g>
+<rect x="601" y="706" width="132" height="24" rx="12" class="chip"/>
+<g>
+<text x="667" y="722.2" class="r-code" text-anchor="middle">instrumentation</text>
+</g>
+<rect x="741" y="706" width="87" height="24" rx="12" class="chip"/>
+<g>
+<text x="784.5" y="722.2" class="r-code" text-anchor="middle">user-docs</text>
+</g>
+<rect x="112" y="788" width="808" height="108" rx="10" class="card" filter="url(#cos-agent-org-sh)"/>
+<rect x="120" y="800" width="3" height="84" rx="1.5" class="bar f-eng"/>
+<text x="136" y="816" class="r-h">DevOps</text>
+<text x="136" y="836" class="r-body">Deploys, observability,</text>
+<text x="136" y="854" class="r-body">flags.</text>
+<rect x="136" y="868" width="57" height="22" rx="11" class="chip"/>
+<g>
+<text x="164.5" y="883.2" class="r-meta" text-anchor="middle">sonnet</text>
+</g>
+<rect x="199" y="868" width="70" height="22" rx="11" class="tint f-eng"/>
+<g class="f-eng">
+<text x="234" y="883.2" class="r-meta c-a" text-anchor="middle">5 skills</text>
+</g>
+<line x1="312" y1="802" x2="312" y2="882" class="rule"/>
+<rect x="328" y="814" width="162" height="24" rx="12" class="chip"/>
+<g>
+<text x="409" y="830.2" class="r-code" text-anchor="middle">deployment-strategy</text>
+</g>
+<rect x="498" y="814" width="184" height="24" rx="12" class="chip"/>
+<g>
+<text x="590" y="830.2" class="r-code" text-anchor="middle">observability-baseline</text>
+</g>
+<rect x="690" y="814" width="117" height="24" rx="12" class="chip"/>
+<g>
+<text x="748.5" y="830.2" class="r-code" text-anchor="middle">feature-flags</text>
+</g>
+<rect x="328" y="846" width="132" height="24" rx="12" class="chip"/>
+<g>
+<text x="394" y="862.2" class="r-code" text-anchor="middle">dev-environment</text>
+</g>
+<rect x="468" y="846" width="154" height="24" rx="12" class="chip"/>
+<g>
+<text x="545" y="862.2" class="r-code" text-anchor="middle">resilience-testing</text>
+</g>
+<rect x="72" y="912" width="848" height="120" rx="10" class="card" filter="url(#cos-agent-org-sh)"/>
+<rect x="80" y="924" width="3" height="96" rx="1.5" class="bar f-qa"/>
+<text x="96" y="940" class="r-h">QA &amp; Release</text>
+<text x="96" y="960" class="r-body">Test plans, quality gates,</text>
+<text x="96" y="978" class="r-body">release readiness.</text>
+<rect x="96" y="992" width="57" height="22" rx="11" class="chip"/>
+<g>
+<text x="124.5" y="1007.2" class="r-meta" text-anchor="middle">sonnet</text>
+</g>
+<rect x="159" y="992" width="57" height="22" rx="11" class="chip"/>
+<g>
+<text x="187.5" y="1007.2" class="r-meta" text-anchor="middle">memory</text>
+</g>
+<rect x="222" y="992" width="70" height="22" rx="11" class="tint f-qa"/>
+<g class="f-qa">
+<text x="257" y="1007.2" class="r-meta c-a" text-anchor="middle">9 skills</text>
+</g>
+<line x1="312" y1="926" x2="312" y2="1018" class="rule"/>
+<rect x="328" y="928" width="162" height="24" rx="12" class="chip"/>
+<g>
+<text x="409" y="944.2" class="r-code" text-anchor="middle">test-plan-generator</text>
+</g>
+<rect x="498" y="928" width="162" height="24" rx="12" class="chip"/>
+<g>
+<text x="579" y="944.2" class="r-code" text-anchor="middle">api-tester-playbook</text>
+</g>
+<rect x="668" y="928" width="184" height="24" rx="12" class="chip dashed"/>
+<g>
+<text x="760" y="944.2" class="r-code" text-anchor="middle">release-readiness-gate</text>
+</g>
+<rect x="328" y="960" width="199" height="24" rx="12" class="chip"/>
+<g>
+<text x="427.5" y="976.2" class="r-code" text-anchor="middle">perf-benchmark-checklist</text>
+</g>
+<rect x="535" y="960" width="102" height="24" rx="12" class="chip dashed"/>
+<g>
+<text x="586" y="976.2" class="r-code" text-anchor="middle">code-review</text>
+</g>
+<rect x="645" y="960" width="87" height="24" rx="12" class="chip dashed"/>
+<g>
+<text x="688.5" y="976.2" class="r-code" text-anchor="middle">seed-data</text>
+</g>
+<rect x="740" y="960" width="73" height="24" rx="12" class="chip"/>
+<g>
+<text x="776.5" y="976.2" class="r-code" text-anchor="middle">dogfood</text>
+</g>
+<rect x="328" y="992" width="169" height="24" rx="12" class="chip"/>
+<g>
+<text x="412.5" y="1008.2" class="r-code" text-anchor="middle">experiment-framework</text>
+</g>
+<rect x="505" y="992" width="147" height="24" rx="12" class="chip"/>
+<g>
+<text x="578.5" y="1008.2" class="r-code" text-anchor="middle">test-intelligence</text>
+</g>
+<rect x="72" y="1048" width="848" height="120" rx="10" class="card" filter="url(#cos-agent-org-sh)"/>
+<rect x="80" y="1060" width="3" height="96" rx="1.5" class="bar f-growth"/>
+<text x="96" y="1076" class="r-h">Growth</text>
+<text x="96" y="1096" class="r-body">Positioning, launch,</text>
+<text x="96" y="1114" class="r-body">acquisition.</text>
+<rect x="96" y="1128" width="57" height="22" rx="11" class="chip"/>
+<g>
+<text x="124.5" y="1143.2" class="r-meta" text-anchor="middle">sonnet</text>
+</g>
+<rect x="159" y="1128" width="57" height="22" rx="11" class="chip"/>
+<g>
+<text x="187.5" y="1143.2" class="r-meta" text-anchor="middle">memory</text>
+</g>
+<rect x="222" y="1128" width="70" height="22" rx="11" class="tint f-growth"/>
+<g class="f-growth">
+<text x="257" y="1143.2" class="r-meta c-a" text-anchor="middle">9 skills</text>
+</g>
+<line x1="312" y1="1062" x2="312" y2="1154" class="rule"/>
+<rect x="328" y="1064" width="177" height="24" rx="12" class="chip"/>
+<g>
+<text x="416.5" y="1080.2" class="r-code" text-anchor="middle">positioning-messaging</text>
+</g>
+<rect x="513" y="1064" width="147" height="24" rx="12" class="chip"/>
+<g>
+<text x="586.5" y="1080.2" class="r-code" text-anchor="middle">landing-page-copy</text>
+</g>
+<rect x="668" y="1064" width="117" height="24" rx="12" class="chip"/>
+<g>
+<text x="726.5" y="1080.2" class="r-code" text-anchor="middle">seo-topic-map</text>
+</g>
+<rect x="328" y="1096" width="140" height="24" rx="12" class="chip"/>
+<g>
+<text x="398" y="1112.2" class="r-code" text-anchor="middle">channel-playbook</text>
+</g>
+<rect x="476" y="1096" width="177" height="24" rx="12" class="chip"/>
+<g>
+<text x="564.5" y="1112.2" class="r-code" text-anchor="middle">activation-onboarding</text>
+</g>
+<rect x="661" y="1096" width="132" height="24" rx="12" class="chip"/>
+<g>
+<text x="727" y="1112.2" class="r-code" text-anchor="middle">email-lifecycle</text>
+</g>
+<rect x="328" y="1128" width="125" height="24" rx="12" class="chip"/>
+<g>
+<text x="390.5" y="1144.2" class="r-code" text-anchor="middle">content-engine</text>
+</g>
+<rect x="461" y="1128" width="154" height="24" rx="12" class="chip"/>
+<g>
+<text x="538" y="1144.2" class="r-code" text-anchor="middle">product-led-growth</text>
+</g>
+<rect x="623" y="1128" width="95" height="24" rx="12" class="chip"/>
+<g>
+<text x="670.5" y="1144.2" class="r-code" text-anchor="middle">gtm-sprint</text>
+</g>
+<rect x="72" y="1184" width="848" height="120" rx="10" class="card" filter="url(#cos-agent-org-sh)"/>
+<rect x="80" y="1196" width="3" height="96" rx="1.5" class="bar f-ops"/>
+<text x="96" y="1212" class="r-h">Ops &amp; Risk</text>
+<text x="96" y="1232" class="r-body">Security, privacy,</text>
+<text x="96" y="1250" class="r-body">compliance, cost.</text>
+<rect x="96" y="1264" width="57" height="22" rx="11" class="chip"/>
+<g>
+<text x="124.5" y="1279.2" class="r-meta" text-anchor="middle">sonnet</text>
+</g>
+<rect x="159" y="1264" width="70" height="22" rx="11" class="tint f-ops"/>
+<g class="f-ops">
+<text x="194" y="1279.2" class="r-meta c-a" text-anchor="middle">9 skills</text>
+</g>
+<line x1="312" y1="1198" x2="312" y2="1290" class="rule"/>
+<rect x="328" y="1200" width="132" height="24" rx="12" class="chip"/>
+<g>
+<text x="394" y="1216.2" class="r-code" text-anchor="middle">threat-modeling</text>
+</g>
+<rect x="468" y="1200" width="177" height="24" rx="12" class="chip"/>
+<g>
+<text x="556.5" y="1216.2" class="r-code" text-anchor="middle">privacy-data-handling</text>
+</g>
+<rect x="653" y="1200" width="169" height="24" rx="12" class="chip"/>
+<g>
+<text x="737.5" y="1216.2" class="r-code" text-anchor="middle">compliance-readiness</text>
+</g>
+<rect x="328" y="1232" width="184" height="24" rx="12" class="chip"/>
+<g>
+<text x="420" y="1248.2" class="r-code" text-anchor="middle">pricing-unit-economics</text>
+</g>
+<rect x="520" y="1232" width="169" height="24" rx="12" class="chip"/>
+<g>
+<text x="604.5" y="1248.2" class="r-code" text-anchor="middle">tos-privacy-drafting</text>
+</g>
+<rect x="697" y="1232" width="147" height="24" rx="12" class="chip"/>
+<g>
+<text x="770.5" y="1248.2" class="r-code" text-anchor="middle">incident-response</text>
+</g>
+<rect x="328" y="1264" width="154" height="24" rx="12" class="chip"/>
+<g>
+<text x="405" y="1280.2" class="r-code" text-anchor="middle">support-operations</text>
+</g>
+<rect x="490" y="1264" width="147" height="24" rx="12" class="chip dashed"/>
+<g>
+<text x="563.5" y="1280.2" class="r-code" text-anchor="middle">token-cost-ledger</text>
+</g>
+<rect x="645" y="1264" width="140" height="24" rx="12" class="chip"/>
+<g>
+<text x="715" y="1280.2" class="r-code" text-anchor="middle">security-posture</text>
+</g>
+<path d="M72,188 L62,188 Q56,188 56,194 L56,1238 Q56,1244 62,1244 L72,1244" class="edge" marker-end="url(#cos-agent-org-ah)"/>
+<path d="M56,340 L72,340" class="edge" marker-end="url(#cos-agent-org-ah)"/>
+<path d="M56,470 L72,470" class="edge" marker-end="url(#cos-agent-org-ah)"/>
+<path d="M56,972 L72,972" class="edge" marker-end="url(#cos-agent-org-ah)"/>
+<path d="M56,1108 L72,1108" class="edge" marker-end="url(#cos-agent-org-ah)"/>
+<path d="M96,524 L96,836 Q96,842 102,842 L112,842" class="edge dashed" marker-end="url(#cos-agent-org-ah)"/>
+<path d="M96,594 L112,594" class="edge dashed" marker-end="url(#cos-agent-org-ah)"/>
+<path d="M96,718 L112,718" class="edge dashed" marker-end="url(#cos-agent-org-ah)"/>
+<path d="M40,1328 L66,1328" class="edge" marker-end="url(#cos-agent-org-ah)"/>
+<text x="74" y="1332" class="r-meta">reports to the Orchestrator</text>
+<path d="M280,1328 L306,1328" class="edge dashed" marker-end="url(#cos-agent-org-ah)"/>
+<text x="314" y="1332" class="r-meta">delegated via the Task tool</text>
+<rect x="521" y="1320" width="24" height="16" rx="8" class="chip"/>
+<text x="554" y="1332" class="r-meta">skill</text>
+<rect x="613" y="1320" width="24" height="16" rx="8" class="chip dashed"/>
+<text x="646" y="1332" class="r-meta">skill shared with another agent</text>
+<text x="40" y="1360" class="r-meta">opus / sonnet = the model the agent runs on. memory = keeps project memory across sessions.</text>
+<text x="40" y="1378" class="r-meta">Backend and DevOps work in parallel; Frontend waits for the API contract.</text>
+<text x="920" y="1400" class="r-meta" text-anchor="end">Company OS · generated by docs/diagrams/render.js</text>
+</svg>

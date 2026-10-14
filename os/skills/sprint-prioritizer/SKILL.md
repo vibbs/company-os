@@ -1,0 +1,53 @@
+---
+name: sprint-prioritizer
+description: Ranks features and work items by impact, effort and risk. Use when planning a sprint or deciding what to build next.
+runtimes:
+  claude:
+    user-invocable: true
+---
+
+# Sprint Prioritizer
+
+## Reference
+- **ID**: S-PROD-03
+- **Category**: Product
+- **Inputs**: feature backlog, impact estimates, effort estimates, risk assessments, strategic goals
+- **Outputs**: prioritized sprint plan → artifacts/product/
+- **Used by**: Product Agent
+- **Tool scripts**: ./tools/artifact/validate.sh
+
+## Purpose
+Takes a backlog of features and work items and produces a prioritized sprint plan by scoring each item on impact, effort, and risk, ensuring the team works on the highest-value items first.
+
+## Procedure
+
+### Step 0: Define Sprint Capacity
+
+Before prioritization, establish capacity constraints:
+- **Sprint duration**: default 2 weeks (configurable)
+- **Available hours**: default for solopreneur is 28h productive per week (56h per sprint)
+- **Effort scale**: 1 = 1 day, 2 = 3 days, 3 = 1 week, 4 = 2 weeks, 5 = 3+ weeks (split required)
+- **Default weights**: Impact 40%, Effort 30%, Risk 20%, Strategic Alignment 10%
+
+Read `company.stage` from config — at `idea`/`mvp`, bias toward Impact weight (50%) and reduce Strategic Alignment (0%) since survival trumps strategy.
+
+### Steps
+1. Collect the candidate feature/work-item backlog for the upcoming sprint.
+2. For each item, score **impact** (1-5): user value, revenue potential, strategic alignment.
+3. For each item, score **effort** (1-5): engineering complexity, dependencies, unknowns.
+4. For each item, score **risk** (1-5): technical risk, market risk, dependency risk.
+5. Calculate a priority score: `(Impact * weight) / (Effort + Risk)` using agreed weights.
+6. Rank items by priority score, highest first.
+7. Apply capacity constraints — fit items into available sprint capacity.
+8. Flag items with high risk that may need spikes or de-risking work first.
+9. Produce the prioritized sprint plan with rationale for top selections.
+10. Save to `artifacts/product/` and validate using `./tools/artifact/validate.sh`.
+
+## Quality Checklist
+- [ ] All candidate items have impact, effort, and risk scores
+- [ ] Scoring criteria are consistent across items
+- [ ] Sprint capacity constraints are applied realistically
+- [ ] High-risk items have mitigation plans or spike tasks
+- [ ] Top priorities align with current strategic goals
+- [ ] Rationale is documented for any overrides of the calculated ranking
+- [ ] Artifact passes validation

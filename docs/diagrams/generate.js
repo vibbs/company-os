@@ -7,6 +7,12 @@
 const { writeFileSync } = require('fs');
 const { join } = require('path');
 
+// Counts and agent skill lists come from the repo (shared with render.js),
+// so these Excalidraw sources cannot drift from os/ and tools/.
+const { readRepoFacts } = require('./render');
+const FACTS = readRepoFacts();
+const agentSub = (name) => `${FACTS.agents[name].model} · ${FACTS.agents[name].skills.length} skills`;
+
 // ═══════════════════════════════════════════════════════════════
 // Section 1: ID Factory (deterministic for clean git diffs)
 // ═══════════════════════════════════════════════════════════════
@@ -320,8 +326,8 @@ function buildAgentArchitecture() {
 
   // ── Zone labels ──
   els.push(freeText({ x: 20, y: 15, content: 'AGENTS (Authority)', fontSize: 18, color: C.orchestrator.stroke }));
-  els.push(freeText({ x: 20, y: agentZoneH + 10, content: 'SKILLS (Procedural) — 62 skills', fontSize: 16, color: '#087f5b' }));
-  els.push(freeText({ x: 20, y: agentZoneH + skillZoneH + 10, content: 'TOOLS (Execution) — 31 scripts', fontSize: 16, color: '#e67700' }));
+  els.push(freeText({ x: 20, y: agentZoneH + 10, content: `SKILLS (Procedural) — ${FACTS.skills.length} skills, authored in os/skills/`, fontSize: 16, color: '#087f5b' }));
+  els.push(freeText({ x: 20, y: agentZoneH + skillZoneH + 10, content: `TOOLS (Execution) — ${FACTS.toolCount} tool scripts + ${FACTS.buildCount} build scripts`, fontSize: 16, color: '#e67700' }));
 
   // Layer description texts
   els.push(freeText({ x: 1300, y: 15, content: 'Choose what happens next', fontSize: 13, color: C.textMuted }));
@@ -335,7 +341,7 @@ function buildAgentArchitecture() {
     label: 'Orchestrator Agent', fontSize: 22,
   });
   els.push(orchBox, orchLbl);
-  els.push(freeText({ x: 650, y: 155, content: 'opus · 15 skills · Routes, gates, approves releases', fontSize: 12, color: C.textSub }));
+  els.push(freeText({ x: 650, y: 155, content: `${agentSub('orchestrator')} · Routes, gates, approves releases`, fontSize: 12, color: C.textSub }));
 
   // ── Five leaf agents (row) ──
   const agentY = 260;
@@ -343,11 +349,11 @@ function buildAgentArchitecture() {
   const agentGap = 30;
 
   const agents = [
-    { id: 'prod', label: 'Product\nAgent', color: C.product, sub: 'sonnet · 8 skills', desc: 'PRDs, ICP, feedback' },
-    { id: 'eng',  label: 'Engineering\nAgent (Staff)', color: C.engineering, sub: 'opus · 5 skills', desc: 'RFC, architecture, delegation' },
-    { id: 'qa',   label: 'QA & Release\nAgent', color: C.qa, sub: 'sonnet · 9 skills', desc: 'Test plans, release gates' },
-    { id: 'grow', label: 'Growth\nAgent', color: C.growth, sub: 'sonnet · 8 skills', desc: 'Launch, SEO, activation' },
-    { id: 'risk', label: 'Ops & Risk\nAgent', color: C.ops, sub: 'sonnet · 9 skills', desc: 'Security, compliance, costs' },
+    { id: 'prod', label: 'Product\nAgent', color: C.product, sub: agentSub('product'), desc: 'PRDs, ICP, feedback' },
+    { id: 'eng',  label: 'Engineering\nAgent (Staff)', color: C.engineering, sub: agentSub('engineering'), desc: 'RFC, architecture, delegation' },
+    { id: 'qa',   label: 'QA & Release\nAgent', color: C.qa, sub: agentSub('qa-release'), desc: 'Test plans, release gates' },
+    { id: 'grow', label: 'Growth\nAgent', color: C.growth, sub: agentSub('growth'), desc: 'Launch, SEO, GTM sprints' },
+    { id: 'risk', label: 'Ops & Risk\nAgent', color: C.ops, sub: agentSub('ops-risk'), desc: 'Security, compliance, costs' },
   ];
 
   const agentW = 280;
@@ -383,9 +389,9 @@ function buildAgentArchitecture() {
   const subStartX = engCx - subTotalW / 2;
 
   const subs = [
-    { id: 'be', label: 'Backend\nEngineer', color: C.backend, sub: 'sonnet · 4 skills', desc: 'API, DB, jobs' },
-    { id: 'fe', label: 'Frontend\nEngineer', color: C.frontend, sub: 'sonnet · 4 skills', desc: 'UI, components, docs' },
-    { id: 'do', label: 'DevOps\nEngineer', color: C.devops, sub: 'sonnet · 5 skills', desc: 'CI/CD, infra, flags' },
+    { id: 'be', label: 'Backend\nEngineer', color: C.backend, sub: agentSub('engineering-backend'), desc: 'API, DB, jobs' },
+    { id: 'fe', label: 'Frontend\nEngineer', color: C.frontend, sub: agentSub('engineering-frontend'), desc: 'UI, components, docs' },
+    { id: 'do', label: 'DevOps\nEngineer', color: C.devops, sub: agentSub('engineering-devops'), desc: 'CI/CD, infra, flags' },
   ];
 
   const subEls = {};
@@ -445,7 +451,7 @@ function buildAgentArchitecture() {
     els.push(pill, pLbl);
     sx += pw + pillGap;
   });
-  els.push(freeText({ x: sx + 10, y: skillsY + 4, content: '...and 46 more', fontSize: 12, color: C.textMuted }));
+  els.push(freeText({ x: sx + 10, y: skillsY + 4, content: `...and ${FACTS.skills.length - skills.length} more`, fontSize: 12, color: C.textMuted }));
 
   // ── Tools row (representative) ──
   const toolsY = agentZoneH + skillZoneH + 40;
@@ -467,7 +473,7 @@ function buildAgentArchitecture() {
     els.push(pill, pLbl);
     tx += tw + pillGap;
   });
-  els.push(freeText({ x: tx + 10, y: toolsY + 4, content: '...and 18 more', fontSize: 12, color: C.textMuted }));
+  els.push(freeText({ x: tx + 10, y: toolsY + 4, content: `...and ${FACTS.toolCount - tools.length} more`, fontSize: 12, color: C.textMuted }));
 
   // ── Dependency arrows between layers ──
   els.push(freeText({ x: zoneW - 280, y: agentZoneH - 25, content: 'Agents → Skills (how to think)', fontSize: 11, color: C.textMuted }));
@@ -535,21 +541,24 @@ function buildShipFlow() {
   const s2b = stepNode('Step 2.5\nDiscovery\nValidation', 'Product', C.product, 140);
   const s3 = stepNode('Step 3\nClassify', 'Orchestrator', C.orchestrator, 120);
   const s4 = stepNode('Step 4\nExec Plan', 'Orchestrator', C.orchestrator, 130);
-  const g1 = gateNode('prd-to-rfc');
+  // Each gate sits AFTER the artifact it checks; every gate pauses for approval.
   const s5prd = stepNode('PRD', 'Product Agent', C.product, 100);
-  const g2 = gateNode('rfc-to-impl');
+  const g1 = gateNode('prd-to-rfc');
   const s5rfc = stepNode('RFC +\nAPI Contract', 'Engineering', C.engineering, 130);
-  const g3 = gateNode('impl-to-qa');
+  const g2 = gateNode('rfc-to-impl');
   const s5impl = stepNode('Step 5\nImplement', 'Engineering', C.engineering, 140);
+  const g3 = gateNode('impl-to-qa');
   const s57 = stepNode('Step 5.7\nUser Docs', 'Eng/Frontend', C.frontend, 130);
-  const s58 = stepNode('Step 5.8\nSeed &\nVerify', 'Orchestrator', C.orchestrator, 120);
-  const g4 = gateNode('release');
+  const s58 = stepNode('Step 5.8\nSeed &\nVerify', 'Engineering + you', C.engineering, 120);
+  const s595 = stepNode('Step 5.95\nExperiment\nReview', 'optional, advisory', C.muted, 130);
   const s6 = stepNode('Step 6\nRelease\nGate', 'Orchestrator + QA', C.qa, 130);
+  const g4 = gateNode('release');
   const s7 = stepNode('Step 7\nRelease\nSummary', 'Orchestrator', C.orchestrator, 130);
+  const s75 = stepNode('Step 7.5\nToken Cost\nLogging', 'advisory', C.muted, 130);
   const s8 = stepNode('Step 8\nWhat\'s Next', 'Orchestrator', C.muted, 120);
 
   // ── Connect main pipeline ──
-  const mainNodes = [s1, s2, s2b, s3, s4, g1, s5prd, g2, s5rfc, g3, s5impl, s57, s58, g4, s6, s7, s8];
+  const mainNodes = [s1, s2, s2b, s3, s4, s5prd, g1, s5rfc, g2, s5impl, g3, s57, s58, s595, s6, g4, s7, s75, s8];
   for (let i = 0; i < mainNodes.length - 1; i++) {
     els.push(connect(mainNodes[i], mainNodes[i + 1], {
       fromSide: 'right', toSide: 'left',
@@ -616,6 +625,7 @@ function buildShipFlow() {
   els.push(lgGate, lgGateLbl);
   els.push(freeText({ x: 100, y: 672, content: '= Stage gate checkpoint', fontSize: 12, color: C.textSub }));
   els.push(freeText({ x: 60, y: 710, content: '--- = Parallel / optional branch', fontSize: 12, color: C.textSub }));
+  els.push(freeText({ x: 60, y: 735, content: 'At each gate: validate.sh + link.sh → promote to review → check-gate.sh → PAUSE for your approval (approve = promote approved; reject = iterate)', fontSize: 12, color: C.textSub }));
 
   return els;
 }
@@ -733,7 +743,7 @@ function buildEngineeringDelegation() {
   els.push(connect(subEls[1], apiBox, { fromSide: 'bottom', toSide: 'top', color: '#e67700', strokeStyle: 'dashed' }));
 
   // ── Staff Engineer skills ──
-  els.push(freeText({ x: 520, y: 425, content: 'Skills: architecture-draft · implementation-decomposer · code-review · conflict-resolver · ai-engineering', fontSize: 11, color: C.textMuted }));
+  els.push(freeText({ x: 520, y: 425, content: `Skills: ${FACTS.agents.engineering.skills.join(' · ')}`, fontSize: 11, color: C.textMuted }));
 
   return els;
 }
@@ -803,8 +813,8 @@ function buildArtifactLineage() {
   const gates = [
     { afterIdx: 0, label: 'Gate: prd-to-rfc', checks: 'PRD approved + acceptance criteria present' },
     { afterIdx: 1, label: 'Gate: rfc-to-impl', checks: 'RFC approved + parent PRD approved' },
-    { afterIdx: 3, label: 'Gate: impl-to-qa', checks: 'RFC approved + test plan exists' },
-    { afterIdx: 5, label: 'Gate: release', checks: 'All artifacts approved + version bumped' },
+    { afterIdx: 3, label: 'Gate: impl-to-qa', checks: 'RFC approved + test plan exists (seed catalog: advisory)' },
+    { afterIdx: 5, label: 'Gate: release', checks: 'PRD, RFC, QA report approved + security review + version bumped' },
   ];
 
   const artEls = [];
@@ -906,14 +916,14 @@ function buildFeedbackLoop() {
   els.push(freeText({ x: 50, y: 20, content: 'Customer Feedback → Product Pipeline', fontSize: 24, color: C.text }));
   els.push(freeText({ x: 50, y: 55, content: 'The inbound loop: customer conversations feed feedback synthesis, which generates PRD candidates for the ship flow.', fontSize: 13, color: C.textSub }));
 
-  // ── Input: 6 Conversation Types ──
+  // ── Input: conversation types (customer-conversations SKILL.md) ──
   const inputX = 60;
   const inputY = 130;
   const inputW = 140;
   const inputH = 38;
   const inputGap = 8;
 
-  const convTypes = ['Discovery', 'Demo', 'Churn-save', 'Upsell', 'Check-in', 'Cold outreach'];
+  const convTypes = ['Discovery', 'Mom-test', 'Demo', 'Churn-save', 'Upsell', 'Check-in', 'Cold outreach'];
 
   const inputEls = [];
   convTypes.forEach((t, i) => {
@@ -927,7 +937,7 @@ function buildFeedbackLoop() {
     inputEls.push(box);
   });
 
-  els.push(freeText({ x: inputX, y: inputY - 25, content: '6 Conversation Types', fontSize: 14, color: C.product.stroke }));
+  els.push(freeText({ x: inputX, y: inputY - 25, content: `${convTypes.length} Conversation Types`, fontSize: 14, color: C.product.stroke }));
 
   // ── Customer Conversations Skill ──
   const ccX = 280;
@@ -993,7 +1003,7 @@ function buildFeedbackLoop() {
 
   const scores = [
     { label: 'Score > 15\n→ /ship', bg: '#ebfbee', stroke: '#2b8a3e' },
-    { label: 'Score 8–15\n→ /discovery', bg: '#fff9db', stroke: '#e67700' },
+    { label: 'Score 8–15\n→ /discovery-validation', bg: '#fff9db', stroke: '#e67700' },
     { label: 'Score < 8\n→ monitor', bg: '#f8f9fa', stroke: '#868e96' },
   ];
 
@@ -1001,7 +1011,7 @@ function buildFeedbackLoop() {
   scores.forEach((s, i) => {
     const y = scoreY + i * 65;
     const [box, lbl] = labeledBox({
-      x: scoreX, y, w: 150, h: 50,
+      x: scoreX, y, w: 170, h: 50,
       bg: s.bg, stroke: s.stroke,
       label: s.label, fontSize: 12,
     });
@@ -1050,7 +1060,7 @@ function buildWorkflowRouter() {
   const els = [];
 
   // Title
-  els.push(freeText({ x: 50, y: 20, content: 'Workflow Router — 9 Objective Classifications', fontSize: 24, color: C.text }));
+  els.push(freeText({ x: 50, y: 20, content: 'Workflow Router — 10 Objective Classifications', fontSize: 24, color: C.text }));
   els.push(freeText({ x: 50, y: 55, content: 'The Orchestrator classifies every objective and selects the appropriate pipeline.', fontSize: 13, color: C.textSub }));
 
   // ── Input ──
@@ -1070,7 +1080,7 @@ function buildWorkflowRouter() {
   els.push(routerBox, routerLbl);
   els.push(connect(inputBox, routerBox, { color: C.arrowDel }));
 
-  // ── 9 Classifications ──
+  // ── 10 Classifications ──
   const classY = 320;
   const colW = 165;
   const colH = 55;
@@ -1111,8 +1121,8 @@ function buildWorkflowRouter() {
       skips: ['PRD', 'Growth'],
     },
     {
-      label: 'Prototype\n/ Demo', color: C.product,
-      steps: ['Mini-PRD', 'Build', 'Demo Script'],
+      label: 'Prototype / Demo\n/rapid-prototype', color: C.product,
+      steps: ['Mini-PRD (≤3 AC)', 'Build', 'Demo Script'],
       skips: ['RFC', 'Security', 'QA'],
     },
     {
@@ -1125,10 +1135,15 @@ function buildWorkflowRouter() {
       steps: ['Scan', 'RFC?', 'Build', 'Test'],
       skips: ['PRD', 'Growth'],
     },
+    {
+      label: 'GTM / Market\nValidation', color: C.growth,
+      steps: ['ICP', 'Interviews', 'Pain Synthesis', 'LOIs', 'Launch'],
+      skips: ['Engineering', 'RFC', 'QA'],
+    },
   ];
 
   const totalColW = classifications.length * colW + (classifications.length - 1) * colGap;
-  const colStartX = (1700 - totalColW) / 2;
+  const colStartX = (1800 - totalColW) / 2;
 
   const classEls = [];
   classifications.forEach((c, i) => {

@@ -4,13 +4,17 @@
 # ============================================================================
 # Scaffolds directories and creates template files for Company OS.
 # Use this when you want to set up Company OS before opening Claude Code.
+# The installer puts it at .company-os/setup.sh; run it from the project root.
 #
 # Usage:
-#   bash setup.sh             # scaffold directories + template config
-#   bash setup.sh --cleanup   # remove template documentation files
+#   bash .company-os/setup.sh             # scaffold directories + template config
+#   bash .company-os/setup.sh --cleanup   # remove example artifacts and standards
+#   bash .company-os/setup.sh --claude    # also create .claude/settings.json without a .claude/ folder
+#   bash .company-os/setup.sh --help      # show this help
 #
 # After running this script, open Claude Code and run /setup to customize
-# your configuration interactively.
+# your configuration interactively. No AI runtime? Edit company.config.yaml
+# by hand using .company-os/docs/CONFIG_REFERENCE.md.
 # ============================================================================
 
 set -euo pipefail
@@ -30,16 +34,76 @@ else
   NC=''
 fi
 
+# --- Help ---
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+  cat <<'HELP'
+Company OS — Setup Script (bash fallback)
+
+Creates the Company OS working folders and template files in the current
+directory. Use it when you want to set up before opening an AI runtime, or
+if you do not use one. Existing files are never overwritten.
+
+Usage:
+  bash .company-os/setup.sh             Scaffold folders and template files
+  bash .company-os/setup.sh --cleanup   Remove example files (the guides in .company-os/docs/ stay)
+  bash .company-os/setup.sh --claude    Also create .claude/settings.json when .claude/ does not exist yet
+  bash .company-os/setup.sh --help      Show this help
+
+What the default run creates (only if missing):
+  artifacts/   prds, rfcs, test-plans, qa-reports, launch-briefs,
+               security-reviews, decision-memos, test-data, .audit-log
+  standards/   api, coding, compliance, templates, brand, ops, analytics,
+               docs, email, engineering
+  imports/  tasks/ (todo.md, lessons.md)  seeds/  cogs/ai-ledger/
+  company.config.yaml       blank template
+  .claude/settings.json     Node.js default permissions, only when the Claude Code
+                            adapter is installed (.claude/ exists) or with --claude
+
+What --cleanup removes (if present):
+  the example PRD, RFC and standards files, and old root-level copies of
+  TOKEN_COSTS.md, FAQ.md and SETUP_COMPANY_OS.md.
+  The guides in .company-os/docs/ are kept: other files link to them.
+
+Next steps:
+  Claude Code:   run `claude`, then type /setup
+  Other runtime: ask the agent to "run the setup skill"
+  No runtime:    edit company.config.yaml by hand
+                 (guide: .company-os/docs/CONFIG_REFERENCE.md)
+
+Docs: https://github.com/vibbs/company-os#readme
+HELP
+  exit 0
+fi
+
+WITH_CLAUDE=false
+case "${1:-}" in
+  ""|--cleanup) ;;
+  --claude) WITH_CLAUDE=true ;;
+  *) echo "ERROR: Unknown option: $1" >&2; echo "Run: bash .company-os/setup.sh --help" >&2; exit 1 ;;
+esac
+
 # --- Cleanup Mode ---
 if [[ "${1:-}" == "--cleanup" ]]; then
   echo -e "${BLUE}Company OS — Template Cleanup${NC}"
   echo "================================"
   echo ""
-  echo "Removing template documentation files (not needed for daily operation)..."
+  echo "Removing example artifacts and standards (the guides in .company-os/docs/ are kept)..."
   echo ""
   REMOVED=0
-  for f in .company-os/docs/TOKEN_COSTS.md .company-os/docs/FAQ.md .company-os/docs/SETUP.md .company-os/docs/ROADMAP.md TOKEN_COSTS.md FAQ.md SETUP_COMPANY_OS.md artifacts/prds/PRD-EXAMPLE-001-notifications.md artifacts/rfcs/RFC-EXAMPLE-001-notification-system.md standards/api/example-api-conventions.md standards/coding/example-coding-standards.md; do
-    if [ -f "$f" ]; then
+  # A root FAQ.md, TOKEN_COSTS.md or SETUP_COMPANY_OS.md may be the user's own.
+  # Delete one only when it is the old Company OS copy.
+  is_company_os_copy() {
+    case "$1" in
+      FAQ.md) [ "$(head -n 1 "$1")" = "# FAQ — AI Agentic Company OS" ] ;;
+      SETUP_COMPANY_OS.md) [ "$(head -n 1 "$1")" = "# Setup Guide — AI Agentic Company OS" ] ;;
+      TOKEN_COSTS.md) [ "$(head -n 1 "$1")" = "# Token Cost Reference" ] && head -n 5 "$1" | grep -q "Company OS" ;;
+      *) return 0 ;;
+    esac
+  }
+  for f in TOKEN_COSTS.md FAQ.md SETUP_COMPANY_OS.md artifacts/prds/PRD-EXAMPLE-001-notifications.md artifacts/rfcs/RFC-EXAMPLE-001-notification-system.md standards/api/example-api-conventions.md standards/coding/example-coding-standards.md; do
+    if [ -f "$f" ] && ! is_company_os_copy "$f"; then
+      echo -e "  ${YELLOW}Kept${NC}     $f (not a Company OS copy)"
+    elif [ -f "$f" ]; then
       rm "$f"
       echo -e "  ${RED}Removed${NC}  $f"
       REMOVED=$((REMOVED + 1))
@@ -50,8 +114,7 @@ if [[ "${1:-}" == "--cleanup" ]]; then
   echo -e "${GREEN}Done!${NC} Removed $REMOVED template files."
   echo ""
   echo -e "${YELLOW}You may also want to:${NC}"
-  echo "  - Replace README.md with your project README"
-  echo "  - Delete setup.sh (this script) — it's no longer needed"
+  echo "  - Replace README.md with your project README (only if it is still the Company OS template one)"
   exit 0
 fi
 
@@ -256,8 +319,11 @@ else
   SKIPPED=$((SKIPPED + 1))
 fi
 
-# .claude/settings.json (default Node.js permissions — only if missing)
-if [ ! -f ".claude/settings.json" ]; then
+# .claude/settings.json (default Node.js permissions — only if missing, and only
+# for Claude Code: when .claude/ exists or --claude was passed)
+if [ ! -d ".claude" ] && [ "$WITH_CLAUDE" = false ]; then
+  echo -e "  ${YELLOW}Skipped${NC}  .claude/settings.json (Claude Code adapter not installed; use --claude to create it)"
+elif [ ! -f ".claude/settings.json" ]; then
   mkdir -p ".claude"
   cat > ".claude/settings.json" << 'JSON'
 {

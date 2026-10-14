@@ -1,0 +1,302 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="cos-ship-flow" width="960" height="1272" viewBox="0 0 960 1272" role="img" aria-labelledby="cos-ship-flow-title cos-ship-flow-desc">
+<title id="cos-ship-flow-title">The /ship pipeline</title>
+<desc id="cos-ship-flow-desc">Plan: load config, inventory artifacts, discovery check for new features, classify, plan stages, you approve the plan. Build (step 5): PRD by Product, gate prd-to-rfc, you approve; RFC and API contract by Engineering, gate rfc-to-impl, you approve; implement by Engineering and sub-agents, gate impl-to-qa, you approve. In parallel: launch brief by Growth, threat model by Ops &amp; Risk, test plan by QA. Verify: user docs and tours, seed and verify, QA report, optional dogfood, optional experiment review. Release: release gate with tests, lint, scan, pre-deploy and version bump, gate release, you approve; release summary; optional AI cost logging; what next. At every gate: delegate, validate and link, promote to review, check-gate, you review, then approve or iterate.</desc>
+<style>
+#cos-ship-flow{--bg:#f6f8fa;--surface:#ffffff;--sunken:#f6f8fa;--border:#d1d9e0;--border-soft:#e4e9ee;--text:#1f2328;--text-2:#4b5562;--text-3:#606a76;--line:#8c959f;--shadow:#1f2328;--shadow-o:0.07;--solid:#24292f;--on-solid:#ffffff;--mono:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+#cos-ship-flow .f-orch{--a:#4f46e5;--a-soft:#eef0ff}#cos-ship-flow .f-product{--a:#7c3aed;--a-soft:#f4effe}#cos-ship-flow .f-eng{--a:#0f766e;--a-soft:#e6f5f3}#cos-ship-flow .f-qa{--a:#0369a1;--a-soft:#e8f4fb}#cos-ship-flow .f-growth{--a:#be185d;--a-soft:#fdf0f6}#cos-ship-flow .f-ops{--a:#b42318;--a-soft:#fdf1f0}#cos-ship-flow .f-gate{--a:#b45309;--a-soft:#fef6e7}#cos-ship-flow .f-neutral{--a:#4b5562;--a-soft:#f1f3f5}
+@media (prefers-color-scheme: dark){#cos-ship-flow{--bg:#0d1117;--surface:#151b23;--sunken:#10151c;--border:#3d444d;--border-soft:#2a3038;--text:#e6edf3;--text-2:#b1bac4;--text-3:#9198a1;--line:#7d8590;--shadow:#000000;--shadow-o:0.35;--solid:#e6edf3;--on-solid:#0d1117}#cos-ship-flow .f-orch{--a:#a5b4fc;--a-soft:rgba(129,140,248,0.16)}#cos-ship-flow .f-product{--a:#c4b5fd;--a-soft:rgba(167,139,250,0.16)}#cos-ship-flow .f-eng{--a:#5eead4;--a-soft:rgba(45,212,191,0.14)}#cos-ship-flow .f-qa{--a:#7dd3fc;--a-soft:rgba(56,189,248,0.14)}#cos-ship-flow .f-growth{--a:#f9a8d4;--a-soft:rgba(244,114,182,0.14)}#cos-ship-flow .f-ops{--a:#fca5a5;--a-soft:rgba(248,113,113,0.14)}#cos-ship-flow .f-gate{--a:#fbbf24;--a-soft:rgba(251,191,36,0.14)}#cos-ship-flow .f-neutral{--a:#b1bac4;--a-soft:rgba(177,186,196,0.12)}}
+#cos-ship-flow text{font-family:-apple-system, 'Segoe UI', Inter, Helvetica, Arial, sans-serif;fill:var(--text)}
+#cos-ship-flow .r-title{font-size:22px;font-weight:600}#cos-ship-flow .r-sub{font-size:14px;font-weight:400}#cos-ship-flow .r-h{font-size:14px;font-weight:600}#cos-ship-flow .r-hs{font-size:13px;font-weight:600}#cos-ship-flow .r-body{font-size:13px;font-weight:400}#cos-ship-flow .r-meta{font-size:12px;font-weight:400}#cos-ship-flow .r-badge{font-size:12px;font-weight:500}#cos-ship-flow .r-label{font-size:12px;font-weight:600;letter-spacing:0.04em}#cos-ship-flow .r-code{font-size:12px;font-weight:400;font-family:var(--mono)}#cos-ship-flow .r-codes{font-size:11px;font-weight:400;font-family:var(--mono)}#cos-ship-flow .r-codeh{font-size:13px;font-weight:600;font-family:var(--mono)}
+#cos-ship-flow .r-sub,#cos-ship-flow .r-body{fill:var(--text-2)}
+#cos-ship-flow .r-meta{fill:var(--text-3)}
+#cos-ship-flow .r-label,#cos-ship-flow .c-a{fill:var(--a)}
+#cos-ship-flow .c-2{fill:var(--text-2)}#cos-ship-flow .c-3{fill:var(--text-3)}#cos-ship-flow .c-on{fill:var(--on-solid)}
+#cos-ship-flow .panel{fill:var(--bg);stroke:var(--border)}
+#cos-ship-flow .card{fill:var(--surface);stroke:var(--border)}
+#cos-ship-flow .sunken{fill:var(--sunken);stroke:var(--border-soft)}
+#cos-ship-flow .tint{fill:var(--a-soft);stroke:var(--a)}
+#cos-ship-flow .tint-soft{fill:var(--a-soft);stroke:none}
+#cos-ship-flow .bar{fill:var(--a)}
+#cos-ship-flow .chip{fill:var(--sunken);stroke:var(--border)}
+#cos-ship-flow .solid{fill:var(--solid);stroke:var(--solid)}
+#cos-ship-flow .fold{fill:var(--border-soft);stroke:var(--border)}
+#cos-ship-flow .rule{stroke:var(--border-soft);fill:none}
+#cos-ship-flow .edge{fill:none;stroke:var(--line);stroke-width:1.25}
+#cos-ship-flow .ah{fill:var(--line)}
+#cos-ship-flow .dashed{stroke-dasharray:5 4}
+#cos-ship-flow .dotted{stroke-dasharray:1.5 3;stroke-linecap:round}
+#cos-ship-flow .lbg{fill:var(--bg)}#cos-ship-flow .lbg-card{fill:var(--surface)}
+#cos-ship-flow .shadow{flood-color:var(--shadow);flood-opacity:var(--shadow-o)}
+#cos-ship-flow .tick{fill:none;stroke:var(--a);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+</style>
+<defs>
+<filter id="cos-ship-flow-sh" x="-5%" y="-5%" width="110%" height="130%"><feDropShadow dx="0" dy="1" stdDeviation="1.5" class="shadow"/></filter>
+<marker id="cos-ship-flow-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M1,1.5 L9,5 L1,8.5 Z" class="ah"/></marker>
+</defs>
+<rect x="0.5" y="0.5" width="959" height="1271" rx="16" class="panel"/>
+<text x="40" y="52" class="r-title">The /ship pipeline</text>
+<text x="40" y="78" class="r-sub">One command takes a feature from idea to release. It pauses at every gate for your approval.</text>
+<rect x="40" y="112" width="880" height="148" rx="12" class="sunken"/>
+<rect x="68" y="126" width="22" height="22" rx="11" class="solid"/>
+<text x="79" y="141.5" class="r-badge c-on" text-anchor="middle">1</text>
+<text x="100" y="142" class="r-h">Plan</text>
+<text x="904" y="142" class="r-meta" text-anchor="end">Orchestrator</text>
+<rect x="68" y="168" width="132" height="76" rx="10" class="card" filter="url(#cos-ship-flow-sh)"/>
+<rect x="76" y="180" width="3" height="52" rx="1.5" class="bar f-orch"/>
+<g class="f-orch">
+<text x="88" y="192" class="r-label">STEP 1</text>
+</g>
+<text x="88" y="212" class="r-hs">Load config</text>
+<text x="88" y="230" class="r-meta">stack and stage</text>
+<rect x="222" y="168" width="132" height="76" rx="10" class="card" filter="url(#cos-ship-flow-sh)"/>
+<rect x="230" y="180" width="3" height="52" rx="1.5" class="bar f-orch"/>
+<g class="f-orch">
+<text x="242" y="192" class="r-label">STEP 2</text>
+</g>
+<text x="242" y="212" class="r-hs">Inventory</text>
+<text x="242" y="230" class="r-meta">what exists</text>
+<path d="M200,206 L220,206" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<rect x="376" y="168" width="132" height="76" rx="10" class="card dashed" filter="url(#cos-ship-flow-sh)"/>
+<rect x="384" y="180" width="3" height="52" rx="1.5" class="bar f-orch"/>
+<g class="f-orch">
+<text x="396" y="192" class="r-label">STEP 2.5</text>
+</g>
+<text x="396" y="212" class="r-hs">Discovery</text>
+<text x="396" y="230" class="r-meta">new ideas only</text>
+<path d="M354,206 L374,206" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<rect x="530" y="168" width="132" height="76" rx="10" class="card" filter="url(#cos-ship-flow-sh)"/>
+<rect x="538" y="180" width="3" height="52" rx="1.5" class="bar f-orch"/>
+<g class="f-orch">
+<text x="550" y="192" class="r-label">STEP 3</text>
+</g>
+<text x="550" y="212" class="r-hs">Classify</text>
+<text x="550" y="230" class="r-meta">pick the route</text>
+<path d="M508,206 L528,206" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<rect x="684" y="168" width="132" height="76" rx="10" class="card" filter="url(#cos-ship-flow-sh)"/>
+<rect x="692" y="180" width="3" height="52" rx="1.5" class="bar f-orch"/>
+<g class="f-orch">
+<text x="704" y="192" class="r-label">STEP 4</text>
+</g>
+<text x="704" y="212" class="r-hs">Plan stages</text>
+<text x="704" y="230" class="r-meta">who does what</text>
+<path d="M662,206 L682,206" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<path d="M816,206 L850,206" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<g class="f-orch"><polygon points="876,206 870,216.4 858,216.4 852,206 858,195.6 870,195.6" class="tint" stroke-width="1.25"/>
+<path d="M859.5,206.5 L862.8,209.8 L869,202.5" class="tick"/></g>
+<text x="864" y="182" class="r-meta" text-anchor="middle">you approve</text>
+<rect x="40" y="300" width="880" height="304" rx="12" class="sunken"/>
+<rect x="68" y="314" width="22" height="22" rx="11" class="solid"/>
+<text x="79" y="329.5" class="r-badge c-on" text-anchor="middle">2</text>
+<text x="100" y="330" class="r-h">Build · Step 5, one stage at a time</text>
+<text x="904" y="330" class="r-meta" text-anchor="end">artifact folders live under artifacts/</text>
+<path d="M78,368 H218 L232,382 V450 A10,10 0 0 1 222,460 H78 A10,10 0 0 1 68,450 V378 A10,10 0 0 1 78,368 Z" class="card" filter="url(#cos-ship-flow-sh)"/>
+<path d="M218,368 V379 Q218,382 221,382 H232 Z" class="fold"/>
+<rect x="76" y="380" width="3" height="68" rx="1.5" class="bar f-product"/>
+<g class="f-product">
+<text x="88" y="392" class="r-label">PRODUCT</text>
+</g>
+<text x="88" y="412" class="r-hs">PRD</text>
+<text x="88" y="430" class="r-meta">what and why</text>
+<text x="88" y="448" class="r-code">prds/</text>
+<path d="M232,414 L256,414" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<polygon points="268,403 279,414 268,425 257,414" class="tint f-gate" stroke-width="1.25"/>
+<path d="M279,414 L296,414" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<g class="f-orch"><polygon points="322,414 316,424.4 304,424.4 298,414 304,403.6 316,403.6" class="tint" stroke-width="1.25"/>
+<path d="M305.5,414.5 L308.8,417.8 L315,410.5" class="tick"/></g>
+<text x="278" y="392" class="r-code" text-anchor="middle">prd-to-rfc</text>
+<path d="M322,414 L342,414" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<path d="M354,368 H494 L508,382 V450 A10,10 0 0 1 498,460 H354 A10,10 0 0 1 344,450 V378 A10,10 0 0 1 354,368 Z" class="card" filter="url(#cos-ship-flow-sh)"/>
+<path d="M494,368 V379 Q494,382 497,382 H508 Z" class="fold"/>
+<rect x="352" y="380" width="3" height="68" rx="1.5" class="bar f-eng"/>
+<g class="f-eng">
+<text x="364" y="392" class="r-label">ENGINEERING</text>
+</g>
+<text x="364" y="412" class="r-hs">RFC</text>
+<text x="364" y="430" class="r-meta">plus API contract</text>
+<text x="364" y="448" class="r-code">rfcs/</text>
+<path d="M508,414 L532,414" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<polygon points="544,403 555,414 544,425 533,414" class="tint f-gate" stroke-width="1.25"/>
+<path d="M555,414 L572,414" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<g class="f-orch"><polygon points="598,414 592,424.4 580,424.4 574,414 580,403.6 592,403.6" class="tint" stroke-width="1.25"/>
+<path d="M581.5,414.5 L584.8,417.8 L591,410.5" class="tick"/></g>
+<text x="554" y="392" class="r-code" text-anchor="middle">rfc-to-impl</text>
+<path d="M598,414 L618,414" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<rect x="620" y="368" width="164" height="92" rx="10" class="card" filter="url(#cos-ship-flow-sh)"/>
+<rect x="628" y="380" width="3" height="68" rx="1.5" class="bar f-eng"/>
+<g class="f-eng">
+<text x="640" y="392" class="r-label">ENGINEERING</text>
+</g>
+<text x="640" y="412" class="r-hs">Implement</text>
+<text x="640" y="430" class="r-meta">with sub-agents</text>
+<text x="640" y="448" class="r-code">tools/ci/*.sh</text>
+<path d="M784,414 L808,414" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<polygon points="820,403 831,414 820,425 809,414" class="tint f-gate" stroke-width="1.25"/>
+<path d="M831,414 L848,414" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<g class="f-orch"><polygon points="874,414 868,424.4 856,424.4 850,414 856,403.6 868,403.6" class="tint" stroke-width="1.25"/>
+<path d="M857.5,414.5 L860.8,417.8 L867,410.5" class="tick"/></g>
+<text x="830" y="392" class="r-code" text-anchor="middle">impl-to-qa</text>
+<path d="M78,508 H218 L232,522 V574 A10,10 0 0 1 222,584 H78 A10,10 0 0 1 68,574 V518 A10,10 0 0 1 78,508 Z" class="card" filter="url(#cos-ship-flow-sh)"/>
+<path d="M218,508 V519 Q218,522 221,522 H232 Z" class="fold"/>
+<rect x="76" y="520" width="3" height="52" rx="1.5" class="bar f-growth"/>
+<g class="f-growth">
+<text x="88" y="532" class="r-label">GROWTH</text>
+</g>
+<text x="88" y="552" class="r-hs">Launch brief</text>
+<text x="88" y="570" class="r-code">launch-briefs/</text>
+<path d="M354,508 H494 L508,522 V574 A10,10 0 0 1 498,584 H354 A10,10 0 0 1 344,574 V518 A10,10 0 0 1 354,508 Z" class="card" filter="url(#cos-ship-flow-sh)"/>
+<path d="M494,508 V519 Q494,522 497,522 H508 Z" class="fold"/>
+<rect x="352" y="520" width="3" height="52" rx="1.5" class="bar f-ops"/>
+<g class="f-ops">
+<text x="364" y="532" class="r-label">OPS &amp; RISK</text>
+</g>
+<text x="364" y="552" class="r-hs">Threat model</text>
+<text x="364" y="570" class="r-code">security-reviews/</text>
+<path d="M630,508 H770 L784,522 V574 A10,10 0 0 1 774,584 H630 A10,10 0 0 1 620,574 V518 A10,10 0 0 1 630,508 Z" class="card" filter="url(#cos-ship-flow-sh)"/>
+<path d="M770,508 V519 Q770,522 773,522 H784 Z" class="fold"/>
+<rect x="628" y="520" width="3" height="52" rx="1.5" class="bar f-qa"/>
+<g class="f-qa">
+<text x="640" y="532" class="r-label">QA &amp; RELEASE</text>
+</g>
+<text x="640" y="552" class="r-hs">Test plan</text>
+<text x="640" y="570" class="r-code">test-plans/</text>
+<path d="M150,460 L150,508" class="edge dashed" marker-end="url(#cos-ship-flow-ah)"/>
+<path d="M426,460 L426,508" class="edge dashed" marker-end="url(#cos-ship-flow-ah)"/>
+<path d="M784,546 L814,546 Q820,546 820,540 L820,426" class="edge dashed" marker-end="url(#cos-ship-flow-ah)"/>
+<rect x="108" y="474" width="84" height="18" rx="4" class="lbg"/>
+<text x="150" y="487.5" class="r-meta" text-anchor="middle">in parallel</text>
+<rect x="384" y="474" width="84" height="18" rx="4" class="lbg"/>
+<text x="426" y="487.5" class="r-meta" text-anchor="middle">in parallel</text>
+<path d="M864,218 L864,274 Q864,280 858,280 L58,280 Q52,280 52,286 L52,408 Q52,414 58,414 L66,414" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<rect x="40" y="644" width="880" height="148" rx="12" class="sunken"/>
+<rect x="68" y="658" width="22" height="22" rx="11" class="solid"/>
+<text x="79" y="673.5" class="r-badge c-on" text-anchor="middle">3</text>
+<text x="100" y="674" class="r-h">Verify</text>
+<text x="904" y="674" class="r-meta" text-anchor="end">after impl-to-qa passes</text>
+<rect x="68" y="700" width="152" height="76" rx="10" class="card" filter="url(#cos-ship-flow-sh)"/>
+<rect x="76" y="712" width="3" height="52" rx="1.5" class="bar f-eng"/>
+<g class="f-eng">
+<text x="88" y="724" class="r-label">STEP 5.7</text>
+</g>
+<text x="88" y="744" class="r-hs">Docs and tours</text>
+<text x="88" y="762" class="r-meta">Frontend</text>
+<rect x="239" y="700" width="152" height="76" rx="10" class="card" filter="url(#cos-ship-flow-sh)"/>
+<rect x="247" y="712" width="3" height="52" rx="1.5" class="bar f-eng"/>
+<g class="f-eng">
+<text x="259" y="724" class="r-label">STEP 5.8</text>
+</g>
+<text x="259" y="744" class="r-hs">Seed and verify</text>
+<text x="259" y="762" class="r-meta">you test the app</text>
+<path d="M220,738 L237,738" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<path d="M420,700 H548 L562,714 V766 A10,10 0 0 1 552,776 H420 A10,10 0 0 1 410,766 V710 A10,10 0 0 1 420,700 Z" class="card" filter="url(#cos-ship-flow-sh)"/>
+<path d="M548,700 V711 Q548,714 551,714 H562 Z" class="fold"/>
+<rect x="418" y="712" width="3" height="52" rx="1.5" class="bar f-qa"/>
+<g class="f-qa">
+<text x="430" y="724" class="r-label">QA &amp; RELEASE</text>
+</g>
+<text x="430" y="744" class="r-hs">QA report</text>
+<text x="430" y="762" class="r-meta">qa-reports/</text>
+<path d="M391,738 L408,738" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<rect x="581" y="700" width="152" height="76" rx="10" class="card dashed" filter="url(#cos-ship-flow-sh)"/>
+<rect x="589" y="712" width="3" height="52" rx="1.5" class="bar f-qa"/>
+<g class="f-qa">
+<text x="601" y="724" class="r-label">STEP 5.9</text>
+</g>
+<text x="601" y="744" class="r-hs">Dogfood</text>
+<text x="601" y="762" class="r-meta">optional</text>
+<path d="M562,738 L579,738" class="edge dashed" marker-end="url(#cos-ship-flow-ah)"/>
+<rect x="752" y="700" width="152" height="76" rx="10" class="card dashed" filter="url(#cos-ship-flow-sh)"/>
+<rect x="760" y="712" width="3" height="52" rx="1.5" class="bar f-orch"/>
+<g class="f-orch">
+<text x="772" y="724" class="r-label">STEP 5.95</text>
+</g>
+<text x="772" y="744" class="r-hs">Experiments</text>
+<text x="772" y="762" class="r-meta">review, advisory</text>
+<path d="M733,738 L750,738" class="edge dashed" marker-end="url(#cos-ship-flow-ah)"/>
+<path d="M862,426 L862,618 Q862,624 856,624 L58,624 Q52,624 52,630 L52,732 Q52,738 58,738 L66,738" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<rect x="40" y="832" width="880" height="148" rx="12" class="sunken"/>
+<rect x="68" y="846" width="22" height="22" rx="11" class="solid"/>
+<text x="79" y="861.5" class="r-badge c-on" text-anchor="middle">4</text>
+<text x="100" y="862" class="r-h">Release</text>
+<text x="904" y="862" class="r-meta" text-anchor="end">Orchestrator · QA &amp; Release</text>
+<rect x="68" y="888" width="216" height="76" rx="10" class="card" filter="url(#cos-ship-flow-sh)"/>
+<rect x="76" y="900" width="3" height="52" rx="1.5" class="bar f-qa"/>
+<g class="f-qa">
+<text x="88" y="912" class="r-label">STEP 6</text>
+</g>
+<text x="88" y="932" class="r-hs">Release gate</text>
+<text x="88" y="950" class="r-meta">tests, scan, version bumped</text>
+<path d="M284,926 L308,926" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<polygon points="320,915 331,926 320,937 309,926" class="tint f-gate" stroke-width="1.25"/>
+<path d="M331,926 L348,926" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<g class="f-orch"><polygon points="374,926 368,936.4 356,936.4 350,926 356,915.6 368,915.6" class="tint" stroke-width="1.25"/>
+<path d="M357.5,926.5 L360.8,929.8 L367,922.5" class="tick"/></g>
+<text x="330" y="904" class="r-code" text-anchor="middle">release</text>
+<path d="M374,926 L394,926" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<rect x="396" y="888" width="160" height="76" rx="10" class="card" filter="url(#cos-ship-flow-sh)"/>
+<rect x="404" y="900" width="3" height="52" rx="1.5" class="bar f-orch"/>
+<g class="f-orch">
+<text x="416" y="912" class="r-label">STEP 7</text>
+</g>
+<text x="416" y="932" class="r-hs">Release summary</text>
+<path d="M556,926 L576,926" class="edge dotted" marker-end="url(#cos-ship-flow-ah)"/>
+<rect x="578" y="888" width="160" height="76" rx="10" class="card dotted" filter="url(#cos-ship-flow-sh)"/>
+<rect x="586" y="900" width="3" height="52" rx="1.5" class="bar f-orch"/>
+<g class="f-orch">
+<text x="598" y="912" class="r-label">STEP 7.5</text>
+</g>
+<text x="598" y="932" class="r-hs">Log AI cost</text>
+<text x="598" y="950" class="r-meta">advisory</text>
+<path d="M738,926 L758,926" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<rect x="760" y="888" width="144" height="76" rx="10" class="card" filter="url(#cos-ship-flow-sh)"/>
+<rect x="768" y="900" width="3" height="52" rx="1.5" class="bar f-orch"/>
+<g class="f-orch">
+<text x="780" y="912" class="r-label">STEP 8</text>
+</g>
+<text x="780" y="932" class="r-hs">What's next</text>
+<text x="780" y="950" class="r-meta">suggestions only</text>
+<path d="M828,776 L828,806 Q828,812 822,812 L58,812 Q52,812 52,818 L52,920 Q52,926 58,926 L66,926" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<rect x="40" y="1012" width="880" height="184" rx="10" class="card" filter="url(#cos-ship-flow-sh)"/>
+<g class="f-gate">
+<text x="64" y="1042" class="r-label">WHAT HAPPENS AT EVERY GATE (STEP 5)</text>
+</g>
+<rect x="64" y="1062" width="152" height="52" rx="8" class="sunken"/>
+<text x="78" y="1084" class="r-hs">a. Delegate</text>
+<text x="78" y="1102" class="r-meta">to the right agent</text>
+<rect x="236" y="1062" width="152" height="52" rx="8" class="sunken"/>
+<text x="250" y="1084" class="r-hs">b. Validate, link</text>
+<text x="250" y="1102" class="r-code">validate.sh</text>
+<path d="M216,1088 L234,1088" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<rect x="408" y="1062" width="152" height="52" rx="8" class="sunken"/>
+<text x="422" y="1084" class="r-hs">c. To review</text>
+<text x="422" y="1102" class="r-code">promote.sh</text>
+<path d="M388,1088 L406,1088" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<rect x="580" y="1062" width="152" height="52" rx="8" class="sunken"/>
+<text x="594" y="1084" class="r-hs">d. Check the gate</text>
+<text x="594" y="1102" class="r-code">check-gate.sh</text>
+<path d="M560,1088 L578,1088" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<polygon points="716,1069 723,1076 716,1083 709,1076" class="tint f-gate" stroke-width="1.25"/>
+<rect x="752" y="1062" width="152" height="52" rx="8" class="sunken"/>
+<text x="766" y="1084" class="r-hs">e. You review</text>
+<text x="766" y="1102" class="r-meta">approve or reject</text>
+<path d="M732,1088 L750,1088" class="edge" marker-end="url(#cos-ship-flow-ah)"/>
+<g class="f-orch"><polygon points="897,1076 892.5,1083.8 883.5,1083.8 879,1076 883.5,1068.2 892.5,1068.2" class="tint" stroke-width="1.25"/>
+<path d="M883.5,1076.5 L886.8,1079.8 L893,1072.5" class="tick"/></g>
+<path d="M828,1114 L828,1136 Q828,1142 822,1142 L146,1142 Q140,1142 140,1136 L140,1116" class="edge dashed" marker-end="url(#cos-ship-flow-ah)"/>
+<rect x="274" y="1132" width="420" height="18" rx="4" class="lbg-card"/>
+<text x="484" y="1145.5" class="r-meta" text-anchor="middle">If you request changes, the agent iterates with your feedback</text>
+<text x="64" y="1178" class="r-body">If you approve, promote.sh marks the artifact approved and the next step starts.</text>
+<rect x="42" y="1216" width="22" height="16" rx="4" class="card"/>
+<text x="74" y="1228" class="r-meta">step</text>
+<path d="M131,1215 H141 L146,1220 V1233 H131 Z" class="card"/>
+<text x="159" y="1228" class="r-meta">artifact produced</text>
+<polygon points="311,1215 320,1224 311,1233 302,1224" class="tint f-gate" stroke-width="1.25"/>
+<text x="332" y="1228" class="r-meta">gate check</text>
+<g class="f-orch"><polygon points="447,1224 442,1232.7 432,1232.7 427,1224 432,1215.3 442,1215.3" class="tint" stroke-width="1.25"/>
+<path d="M432.5,1224.5 L435.8,1227.8 L442,1220.5" class="tick"/></g>
+<text x="458" y="1228" class="r-meta">you approve</text>
+<rect x="558" y="1216" width="22" height="16" rx="4" class="card dashed"/>
+<text x="590" y="1228" class="r-meta">optional or advisory</text>
+<path d="M749,1224 L775,1224" class="edge dashed" marker-end="url(#cos-ship-flow-ah)"/>
+<text x="783" y="1228" class="r-meta">parallel work</text>
+<text x="920" y="1254" class="r-meta" text-anchor="end">Company OS · generated by docs/diagrams/render.js</text>
+</svg>

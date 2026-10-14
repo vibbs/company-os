@@ -4,7 +4,27 @@
 # Usage: ./tools/deploy/pre-deploy.sh [--help]
 # Inputs: reads company.config.yaml for tech stack detection
 # Outputs: validation report with pass/warn/fail per check, exit 0=pass 1=warnings 2=failures
+#
+# Runs pre-deployment validation checks against the current project.
+#
+# Checks performed:
+#   1. Git status: no uncommitted changes
+#   2. Branch check: on expected deploy branch
+#   3. Tests pass: run configured test framework
+#   4. Lint passes: run configured linter
+#   5. No secrets in codebase: scan for common secret patterns
+#   6. Migrations reviewed: check for pending migrations
+#   7. Environment variables: compare .env.example with current env
+#   8. Version management: app version exists, valid semver, bumped since last release
+#
+# Exit codes:
+#   0  All checks passed
+#   1  Warnings only (non-blocking issues)
+#   2  One or more checks failed (do not deploy)
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/config.sh"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
 SCRIPT_DIR="$(dirname "$0")"
 CONFIG_FILE="$SCRIPT_DIR/../../company.config.yaml"
@@ -21,44 +41,9 @@ PASS_COUNT=0
 WARN_COUNT=0
 FAIL_COUNT=0
 
-# ─── Usage ──────────────────────────────────────────────────────────────────────
-usage() {
-  cat <<EOF
-Usage: $(basename "$0") [--help]
-
-Run pre-deployment validation checks against the current project.
-Reads company.config.yaml for tech stack detection.
-
-Checks performed:
-  1. Git status: no uncommitted changes
-  2. Branch check: on expected deploy branch
-  3. Tests pass: run configured test framework
-  4. Lint passes: run configured linter
-  5. No secrets in codebase: scan for common secret patterns
-  6. Migrations reviewed: check for pending migrations
-  7. Environment variables: compare .env.example with current env
-  8. Version management: app version exists, valid semver, bumped since last release
-
-Exit Codes:
-  0  All checks passed
-  1  Warnings only (non-blocking issues)
-  2  One or more checks failed (do not deploy)
-EOF
-  exit 0
-}
-
-if [[ "${1:-}" == "--help" ]]; then
-  usage
-fi
-
-# ─── Helper: read a value from company.config.yaml (basic grep, no yq needed) ──
+# ─── Helper: read a value from company.config.yaml (via tools/lib/config.sh) ──
 read_config() {
-  local key="$1"
-  local value=""
-  if [[ -f "$CONFIG_FILE" ]]; then
-    value=$(grep "${key}:" "$CONFIG_FILE" 2>/dev/null | head -1 | sed "s/.*${key}: *//" | tr -d '"' | tr -d "'" | xargs) || true
-  fi
-  echo "$value"
+  cfg_get "$1"
 }
 
 # ─── Helper: report a check result ─────────────────────────────────────────────
@@ -78,10 +63,10 @@ report_fail() {
 }
 
 # ─── Read config values ────────────────────────────────────────────────────────
-TEST_FRAMEWORK=$(read_config "test_framework")
-LINTER=$(read_config "linter")
-BRANCHING=$(read_config "branching")
-ORM=$(read_config "orm")
+TEST_FRAMEWORK=$(read_config "conventions.test_framework")
+LINTER=$(read_config "conventions.linter")
+BRANCHING=$(read_config "conventions.branching")
+ORM=$(read_config "tech_stack.orm")
 
 echo ""
 echo -e "${BOLD}Pre-Deployment Validation${RESET}"
@@ -259,7 +244,7 @@ echo ""
 echo -e "${BOLD}[6/8] Migration Check${RESET}"
 HAS_MIGRATIONS=false
 
-case "${ORM,,}" in
+case "$(printf '%s' "$ORM" | tr '[:upper:]' '[:lower:]')" in
   prisma)
     if [[ -d "prisma/migrations" ]]; then
       HAS_MIGRATIONS=true

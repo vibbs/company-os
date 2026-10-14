@@ -1,6 +1,8 @@
 ---
 name: prd-writer
-description: Generates consistent PRDs with problem statements, acceptance criteria, success metrics, and scope boundaries. Use when creating or updating product requirements for any feature.
+description: Writes a product requirements document (PRD) with problem statement, acceptance criteria, success metrics and scope. Use when creating or updating requirements for a feature.
+user-invocable: true
+argument-hint: "<feature or problem to specify>"
 ---
 
 # PRD Writer

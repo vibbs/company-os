@@ -5,17 +5,19 @@
 # Inputs: path to OpenAPI spec file (YAML or JSON)
 # Outputs: validation results, exit 0 if valid
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
 SPEC_PATH="${1:-}"
 
 if [[ -z "$SPEC_PATH" ]]; then
-  echo "ERROR: No spec path provided"
-  echo "Usage: ./tools/ci/openapi-lint.sh <spec-path>"
+  echo "ERROR: No spec path provided" >&2
+  echo "Usage: ./tools/ci/openapi-lint.sh <spec-path>" >&2
   exit 1
 fi
 
 if [[ ! -f "$SPEC_PATH" ]]; then
-  echo "ERROR: Spec file not found: $SPEC_PATH"
+  echo "ERROR: Spec file not found: $SPEC_PATH" >&2
   exit 1
 fi
 

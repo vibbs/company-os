@@ -1,6 +1,7 @@
 ---
 name: background-jobs
-description: Design patterns for background job processing including retries, idempotency, and queue management. Use when designing or reviewing async task infrastructure.
+description: "Designs background job processing: retries, idempotency (safe repeats) and queue management. Use when designing or reviewing async task infrastructure."
+user-invocable: false
 ---
 
 # Background Jobs
