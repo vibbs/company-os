@@ -7,6 +7,14 @@ argument-hint: "[plan | status | gate-check] [7 | 14 | 21]"
 
 # GTM Sprint
 
+## When to Use
+
+- Pre-product validation: "Do people actually want this?"
+- MVP launch: "We built it, now how do we get users?"
+- New market entry: "We're expanding to a new segment"
+- Repositioning: "Our current positioning isn't working"
+- Any time the user says: "go to market", "GTM", "launch plan", "validate market", "find customers"
+
 ## Reference
 - **ID**: S-GRO-09
 - **Category**: Growth
@@ -20,14 +28,6 @@ argument-hint: "[plan | status | gate-check] [7 | 14 | 21]"
 Orchestrates a time-boxed go-to-market sprint that sequences validation, commitment, launch, and distribution into a structured daily cadence with quantified decision gates. Unlike `/ship` (which builds software) or `/rapid-prototype` (which proves technical feasibility), `/gtm-sprint` validates **market demand** and builds **distribution** — no code required.
 
 Inspired by the 100x GTM Playbook methodology: validate with interviews, secure commitments (LOIs), build launch assets, activate distribution channels, and measure traction — all within a fixed sprint window.
-
-## When to Use
-
-- Pre-product validation: "Do people actually want this?"
-- MVP launch: "We built it, now how do we get users?"
-- New market entry: "We're expanding to a new segment"
-- Repositioning: "Our current positioning isn't working"
-- Any time the user says: "go to market", "GTM", "launch plan", "validate market", "find customers"
 
 ## When NOT to Use
 

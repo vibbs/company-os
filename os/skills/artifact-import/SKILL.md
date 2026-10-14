@@ -11,6 +11,12 @@ runtimes:
 
 Imports pre-existing documents from external sources (Google Docs, Notion, Confluence, local files, or inline-pasted content) into the Company OS artifact system with proper frontmatter, classification, and linking.
 
+## When to Use
+
+- You already have PRDs, RFCs, API specs or test plans in Google Docs, Notion, Confluence or local files.
+- You want the stage gates in `/ship` to recognise that earlier work.
+- Not needed for new work: the other skills create artifacts with the right frontmatter.
+
 ## Input Modes
 
 **Mode A — File-based**: User places exported documents (Markdown, HTML, or plain text) in the `imports/` directory, then runs `/artifact-import`.

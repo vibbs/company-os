@@ -45,7 +45,9 @@ bash install.sh --dry-run       # preview every change without writing anything
 bash install.sh                 # install
 ```
 
-To pin a release instead of the latest, add `--version 1.12.0`.
+To pin a release instead of the latest, add `--version 1.12.0`. The same steps work for upgrades: use `bash install.sh --force --dry-run`, then `bash install.sh --force`.
+
+If an upgrade finds a file you edited, it keeps your copy and saves both versions under `.company-os/conflicts/` in the same folder path as the original (for example `.company-os/conflicts/tools/qa/run.sh.user` and `run.sh.new`). Merge what you want, then delete the pair.
 
 ## Wrong runtime detected
 

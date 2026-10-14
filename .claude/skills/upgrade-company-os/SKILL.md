@@ -9,6 +9,12 @@ argument-hint: "[check | preview | apply | rollback]"
 
 Checks for updates, previews changes, upgrades, or rolls back Company OS to a previous version.
 
+## When to Use
+
+- You want to know whether a newer Company OS release exists.
+- You want to see what an upgrade would change before it touches any file.
+- You want to apply an upgrade, or undo one that went wrong.
+
 ## Subcommands
 
 ### `/upgrade-company-os` or `/upgrade-company-os check`
@@ -19,6 +25,12 @@ Check if an update is available:
 2. If checking against remote, advise the user to run:
    ```bash
    curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --check
+   ```
+   To read the script first, download it, review it, then run it:
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh -o install.sh
+   less install.sh
+   bash install.sh --check
    ```
 3. If `.company-os/version` doesn't exist, inform the user this is a pre-versioning install and recommend running `--force` to stamp the version
 
@@ -42,8 +54,9 @@ Preview what would change without applying:
    ```
 2. If `install.sh` is not available locally (user installed via curl), advise:
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --dry-run --force
+   curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh -o install.sh && less install.sh && bash install.sh --dry-run --force
    ```
+   (Downloading to a file first lets the user read the script before it runs. Piping the script straight into `bash` works too, but nothing is reviewed.)
 3. Parse and display the output — highlight new files, updated files, conflicts, and migration notes
 
 What you will see:
@@ -70,8 +83,9 @@ Perform the upgrade:
    ```
    Or if not available locally:
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --force
+   curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh -o install.sh && less install.sh && bash install.sh --force
    ```
+   To upgrade to a specific release instead of the latest, pin it with `--version`, for example `bash install.sh --force --version 1.12.0`. Pinning also works for a downgrade or when a team wants everyone on the same version.
 4. After upgrade, verify with:
    ```bash
    ./tools/registry/health-check.sh

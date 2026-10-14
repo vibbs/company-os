@@ -61,7 +61,7 @@ Never edit `.claude/skills/` or the other generated adapters; the build overwrit
 
 Run `/upgrade-company-os` (or `/upgrade-company-os check` to only look).
 
-It previews the changes, keeps your config and edited files, saves a backup, and can roll back. These guides in `.company-os/docs/` are always refreshed; if you edited one, your copy is kept next to it as `<name>.user`. Without Claude Code, re-run the installer with `--force`; add `--dry-run` first to preview. See the [CHANGELOG](CHANGELOG.md) for what changed.
+It previews the changes, keeps your config and edited files, saves a backup, and can roll back. These guides in `.company-os/docs/` are always refreshed; if you edited one, your copy is kept next to it as `<name>.user`. If an upgrade replaces a file you edited, your copy and the new one are saved under `.company-os/conflicts/` in the same folder path (for example `.company-os/conflicts/tools/qa/run.sh.user` and `.new`). Without Claude Code, download `install.sh`, read it, then run it with `--force` (add `--dry-run` first to preview, and `--version <X.Y.Z>` to pin a release). See the [CHANGELOG](CHANGELOG.md) for what changed.
 
 ### What is the difference between idea, mvp, growth and scale?
 

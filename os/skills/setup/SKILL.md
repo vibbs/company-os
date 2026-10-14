@@ -21,6 +21,12 @@ Interactive setup skill for Company OS. Works on both new (greenfield) and exist
 - **Done when**: you see the "Setup Complete" summary with next steps (usually `/ship` or `/gtm-sprint`).
 - **Note**: the `## Design` block inside Step 5.7 is part of the express template, not a separate step.
 
+## When to Use
+
+- The first time you open a repo with Company OS installed.
+- When you change your tech stack, company stage or platform targets and want the config and permissions to match.
+- Not needed for day-to-day work once `company.config.yaml` is filled in.
+
 ## Modes
 
 - **Interactive** (`/setup` or `/setup nextjs`) — step-by-step guided wizard with smart defaults
@@ -598,13 +604,14 @@ Ask: "Would you like to clean up template example files? This removes the exampl
 | `README.md` | Describes Company OS template | **Replace** with a project-specific README |
 | `.company-os/docs/` | Company OS guides (SETUP, CONCEPTS, CONFIG_REFERENCE, CUSTOMIZING, TROUBLESHOOTING, FAQ, TOKEN_COSTS, ROADMAP, CHANGELOG, SKILL_SCHEMA) and the `diagrams/` they embed | **Keep.** Other files link to them and they cost no tokens unless read |
 | `setup.sh` | One-time scaffolding script | **Remove** after first run |
+| `TOKEN_COSTS.md`, `FAQ.md`, `SETUP_COMPANY_OS.md` (repo root) | Old copies of guides that now live in `.company-os/docs/`. Present only in projects set up before 1.12.0 | **Remove** if present. `bash setup.sh --cleanup` removes exactly these |
 | `artifacts/prds/PRD-EXAMPLE-001-notifications.md` | Example PRD artifact | **Remove** after reviewing |
 | `artifacts/rfcs/RFC-EXAMPLE-001-notification-system.md` | Example RFC artifact | **Remove** after reviewing |
 | `standards/api/example-api-conventions.md` | Example API standards | **Remove** after reviewing |
 | `standards/coding/example-coding-standards.md` | Example coding standards | **Remove** after reviewing |
 
 If user confirms:
-1. Delete `setup.sh`, example artifacts, and example standards
+1. Delete `setup.sh`, the legacy root files above (if present), example artifacts, and example standards
 2. Replace `README.md` with a minimal project README:
    ```
    # {company.product}

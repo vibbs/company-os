@@ -21,6 +21,14 @@ The primary entry point for the canonical ship flow. Takes an objective from ide
 - **Time**: a small feature takes one session. Larger ones can be resumed; finished artifacts are never redone.
 - **Need it faster?** Use `/rapid-prototype`. **Need market proof first?** Use `/gtm-sprint`.
 
+## When to Use
+
+- User wants to build a new feature end-to-end
+- User wants to ship an improvement or enhancement
+- User wants the full orchestrated pipeline with quality gates
+
+**Alternative**: For time-boxed proofs-of-concept or investor demos, use `/rapid-prototype` instead. It skips RFC, security, QA, and growth stages for maximum speed.
+
 ## Reference
 
 - **ID**: S-ORG-08
@@ -29,14 +37,6 @@ The primary entry point for the canonical ship flow. Takes an objective from ide
 - **Outputs**: Full artifact chain (PRD -> RFC -> QA Report -> Launch Brief) with stage gate verification
 - **Used by**: User (directly), Orchestrator Agent
 - **Tool scripts**: ./tools/artifact/validate.sh, ./tools/artifact/check-gate.sh, ./tools/artifact/promote.sh, ./tools/artifact/link.sh, ./tools/ci/run-tests.sh, ./tools/ci/lint-format.sh, ./tools/security/dependency-scan.sh
-
-## When to Use
-
-- User wants to build a new feature end-to-end
-- User wants to ship an improvement or enhancement
-- User wants the full orchestrated pipeline with quality gates
-
-**Alternative**: For time-boxed proofs-of-concept or investor demos, use `/rapid-prototype` instead. It skips RFC, security, QA, and growth stages for maximum speed.
 
 ## What You Will See
 

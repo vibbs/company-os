@@ -7,6 +7,13 @@ argument-hint: "[prd | rfc | qa | all | --dashboard]"
 
 # Status Dashboard
 
+## When to Use
+
+- User wants to see project health at a glance
+- Before starting a new feature (check what exists)
+- Before a release (check all gates)
+- After a session to verify artifact integrity
+
 ## Reference
 - **ID**: S-ORG-09
 - **Category**: Orchestration
@@ -19,12 +26,6 @@ argument-hint: "[prd | rfc | qa | all | --dashboard]"
 
 Show a project health dashboard at a glance: how many artifacts exist, their statuses, whether references between them are intact, and whether stage gates are ready to pass.
 
-## When to Use
-
-- User wants to see project health at a glance
-- Before starting a new feature (check what exists)
-- Before a release (check all gates)
-- After a session to verify artifact integrity
 ## What You Will See
 
 ```text

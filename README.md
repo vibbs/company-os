@@ -349,9 +349,14 @@ Check your installed version in `.company-os/version`. In Claude Code:
 From a terminal:
 
 ```bash
-# Preview, then apply
-curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --force --dry-run
-curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --force
+# Download, read, preview, then apply
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh -o install.sh
+less install.sh
+bash install.sh --force --dry-run
+bash install.sh --force
+
+# Or pin a release instead of taking the latest
+bash install.sh --force --version 1.12.0
 ```
 
 Upgrades keep your config, permissions, artifacts and agent memory. If you edited a Company OS file that the upgrade replaces, both your copy (`.user`) and the new one (`.new`) are saved under `.company-os/conflicts/` in the same folder path as the original (for example `.company-os/conflicts/tools/qa/run.sh.user` and `run.sh.new`), so same-named files never collide. Merge them by hand. The guides in `.company-os/docs/` belong to the template and are always refreshed; if you edited one, your copy is kept next to it as `<name>.user`. Major upgrades create a backup automatically.
