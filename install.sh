@@ -26,6 +26,10 @@
 #   --backup     Create backup before upgrading (auto-enabled for major upgrades)
 #   --help       Show this help message
 #
+# Environment:
+#   COMPANY_OS_SOURCE  Path to a Company OS checkout or .tar.gz to install from
+#                      instead of GitHub (offline installs, tests). Unset = download.
+#
 # Docs: https://github.com/vibbs/company-os#readme
 # ============================================================================
 
@@ -79,6 +83,11 @@ Flags:
   --changelog        Show the changelog since the installed version
   --backup           Back up Company OS files before upgrading (automatic for major upgrades)
   -h, --help         Show this help
+
+Environment:
+  COMPANY_OS_SOURCE  Install from a local checkout or .tar.gz instead of GitHub
+                     (offline or air-gapped installs, tests). When unset or
+                     empty, the installer downloads from GitHub as usual.
 
 --check and --changelog compare against the Company OS install in the current
 directory, so run them from an existing install. In a fresh directory --check
@@ -360,8 +369,14 @@ else
 fi
 echo ""
 
+# --- Local source (offline installs and tests) ---
+# COMPANY_OS_SOURCE=<checkout dir or .tar.gz> installs from that copy instead
+# of downloading from GitHub. It is used only when the variable is set and not
+# empty; --branch and --version are then ignored.
+LOCAL_SOURCE="${COMPANY_OS_SOURCE:-}"
+
 # --- Pre-flight checks ---
-if ! command -v curl &>/dev/null && ! command -v wget &>/dev/null; then
+if [ -z "$LOCAL_SOURCE" ] && ! command -v curl &>/dev/null && ! command -v wget &>/dev/null; then
   echo -e "${RED}Error:${NC} curl or wget is required but not installed."
   exit 1
 fi
@@ -402,7 +417,9 @@ fi
 
 # --- Determine download reference ---
 DOWNLOAD_REF="$BRANCH"
-if [ -n "$TARGET_VERSION" ]; then
+if [ -n "$LOCAL_SOURCE" ]; then
+  DOWNLOAD_REF="local"
+elif [ -n "$TARGET_VERSION" ]; then
   DOWNLOAD_REF="v$TARGET_VERSION"
 elif [ "$BRANCH" = "main" ]; then
   # Try to fetch latest release tag from GitHub API
@@ -420,24 +437,63 @@ fi
 WORK_DIR=$(mktemp -d)
 trap "rm -rf $WORK_DIR" EXIT
 
-echo -e "  ${DIM}Downloading from github.com/$REPO ($DOWNLOAD_REF)...${NC}"
-ARCHIVE_URL="https://github.com/$REPO/archive/$DOWNLOAD_REF.tar.gz"
+# Find the extracted directory. GitHub names it company-os-<ref>; a local
+# archive may use another top-level folder or none (plain `git archive`).
+find_extracted_src() {
+  local dir
+  dir=$(find "$WORK_DIR" -maxdepth 1 -type d -name "company-os-*" | head -1)
+  if [ -z "$dir" ] && [ -d "$WORK_DIR/os" ]; then
+    dir="$WORK_DIR"
+  fi
+  if [ -z "$dir" ]; then
+    dir=$(find "$WORK_DIR" -mindepth 2 -maxdepth 2 -type d -name os | head -1)
+    [ -n "$dir" ] && dir=$(dirname "$dir")
+  fi
+  echo "$dir"
+}
 
-if command -v curl &>/dev/null; then
-  curl -fsSL "$ARCHIVE_URL" | tar -xz -C "$WORK_DIR"
+if [ -n "$LOCAL_SOURCE" ]; then
+  if [ -d "$LOCAL_SOURCE" ]; then
+    SRC=$(cd "$LOCAL_SOURCE" && pwd)
+    if [ "$SRC" = "$(pwd)" ]; then
+      echo -e "${RED}Error:${NC} COMPANY_OS_SOURCE points at this directory. Run the installer from your project, not from the source."
+      exit 1
+    fi
+    echo -e "  ${BLUE}Using local source${NC} (COMPANY_OS_SOURCE): $SRC"
+  elif [ -f "$LOCAL_SOURCE" ]; then
+    echo -e "  ${BLUE}Using local archive${NC} (COMPANY_OS_SOURCE): $LOCAL_SOURCE"
+    if ! tar -xzf "$LOCAL_SOURCE" -C "$WORK_DIR"; then
+      echo -e "${RED}Error:${NC} Could not extract $LOCAL_SOURCE (expected a .tar.gz archive)."
+      exit 1
+    fi
+    SRC=$(find_extracted_src)
+  else
+    echo -e "${RED}Error:${NC} COMPANY_OS_SOURCE not found: $LOCAL_SOURCE"
+    exit 1
+  fi
+  if [ -z "$SRC" ] || [ ! -d "$SRC/os" ]; then
+    echo -e "${RED}Error:${NC} COMPANY_OS_SOURCE does not look like Company OS (no os/ folder): $LOCAL_SOURCE"
+    exit 1
+  fi
 else
-  wget -qO- "$ARCHIVE_URL" | tar -xz -C "$WORK_DIR"
+  echo -e "  ${DIM}Downloading from github.com/$REPO ($DOWNLOAD_REF)...${NC}"
+  ARCHIVE_URL="https://github.com/$REPO/archive/$DOWNLOAD_REF.tar.gz"
+
+  if command -v curl &>/dev/null; then
+    curl -fsSL "$ARCHIVE_URL" | tar -xz -C "$WORK_DIR"
+  else
+    wget -qO- "$ARCHIVE_URL" | tar -xz -C "$WORK_DIR"
+  fi
+
+  SRC=$(find_extracted_src)
+
+  if [ -z "$SRC" ] || [ ! -d "$SRC" ]; then
+    echo -e "${RED}Error:${NC} Download failed or archive structure unexpected."
+    exit 1
+  fi
+
+  echo -e "  ${GREEN}Downloaded${NC}"
 fi
-
-# Find the extracted directory (name varies by branch/tag)
-SRC=$(find "$WORK_DIR" -maxdepth 1 -type d -name "company-os-*" | head -1)
-
-if [ -z "$SRC" ] || [ ! -d "$SRC" ]; then
-  echo -e "${RED}Error:${NC} Download failed or archive structure unexpected."
-  exit 1
-fi
-
-echo -e "  ${GREEN}Downloaded${NC}"
 echo ""
 
 # --- Read incoming version ---

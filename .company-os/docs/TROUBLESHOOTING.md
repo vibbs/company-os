@@ -7,6 +7,7 @@ Find your symptom, apply the fix. If nothing here helps, run the [health check](
 | Installer says "No git repo detected" | [Git is not initialized](#git-is-not-initialized) |
 | "python3 not found, skipping merge" or hooks never fire | [python3 or jq is missing](#python3-or-jq-is-missing) |
 | You do not want to pipe a script into bash | [Reviewing the installer first](#reviewing-the-installer-first) |
+| The machine has no internet access, or GitHub is blocked | [Installing offline](#installing-offline) |
 | Files for the wrong editor were installed, or none were | [Wrong runtime detected](#wrong-runtime-detected) |
 | `/setup` or `/ship` is not recognized | [Slash commands missing](#slash-commands-missing) |
 | A promotion is blocked with "Artifact validation failed before promotion" | [A hook blocks a promotion](#a-hook-blocks-a-promotion) |
@@ -48,6 +49,21 @@ bash install.sh                 # install
 To pin a release instead of the latest, add `--version 1.12.0`. The same steps work for upgrades: use `bash install.sh --force --dry-run`, then `bash install.sh --force`.
 
 If an upgrade finds a file you edited, it keeps your copy and saves both versions under `.company-os/conflicts/` in the same folder path as the original (for example `.company-os/conflicts/tools/qa/run.sh.user` and `run.sh.new`). Merge what you want, then delete the pair.
+
+## Installing offline
+
+The installer normally downloads Company OS from GitHub. On a machine without internet access (an air-gapped machine), copy two files over from a machine that has access: `install.sh` and a release archive.
+
+```bash
+# On a machine with internet access
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh -o install.sh
+curl -fsSL https://github.com/vibbs/company-os/archive/refs/tags/v1.12.0.tar.gz -o company-os.tar.gz
+
+# On the offline machine, inside your project
+COMPANY_OS_SOURCE=/path/to/company-os.tar.gz bash install.sh --runtime claude
+```
+
+`COMPANY_OS_SOURCE` can also point at an unpacked folder or a git checkout. The installer prints `Using local archive` or `Using local source` and does not contact GitHub. Upgrades work the same way: add `--force`. `--branch` and `--version` are ignored, because the archive decides the version.
 
 ## Wrong runtime detected
 

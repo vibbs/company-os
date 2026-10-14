@@ -92,6 +92,29 @@ Ask an agent: "Create a new agent for [responsibility] that uses [these skills].
 2. Create a matching folder under `artifacts/`.
 3. Update the skills that should produce the new type.
 
+## Test changes to Company OS itself (maintainers)
+
+This section is for people changing the Company OS template repo, not for projects that installed it. The test suite lives in `tests/` of the template repo and is not copied into installed projects.
+
+```bash
+bash tests/run.sh                      # every test; prints PASS, FAIL or SKIP per file
+bash tests/run.sh test_build           # only the files whose names match
+/bin/bash tests/run.sh                 # macOS: run under bash 3.2, like CI does
+bash tools/build/build.sh --check --strict
+```
+
+The tests need only bash, git and tar. The diagram test needs `node` and is skipped without it. Each test works in a temporary folder and leaves your working tree alone. CI (`.github/workflows/ci.yml`) runs the same commands on Linux and macOS for every push and pull request.
+
+To try the installer against your working copy instead of a GitHub release, point `COMPANY_OS_SOURCE` at a checkout or a `.tar.gz` archive:
+
+```bash
+git archive --format=tar.gz -o /tmp/company-os.tar.gz HEAD     # committed files only
+cd /path/to/test-project
+COMPANY_OS_SOURCE=/tmp/company-os.tar.gz bash /path/to/company-os/install.sh --runtime claude
+```
+
+The installer prints `Using local archive` or `Using local source` so you can tell it did not download anything. When the variable is unset or empty, it downloads from GitHub as usual.
+
 ## Trim skills to cut cost
 
 Each skill an agent lists in `skills:` is loaded every time that agent starts. Removing skills you never use from `os/agents/<agent>.md` (then rebuilding) lowers token cost. See [TOKEN_COSTS.md](TOKEN_COSTS.md#how-to-reduce-costs).
