@@ -229,6 +229,31 @@ COMPANY_OS_SOURCE="$T/next1" run_install "$N" --force
 assert_contains "$(cat "$N/.company-os/conflicts/os/agents/growth.md.user" 2>/dev/null)" "no-manifest edit" "--force then saves the edit"
 assert_contains "$(cat "$N/os/agents/growth.md")" "template change in $NEXT1" "--force then applies the template change"
 
+# --- A manifest written by an older installer (1.4 to 1.8) hashed the files
+# on disk after install, so it can record an edit as if it were the template
+# copy. It is not trusted: the run takes the no-manifest path (backup, edits
+# kept, .user copies on --force) ---
+O="$(new_project old-manifest)"
+run_install "$O" --runtime claude
+printf '\nold-manifest edit\n' >> "$O/os/agents/growth.md"
+printf '# Company OS v1.8.0 manifest\n# Generated: 2026-03-01T00:00:00Z\n%s  os/agents/growth.md\n' \
+  "$(sha "$O/os/agents/growth.md")" > "$O/.company-os/manifest"
+COMPANY_OS_SOURCE="$T/next1" run_install "$O"
+assert_contains "$OUT" "manifest from an older installer"
+assert_contains "$(cat "$O/os/agents/growth.md")" "old-manifest edit" "edit recorded by an old manifest is kept"
+assert_eq "1" "$(ls "$O/.company-os/backup" 2>/dev/null | wc -l | tr -d ' ')" "backup taken for an old manifest"
+assert_eq "unknown" "$(manifest_entry "$O" os/agents/growth.md)" "kept file recorded without a known base"
+COMPANY_OS_SOURCE="$T/next1" run_install "$O" --force
+assert_contains "$(cat "$O/.company-os/conflicts/os/agents/growth.md.user" 2>/dev/null)" "old-manifest edit" "--force saves the edit"
+# The same for the pre-1.4 root manifest .company-os-manifest.
+O2="$(new_project old-root-manifest)"
+run_install "$O2" --runtime claude
+rm -f "$O2/.company-os/manifest"
+printf '\nroot-manifest edit\n' >> "$O2/os/agents/growth.md"
+printf '# Company OS v1.3.0 manifest\n%s  os/agents/growth.md\n' "$(sha "$O2/os/agents/growth.md")" > "$O2/.company-os-manifest"
+COMPANY_OS_SOURCE="$T/next1" run_install "$O2" --force
+assert_contains "$(cat "$O2/.company-os/conflicts/os/agents/growth.md.user" 2>/dev/null)" "root-manifest edit" "old root manifest: --force saves the edit"
+
 # --- Legacy install: Company OS files but no version stamp and no manifest
 # (every install made from main between 1.9.0 and 1.11.x) ---
 L="$(new_project legacy)"

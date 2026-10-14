@@ -60,6 +60,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 ### Fixed
 - Upgrading an install from 1.11 or earlier (no version stamp, no manifest) no longer overwrites edited files silently or stamps a version over old files: it backs up first, previews without `--force`, and saves `.user` copies with `--force`
 - The manifest records template hashes instead of the files on disk, so a plain re-run no longer makes a later `--force` overwrite your edits silently
+- A manifest written by an installer before 1.12.0 (it hashed the files on disk, your edits included) is no longer used to decide which files you edited. Those installs are upgraded like installs without a manifest: a backup first, edited files kept, and `.company-os/conflicts/<path>.user` copies with `--force`
 - `build.sh` no longer deletes skills or agents that exist only under `.claude/`, or your files inside a generated skill folder; it removes only files it generated itself (listed in `.claude/.generated-by-company-os`)
 - A same-version re-install that changes nothing no longer rewrites `.claude/settings.json` or suggests committing an upgrade
 - Conflict and `.user` copies no longer overwrite an earlier copy you have not merged; the installer's temp-folder cleanup quotes its path; a same-version re-run suggests "re-install" instead of "upgrade x → x"

@@ -133,14 +133,23 @@ fi
 [ -n "$LOCAL_VERSION" ] || LOCAL_VERSION="unknown"
 
 # The manifest from the last install (read-only during this run). Only a
-# manifest with "<hash>  <path>" lines counts.
+# manifest with "<hash>  <path>" lines whose first line carries
+# MANIFEST_MARKER counts. Installers before 1.12.0 wrote manifests
+# without it that hashed the files on disk after install, user edits
+# included, so such a manifest can make an edit look unedited. It is not
+# used as a merge base: the run takes the no-manifest path instead.
+MANIFEST_MARKER="manifest (hashes of the template copies)"
 MANIFEST_FILE=""
+OLD_MANIFEST=""
 for m in .company-os/manifest .company-os-manifest; do
   if [ -f "$m" ] && grep -Eq '^[0-9a-f]{8,}  ' "$m" 2>/dev/null; then
-    MANIFEST_FILE="$m"
-    break
+    case "$(head -n 1 "$m")" in
+      *"$MANIFEST_MARKER"*) MANIFEST_FILE="$m"; break ;;
+    esac
+    [ -n "$OLD_MANIFEST" ] || OLD_MANIFEST="$m"
   fi
 done
+[ -z "$MANIFEST_FILE" ] || OLD_MANIFEST=""
 
 # Company OS files present (any version, stamped or not)?
 COS_PRESENT=false
@@ -374,7 +383,7 @@ generate_manifest() {
   local version="$1" tmp=".company-os/manifest.tmp" path
   mkdir -p .company-os
   {
-    echo "# Company OS v$version manifest (hashes of the template copies)"
+    echo "# Company OS v$version $MANIFEST_MARKER"
     echo "# Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
     awk '!seen[substr($0, index($0, "  ") + 2)]++' "$MANIFEST_NEW"
     if [ -n "$MANIFEST_FILE" ]; then
@@ -511,6 +520,11 @@ if [ "$LEGACY" = true ]; then
   echo -e "  ${YELLOW}Existing Company OS install without a version stamp${NC} (detected version: $LEGACY_VERSION)"
   echo -e "  ${DIM}It has no version stamp or manifest (installs from 1.9 to 1.11 recorded neither), so the${NC}"
   echo -e "  ${DIM}installer cannot tell which files you edited. It treats every file that differs as edited.${NC}"
+  echo ""
+elif [ "$NO_MANIFEST_UPGRADE" = true ] && [ -n "$OLD_MANIFEST" ]; then
+  echo -e "  ${YELLOW}Existing Company OS install with a manifest from an older installer${NC} ($OLD_MANIFEST)"
+  echo -e "  ${DIM}That manifest may record your edits as template files, so it is not used: files that${NC}"
+  echo -e "  ${DIM}differ are treated as edited, and a backup is made first.${NC}"
   echo ""
 elif [ "$NO_MANIFEST_UPGRADE" = true ]; then
   echo -e "  ${YELLOW}Existing Company OS install without a manifest${NC} — files that differ are treated as edited"
