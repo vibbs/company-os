@@ -15,8 +15,10 @@
 #   curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --runtime claude,cursor
 #
 # Flags:
-#   --runtime    Runtimes to install adapters for: auto (default) | all | core |
-#                claude | cursor | codex | gemini | aider (comma-separated list)
+#   --runtime    Runtimes to install adapters for: auto | all | core |
+#                claude | cursor | codex | gemini | aider (comma-separated list).
+#                Default: auto on a fresh install; on an upgrade, the adapters
+#                the project already has.
 #   --force      Update existing Company OS files (default: skip existing)
 #   --branch     Use a specific branch (default: main)
 #   --version    Install a specific version (e.g., --version 1.2.0)
@@ -68,7 +70,8 @@ Usage:
   bash install.sh [flags]            (after downloading the script to review it)
 
 Flags:
-  --runtime <names>  Runtimes to install adapters for (default: auto).
+  --runtime <names>  Runtimes to install adapters for. Default: auto on a fresh
+                     install; on an upgrade, the adapters the project already has.
                      Values: claude | cursor | codex | gemini | aider | all | auto | core
                      Combine with commas: --runtime claude,cursor (or --runtime=claude,cursor)
                        auto  → detect installed agent CLIs/dirs and install for those
@@ -116,12 +119,55 @@ HELP
   esac
 done
 
+# --- Existing install in this directory ---
+# Read before choosing runtimes: an upgrade keeps the adapters the project has.
+LOCAL_VERSION="unknown"
+if [ -f ".company-os/version" ]; then
+  LOCAL_VERSION=$(tr -d '[:space:]' < .company-os/version)
+elif [ -f ".company-os-version" ]; then
+  LOCAL_VERSION=$(tr -d '[:space:]' < .company-os-version)
+fi
+[ -n "$LOCAL_VERSION" ] || LOCAL_VERSION="unknown"
+
+# The manifest from the last install (read-only during this run). Only a
+# manifest with "<hash>  <path>" lines counts.
+MANIFEST_FILE=""
+for m in .company-os/manifest .company-os-manifest; do
+  if [ -f "$m" ] && grep -Eq '^[0-9a-f]{8,}  ' "$m" 2>/dev/null; then
+    MANIFEST_FILE="$m"
+    break
+  fi
+done
+
+# Company OS files present (any version, stamped or not)?
+COS_PRESENT=false
+if [ -d "os/skills" ] || [ -f "tools/artifact/validate.sh" ] || [ -d ".company-os/docs" ] \
+   || [ -f ".claude/skills/ship/SKILL.md" ] || [ -f ".claude/agents/orchestrator.md" ] \
+   || { [ -f "CLAUDE.md" ] && grep -q "## Company OS Overview" CLAUDE.md 2>/dev/null; }; then
+  COS_PRESENT=true
+fi
+
+IS_EXISTING_INSTALL=false
+if [ "$LOCAL_VERSION" != "unknown" ] || [ -n "$MANIFEST_FILE" ] || [ "$COS_PRESENT" = true ]; then
+  IS_EXISTING_INSTALL=true
+fi
+
 # --- Runtime selection ---
 # RUNTIMES is a space-separated whitelist used by should_install_runtime().
 # Always-on universal AGENTS.md is governed by INSTALL_AGENTS_MD (true unless
 # RUNTIME_SPEC explicitly excludes it via "core" pruning — currently no path
 # does, so AGENTS.md is always installed).
 INSTALL_AGENTS_MD=true
+
+# Adapters already in this project (used for upgrades without --runtime).
+detect_project_runtimes() {
+  local out=""
+  if [ -d ".claude" ]; then out="$out claude"; fi
+  if [ -d ".cursor" ] || [ -f ".cursorrules" ]; then out="$out cursor"; fi
+  if [ -d ".codex" ]; then out="$out codex"; fi
+  if [ -f "GEMINI.md" ]; then out="$out gemini"; fi
+  echo "$out"
+}
 
 detect_local_runtimes() {
   local out=""
@@ -133,8 +179,18 @@ detect_local_runtimes() {
   echo "$out"
 }
 
-case "${RUNTIME_SPEC:-auto}" in
-  ""|auto)
+case "${RUNTIME_SPEC:-}" in
+  "")
+    if [ "$IS_EXISTING_INSTALL" = true ]; then
+      # Upgrade: keep the project's adapters, whatever this machine has installed.
+      RUNTIMES="$(detect_project_runtimes)"
+      RUNTIME_MODE="from this project"
+    else
+      RUNTIMES="$(detect_local_runtimes)"
+      RUNTIME_MODE="auto"
+    fi
+    ;;
+  auto)
     RUNTIMES="$(detect_local_runtimes)"
     if [ -z "$RUNTIMES" ]; then
       # No agent CLI detected — install only the universal AGENTS.md story.
@@ -384,14 +440,6 @@ fi
 if ! command -v tar &>/dev/null; then
   echo -e "${RED}Error:${NC} tar is required but not installed."
   exit 1
-fi
-
-# --- Read local version ---
-LOCAL_VERSION="unknown"
-if [ -f ".company-os/version" ]; then
-  LOCAL_VERSION=$(cat .company-os/version | tr -d '[:space:]')
-elif [ -f ".company-os-version" ]; then
-  LOCAL_VERSION=$(cat .company-os-version | tr -d '[:space:]')
 fi
 
 # --- Detect existing setup ---
