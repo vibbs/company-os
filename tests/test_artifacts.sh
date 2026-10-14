@@ -129,6 +129,17 @@ assert_not_contains "$OUT" "WARNINGS"
 assert_exit 0 bash tools/artifact/link.sh artifacts/prds/PRD-003.md artifacts/rfcs/RFC-002.md
 assert_eq "1" "$(grep -c '^depends_on:' artifacts/rfcs/RFC-002.md)" "relinking does not duplicate the field"
 
+# A body line that starts with `id:` is not frontmatter and stays untouched.
+for pair in "prds/PRD-004:prd" "rfcs/RFC-003:rfc"; do
+  file="artifacts/${pair%%:*}.md"; id="$(basename "${pair%%:*}")"
+  printf -- '---\nid: %s\ntype: %s\ntitle: Body has id\nstatus: draft\ncreated: 2026-10-14\nauthor: test\n---\n\n```yaml\nid: example\n```\n\n---\n\nid: other\n' "$id" "${pair##*:}" > "$file"
+done
+cp artifacts/prds/PRD-004.md "$P/prd4.before"
+assert_exit 0 bash tools/artifact/link.sh artifacts/prds/PRD-004.md artifacts/rfcs/RFC-003.md
+assert_eq "1" "$(grep -c '^children:' artifacts/prds/PRD-004.md)" "children added once, in the frontmatter"
+assert_eq "$(sed -n '/^```yaml/,$p' "$P/prd4.before")" "$(sed -n '/^```yaml/,$p' artifacts/prds/PRD-004.md)" "body is unchanged by linking"
+assert_eq "children: [RFC-003]" "$(sed -n '3p' artifacts/prds/PRD-004.md)" "children sits right after id"
+
 # --- promote.sh ---
 assert_exit 1 bash tools/artifact/promote.sh "$PRD" approved
 assert_contains "$OUT" "Cannot promote from 'draft' to 'approved'"

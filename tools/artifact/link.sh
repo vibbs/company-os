@@ -40,7 +40,7 @@ sed_inplace() {
 extract_field() {
   local FILE="$1"
   local FIELD="$2"
-  sed -n '/^---$/,/^---$/p' "$FILE" | { grep "^${FIELD}:" || true; } | sed "s/${FIELD}: *//" | tr -d '"' | tr -d "'"
+  sed -n '1,/^---$/p' "$FILE" | { grep "^${FIELD}:" || true; } | sed "s/${FIELD}: *//" | tr -d '"' | tr -d "'"
 }
 
 # --- Helper: append an ID to an inline array field ([a, b]) ---
@@ -48,13 +48,14 @@ extract_field() {
 add_array_item() {
   local FILE="$1" FIELD="$2" ITEM="$3" CURRENT
   CURRENT=$(extract_field "$FILE" "$FIELD")
-  if [[ -z "$(sed -n '/^---$/,/^---$/p' "$FILE" | grep "^${FIELD}:" || true)" ]]; then
-    sed_inplace "/^id: /a\\
-${FIELD}: [$ITEM]" "$FILE"
+  if [[ -z "$(sed -n '1,/^---$/p' "$FILE" | grep "^${FIELD}:" || true)" ]]; then
+    sed_inplace "2,/^---\$/{/^id: /a\\
+${FIELD}: [$ITEM]
+}" "$FILE"
   elif [[ "$CURRENT" == "[]" || -z "$CURRENT" ]]; then
-    sed_inplace "s/^${FIELD}:.*/${FIELD}: [$ITEM]/" "$FILE"
+    sed_inplace "2,/^---\$/s/^${FIELD}:.*/${FIELD}: [$ITEM]/" "$FILE"
   else
-    sed_inplace "s/^${FIELD}: \[\(.*\)\]/${FIELD}: [\1, $ITEM]/" "$FILE"
+    sed_inplace "2,/^---\$/s/^${FIELD}: \[\(.*\)\]/${FIELD}: [\1, $ITEM]/" "$FILE"
   fi
 }
 
