@@ -28,13 +28,14 @@ Check if an update is available:
    ```bash
    curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --check
    ```
-   To read the script first, download it, review it, then run it:
+   To read the script first, download it to a temporary folder, review it, then run it:
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh -o install.sh
-   less install.sh
-   bash install.sh --check
+   tmp=$(mktemp -d) && curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh -o "$tmp/install.sh"
+   less "$tmp/install.sh"
+   bash "$tmp/install.sh" --check
    ```
-3. If `.company-os/version` doesn't exist, inform the user this is a pre-versioning install and recommend running `--force` to stamp the version
+   Inside an AI tool `less` is not interactive. Show the user only the header and version lines (`head -n 20 "$tmp/install.sh"`) and the path, and ask them to review the whole file in their own terminal.
+3. If `.company-os/version` doesn't exist, inform the user this is a pre-versioning install (1.11 or earlier). The installer backs up first. A run without `--force` only previews. `--force` saves every file that differs from the new template as `.company-os/conflicts/<path>.user`, then replaces it, because there is no manifest to tell the user's edits from template changes
 
 What you will see:
 
@@ -50,13 +51,13 @@ Or, when nothing is newer: `Up to date - Company OS 1.11.0`.
 
 Preview what would change without applying:
 
-1. Run the install script in dry-run mode:
+1. Get the installer. Never run an `install.sh` that sits in the project root: it may be the user's own script or a stale download. Download the current one to a temporary folder (`curl` is denied for the agent, so the user runs this in their terminal):
    ```bash
-   bash install.sh --dry-run --force
+   tmp=$(mktemp -d) && curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh -o "$tmp/install.sh"
    ```
-2. If `install.sh` is not available locally (user installed via curl), advise:
+2. Check that the file is the Company OS installer before running it: `head -n 5 "$tmp/install.sh"` must contain `Company OS`. If it does not, stop and tell the user. Then run it in dry-run mode:
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh -o install.sh && less install.sh && bash install.sh --dry-run --force
+   bash "$tmp/install.sh" --dry-run --force
    ```
    (Downloading to a file first lets the user read the script before it runs. Piping the script straight into `bash` works too, but nothing is reviewed.)
 3. Parse and display the output — highlight new files, updated files, conflicts, and migration notes
@@ -81,13 +82,10 @@ Perform the upgrade:
 2. For MAJOR upgrades: display migration notes from `.company-os/docs/CHANGELOG.md` and ask for confirmation before proceeding
 3. Run the upgrade:
    ```bash
-   bash install.sh --force
+   bash "$tmp/install.sh" --force
    ```
-   Or if not available locally:
-   ```bash
-   curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh -o install.sh && less install.sh && bash install.sh --force
-   ```
-   To upgrade to a specific release instead of the latest, pin it with `--version`, for example `bash install.sh --force --version 1.12.0`. Pinning also works for a downgrade or when a team wants everyone on the same version.
+   Use the same verified download as in preview. If the shell has no `$tmp`, download again to a new temporary folder and run the same header check. The user can also run these steps in their own terminal after reading the file with `less "$tmp/install.sh"`.
+   To upgrade to a specific release instead of the latest, pin it with `--version`, for example `bash "$tmp/install.sh" --force --version 1.12.0`. Pinning also works for a downgrade or when a team wants everyone on the same version.
 4. After upgrade, verify with:
    ```bash
    ./tools/registry/health-check.sh
@@ -104,7 +102,7 @@ What you will see:
   Review the conflicts and merge manually.
 ```
 
-Each conflict keeps the folder path of the original file, so same-named files never collide. For example, a changed `tools/qa/run.sh` is saved as `.company-os/conflicts/tools/qa/run.sh.user` (your version) and `run.sh.new` (the template version). Merge what you want to keep, then delete the conflict files. If you see `Up to date`, there was nothing to apply. The guides in `.company-os/docs/` are template-owned and always refreshed on upgrade; a guide the user edited is kept next to the new copy as `<name>.user` (for example `.company-os/docs/SETUP.md.user`).
+Each conflict keeps the folder path of the original file, so same-named files never collide. A file the user edited that the template did not change is left alone and is not a conflict. A plain upgrade (no `--force`) keeps the user's version of a conflicting file and lists it; `--force` saves both and installs the template copy. A saved copy is never overwritten: a later one gets a timestamp suffix. Upgrades keep the adapters the project already has. For example, a changed `tools/qa/run.sh` is saved as `.company-os/conflicts/tools/qa/run.sh.user` (your version) and `run.sh.new` (the template version). Merge what you want to keep, then delete the conflict files. If you see `Up to date`, there was nothing to apply. The guides in `.company-os/docs/` are template-owned and always refreshed on upgrade; a guide the user edited is kept next to the new copy as `<name>.user` (for example `.company-os/docs/SETUP.md.user`).
 
 ### `/upgrade-company-os rollback`
 
@@ -135,9 +133,9 @@ Restore from a previous backup:
 6. Update `.company-os/version` to the backup's version (parse from the backup directory name)
 7. Rebuild the manifest so the next upgrade compares against the restored version. Re-install that same version, passing only the runtimes the project already has (for example `claude,cursor`):
    ```bash
-   bash install.sh --force --version <backup-version> --runtime <installed runtimes>
+   bash "$tmp/install.sh" --force --version <backup-version> --runtime <installed runtimes>
    ```
-   (Without a local `install.sh`, the user runs the `curl ... | bash -s -- --force --version <backup-version> --runtime <...>` form in their terminal.) This re-applies the same files, so content does not change; any `.user`/`.new` pairs it reports for restored files are identical and can be deleted. Never run `install.sh --force` without `--version` here: it downloads and applies the latest release, which undoes the rollback.
+   (Use the verified download from the apply step. Or the user runs the `curl ... | bash -s -- --force --version <backup-version> --runtime <...>` form in their terminal.) This re-applies the same files, so content does not change; any `.user`/`.new` pairs it reports for restored files are identical and can be deleted. Never run the installer with `--force` and no `--version` here: it downloads and applies the latest release, which undoes the rollback.
 
 What you will see:
 
@@ -170,6 +168,6 @@ After you choose, the skill restores the template files and reports the restored
 ## Notes
 
 - The `curl` command is denied in `.claude/settings.json`. For remote operations (check against latest, download updates), advise the user to run the command in their terminal directly.
-- For local operations (reading version files, listing backups, running local `install.sh`), use Bash tool directly.
+- For local operations (reading version files, listing backups), use Bash tool directly. Never run an `install.sh` found in the project root; use the verified download in a temporary folder.
 - Always show the user what will change before applying upgrades.
 - For major version upgrades, always recommend `--dry-run` first.

@@ -52,12 +52,12 @@ curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | 
 Prefer to read the script before running it:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh -o install.sh
-less install.sh
-bash install.sh --runtime=cursor   # or leave the flag off to auto-detect
+tmp=$(mktemp -d) && curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh -o "$tmp/install.sh"
+less "$tmp/install.sh"
+bash "$tmp/install.sh" --runtime=cursor   # or leave the flag off to auto-detect
 ```
 
-Run `bash install.sh --help` to see every flag (`--runtime`, `--version`, `--dry-run`, `--force`, and more).
+Run `bash "$tmp/install.sh" --help` to see every flag (`--runtime`, `--version`, `--dry-run`, `--force`, and more).
 
 **Mono repo:** install once at the repo root; `company.config.yaml` describes the shared stack. **Multi repo:** install in each repo; each keeps its own config and artifacts.
 

@@ -23,10 +23,12 @@ curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | 
 Prefer to read the script first:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh -o install.sh
-less install.sh
-bash install.sh
+tmp=$(mktemp -d) && curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh -o "$tmp/install.sh"
+less "$tmp/install.sh"
+bash "$tmp/install.sh"
 ```
+
+The script goes to a temporary folder, so it never overwrites a file in your project.
 
 **2. Start your runtime and run setup.** The installer detects which runtimes you have and adds files for each.
 
@@ -292,7 +294,7 @@ Three hooks run automatically with no model calls. The session-start hook adds a
 
 ## Install options
 
-Pass flags after `bash -s --` when piping, or directly to `bash install.sh`. Run `bash install.sh --help` for the same list.
+Pass flags after `bash -s --` when piping, or after the script path (`bash "$tmp/install.sh" --force`). Run the script with `--help` for the same list.
 
 | Flag | What it does |
 |------|--------------|
@@ -350,16 +352,23 @@ From a terminal:
 
 ```bash
 # Download, read, preview, then apply
-curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh -o install.sh
-less install.sh
-bash install.sh --force --dry-run
-bash install.sh --force
+tmp=$(mktemp -d) && curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh -o "$tmp/install.sh"
+less "$tmp/install.sh"
+bash "$tmp/install.sh" --force --dry-run
+bash "$tmp/install.sh" --force
 
 # Or pin a release instead of taking the latest
-bash install.sh --force --version 1.12.0
+bash "$tmp/install.sh" --force --version 1.12.0
 ```
 
-Upgrades keep your config, permissions, artifacts and agent memory. If you edited a Company OS file that the upgrade replaces, both your copy (`.user`) and the new one (`.new`) are saved under `.company-os/conflicts/` in the same folder path as the original (for example `.company-os/conflicts/tools/qa/run.sh.user` and `run.sh.new`), so same-named files never collide. Merge them by hand. The guides in `.company-os/docs/` belong to the template and are always refreshed; if you edited one, your copy is kept next to it as `<name>.user`. Major upgrades create a backup automatically.
+Upgrades keep your config, permissions, artifacts, agent memory and the adapters your project already has. The installer compares your copy of each file with the template copy you last received and the new one:
+
+- If you edited a file and the template did not change it, your file stays.
+- If you both changed it, a plain upgrade keeps yours and lists it. With `--force`, it saves your copy (`.user`) and the new one (`.new`) under `.company-os/conflicts/` in the same folder path (for example `.company-os/conflicts/tools/qa/run.sh.user` and `run.sh.new`), then installs the new one. Merge them by hand. An earlier copy is never overwritten: a later one gets a timestamp suffix.
+- The guides in `.company-os/docs/` belong to the template and are refreshed; if you edited one, your copy is kept next to it as `<name>.user`.
+- Installs from 1.11 or earlier have no manifest, so the installer cannot tell your edits from template changes. It makes a backup first. Without `--force` it only previews. With `--force` it saves every differing file as `.user` before replacing it.
+
+Major upgrades, installs with no manifest, and runs with `--backup` save a backup in `.company-os/backup/` first.
 
 ### Uninstalling
 

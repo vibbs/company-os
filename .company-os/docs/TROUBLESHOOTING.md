@@ -40,27 +40,29 @@ Running `git init` after the install is fine; nothing is lost. Commit the instal
 Piping a script from the internet into `bash` runs it without showing you what it does. To read it first:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh -o install.sh
-less install.sh                 # read it
-bash install.sh --dry-run       # preview every change without writing anything
-bash install.sh                 # install
+tmp=$(mktemp -d) && curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh -o "$tmp/install.sh"
+less "$tmp/install.sh"                 # read it
+bash "$tmp/install.sh" --dry-run       # preview every change without writing anything
+bash "$tmp/install.sh"                 # install
 ```
 
-To pin a release instead of the latest, add `--version 1.12.0`. The same steps work for upgrades: use `bash install.sh --force --dry-run`, then `bash install.sh --force`.
+The script goes to a temporary folder, so it never replaces a file in your project.
 
-If an upgrade finds a file you edited, it keeps your copy and saves both versions under `.company-os/conflicts/` in the same folder path as the original (for example `.company-os/conflicts/tools/qa/run.sh.user` and `run.sh.new`). Merge what you want, then delete the pair.
+To pin a release instead of the latest, add `--version 1.12.0`. The same steps work for upgrades: use `--force --dry-run`, then `--force`.
+
+An upgrade compares each file you edited with the template copy you last received. If the template did not change that file, your edit stays. If you both changed it, a plain upgrade keeps your file and lists it. With `--force` it saves both versions under `.company-os/conflicts/` in the same folder path (for example `.company-os/conflicts/tools/qa/run.sh.user` and `run.sh.new`) and installs the template copy. Merge what you want, then delete the pair. Installs from 1.11 or earlier have no record of the old template, so the first upgrade makes a backup, previews only, and with `--force` saves every differing file as `.user`.
 
 ## Installing offline
 
-The installer normally downloads Company OS from GitHub. On a machine without internet access (an air-gapped machine), copy two files over from a machine that has access: `install.sh` and a release archive.
+The installer normally downloads Company OS from GitHub. On a machine without internet access (an air-gapped machine), copy two files over from a machine that has access: the installer and a release archive. Keep them outside your project folder.
 
 ```bash
 # On a machine with internet access
-curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh -o install.sh
+curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh -o company-os-install.sh
 curl -fsSL https://github.com/vibbs/company-os/archive/refs/tags/v1.12.0.tar.gz -o company-os.tar.gz
 
 # On the offline machine, inside your project
-COMPANY_OS_SOURCE=/path/to/company-os.tar.gz bash install.sh --runtime claude
+COMPANY_OS_SOURCE=/path/to/company-os.tar.gz bash /path/to/company-os-install.sh --runtime claude
 ```
 
 `COMPANY_OS_SOURCE` can also point at an unpacked folder or a git checkout. The installer prints `Using local archive` or `Using local source` and does not contact GitHub. Upgrades work the same way: add `--force`. `--branch` and `--version` are ignored, because the archive decides the version.
@@ -71,7 +73,7 @@ By default the installer installs files for every runtime it finds on your machi
 
 - See what was detected and what is installed: `./tools/registry/list-runtimes.sh`
 - Add a missing runtime: `./tools/registry/install-runtime.sh cursor` (or `claude`, `codex`, `gemini`, `all`)
-- Install exactly what you want: re-run the installer with `--runtime`, for example `bash install.sh --runtime claude,cursor`
+- Install exactly what you want: re-run the installer with `--runtime`, for example `--runtime claude,cursor`
 - Remove an unwanted runtime: delete its files (see the [uninstall list](FAQ.md#how-do-i-uninstall-company-os)).
 
 If no runtime is found, you get the core install only: `os/`, `tools/`, `AGENTS.md`, `CLAUDE.md` and `company.config.yaml`.
