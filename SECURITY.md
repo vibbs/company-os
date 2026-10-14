@@ -12,7 +12,7 @@ Include what you found, the steps to reproduce it, and which version you tested 
 
 - `install.sh`: download, extraction, file writes and the upgrade merge
 - Tool scripts in `tools/` (for example path handling, command injection, unsafe temp files)
-- Hooks in `os/hooks/` and `.claude/hooks/`, and the permissions that `/setup` and `setup.sh` generate
+- Hooks in `os/hooks/` and `.claude/hooks/`, and the permissions that `/setup` and `.company-os/setup.sh` generate
 
 Out of scope: weaknesses in the AI runtimes themselves, and in products you build with Company OS.
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Every runnable tool, build script and validator (plus install.sh and
-# setup.sh) answers -h and --help with exit 0 and a Usage line, and changes
+# .company-os/setup.sh) answers -h and --help with exit 0 and a Usage line, and changes
 # nothing in the working tree.
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/assert.sh"
 cd "$REPO_ROOT"
@@ -13,7 +13,7 @@ BEFORE="$(git_state)"
 
 SCRIPTS="$(find tools -name '*.sh' -type f -not -path 'tools/lib/*' -not -name 'lib-*.sh' | sort)"
 COUNT=0
-for script in $SCRIPTS install.sh setup.sh; do
+for script in $SCRIPTS install.sh .company-os/setup.sh; do
   COUNT=$((COUNT + 1))
   for flag in --help -h; do
     assert_exit 0 bash "$script" "$flag"
@@ -23,7 +23,7 @@ for script in $SCRIPTS install.sh setup.sh; do
   done
 done
 
-# 33 runnable tools + 6 build scripts + 2 validators, plus install.sh and setup.sh.
+# 33 runnable tools + 6 build scripts + 2 validators, plus install.sh and .company-os/setup.sh.
 RUNNABLE="$(find tools -name '*.sh' -type f -not -path 'tools/lib/*' -not -path 'tools/build/*' | wc -l | tr -d ' ')"
 assert_eq "33" "$RUNNABLE" "runnable tool script count (excluding tools/build, tools/lib)"
 assert_eq "43" "$COUNT" "scripts checked for --help"

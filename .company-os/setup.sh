@@ -4,12 +4,13 @@
 # ============================================================================
 # Scaffolds directories and creates template files for Company OS.
 # Use this when you want to set up Company OS before opening Claude Code.
+# The installer puts it at .company-os/setup.sh; run it from the project root.
 #
 # Usage:
-#   bash setup.sh             # scaffold directories + template config
-#   bash setup.sh --cleanup   # remove example artifacts and standards
-#   bash setup.sh --claude    # also create .claude/settings.json without a .claude/ folder
-#   bash setup.sh --help      # show this help
+#   bash .company-os/setup.sh             # scaffold directories + template config
+#   bash .company-os/setup.sh --cleanup   # remove example artifacts and standards
+#   bash .company-os/setup.sh --claude    # also create .claude/settings.json without a .claude/ folder
+#   bash .company-os/setup.sh --help      # show this help
 #
 # After running this script, open Claude Code and run /setup to customize
 # your configuration interactively. No AI runtime? Edit company.config.yaml
@@ -43,10 +44,10 @@ directory. Use it when you want to set up before opening an AI runtime, or
 if you do not use one. Existing files are never overwritten.
 
 Usage:
-  bash setup.sh             Scaffold folders and template files
-  bash setup.sh --cleanup   Remove example files (the guides in .company-os/docs/ stay)
-  bash setup.sh --claude    Also create .claude/settings.json when .claude/ does not exist yet
-  bash setup.sh --help      Show this help
+  bash .company-os/setup.sh             Scaffold folders and template files
+  bash .company-os/setup.sh --cleanup   Remove example files (the guides in .company-os/docs/ stay)
+  bash .company-os/setup.sh --claude    Also create .claude/settings.json when .claude/ does not exist yet
+  bash .company-os/setup.sh --help      Show this help
 
 What the default run creates (only if missing):
   artifacts/   prds, rfcs, test-plans, qa-reports, launch-briefs,
@@ -78,7 +79,7 @@ WITH_CLAUDE=false
 case "${1:-}" in
   ""|--cleanup) ;;
   --claude) WITH_CLAUDE=true ;;
-  *) echo "ERROR: Unknown option: $1" >&2; echo "Run: bash setup.sh --help" >&2; exit 1 ;;
+  *) echo "ERROR: Unknown option: $1" >&2; echo "Run: bash .company-os/setup.sh --help" >&2; exit 1 ;;
 esac
 
 # --- Cleanup Mode ---
@@ -102,7 +103,6 @@ if [[ "${1:-}" == "--cleanup" ]]; then
   echo ""
   echo -e "${YELLOW}You may also want to:${NC}"
   echo "  - Replace README.md with your project README"
-  echo "  - Delete setup.sh (this script) — it's no longer needed"
   exit 0
 fi
 

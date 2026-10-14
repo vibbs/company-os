@@ -47,7 +47,7 @@ Run `/ship` to kick off the full pipeline. It reads your tech stack from `compan
 Run `/gtm-sprint` for time-boxed go-to-market validation (7/14/21 days). Unlike `/ship` which builds software, GTM Sprint validates **market demand** and builds **distribution** — no code required. Sequences: ICP → Mom-Test interviews → pain synthesis → LOI commitments → positioning → landing page → directory blitz → community engagement → retrospective. Includes quantified decision gates (e.g., "<3 LOIs by Day 6 → double interview volume"). Best for idea-stage validation, MVP launches, and repositioning sprints.
 
 ### First-Time Setup
-For new projects or existing repos, run `/setup` to configure Company OS interactively. The wizard fills in `company.config.yaml`, generates `.claude/settings.json` with tech-stack-specific permissions, and scaffolds directories. Alternatively, run `bash setup.sh` for a non-interactive scaffold.
+For new projects or existing repos, run `/setup` to configure Company OS interactively. The wizard fills in `company.config.yaml`, generates `.claude/settings.json` with tech-stack-specific permissions, and scaffolds directories. Alternatively, run `bash .company-os/setup.sh` for a non-interactive scaffold.
 
 ### Upgrading
 Run `/upgrade-company-os` to check for updates, preview changes, upgrade, or rollback. The installer uses semantic versioning and manifest-based conflict detection to safely update template files without losing user customizations. Run `/upgrade-company-os check` to see release notes.
@@ -56,7 +56,7 @@ Run `/upgrade-company-os` to check for updates, preview changes, upgrade, or rol
 - `company.config.yaml` — company-specific tech stack, API standards, conventions. **Read this first in every session.**
 - `tests/run.sh` — the test suite (config, tool help, artifacts, build, diagrams, docs, install). Run `bash tests/run.sh` (and `/bin/bash tests/run.sh` on macOS) before committing tool or installer changes. CI (`.github/workflows/ci.yml`) runs `build.sh --check --strict`, `render.js --check` and the suite on Linux and macOS.
 - `CONTRIBUTING.md`, `SECURITY.md` — contributor workflow and private vulnerability reporting
-- `setup.sh` — bash setup fallback for scaffolding directories and template config
+- `.company-os/setup.sh` — bash setup fallback for scaffolding directories and template config (installed with Company OS; run it from the project root)
 - `imports/` — **transient** staging for `/artifact-import` (files are classified, moved to `artifacts/`, then deleted)
 - `standards/` — **permanent** reference docs agents read continuously (stays in place after `/ingest`)
 - `standards/brand/archetypes/` — design archetype reference files (visual tokens, UX patterns per archetype). Run `/design-system` to configure.

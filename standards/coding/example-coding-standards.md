@@ -1,4 +1,4 @@
-> **EXAMPLE** — This is a reference standards document showing the expected format. Replace it with your own coding standards, or delete it with `bash setup.sh --cleanup`.
+> **EXAMPLE** — This is a reference standards document showing the expected format. Replace it with your own coding standards, or delete it with `bash .company-os/setup.sh --cleanup`.
 
 # Coding Standards
 

@@ -84,7 +84,7 @@
 .company-os/version
 CLAUDE.md
 company.config.yaml
-setup.sh
+.company-os/setup.sh
 standards/api/example-api-conventions.md
 standards/brand/archetypes/attio.md
 standards/brand/archetypes/figma.md

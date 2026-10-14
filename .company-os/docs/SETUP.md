@@ -77,7 +77,7 @@ Expect about 5 minutes for the interactive mode and under a minute for express. 
 
 The most important field is `company.stage` (`idea`, `mvp`, `growth`, or `scale`). It sets how strictly quality checks block you; see [stages and gates](CONCEPTS.md#stages-and-gates).
 
-No AI runtime yet? Run `bash setup.sh` to create the folders and a blank config, then edit `company.config.yaml` by hand using [CONFIG_REFERENCE.md](CONFIG_REFERENCE.md).
+No AI runtime yet? Run `bash .company-os/setup.sh` to create the folders and a blank config, then edit `company.config.yaml` by hand using [CONFIG_REFERENCE.md](CONFIG_REFERENCE.md).
 
 ## 5. Verify it worked
 

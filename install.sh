@@ -448,7 +448,7 @@ create_backup() {
       cp -R "$p" "$backup_dir/$p"
     fi
   done
-  for p in CLAUDE.md AGENTS.md GEMINI.md .cursorrules \
+  for p in CLAUDE.md AGENTS.md GEMINI.md .cursorrules .company-os/setup.sh \
            .company-os/version .company-os/manifest; do
     if [ -f "$p" ]; then
       mkdir -p "$(dirname "$backup_dir/$p")"
@@ -912,7 +912,7 @@ merge_directory() {
 }
 
 # merge_file: one template-owned top-level file (AGENTS.md, GEMINI.md,
-# .cursorrules), merged with merge_template_file.
+# .cursorrules, .company-os/setup.sh), merged with merge_template_file.
 # Usage: merge_file <src_file> <dst_file>
 merge_file() {
   local src_file="$1" dst_file="$2"
@@ -1352,6 +1352,14 @@ if [ -d "$SRC/.company-os/docs" ]; then
   if [ "$DOCS_HELD" -gt 0 ]; then
     echo -e "  ${DIM}Kept${NC}     $DOCS_HELD edited doc(s) in .company-os/docs/ (rerun with --force to refresh them; your edits are kept as <name>.user)"
   fi
+fi
+
+# --- .company-os/setup.sh (bash fallback for /setup; template-owned) ---
+# Releases before 1.12.0 keep it at the repo root.
+if [ -f "$SRC/.company-os/setup.sh" ]; then
+  merge_file "$SRC/.company-os/setup.sh" ".company-os/setup.sh"
+elif [ -f "$SRC/setup.sh" ]; then
+  merge_file "$SRC/setup.sh" ".company-os/setup.sh"
 fi
 
 # --- Scaffold directories (create if missing, never overwrite) ---

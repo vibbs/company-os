@@ -32,7 +32,7 @@ The installer detects which ones you have. See [SETUP.md](SETUP.md#2-pick-your-r
 
 Yes: install with `--runtime cursor`, `codex`, `gemini` or `aider` and ask the agent to "run the *name* skill" wherever the docs say `/name`.
 
-The agents, skills, tools, artifacts and gates all work the same. The gates are shell scripts, so they behave identically everywhere. Without any AI runtime, `bash setup.sh` scaffolds the folders and a blank config for you to fill in by hand.
+The agents, skills, tools, artifacts and gates all work the same. The gates are shell scripts, so they behave identically everywhere. Without any AI runtime, `bash .company-os/setup.sh` scaffolds the folders and a blank config for you to fill in by hand.
 
 ### How do I uninstall Company OS?
 
@@ -490,4 +490,4 @@ Company OS does not replace your native build toolchain (Xcode, Android Studio, 
 - `/system-maintenance`: re-sync docs after structural changes
 - Issues and questions: [github.com/vibbs/company-os/issues](https://github.com/vibbs/company-os/issues)
 
-> This FAQ and the other files in `.company-os/docs/` explain Company OS itself. `bash setup.sh --cleanup` (or the cleanup option in `/setup`) keeps them; delete them by hand if you do not want them.
+> This FAQ and the other files in `.company-os/docs/` explain Company OS itself. `bash .company-os/setup.sh --cleanup` (or the cleanup option in `/setup`) keeps them; delete them by hand if you do not want them.

@@ -595,21 +595,21 @@ If user removes a category, note it but don't delete skills (they're harmless if
 
 ### Step 10: Template Documentation Cleanup (Optional)
 
-Ask: "Would you like to clean up template example files? This removes the example artifacts and standards, replaces the README and deletes setup.sh. The Company OS guides in `.company-os/docs/` stay."
+Ask: "Would you like to clean up template example files? This removes the example artifacts and standards and replaces the README. The Company OS guides in `.company-os/docs/` stay."
 
 | File | Purpose | Recommendation |
 |------|---------|----------------|
 | `README.md` | Describes Company OS template | **Replace** with a project-specific README |
 | `.company-os/docs/` | Company OS guides (SETUP, CONCEPTS, CONFIG_REFERENCE, CUSTOMIZING, TROUBLESHOOTING, FAQ, TOKEN_COSTS, ROADMAP, CHANGELOG, SKILL_SCHEMA) and the `diagrams/` they embed | **Keep.** Other files link to them and they cost no tokens unless read |
-| `setup.sh` | One-time scaffolding script | **Remove** after first run |
-| `TOKEN_COSTS.md`, `FAQ.md`, `SETUP_COMPANY_OS.md` (repo root) | Old copies of guides that now live in `.company-os/docs/`. Present only in projects set up before 1.12.0 | **Remove** if present. `bash setup.sh --cleanup` removes exactly these |
+| `.company-os/setup.sh` | Bash fallback for setup (installed with Company OS) | **Keep.** Upgrades refresh it |
+| `TOKEN_COSTS.md`, `FAQ.md`, `SETUP_COMPANY_OS.md` (repo root) | Old copies of guides that now live in `.company-os/docs/`. Present only in projects set up before 1.12.0 | **Remove** if present. `bash .company-os/setup.sh --cleanup` removes exactly these |
 | `artifacts/prds/PRD-EXAMPLE-001-notifications.md` | Example PRD artifact | **Remove** after reviewing |
 | `artifacts/rfcs/RFC-EXAMPLE-001-notification-system.md` | Example RFC artifact | **Remove** after reviewing |
 | `standards/api/example-api-conventions.md` | Example API standards | **Remove** after reviewing |
 | `standards/coding/example-coding-standards.md` | Example coding standards | **Remove** after reviewing |
 
 If user confirms:
-1. Delete `setup.sh`, the legacy root files above (if present), example artifacts, and example standards
+1. Delete the legacy root files above (if present), example artifacts, and example standards
 2. Replace `README.md` with a minimal project README:
    ```
    # {company.product}

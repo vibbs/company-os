@@ -50,7 +50,7 @@ Every install also gets the shared files: `os/`, `tools/`, `AGENTS.md`, `CLAUDE.
 
 `/ship` writes a plan, then pauses after each step so you can approve, ask for changes, or stop. Outside Claude Code, see [Commands](#commands) for how to run it.
 
-No AI runtime yet? `bash setup.sh` creates the folders and a blank `company.config.yaml` to fill in by hand. Stuck? See [Troubleshooting](.company-os/docs/TROUBLESHOOTING.md).
+No AI runtime yet? `bash .company-os/setup.sh` creates the folders and a blank `company.config.yaml` to fill in by hand. Stuck? See [Troubleshooting](.company-os/docs/TROUBLESHOOTING.md).
 
 ### Most used commands
 
