@@ -593,14 +593,12 @@ merge_directory() {
           if [ "$FORCE" = true ]; then
             if [ "$DRY_RUN" = false ]; then
               # Save conflict copies
-              mkdir -p ".company-os/conflicts"
-              if [ -d "$dst_dir/$name" ]; then
-                cp -r "$dst_dir/$name" ".company-os/conflicts/${name}.user"
-                cp -r "$item" ".company-os/conflicts/${name}.new"
-              else
-                cp "$dst_dir/$name" ".company-os/conflicts/${name}.user"
-                cp "$item" ".company-os/conflicts/${name}.new"
-              fi
+              # Keep the relative path so same-named files in different folders cannot collide.
+              local cdir=".company-os/conflicts/$dst_dir"
+              mkdir -p "$cdir"
+              rm -rf "$cdir/${name}.user" "$cdir/${name}.new"
+              cp -r "$dst_dir/$name" "$cdir/${name}.user"
+              cp -r "$item" "$cdir/${name}.new"
               rm -rf "$dst_dir/$name"
               cp -r "$item" "$dst_dir/$name"
             fi
@@ -1281,7 +1279,7 @@ if [ "$LOCAL_VERSION" != "unknown" ] && [ "$DRY_RUN" = false ]; then
     # If conflicts exist, that's the top priority
     if [ "$CONFLICTS" -gt 0 ]; then
       echo -e "    ${BLUE}${STEP}.${NC} Review conflicts in ${BOLD}.company-os/conflicts/${NC}:"
-      echo -e "       ${DIM}Each conflict has a .user (your version) and .new (template version)${NC}"
+      echo -e "       ${DIM}Each conflict keeps its folder path (e.g. tools/qa/run.sh.user is yours, .new is the template)${NC}"
       echo -e "       ${DIM}Merge the changes you want to keep, then delete the conflict files.${NC}"
       STEP=$((STEP + 1))
       echo ""

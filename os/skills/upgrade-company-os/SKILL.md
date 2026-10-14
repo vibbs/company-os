@@ -90,7 +90,7 @@ What you will see:
   Review the conflicts and merge manually.
 ```
 
-Each conflict has a `.user` file (your version) and a `.new` file (the template version). Merge what you want to keep, then delete the conflict files. If you see `Up to date`, there was nothing to apply. The guides in `.company-os/docs/` are template-owned and always refreshed on upgrade; a guide the user edited is kept next to the new copy as `<name>.user` (for example `.company-os/docs/SETUP.md.user`).
+Each conflict keeps the folder path of the original file, so same-named files never collide. For example, a changed `tools/qa/run.sh` is saved as `.company-os/conflicts/tools/qa/run.sh.user` (your version) and `run.sh.new` (the template version). Merge what you want to keep, then delete the conflict files. If you see `Up to date`, there was nothing to apply. The guides in `.company-os/docs/` are template-owned and always refreshed on upgrade; a guide the user edited is kept next to the new copy as `<name>.user` (for example `.company-os/docs/SETUP.md.user`).
 
 ### `/upgrade-company-os rollback`
 
