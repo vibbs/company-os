@@ -65,8 +65,9 @@ for skill_dir in "$SKILLS_DIR"/*/; do
     WARNINGS=$((WARNINGS + 1))
   fi
 
-  # Check for skeleton markers (unfleshed skills)
-  if grep -q "<!-- TODO" "$SKILL_FILE" 2>/dev/null; then
+  # Check for skeleton markers (unfleshed skills). Plain "<!-- TODO" text can
+  # appear in a skill's own instructions, so only a dedicated marker counts.
+  if grep -q "<!-- SKELETON" "$SKILL_FILE" 2>/dev/null; then
     echo "📝 $DIR_NAME: Skeleton (needs authoring) — $SKILL_NAME"
   fi
 
@@ -137,8 +138,7 @@ for agent_file in "$AGENTS_DIR"/*.md; do
   if echo "$AGENT_FM" | grep -q "^memory: project"; then
     MEMORY_DIR="$(dirname "$0")/../../.claude/agent-memory/$AGENT_NAME"
     if [[ ! -f "$MEMORY_DIR/MEMORY.md" ]]; then
-      echo "⚠️  $AGENT_NAME: Has memory: project but no MEMORY.md at .claude/agent-memory/$AGENT_NAME/"
-      AGENT_WARNINGS=$((AGENT_WARNINGS + 1))
+      echo "ℹ️  $AGENT_NAME: No MEMORY.md yet at .claude/agent-memory/$AGENT_NAME/ (created on first use)"
     fi
   fi
 done
