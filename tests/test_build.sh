@@ -36,6 +36,34 @@ for f in os/skills/*/SKILL.md; do
 done
 assert_eq "true" "$SKILLS_OK" "every generated .claude/skills/*/SKILL.md matches a fresh build"
 
+# --- The build removes only what it generated ---
+# A skill or agent made by hand under .claude/ (no os/ source) survives with a
+# warning; a generated one whose os/ source is gone is removed. With no
+# generated list yet (first build after an upgrade), nothing is removed.
+G="$(make_tmp)"
+cp -R "$B/." "$G/"
+assert_file_exists "$G/.claude/.generated-by-company-os" "build writes the generated list"
+mkdir -p "$G/.claude/skills/my-custom" "$G/os/skills/old-generated"
+printf -- '---\nname: my-custom\ndescription: Hand-made.\n---\n' > "$G/.claude/skills/my-custom/SKILL.md"
+printf -- '---\nname: my-agent\ndescription: Hand-made.\n---\n' > "$G/.claude/agents/my-agent.md"
+cp "$G/os/skills/ship/SKILL.md" "$G/os/skills/old-generated/SKILL.md"
+assert_exit 0 bash "$G/tools/build/build-claude.sh"
+assert_file_exists "$G/.claude/skills/old-generated/SKILL.md"
+rm -rf "$G/os/skills/old-generated"
+assert_exit 0 bash "$G/tools/build/build-claude.sh"
+assert_file_missing "$G/.claude/skills/old-generated" "stale generated skill is pruned"
+assert_contains "$OUT" "removed stale generated skill .claude/skills/old-generated"
+assert_file_exists "$G/.claude/skills/my-custom/SKILL.md" "custom .claude skill survives the build"
+assert_file_exists "$G/.claude/agents/my-agent.md" "custom .claude agent survives the build"
+assert_contains "$OUT" "custom skill .claude/skills/my-custom is not in os/ — move it to os/skills/my-custom/"
+assert_contains "$OUT" "custom agent .claude/agents/my-agent.md is not in os/ — move it to os/agents/my-agent.md"
+# No list yet: a stale skill is kept (it may be the user's).
+rm -f "$G/.claude/.generated-by-company-os"
+mkdir -p "$G/.claude/skills/unlisted"
+cp "$G/os/skills/ship/SKILL.md" "$G/.claude/skills/unlisted/SKILL.md"
+assert_exit 0 bash "$G/tools/build/build-claude.sh"
+assert_file_exists "$G/.claude/skills/unlisted/SKILL.md" "first build without a list prunes nothing"
+
 # --- Lift edge cases (fixtures) ---
 cp -R tests/fixtures/skills/crlf-comments tests/fixtures/skills/spaced-comments "$B/os/skills/"
 mkdir -p "$B/os/skills/legacy-top"
