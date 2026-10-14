@@ -43,6 +43,21 @@ extract_field() {
   sed -n '/^---$/,/^---$/p' "$FILE" | { grep "^${FIELD}:" || true; } | sed "s/${FIELD}: *//" | tr -d '"' | tr -d "'"
 }
 
+# --- Helper: append an ID to an inline array field ([a, b]) ---
+# Adds the field after `id:` when the frontmatter does not have it yet.
+add_array_item() {
+  local FILE="$1" FIELD="$2" ITEM="$3" CURRENT
+  CURRENT=$(extract_field "$FILE" "$FIELD")
+  if [[ -z "$(sed -n '/^---$/,/^---$/p' "$FILE" | grep "^${FIELD}:" || true)" ]]; then
+    sed_inplace "/^id: /a\\
+${FIELD}: [$ITEM]" "$FILE"
+  elif [[ "$CURRENT" == "[]" || -z "$CURRENT" ]]; then
+    sed_inplace "s/^${FIELD}:.*/${FIELD}: [$ITEM]/" "$FILE"
+  else
+    sed_inplace "s/^${FIELD}: \[\(.*\)\]/${FIELD}: [\1, $ITEM]/" "$FILE"
+  fi
+}
+
 # Extract IDs
 PARENT_ID=$(extract_field "$PARENT_PATH" "id")
 CHILD_ID=$(extract_field "$CHILD_PATH" "id")
@@ -86,14 +101,7 @@ CURRENT_CHILDREN=$(extract_field "$PARENT_PATH" "children")
 if echo "$CURRENT_CHILDREN" | grep -q "$CHILD_ID"; then
   echo "  ℹ️  Parent already has $CHILD_ID in children (no change)"
 else
-  if [[ "$CURRENT_CHILDREN" == "[]" || -z "$CURRENT_CHILDREN" ]]; then
-    # Empty array — replace with single item
-    sed_inplace "s/^children: \[\]/children: [$CHILD_ID]/" "$PARENT_PATH"
-  else
-    # Non-empty array — append
-    # Remove trailing ] and add ", CHILD_ID]"
-    sed_inplace "s/^children: \[\(.*\)\]/children: [\1, $CHILD_ID]/" "$PARENT_PATH"
-  fi
+  add_array_item "$PARENT_PATH" children "$CHILD_ID"
   echo "  ✅ Added $CHILD_ID to parent's children"
 fi
 
@@ -103,11 +111,7 @@ CURRENT_DEPENDS=$(extract_field "$CHILD_PATH" "depends_on")
 if echo "$CURRENT_DEPENDS" | grep -q "$PARENT_ID"; then
   echo "  ℹ️  Child already has $PARENT_ID in depends_on (no change)"
 else
-  if [[ "$CURRENT_DEPENDS" == "[]" || -z "$CURRENT_DEPENDS" ]]; then
-    sed_inplace "s/^depends_on: \[\]/depends_on: [$PARENT_ID]/" "$CHILD_PATH"
-  else
-    sed_inplace "s/^depends_on: \[\(.*\)\]/depends_on: [\1, $PARENT_ID]/" "$CHILD_PATH"
-  fi
+  add_array_item "$CHILD_PATH" depends_on "$PARENT_ID"
   echo "  ✅ Added $PARENT_ID to child's depends_on"
 fi
 
