@@ -4,7 +4,21 @@
 # Usage: ./tools/ops/support-faq-check.sh [prd-path]
 # Inputs: optional path to a specific PRD file
 # Outputs: coverage report, exit 0=good coverage 1=gaps found
+#
+# Validates FAQ coverage against PRD acceptance criteria.
+#
+# With a prd-path, extracts acceptance criteria from that PRD and checks that
+# FAQ entries exist. Without one, scans all PRDs in artifacts/prds/ and reports
+# overall FAQ coverage.
+#
+# Options:
+#   -h, --help  Show this help message
+#
+# Examples:
+#   ./tools/ops/support-faq-check.sh
+#   ./tools/ops/support-faq-check.sh artifacts/prds/PRD-001-user-auth.md
 set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
 
 # ─── Color codes ──────────────────────────────────────────────────────────────
 RED='\033[0;31m'
@@ -19,34 +33,9 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 PRD_DIR="$REPO_ROOT/artifacts/prds"
 FAQ_DIR="$REPO_ROOT/artifacts/support"
 
-# ─── Usage ────────────────────────────────────────────────────────────────────
-usage() {
-  cat <<EOF
-Usage: $(basename "$0") [OPTIONS] [prd-path]
-
-Validate FAQ coverage against PRD acceptance criteria.
-
-If prd-path is provided:
-  Extract acceptance criteria from that PRD and check if FAQ entries exist.
-
-If no prd-path:
-  Scan all PRDs in artifacts/prds/ and report overall FAQ coverage.
-
-Options:
-  --help    Show this help message
-
-Examples:
-  $(basename "$0")
-  $(basename "$0") artifacts/prds/PRD-001-user-auth.md
-EOF
-  exit 0
-}
-
 # ─── Parse arguments ──────────────────────────────────────────────────────────
 PRD_PATH=""
-if [[ ${1:-} == "--help" || ${1:-} == "-h" ]]; then
-  usage
-fi
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 if [[ $# -gt 0 ]]; then
   PRD_PATH="$1"
 fi

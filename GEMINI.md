@@ -425,7 +425,7 @@ Deterministic shell scripts. Safe to invoke directly. All live under `tools/`.
 - `tools/security/posture-check.sh` — Tool: T-SEC-04 Security Posture Check
 - `tools/security/sast.sh` — Tool: T-SEC-03 Basic SAST (Static Application Security Testing)
 - `tools/security/secrets-scan.sh` — Tool: T-SEC-02 Secrets Scan
-- `tools/versioning/version-bump.sh` — Detects the app version file, bumps it by the specified type, updates CHANGELOG.md,
+- `tools/versioning/version-bump.sh` — Tool: App Version Bump
 
 ---
 

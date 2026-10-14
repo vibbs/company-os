@@ -4,8 +4,27 @@
 # Usage: ./tools/deploy/pre-deploy.sh [--help]
 # Inputs: reads company.config.yaml for tech stack detection
 # Outputs: validation report with pass/warn/fail per check, exit 0=pass 1=warnings 2=failures
+#
+# Runs pre-deployment validation checks against the current project.
+#
+# Checks performed:
+#   1. Git status: no uncommitted changes
+#   2. Branch check: on expected deploy branch
+#   3. Tests pass: run configured test framework
+#   4. Lint passes: run configured linter
+#   5. No secrets in codebase: scan for common secret patterns
+#   6. Migrations reviewed: check for pending migrations
+#   7. Environment variables: compare .env.example with current env
+#   8. Version management: app version exists, valid semver, bumped since last release
+#
+# Exit codes:
+#   0  All checks passed
+#   1  Warnings only (non-blocking issues)
+#   2  One or more checks failed (do not deploy)
 set -euo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/config.sh"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
+usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
 
 SCRIPT_DIR="$(dirname "$0")"
 CONFIG_FILE="$SCRIPT_DIR/../../company.config.yaml"
@@ -21,36 +40,6 @@ RESET='\033[0m'
 PASS_COUNT=0
 WARN_COUNT=0
 FAIL_COUNT=0
-
-# ─── Usage ──────────────────────────────────────────────────────────────────────
-usage() {
-  cat <<EOF
-Usage: $(basename "$0") [--help]
-
-Run pre-deployment validation checks against the current project.
-Reads company.config.yaml for tech stack detection.
-
-Checks performed:
-  1. Git status: no uncommitted changes
-  2. Branch check: on expected deploy branch
-  3. Tests pass: run configured test framework
-  4. Lint passes: run configured linter
-  5. No secrets in codebase: scan for common secret patterns
-  6. Migrations reviewed: check for pending migrations
-  7. Environment variables: compare .env.example with current env
-  8. Version management: app version exists, valid semver, bumped since last release
-
-Exit Codes:
-  0  All checks passed
-  1  Warnings only (non-blocking issues)
-  2  One or more checks failed (do not deploy)
-EOF
-  exit 0
-}
-
-if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
-  usage
-fi
 
 # ─── Helper: read a value from company.config.yaml (via tools/lib/config.sh) ──
 read_config() {

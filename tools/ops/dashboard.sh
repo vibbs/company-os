@@ -6,8 +6,18 @@
 # Usage: ./tools/ops/dashboard.sh [--html] [--out <path>] [--period <monthly|all>]
 # Inputs: artifacts/ directory, cogs/ai-ledger/entries.jsonl, company.config.yaml
 # Outputs: Markdown or HTML dashboard (stdout or --out path)
+#
+# Generates a static project dashboard with artifact status, gate readiness,
+# artifact graph, open risks, and cost snapshot.
+#
+# Flags:
+#   --html                   Output as self-contained HTML (default: Markdown)
+#   --out <path>             Write to file instead of stdout
+#   --period <monthly|all>   Cost ledger period (default: monthly)
+#   -h, --help               Show this help
 set -euo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/config.sh"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/../.."
@@ -29,18 +39,7 @@ while [[ $# -gt 0 ]]; do
     --period)
       [[ $# -ge 2 ]] || { echo "ERROR: --period requires a value (monthly or all)" >&2; exit 1; }
       PERIOD="$2"; shift 2 ;;
-    --help|-h)
-      echo "Usage: ./tools/ops/dashboard.sh [--html] [--out <path>] [--period <monthly|all>]"
-      echo ""
-      echo "Generates a static project dashboard with artifact status, gate readiness,"
-      echo "artifact graph, open risks, and cost snapshot."
-      echo ""
-      echo "Flags:"
-      echo "  --html              Output as self-contained HTML (default: Markdown)"
-      echo "  --out <path>        Write to file instead of stdout"
-      echo "  --period <monthly|all>  Cost ledger period (default: monthly)"
-      exit 0
-      ;;
+    --help|-h) usage_print_header "${BASH_SOURCE[0]}"; exit 0 ;;
     *)
       echo "ERROR: Unknown flag: $1" >&2
       echo "Usage: ./tools/ops/dashboard.sh [--html] [--out <path>] [--period <monthly|all>]" >&2

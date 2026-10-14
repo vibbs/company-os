@@ -1,13 +1,24 @@
 #!/usr/bin/env bash
+# Tool: App Version Bump
+# Description: Detects the app version file, bumps it, updates CHANGELOG.md and creates a git tag
+# Usage: ./tools/versioning/version-bump.sh <major|minor|patch> [--dry-run] [--no-tag]
+# Inputs: package.json, pyproject.toml or VERSION; company.config.yaml (company.stage)
+# Outputs: bumped version file, CHANGELOG.md entry, git tag (unless --no-tag)
+#
+# Options:
+#   major       Bump major version (breaking changes)
+#   minor       Bump minor version (new features)
+#   patch       Bump patch version (bug fixes)
+#   --dry-run   Show what would change without modifying files
+#   --no-tag    Skip git tag creation
+#   -h, --help  Show this help
+#
+# Stage-aware:
+#   idea/mvp stages: version stays at 0.x.x (major bumps become minor)
+#   growth/scale stages: full semver (warns if still at 0.x.x)
 set -euo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/config.sh"
-
-# ─── App Version Bump Tool ──────────────────────────────────────────────────────
-# Detects the app version file, bumps it by the specified type, updates CHANGELOG.md,
-# and creates a git tag. Stage-aware: idea/mvp stay at v0.x.x.
-#
-# Usage: ./tools/versioning/version-bump.sh <major|minor|patch> [--dry-run] [--no-tag]
-# ─────────────────────────────────────────────────────────────────────────────────
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
 
 # ─── Colors ──────────────────────────────────────────────────────────────────────
 RED='\033[0;31m'
@@ -27,21 +38,7 @@ for arg in "$@"; do
     major|minor|patch) BUMP_TYPE="$arg" ;;
     --dry-run) DRY_RUN=true ;;
     --no-tag) NO_TAG=true ;;
-    -h|--help)
-      echo "Usage: ./tools/versioning/version-bump.sh <major|minor|patch> [--dry-run] [--no-tag]"
-      echo ""
-      echo "Options:"
-      echo "  major      Bump major version (breaking changes)"
-      echo "  minor      Bump minor version (new features)"
-      echo "  patch      Bump patch version (bug fixes)"
-      echo "  --dry-run  Show what would change without modifying files"
-      echo "  --no-tag   Skip git tag creation"
-      echo ""
-      echo "Stage-aware:"
-      echo "  idea/mvp stages: version stays at 0.x.x (major bumps become minor)"
-      echo "  growth/scale stages: full semver (warns if still at 0.x.x)"
-      exit 0
-      ;;
+    -h|--help) usage_print_header "${BASH_SOURCE[0]}"; exit 0 ;;
     *)
       echo -e "${RED}ERROR: Unknown argument: $arg${RESET}" >&2
       echo "Usage: ./tools/versioning/version-bump.sh <major|minor|patch> [--dry-run] [--no-tag]" >&2
