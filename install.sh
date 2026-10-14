@@ -86,7 +86,8 @@ Flags:
   --dry-run          Preview what would change without writing anything
   --check            Check whether an upgrade is available
   --changelog        Show the changelog since the installed version
-  --backup           Back up Company OS files before upgrading (automatic for major upgrades)
+  --backup           Back up Company OS files before upgrading (automatic for major
+                     upgrades and for installs without a manifest)
   -h, --help         Show this help
 
 Environment:
@@ -149,10 +150,38 @@ if [ -d "os/skills" ] || [ -f "tools/artifact/validate.sh" ] || [ -d ".company-o
   COS_PRESENT=true
 fi
 
+# Upgrading an install that has no usable manifest: nothing tells us which
+# files the user edited, so every file that differs is treated as edited and a
+# backup is always taken. LEGACY = the same with no version stamp either (every
+# install made from main between 1.9.0 and 1.11.x).
+NO_MANIFEST_UPGRADE=false
+LEGACY=false
+if [ "$COS_PRESENT" = true ] && [ -z "$MANIFEST_FILE" ]; then
+  NO_MANIFEST_UPGRADE=true
+  if [ "$LOCAL_VERSION" = "unknown" ]; then LEGACY=true; fi
+fi
 IS_EXISTING_INSTALL=false
 if [ "$LOCAL_VERSION" != "unknown" ] || [ -n "$MANIFEST_FILE" ] || [ "$COS_PRESENT" = true ]; then
   IS_EXISTING_INSTALL=true
 fi
+
+# Best-effort version of an unstamped install (display and backup label only).
+detect_legacy_version() {
+  local f v=""
+  for f in .company-os/docs/CHANGELOG.md CHANGELOG.md; do
+    [ -f "$f" ] || continue
+    if [ "$f" = "CHANGELOG.md" ] && ! grep -q "Company OS" "$f" 2>/dev/null; then continue; fi
+    v=$(grep -E '^## \[[0-9]+\.[0-9]+\.[0-9]+\]' "$f" 2>/dev/null | head -1 | sed -E 's/^## \[([^]]*)\].*/\1/' || true)
+    if [ -n "$v" ]; then echo "$v"; return; fi
+  done
+  if [ -f "VERSION" ]; then
+    v=$(tr -d '[:space:]' < VERSION)
+    if echo "$v" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then echo "$v"; return; fi
+  fi
+  echo "unknown"
+}
+LEGACY_VERSION=""
+if [ "$LEGACY" = true ]; then LEGACY_VERSION=$(detect_legacy_version); fi
 
 # --- Runtime selection ---
 # RUNTIMES is a space-separated whitelist used by should_install_runtime().
@@ -478,6 +507,16 @@ if [ "$HAS_CLAUDE_DIR" = true ] || [ "$HAS_CLAUDE_MD" = true ]; then
   fi
   echo ""
 fi
+if [ "$LEGACY" = true ]; then
+  echo -e "  ${YELLOW}Existing Company OS install without a version stamp${NC} (detected version: $LEGACY_VERSION)"
+  echo -e "  ${DIM}It has no version stamp or manifest (installs from 1.9 to 1.11 recorded neither), so the${NC}"
+  echo -e "  ${DIM}installer cannot tell which files you edited. It treats every file that differs as edited.${NC}"
+  echo ""
+elif [ "$NO_MANIFEST_UPGRADE" = true ]; then
+  echo -e "  ${YELLOW}Existing Company OS install without a manifest${NC} — files that differ are treated as edited"
+  echo ""
+fi
+
 # --- Determine download reference ---
 DOWNLOAD_REF="$BRANCH"
 if [ -n "$LOCAL_SOURCE" ]; then
@@ -584,7 +623,13 @@ elif [ -f "$SRC/CHANGELOG.md" ]; then
 fi
 
 # --- Display version info ---
-if [ "$LOCAL_VERSION" != "unknown" ] || [ "$INCOMING_VERSION" != "unknown" ]; then
+if [ "$LEGACY" = true ]; then
+  UPGRADE_TYPE="legacy upgrade"
+  echo -e "  ${BOLD}Version${NC}"
+  echo -e "    Installed:  ${BOLD}$LEGACY_VERSION${NC} (no version stamp)"
+  echo -e "    Available:  ${BOLD}$INCOMING_VERSION${NC} ($UPGRADE_TYPE)"
+  echo ""
+elif [ "$LOCAL_VERSION" != "unknown" ] || [ "$INCOMING_VERSION" != "unknown" ]; then
   UPGRADE_TYPE=$(upgrade_type "$LOCAL_VERSION" "$INCOMING_VERSION")
 
   echo -e "  ${BOLD}Version${NC}"
@@ -593,11 +638,31 @@ if [ "$LOCAL_VERSION" != "unknown" ] || [ "$INCOMING_VERSION" != "unknown" ]; th
   echo ""
 fi
 
+# The command to re-run this installer with --force (printed as advice).
+force_command() {
+  local flags="--force"
+  [ -n "$RUNTIME_SPEC" ] && flags="--runtime $RUNTIME_SPEC $flags"
+  if [ -n "$LOCAL_SOURCE" ] && [ -f "$0" ]; then
+    echo "COMPANY_OS_SOURCE=$LOCAL_SOURCE bash $0 $flags"
+  elif [ -f "$0" ] && [ "$(basename "$0")" = "install.sh" ]; then
+    echo "bash $0 $flags"
+  else
+    echo "curl -fsSL https://raw.githubusercontent.com/$REPO/main/install.sh | bash -s -- $flags"
+  fi
+}
+
 # ============================================================================
 # Check-only mode
 # ============================================================================
 if [ "$CHECK_ONLY" = true ]; then
-  if [ "$LOCAL_VERSION" = "$INCOMING_VERSION" ]; then
+  if [ "$LEGACY" = true ]; then
+    echo -e "  ${YELLOW}Company OS found without a version stamp${NC} (detected version: $LEGACY_VERSION) — $INCOMING_VERSION available"
+    echo ""
+    echo -e "  Commit or back up your project, then upgrade with --force. A backup is made"
+    echo -e "  first and every file you changed is saved under .company-os/conflicts/:"
+    echo -e "  ${DIM}$(force_command)${NC}"
+    exit 0
+  elif [ "$LOCAL_VERSION" = "$INCOMING_VERSION" ]; then
     echo -e "  ${GREEN}Up to date${NC} — Company OS $LOCAL_VERSION"
     exit 0
   elif [ "$LOCAL_VERSION" = "unknown" ]; then
@@ -661,11 +726,31 @@ if [ "$INCOMING_VERSION" != "unknown" ] && [ "$LOCAL_VERSION" != "unknown" ]; th
 fi
 
 # ============================================================================
-# Backup (if requested or auto-enabled for major upgrades)
+# Backup (if requested, a major upgrade, or an install without a manifest)
 # ============================================================================
-if [ "$BACKUP" = true ] && [ "$DRY_RUN" = false ] && [ "$IS_EXISTING_INSTALL" = true ]; then
-  backup_path=$(create_backup "$LOCAL_VERSION")
+BACKUP_MADE=false
+if [ "$DRY_RUN" = false ] && [ "$IS_EXISTING_INSTALL" = true ] \
+   && { [ "$BACKUP" = true ] || [ "$NO_MANIFEST_UPGRADE" = true ]; }; then
+  backup_label="$LOCAL_VERSION"
+  if [ "$LEGACY" = true ]; then
+    backup_label="legacy"
+    [ "$LEGACY_VERSION" != "unknown" ] && backup_label="${LEGACY_VERSION}-legacy"
+  fi
+  backup_path=$(create_backup "$backup_label")
+  BACKUP_MADE=true
   echo -e "  ${BLUE}Backup${NC}   Created at $backup_path"
+  echo ""
+fi
+
+# An unstamped install is upgraded only with --force. Without it, show what
+# --force would do and change nothing else: no files, no version stamp, no
+# manifest (a stamp over old files would hide the pending upgrade).
+LEGACY_PREVIEW=false
+if [ "$LEGACY" = true ] && [ "$FORCE" = false ]; then
+  LEGACY_PREVIEW=true
+  DRY_RUN=true
+  FORCE=true
+  echo -e "  ${YELLOW}Not upgraded yet.${NC} Below is what an upgrade with --force would do."
   echo ""
 fi
 
@@ -1408,7 +1493,20 @@ if [ "$DRY_RUN" = true ]; then
     print_paths "$CONFLICT_LOG" 15
   fi
   echo ""
-  echo -e "  ${DIM}Run without --dry-run to apply these changes.${NC}"
+  if [ "$LEGACY_PREVIEW" = true ]; then
+    if [ "$BACKUP_MADE" = true ]; then
+      echo -e "  ${BOLD}Nothing was changed${NC} (apart from the backup above)."
+    else
+      echo -e "  ${BOLD}Nothing was changed.${NC}"
+    fi
+    echo -e "  This install has no version stamp, so it is upgraded only with --force."
+    echo -e "  Commit or back up your project first, then run:"
+    echo -e "    ${BOLD}$(force_command)${NC}"
+    echo -e "  ${DIM}Every file you changed is saved under .company-os/conflicts/<path>.user (guides in${NC}"
+    echo -e "  ${DIM}.company-os/docs/ next to the file as <name>.user) before the new copy replaces it.${NC}"
+  else
+    echo -e "  ${DIM}Run without --dry-run to apply these changes.${NC}"
+  fi
 else
   TOTAL=$((CREATED + ADDED + UPDATED + MERGED))
   if [ "$TOTAL" -eq 0 ] && [ "$SKIPPED" -gt 0 ]; then
@@ -1417,7 +1515,9 @@ else
       echo -e "  ${DIM}Use --force to update the files you edited (your copies are saved first)${NC}"
     fi
   else
-    if [ "$LOCAL_VERSION" != "unknown" ] && [ "$INCOMING_VERSION" != "unknown" ] && [ "$LOCAL_VERSION" != "$INCOMING_VERSION" ]; then
+    if [ "$LEGACY" = true ] && [ "$INCOMING_VERSION" != "unknown" ]; then
+      echo -e "  ${GREEN}Done!${NC} Upgraded $LEGACY_VERSION (no version stamp) → $INCOMING_VERSION: $UPDATED files updated, $ADDED added."
+    elif [ "$LOCAL_VERSION" != "unknown" ] && [ "$INCOMING_VERSION" != "unknown" ] && [ "$LOCAL_VERSION" != "$INCOMING_VERSION" ]; then
       echo -e "  ${GREEN}Done!${NC} Upgraded $LOCAL_VERSION → $INCOMING_VERSION"
     else
       echo -e "  ${GREEN}Done!${NC} Created $CREATED, added $ADDED, merged $MERGED, updated $UPDATED, skipped $SKIPPED."
@@ -1543,6 +1643,8 @@ if [ "$IS_EXISTING_INSTALL" = true ] && [ "$DRY_RUN" = false ]; then
     if [ -d ".git" ]; then
       if [ "$LOCAL_VERSION" = "$INCOMING_VERSION" ]; then
         commit_msg="chore: re-install Company OS ${INCOMING_VERSION}"
+      elif [ "$LEGACY" = true ]; then
+        commit_msg="chore: upgrade Company OS ${LEGACY_VERSION} → ${INCOMING_VERSION}"
       else
         commit_msg="chore: upgrade Company OS ${LOCAL_VERSION} → ${INCOMING_VERSION}"
       fi
