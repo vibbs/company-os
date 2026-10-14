@@ -7,7 +7,8 @@
 # this script; do not edit the generated adapters by hand.
 #
 # Usage:
-#   bash tools/build/build.sh                     # build all adapters
+#   bash tools/build/build.sh                     # build the adapters this project uses
+#   bash tools/build/build.sh --runtime=all       # build every adapter
 #   bash tools/build/build.sh --runtime=cursor    # build only the cursor adapter
 #   bash tools/build/build.sh --runtime=agents    # build only AGENTS.md
 #   bash tools/build/build.sh --runtime=gemini    # build only GEMINI.md
@@ -16,7 +17,11 @@
 #   bash tools/build/build.sh --check --strict    # also fail on warnings
 #
 # Options:
-#   --runtime=<name>   all (default), claude, cursor, agents, gemini or codex
+#   --runtime=<name>   all, claude, cursor, agents, gemini or codex. Default: in a
+#                      project installed with install.sh (.company-os/manifest
+#                      has hashes), the adapters already present (.claude/,
+#                      .cursor/ or .cursorrules, .codex/, GEMINI.md) plus
+#                      AGENTS.md; in the Company OS repo itself, all
 #   --check            run the skill and agent validators; write nothing
 #   --strict           with --check, exit 1 when any validator reports a warning
 #   -h, --help         show this help
@@ -33,7 +38,7 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 
-RUNTIME="all"
+RUNTIME=""
 CHECK=false
 STRICT=false
 
@@ -89,6 +94,16 @@ if [ "$CHECK" = true ]; then
   exit "$CHECK_RC"
 fi
 
+# Default: an installed project builds only the adapters it already has, so
+# a rebuild does not add runtimes (the next upgrade keeps what is present).
+# The Company OS repo (no install manifest with hashes) builds everything.
+if [ -z "$RUNTIME" ]; then
+  RUNTIME="all"
+  if [ -f .company-os/manifest ] && grep -Eq '^[0-9a-f]{8,}  ' .company-os/manifest 2>/dev/null; then
+    RUNTIME="project"
+  fi
+fi
+
 run() {
   local script="$1"
   echo "→ $(basename "$script")"
@@ -102,6 +117,14 @@ case "$RUNTIME" in
     run tools/build/build-gemini.sh
     run tools/build/build-cursor.sh
     run tools/build/build-codex.sh
+    ;;
+  project)
+    echo "Building the adapters this project has (use --runtime=all for every adapter)"
+    if [ -d .claude ]; then run tools/build/build-claude.sh; fi
+    run tools/build/build-agents-md.sh
+    if [ -f GEMINI.md ]; then run tools/build/build-gemini.sh; fi
+    if [ -d .cursor ] || [ -f .cursorrules ]; then run tools/build/build-cursor.sh; fi
+    if [ -d .codex ]; then run tools/build/build-codex.sh; fi
     ;;
   claude)  run tools/build/build-claude.sh ;;
   agents)  run tools/build/build-agents-md.sh ;;

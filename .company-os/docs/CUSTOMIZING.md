@@ -19,7 +19,8 @@ Make Company OS follow your processes: change a skill, add your own, teach agent
 | same | `build-codex.sh` | `.codex/config.md` |
 
 ```bash
-bash tools/build/build.sh                  # rebuild every adapter
+bash tools/build/build.sh                  # rebuild the adapters this project has
+bash tools/build/build.sh --runtime=all    # rebuild every adapter (adds missing ones)
 bash tools/build/build.sh --runtime=cursor # rebuild one adapter
 bash tools/build/build.sh --check          # validate skills and agents without writing
 ```

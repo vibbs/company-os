@@ -57,6 +57,21 @@ assert_file_exists "$G/.claude/skills/my-custom/SKILL.md" "custom .claude skill 
 assert_file_exists "$G/.claude/agents/my-agent.md" "custom .claude agent survives the build"
 assert_contains "$OUT" "custom skill .claude/skills/my-custom is not in os/ — move it to os/skills/my-custom/"
 assert_contains "$OUT" "custom agent .claude/agents/my-agent.md is not in os/ — move it to os/agents/my-agent.md"
+# Your files inside a generated skill folder survive; a sidecar the build
+# generated is removed once its os/ source is gone.
+printf 'my notes\n' > "$G/.claude/skills/ship/my-notes.md"
+printf 'generated sidecar\n' > "$G/os/skills/ship/extra.md"
+assert_exit 0 bash "$G/tools/build/build-claude.sh"
+assert_file_exists "$G/.claude/skills/ship/extra.md"
+rm -f "$G/os/skills/ship/extra.md"
+assert_exit 0 bash "$G/tools/build/build-claude.sh"
+assert_file_exists "$G/.claude/skills/ship/my-notes.md" "user file inside a generated skill folder survives"
+assert_contains "$OUT" "kept .claude/skills/ship/my-notes.md (your file; the build does not manage it)"
+assert_file_missing "$G/.claude/skills/ship/extra.md" "stale generated sidecar is removed"
+# The Company OS repo (no install manifest) still builds every adapter.
+assert_exit 0 bash "$G/tools/build/build.sh"
+assert_not_contains "$OUT" "Building the adapters this project has"
+
 # No list yet: a stale skill is kept (it may be the user's).
 rm -f "$G/.claude/.generated-by-company-os"
 mkdir -p "$G/.claude/skills/unlisted"

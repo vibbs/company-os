@@ -17,11 +17,11 @@
 # Hooks (.claude/hooks/) and settings (.claude/settings.json) are
 # Claude-specific and are NOT generated — they live directly under .claude/.
 #
-# The build records what it wrote in .claude/.generated-by-company-os. A later
-# build removes only entries on that list whose os/ source is gone. Any other
-# skill or agent under .claude/ (one you made by hand) is left in place with
-# a warning to move it to os/. With no list yet (first build after an
-# upgrade), nothing is removed.
+# The build records every file it wrote in .claude/.generated-by-company-os.
+# A later build removes only listed files whose os/ source is gone. Any other
+# skill or agent under .claude/ (one you made by hand), and any file of yours
+# inside a generated skill folder, is left in place with a notice. With no
+# list yet (first build after an upgrade), nothing is removed.
 #
 # Usage:
 #   bash tools/build/build-claude.sh
@@ -78,38 +78,68 @@ lift_claude_fields() {
 mkdir -p .claude/skills .claude/agents
 
 GENERATED_LIST=".claude/.generated-by-company-os"
-was_generated() {  # was_generated <skills/name | agents/name.md>
+NEW_LIST="$(mktemp)"
+trap 'rm -f "$NEW_LIST"' EXIT
+
+was_generated() {  # was_generated <skills/name/file | agents/name.md>
   [ -f "$GENERATED_LIST" ] && grep -qxF "$1" "$GENERATED_LIST"
+}
+listed_under() {  # listed_under <prefix>: list entries starting with <prefix>
+  [ -f "$GENERATED_LIST" ] || return 0
+  awk -v p="$1" 'index($0, p) == 1' "$GENERATED_LIST"
+}
+# remove_listed_stale <name>: delete files the build generated for skill
+# <name> earlier that os/skills/<name> no longer has. Files the build did not
+# generate are left alone and reported.
+remove_listed_stale() {
+  local name="$1" entry rel f
+  while IFS= read -r entry; do
+    rel="${entry#skills/$name/}"
+    if [ ! -f "os/skills/$name/$rel" ] && [ -f ".claude/skills/$name/$rel" ]; then
+      rm -f ".claude/skills/$name/$rel"
+    fi
+  done < <(listed_under "skills/$name/")
+  find ".claude/skills/$name" -mindepth 1 -type d -empty -delete 2>/dev/null || true
+  while IFS= read -r f; do
+    rel="${f#.claude/skills/$name/}"
+    if [ ! -f "os/skills/$name/$rel" ]; then
+      echo "  kept $f (your file; the build does not manage it)"
+    fi
+  done < <(find ".claude/skills/$name" -type f 2>/dev/null | sort)
 }
 
 # --- Skills ---
-# Remove skills this build generated before whose os/skills source is gone;
-# keep (and warn about) skills it did not generate.
+# A skill whose os/skills source is gone: remove the files this build
+# generated for it; keep (and warn about) skills it never generated.
 for existing in .claude/skills/*/; do
   [ -d "$existing" ] || continue
   name="$(basename "$existing")"
   [ -d "os/skills/$name" ] && continue
-  if was_generated "skills/$name"; then
-    rm -rf "$existing"
-    echo "  removed stale generated skill .claude/skills/$name (no longer in os/skills/)"
+  if [ -n "$(listed_under "skills/$name/")" ]; then
+    remove_listed_stale "$name"
+    if rmdir ".claude/skills/$name" 2>/dev/null; then
+      echo "  removed stale generated skill .claude/skills/$name (no longer in os/skills/)"
+    fi
   else
     echo "⚠ custom skill .claude/skills/$name is not in os/ — move it to os/skills/$name/ to keep it across runtimes" >&2
   fi
 done
 
-# Copy each skill directory wholesale (preserves SKILL.md + any sidecars)
+# Copy every file of each skill (SKILL.md and any sidecars). Only files the
+# build writes are overwritten or removed; your own files in the folder stay.
 for src in os/skills/*/; do
   [ -d "$src" ] || continue
   name="$(basename "$src")"
   dst=".claude/skills/$name"
   mkdir -p "$dst"
-  # Sync contents without preserving owner/timestamps to keep diffs minimal
-  rsync -a --delete "$src" "$dst/" 2>/dev/null || {
-    # Fallback for systems without rsync
-    rm -rf "$dst"
-    cp -R "$src" "$dst"
-  }
+  while IFS= read -r f; do
+    rel="${f#os/skills/$name/}"
+    mkdir -p "$(dirname "$dst/$rel")"
+    cp "$f" "$dst/$rel"
+    echo "skills/$name/$rel" >> "$NEW_LIST"
+  done < <(find "os/skills/$name" -type f | sort)
   lift_claude_fields "$dst/SKILL.md"
+  remove_listed_stale "$name"
 done
 
 # --- Agents ---
@@ -129,18 +159,14 @@ for src in os/agents/*.md; do
   [ -f "$src" ] || continue
   name="$(basename "$src")"
   cp "$src" ".claude/agents/$name"
+  echo "agents/$name" >> "$NEW_LIST"
 done
 
 # --- Record what this build generated ---
 {
-  echo "# Written by tools/build/build-claude.sh: the skills and agents it generated"
-  echo "# from os/. The next build removes only entries here whose os/ source is gone."
-  for src in os/skills/*/; do
-    if [ -d "$src" ]; then echo "skills/$(basename "$src")"; fi
-  done
-  for src in os/agents/*.md; do
-    if [ -f "$src" ]; then echo "agents/$(basename "$src")"; fi
-  done
+  echo "# Written by tools/build/build-claude.sh: the files it generated from os/."
+  echo "# The next build removes or overwrites only files listed here."
+  cat "$NEW_LIST"
 } > "$GENERATED_LIST"
 
 SKILL_COUNT=$(find os/skills -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ')
