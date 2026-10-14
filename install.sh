@@ -19,7 +19,8 @@
 #                claude | cursor | codex | gemini | aider (comma-separated list).
 #                Default: auto on a fresh install; on an upgrade, the adapters
 #                the project already has.
-#   --force      Update existing Company OS files (default: skip existing)
+#   --force      Also update files you edited (your copies are saved under
+#                .company-os/conflicts/); default: keep them
 #   --branch     Use a specific branch (default: main)
 #   --version    Install a specific version (e.g., --version 1.2.0)
 #   --dry-run    Preview what would change without applying
@@ -78,7 +79,8 @@ Flags:
                        all   → install every adapter
                        core  → shared files only (os/, tools/, AGENTS.md, CLAUDE.md, config);
                                no runtime-specific adapter
-  --force            Update existing Company OS files (keeps your config and edits)
+  --force            Also update Company OS files you edited; your copies are saved
+                     under .company-os/conflicts/ (config and artifacts are never touched)
   --branch <name>    Use a specific branch (default: main)
   --version <X.Y.Z>  Install a specific release, e.g. --version 1.12.0
   --dry-run          Preview what would change without writing anything
@@ -241,6 +243,7 @@ SKIPPED=0
 UPDATED=0
 MERGED=0
 CONFLICTS=0
+KEPT_EDITS=0
 
 # ============================================================================
 # Version Comparison Functions
@@ -305,64 +308,57 @@ upgrade_type() {
 # ============================================================================
 
 # Compute SHA256 hash of a file (cross-platform)
+if command -v shasum &>/dev/null; then
+  HASH_CMD="shasum -a 256"
+elif command -v sha256sum &>/dev/null; then
+  HASH_CMD="sha256sum"
+else
+  HASH_CMD="cksum"   # fallback when neither sha tool is available
+fi
 file_hash() {
-  local file="$1"
-  if command -v shasum &>/dev/null; then
-    shasum -a 256 "$file" 2>/dev/null | awk '{print $1}'
-  elif command -v sha256sum &>/dev/null; then
-    sha256sum "$file" 2>/dev/null | awk '{print $1}'
-  else
-    # Fallback: use cksum if neither sha tool available
-    cksum "$file" 2>/dev/null | awk '{print $1}'
-  fi
+  $HASH_CMD "$1" 2>/dev/null | awk '{print $1}'
 }
 
-# Read a file's hash from the manifest. Returns empty string if not found.
+# Read a path's hash from the previous manifest (exact path match). Prints
+# nothing when the path is not recorded or there is no manifest.
 manifest_hash() {
-  local file="$1"
-  local manifest_file=""
-  if [ -f ".company-os/manifest" ]; then
-    manifest_file=".company-os/manifest"
-  elif [ -f ".company-os-manifest" ]; then
-    manifest_file=".company-os-manifest"
-  fi
-  if [ -n "$manifest_file" ]; then
-    grep "  $file$" "$manifest_file" 2>/dev/null | awk '{print $1}' || true
-  fi
+  [ -n "$MANIFEST_FILE" ] || return 0
+  awk -v f="$1" '
+    /^#/ { next }
+    { i = index($0, "  "); if (i > 0 && substr($0, i + 2) == f) { print substr($0, 1, i - 1); exit } }
+  ' "$MANIFEST_FILE"
 }
 
-# Generate manifest of all template files after installation
+# The new manifest records, for every template-owned file, the hash of the
+# TEMPLATE copy that file is based on, never the hash of whatever is on disk.
+# A file the user edited therefore still reads as edited on the next upgrade.
+# A kept file with no known template copy is recorded as "unknown".
+# Lines are collected in $MANIFEST_NEW during the run (see record_manifest).
+record_manifest() {  # record_manifest <hash> <path>
+  echo "$1  $2" >> "$MANIFEST_NEW"
+}
+
+# Write .company-os/manifest from the recorded lines. Entries of the old
+# manifest that this run did not touch (for example an adapter left out with
+# --runtime) are kept when the file still exists and is a template file.
 generate_manifest() {
-  local version="$1"
+  local version="$1" tmp=".company-os/manifest.tmp" path
   mkdir -p .company-os
-  echo "# Company OS v$version manifest" > .company-os/manifest
-  echo "# Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> .company-os/manifest
-
-  # Hash all template-owned files
-  # os/ is the authoring source; .claude/ is a generated adapter (still tracked
-  # so Claude Code users can clone-and-go without running the build step)
-  for dir in os/agents os/skills os/playbooks os/hooks .claude/agents .claude/skills .claude/hooks tools .company-os/docs; do
-    if [ -d "$dir" ]; then
-      while IFS= read -r file; do
-        hash=$(file_hash "$file")
-        echo "$hash  $file" >> .company-os/manifest
-      done < <(find "$dir" -type f -not -name '*.user' 2>/dev/null | sort)
+  {
+    echo "# Company OS v$version manifest (hashes of the template copies)"
+    echo "# Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    awk '!seen[substr($0, index($0, "  ") + 2)]++' "$MANIFEST_NEW"
+    if [ -n "$MANIFEST_FILE" ]; then
+      awk 'NR == FNR { done[substr($0, index($0, "  ") + 2)] = 1; next }
+           /^#/ { next }
+           { i = index($0, "  "); if (i > 0 && !(substr($0, i + 2) in done)) print }' \
+        "$MANIFEST_NEW" "$MANIFEST_FILE" | while IFS= read -r line; do
+          path="${line#*  }"
+          if [ -f "$path" ] && [ -f "$SRC/$path" ]; then echo "$line"; fi
+        done
     fi
-  done
-}
-
-# Check if user modified a file (current hash differs from manifest hash)
-user_modified() {
-  local file="$1"
-  local recorded
-  recorded=$(manifest_hash "$file")
-  if [ -z "$recorded" ]; then
-    # Not in manifest — can't tell, assume not modified
-    return 1
-  fi
-  local current
-  current=$(file_hash "$file")
-  [ "$current" != "$recorded" ]
+  } > "$tmp"
+  mv "$tmp" .company-os/manifest
 }
 
 # ============================================================================
@@ -396,20 +392,25 @@ extract_changelog() {
 # ============================================================================
 
 create_backup() {
-  local version="$1"
-  local backup_dir=".company-os/backup/$(date +%Y%m%d-%H%M%S)-v${version}"
+  local label="$1"
+  local backup_dir=".company-os/backup/$(date +%Y%m%d-%H%M%S)-v${label}"
+  local p
   mkdir -p "$backup_dir"
 
-  for dir in os/agents os/skills os/playbooks os/hooks .claude/agents .claude/skills .claude/hooks tools; do
-    if [ -d "$dir" ]; then
-      local target_dir="$backup_dir/$dir"
-      mkdir -p "$(dirname "$target_dir")"
-      cp -r "$dir" "$target_dir"
+  for p in os/agents os/skills os/playbooks os/hooks .claude/agents .claude/skills .claude/hooks \
+           .cursor .codex tools .company-os/docs; do
+    if [ -d "$p" ]; then
+      mkdir -p "$(dirname "$backup_dir/$p")"
+      cp -R "$p" "$backup_dir/$p"
     fi
   done
-
-  # Also backup CLAUDE.md
-  [ -f "CLAUDE.md" ] && cp "CLAUDE.md" "$backup_dir/"
+  for p in CLAUDE.md AGENTS.md GEMINI.md .cursorrules \
+           .company-os/version .company-os/manifest; do
+    if [ -f "$p" ]; then
+      mkdir -p "$(dirname "$backup_dir/$p")"
+      cp "$p" "$backup_dir/$p"
+    fi
+  done
 
   echo "$backup_dir"
 }
@@ -462,7 +463,6 @@ if [ "$HAS_CLAUDE_DIR" = true ] || [ "$HAS_CLAUDE_MD" = true ]; then
   fi
   echo ""
 fi
-
 # --- Determine download reference ---
 DOWNLOAD_REF="$BRANCH"
 if [ -n "$LOCAL_SOURCE" ]; then
@@ -484,6 +484,8 @@ fi
 # --- Download ---
 WORK_DIR=$(mktemp -d)
 trap "rm -rf $WORK_DIR" EXIT
+MANIFEST_NEW="$WORK_DIR/manifest.new"
+: > "$MANIFEST_NEW"
 
 # Find the extracted directory. GitHub names it company-os-<ref>; a local
 # archive may use another top-level folder or none (plain `git archive`).
@@ -646,7 +648,7 @@ fi
 # ============================================================================
 # Backup (if requested or auto-enabled for major upgrades)
 # ============================================================================
-if [ "$BACKUP" = true ] && [ "$DRY_RUN" = false ] && [ "$LOCAL_VERSION" != "unknown" ]; then
+if [ "$BACKUP" = true ] && [ "$DRY_RUN" = false ] && [ "$IS_EXISTING_INSTALL" = true ]; then
   backup_path=$(create_backup "$LOCAL_VERSION")
   echo -e "  ${BLUE}Backup${NC}   Created at $backup_path"
   echo ""
@@ -656,151 +658,174 @@ fi
 # Smart Merge Functions
 # ============================================================================
 
-# merge_directory: Copies items from src_dir into dst_dir individually.
-# Uses manifest for three-way conflict detection when available.
-# New items are always added. Existing items use manifest-based logic.
+# Every template-owned file goes through merge_template_file, a three-way
+# merge between the template copy the user last got (its hash in the old
+# manifest = "base"), the file on disk, and the incoming template copy:
+#
+#   missing on disk                     -> add the template copy
+#   disk == incoming                    -> nothing to do
+#   disk == base                        -> not edited: update to the template
+#   disk != base, incoming == base      -> edited, template unchanged: keep it
+#   edited and template changed (or no
+#   base to compare, e.g. no manifest):
+#     --force    -> save <path>.user (yours) and <path>.new (template) under
+#                   .company-os/conflicts/, then install the template copy
+#     no --force -> keep the user's file and report it
+#
+# Sets MERGE_RESULT to: added | current | updated | kept | conflict | held.
+# Paths saved in conflicts/ are appended to $CONFLICT_LOG.
+CONFLICT_LOG="$WORK_DIR/conflicts.log"
+HELD_LOG="$WORK_DIR/held.log"
+: > "$CONFLICT_LOG"
+: > "$HELD_LOG"
+CONFLICT_USER_COPIES=0
+
+save_conflict_copies() {  # save_conflict_copies <src_file> <dst_file> <with_new:true|false>
+  local src="$1" dst="$2" with_new="$3" cbase=".company-os/conflicts/$2" ucopy ncopy
+  ucopy="$cbase.user"
+  if [ "$DRY_RUN" = false ]; then
+    mkdir -p "$(dirname "$cbase")"
+    cp "$dst" "$ucopy"
+  fi
+  echo "$ucopy" >> "$CONFLICT_LOG"
+  CONFLICT_USER_COPIES=$((CONFLICT_USER_COPIES + 1))
+  if [ "$with_new" = true ]; then
+    ncopy="$cbase.new"
+    [ "$DRY_RUN" = false ] && cp "$src" "$ncopy"
+  fi
+}
+
+merge_template_file() {  # merge_template_file <src_file> <dst_file>
+  local src="$1" dst="$2" inc base disk
+  inc=$(file_hash "$src")
+  if [ ! -e "$dst" ] && [ ! -L "$dst" ]; then
+    if [ "$DRY_RUN" = false ]; then
+      mkdir -p "$(dirname "$dst")"
+      cp "$src" "$dst"
+    fi
+    record_manifest "$inc" "$dst"
+    MERGE_RESULT=added
+    return
+  fi
+  if [ ! -f "$dst" ]; then
+    # Something else (a folder, a broken link) is in the way: leave it alone.
+    echo "$dst (not a regular file)" >> "$HELD_LOG"
+    MERGE_RESULT=held
+    return
+  fi
+  disk=$(file_hash "$dst")
+  if [ "$disk" = "$inc" ]; then
+    record_manifest "$inc" "$dst"
+    MERGE_RESULT=current
+    return
+  fi
+  base=$(manifest_hash "$dst")
+  if [ -n "$base" ] && [ "$disk" = "$base" ]; then
+    [ "$DRY_RUN" = false ] && cp "$src" "$dst"
+    record_manifest "$inc" "$dst"
+    MERGE_RESULT=updated
+    return
+  fi
+  if [ -n "$base" ] && [ "$inc" = "$base" ]; then
+    record_manifest "$base" "$dst"
+    MERGE_RESULT=kept
+    return
+  fi
+  if [ "$FORCE" = true ]; then
+    # With a base this is a real conflict: keep both sides. Without one (no
+    # manifest) the new copy is the live file, so only the user's is saved.
+    if [ -n "$base" ]; then
+      save_conflict_copies "$src" "$dst" true
+    else
+      save_conflict_copies "$src" "$dst" false
+    fi
+    [ "$DRY_RUN" = false ] && cp "$src" "$dst"
+    record_manifest "$inc" "$dst"
+    MERGE_RESULT=conflict
+    return
+  fi
+  # Keep the user's file. Record the template copy it is based on, or
+  # "unknown" when there is none, so the next upgrade still sees the edit AND
+  # the pending template change (recording the incoming hash would make a
+  # later --force read it as "template unchanged" and skip it).
+  record_manifest "${base:-unknown}" "$dst"
+  echo "$dst" >> "$HELD_LOG"
+  MERGE_RESULT=held
+}
+
+# merge_directory: merges every file under src_dir into dst_dir with
+# merge_template_file. Files the template does not have (your own tools,
+# notes inside a skill folder) are never touched.
 # Usage: merge_directory <src_dir> <dst_dir> <label>
 merge_directory() {
-  local src_dir="$1" dst_dir="$2" label="$3"
-  local new_count=0 existing_count=0 conflict_count=0 auto_updated=0
+  local src_dir="${1%/}" dst_dir="${2%/}" label="$3"
+  local added=0 current=0 updated=0 kept=0 conflict=0 held=0 f rel
 
   if [ ! -d "$src_dir" ]; then
     return
   fi
 
-  if [ "$DRY_RUN" = false ]; then
-    mkdir -p "$dst_dir"
-  fi
+  while IFS= read -r f; do
+    rel="${f#"$src_dir"/}"
+    merge_template_file "$f" "$dst_dir/$rel"
+    case "$MERGE_RESULT" in
+      added)    added=$((added + 1)) ;;
+      current)  current=$((current + 1)) ;;
+      updated)  updated=$((updated + 1)) ;;
+      kept)     kept=$((kept + 1)) ;;
+      conflict) conflict=$((conflict + 1)) ;;
+      held)     held=$((held + 1)) ;;
+    esac
+  done < <(find "$src_dir" -type f 2>/dev/null | sort)
 
-  for item in "$src_dir"/*; do
-    [ -e "$item" ] || continue  # skip if glob matched nothing
-    local name
-    name=$(basename "$item")
+  ADDED=$((ADDED + added))
+  UPDATED=$((UPDATED + updated + conflict))
+  SKIPPED=$((SKIPPED + current + kept + held))
+  CONFLICTS=$((CONFLICTS + conflict))
+  KEPT_EDITS=$((KEPT_EDITS + kept + held))
 
-    if [ -e "$dst_dir/$name" ]; then
-      # --- Manifest-based three-way merge ---
-      if [ -f ".company-os/manifest" ] || [ -f ".company-os-manifest" ]; then
-        # Determine if user modified the existing file(s)
-        local has_user_mods=false
-        if [ -d "$dst_dir/$name" ]; then
-          # Directory: check if any file inside was modified
-          while IFS= read -r subfile; do
-            if user_modified "$subfile"; then
-              has_user_mods=true
-              break
-            fi
-          done < <(find "$dst_dir/$name" -type f 2>/dev/null)
-        else
-          # Single file
-          if user_modified "$dst_dir/$name"; then
-            has_user_mods=true
-          fi
-        fi
+  local parts=""
+  [ "$added" -gt 0 ] && parts="$parts, $added new"
+  [ "$updated" -gt 0 ] && parts="$parts, $updated updated"
+  [ "$conflict" -gt 0 ] && parts="$parts, $conflict replaced (your copies saved)"
+  [ "$kept" -gt 0 ] && parts="$parts, $kept kept (your edits)"
+  [ "$held" -gt 0 ] && parts="$parts, $held kept (your edits; template changed)"
+  [ "$current" -gt 0 ] && parts="$parts, $current unchanged"
+  parts="${parts#, }"
 
-        if [ "$has_user_mods" = true ]; then
-          # User modified this — check if template also changed
-          # (We can't easily diff template versions, so if user modified + force, warn about conflict)
-          if [ "$FORCE" = true ]; then
-            if [ "$DRY_RUN" = false ]; then
-              # Save conflict copies
-              # Keep the relative path so same-named files in different folders cannot collide.
-              local cdir=".company-os/conflicts/$dst_dir"
-              mkdir -p "$cdir"
-              rm -rf "$cdir/${name}.user" "$cdir/${name}.new"
-              cp -r "$dst_dir/$name" "$cdir/${name}.user"
-              cp -r "$item" "$cdir/${name}.new"
-              rm -rf "$dst_dir/$name"
-              cp -r "$item" "$dst_dir/$name"
-            fi
-            conflict_count=$((conflict_count + 1))
-            CONFLICTS=$((CONFLICTS + 1))
-            UPDATED=$((UPDATED + 1))
-          else
-            existing_count=$((existing_count + 1))
-            SKIPPED=$((SKIPPED + 1))
-          fi
-        else
-          # User did NOT modify — safe to auto-update
-          if [ "$DRY_RUN" = false ]; then
-            rm -rf "$dst_dir/$name"
-            cp -r "$item" "$dst_dir/$name"
-          fi
-          auto_updated=$((auto_updated + 1))
-          UPDATED=$((UPDATED + 1))
-        fi
-      else
-        # --- No manifest: fall back to original skip/force behavior ---
-        if [ "$FORCE" = true ]; then
-          if [ "$DRY_RUN" = false ]; then
-            rm -rf "$dst_dir/$name"
-            cp -r "$item" "$dst_dir/$name"
-          fi
-          UPDATED=$((UPDATED + 1))
-        else
-          existing_count=$((existing_count + 1))
-          SKIPPED=$((SKIPPED + 1))
-        fi
-      fi
+  if [ "$conflict" -gt 0 ]; then
+    echo -e "  ${YELLOW}Updated${NC}  $label ($parts)"
+  elif [ $((added + updated)) -gt 0 ]; then
+    if [ $((current + updated + kept + held)) -eq 0 ]; then
+      echo -e "  ${GREEN}Created${NC}  $label ($added files)"
     else
-      # New item — always add
-      if [ "$DRY_RUN" = false ]; then
-        cp -r "$item" "$dst_dir/$name"
-      fi
-      new_count=$((new_count + 1))
-      ADDED=$((ADDED + 1))
+      echo -e "  ${GREEN}Updated${NC}  $label ($parts)"
     fi
-  done
-
-  # Report
-  if [ "$conflict_count" -gt 0 ]; then
-    echo -e "  ${RED}Conflict${NC} $label ($conflict_count conflicts — see .company-os/conflicts/)"
-  elif [ "$auto_updated" -gt 0 ] && [ "$new_count" -gt 0 ]; then
-    echo -e "  ${GREEN}Updated${NC}  $label ($new_count new, $auto_updated auto-updated)"
-  elif [ "$auto_updated" -gt 0 ]; then
-    echo -e "  ${GREEN}Updated${NC}  $label ($auto_updated auto-updated)"
-  elif [ "$FORCE" = true ] && [ "$existing_count" -eq 0 ] && [ "$new_count" -gt 0 ]; then
-    echo -e "  ${GREEN}Created${NC}  $label ($new_count items)"
-  elif [ "$new_count" -gt 0 ] && [ "$existing_count" -gt 0 ]; then
-    echo -e "  ${GREEN}Added${NC}    $label ($new_count new, $existing_count existing preserved)"
-  elif [ "$new_count" -gt 0 ]; then
-    echo -e "  ${GREEN}Created${NC}  $label ($new_count items)"
-  elif [ "$FORCE" = true ]; then
-    echo -e "  ${YELLOW}Updated${NC}  $label"
+  elif [ "$held" -gt 0 ] || [ "$kept" -gt 0 ]; then
+    echo -e "  ${BLUE}Kept${NC}     $label ($parts)"
   else
-    echo -e "  ${DIM}Exists${NC}   $label ($existing_count items preserved)"
+    echo -e "  ${DIM}Exists${NC}   $label (up to date)"
   fi
 }
 
-# merge_file: Copy a single template file into the project.
-# Skips if file exists and user has not requested --force. Used for generated
-# top-level adapter files (AGENTS.md, GEMINI.md, .cursorrules) which can always
-# be regenerated locally via tools/build/build.sh.
+# merge_file: one template-owned top-level file (AGENTS.md, GEMINI.md,
+# .cursorrules), merged with merge_template_file.
 # Usage: merge_file <src_file> <dst_file>
 merge_file() {
   local src_file="$1" dst_file="$2"
   if [ ! -f "$src_file" ]; then
     return
   fi
-  if [ -f "$dst_file" ] && [ "$FORCE" = false ]; then
-    if [ "$DRY_RUN" = true ]; then
-      echo "    SKIP  $dst_file (exists)"
-    fi
-    SKIPPED=$((SKIPPED + 1))
-    return
-  fi
-  if [ "$DRY_RUN" = true ]; then
-    if [ -f "$dst_file" ]; then
-      echo "    UPDATE  $dst_file"
-    else
-      echo "    CREATE  $dst_file"
-    fi
-    return
-  fi
-  mkdir -p "$(dirname "$dst_file")"
-  cp "$src_file" "$dst_file"
-  if [ -f "$dst_file" ] && [ ! -L "$dst_file" ]; then
-    CREATED=$((CREATED + 1))
-  fi
+  merge_template_file "$src_file" "$dst_file"
+  case "$MERGE_RESULT" in
+    added)    ADDED=$((ADDED + 1)); echo -e "  ${GREEN}Created${NC}  $dst_file" ;;
+    updated)  UPDATED=$((UPDATED + 1)); echo -e "  ${GREEN}Updated${NC}  $dst_file" ;;
+    conflict) UPDATED=$((UPDATED + 1)); CONFLICTS=$((CONFLICTS + 1))
+              echo -e "  ${YELLOW}Updated${NC}  $dst_file (your copy saved under .company-os/conflicts/)" ;;
+    kept)     SKIPPED=$((SKIPPED + 1)); KEPT_EDITS=$((KEPT_EDITS + 1)); echo -e "  ${BLUE}Kept${NC}     $dst_file (your edits)" ;;
+    held)     SKIPPED=$((SKIPPED + 1)); KEPT_EDITS=$((KEPT_EDITS + 1)); echo -e "  ${BLUE}Kept${NC}     $dst_file (your edits; template changed)" ;;
+    *)        SKIPPED=$((SKIPPED + 1)) ;;
+  esac
 }
 
 # merge_settings_json: Merges Company OS permissions and hooks into existing settings.json.
@@ -913,15 +938,30 @@ PYEOF
 
 # merge_claude_md: Appends Company OS section to existing CLAUDE.md.
 # Detects the "## Company OS Overview" marker to avoid double-appending.
+# The Company OS section runs from that marker to the end of the file. Its
+# template hash is recorded in the manifest under "CLAUDE.md#company-os", so
+# an upgrade refreshes an unedited section and saves a copy of CLAUDE.md
+# under .company-os/conflicts/ before replacing an edited one (text you added
+# after the section counts as an edit).
 # Usage: merge_claude_md <src_file> <dst_file>
+CLAUDE_MD_KEY="CLAUDE.md#company-os"
+claude_section_hash() {  # hash of the Company OS section of $1
+  local tmp="$WORK_DIR/claude-section"
+  sed -n '/## Company OS Overview/,$p' "$1" > "$tmp"
+  file_hash "$tmp"
+}
+
 merge_claude_md() {
   local src_file="$1" dst_file="$2"
+  local inc_section
+  inc_section=$(claude_section_hash "$src_file")
 
   if [ ! -f "$dst_file" ]; then
     # No existing CLAUDE.md — just copy
     if [ "$DRY_RUN" = false ]; then
       cp "$src_file" "$dst_file"
     fi
+    record_manifest "$inc_section" "$CLAUDE_MD_KEY"
     echo -e "  ${GREEN}Created${NC}  CLAUDE.md"
     CREATED=$((CREATED + 1))
     return
@@ -929,56 +969,92 @@ merge_claude_md() {
 
   # Check if Company OS section already exists
   if grep -q "## Company OS Overview" "$dst_file" 2>/dev/null; then
-    if [ "$FORCE" = true ]; then
-      if [ "$DRY_RUN" = true ]; then
-        echo -e "  ${DIM}Preview${NC}  CLAUDE.md (would refresh Company OS section)"
-        UPDATED=$((UPDATED + 1))
-        return
-      fi
-
-      # Extract user content (everything before Company OS section) and replace Company OS part
-      local marker_line
-      marker_line=$(grep -n "## Company OS Overview" "$dst_file" | head -1 | cut -d: -f1)
-
-      # Find the separator line (---) just before the marker, if any
-      local start_line=$marker_line
-      if [ "$marker_line" -gt 1 ]; then
-        local prev_line=$((marker_line - 1))
-        local prev_content
-        prev_content=$(sed -n "${prev_line}p" "$dst_file")
-        if [ "$prev_content" = "---" ]; then
-          start_line=$prev_line
-        fi
-        # Check one more line back for blank line before ---
-        if [ "$start_line" -gt 1 ]; then
-          local prev2=$((start_line - 1))
-          local prev2_content
-          prev2_content=$(sed -n "${prev2}p" "$dst_file")
-          if [ -z "$prev2_content" ]; then
-            start_line=$prev2
-          fi
-        fi
-      fi
-
-      # Keep user content, replace Company OS section
-      local user_content
-      user_content=$(head -n "$((start_line - 1))" "$dst_file")
-
-      # Extract Company OS section from source (everything from ## Company OS Overview onward)
-      local cos_section
-      cos_section=$(sed -n '/## Company OS Overview/,$p' "$src_file")
-
-      printf '%s\n\n---\n\n%s\n' "$user_content" "$cos_section" > "$dst_file"
-      echo -e "  ${YELLOW}Updated${NC}  CLAUDE.md (Company OS section refreshed, user content preserved)"
-      UPDATED=$((UPDATED + 1))
-    else
-      echo -e "  ${DIM}Exists${NC}   CLAUDE.md (Company OS section already present)"
+    local disk_section base
+    disk_section=$(claude_section_hash "$dst_file")
+    base=$(manifest_hash "$CLAUDE_MD_KEY")
+    if [ "$disk_section" = "$inc_section" ]; then
+      record_manifest "$inc_section" "$CLAUDE_MD_KEY"
+      echo -e "  ${DIM}Exists${NC}   CLAUDE.md (Company OS section up to date)"
       SKIPPED=$((SKIPPED + 1))
+      return
     fi
+    local edited=true
+    [ -n "$base" ] && [ "$disk_section" = "$base" ] && edited=false
+    if [ "$edited" = true ] && [ -n "$base" ] && [ "$inc_section" = "$base" ]; then
+      record_manifest "$base" "$CLAUDE_MD_KEY"
+      echo -e "  ${BLUE}Kept${NC}     CLAUDE.md (your edits to the Company OS section; template unchanged)"
+      SKIPPED=$((SKIPPED + 1))
+      KEPT_EDITS=$((KEPT_EDITS + 1))
+      return
+    fi
+    if [ "$edited" = true ] && [ "$FORCE" = false ]; then
+      record_manifest "${base:-unknown}" "$CLAUDE_MD_KEY"
+      echo -e "  ${DIM}Exists${NC}   CLAUDE.md (Company OS section kept; rerun with --force to refresh it, your copy is saved first)"
+      echo "CLAUDE.md (Company OS section)" >> "$HELD_LOG"
+      SKIPPED=$((SKIPPED + 1))
+      KEPT_EDITS=$((KEPT_EDITS + 1))
+      return
+    fi
+
+    if [ "$edited" = true ]; then
+      save_conflict_copies "$src_file" "$dst_file" false
+      CONFLICTS=$((CONFLICTS + 1))
+    fi
+    record_manifest "$inc_section" "$CLAUDE_MD_KEY"
+    if [ "$DRY_RUN" = true ]; then
+      echo -e "  ${DIM}Preview${NC}  CLAUDE.md (would refresh Company OS section)"
+      UPDATED=$((UPDATED + 1))
+      return
+    fi
+
+    # Extract user content (everything before Company OS section) and replace Company OS part
+    local marker_line
+    marker_line=$(grep -n "## Company OS Overview" "$dst_file" | head -1 | cut -d: -f1)
+
+    # Find the separator line (---) just before the marker, if any
+    local start_line=$marker_line
+    if [ "$marker_line" -gt 1 ]; then
+      local prev_line=$((marker_line - 1))
+      local prev_content
+      prev_content=$(sed -n "${prev_line}p" "$dst_file")
+      if [ "$prev_content" = "---" ]; then
+        start_line=$prev_line
+      fi
+      # Check one more line back for blank line before ---
+      if [ "$start_line" -gt 1 ]; then
+        local prev2=$((start_line - 1))
+        local prev2_content
+        prev2_content=$(sed -n "${prev2}p" "$dst_file")
+        if [ -z "$prev2_content" ]; then
+          start_line=$prev2
+        fi
+      fi
+    fi
+
+    # Keep user content, replace Company OS section
+    local user_content
+    user_content=$(head -n "$((start_line - 1))" "$dst_file")
+
+    # Extract Company OS section from source (everything from ## Company OS Overview onward)
+    local cos_section
+    cos_section=$(sed -n '/## Company OS Overview/,$p' "$src_file")
+
+    if [ -n "$user_content" ]; then
+      printf '%s\n\n---\n\n%s\n' "$user_content" "$cos_section" > "$dst_file"
+    else
+      printf '%s\n' "$cos_section" > "$dst_file"
+    fi
+    if [ "$edited" = true ]; then
+      echo -e "  ${YELLOW}Updated${NC}  CLAUDE.md (Company OS section refreshed; your previous CLAUDE.md is saved under .company-os/conflicts/)"
+    else
+      echo -e "  ${GREEN}Updated${NC}  CLAUDE.md (Company OS section refreshed, user content preserved)"
+    fi
+    UPDATED=$((UPDATED + 1))
     return
   fi
 
   # No Company OS section found — append it
+  record_manifest "$inc_section" "$CLAUDE_MD_KEY"
   if [ "$DRY_RUN" = true ]; then
     echo -e "  ${DIM}Preview${NC}  CLAUDE.md (would append Company OS section)"
     MERGED=$((MERGED + 1))
@@ -1094,12 +1170,12 @@ else
 fi
 
 # --- .company-os/docs/ (template-owned user guides, diagrams, skill schema) ---
-# These docs belong to the template, so an upgrade refreshes them. A copy you
-# edited (its hash differs from the manifest) is saved next to it as
-# <name>.user before the new version replaces it. Files not in the manifest
-# (installs before 1.12.0 did not record docs) count as unedited.
+# These docs belong to the template, so an upgrade refreshes them, using the
+# same three-way rules as merge_template_file. A copy you edited is saved next
+# to it as <name>.user before the new version replaces it. Without a manifest
+# entry to compare against, a doc that differs counts as edited.
 # VERSION is NOT copied — it would conflict with the user's app version file.
-DOCS_ADDED=0 DOCS_REFRESHED=0 DOCS_USER_SAVED=0 DOCS_KEPT=0
+DOCS_ADDED=0 DOCS_REFRESHED=0 DOCS_USER_SAVED=0 DOCS_KEPT=0 DOCS_HELD=0
 IS_UPGRADE=false
 if [ "$FORCE" = true ] || { [ "$LOCAL_VERSION" != "unknown" ] && [ "$LOCAL_VERSION" != "$INCOMING_VERSION" ]; }; then
   IS_UPGRADE=true
@@ -1108,36 +1184,50 @@ if [ -d "$SRC/.company-os/docs" ]; then
   while IFS= read -r doc_file; do
     doc_rel="${doc_file#"$SRC"/.company-os/docs/}"
     doc_dst=".company-os/docs/$doc_rel"
+    doc_inc=$(file_hash "$doc_file")
     if [ ! -f "$doc_dst" ]; then
       if [ "$DRY_RUN" = false ]; then
         mkdir -p "$(dirname "$doc_dst")"
         cp "$doc_file" "$doc_dst"
       fi
+      record_manifest "$doc_inc" "$doc_dst"
       DOCS_ADDED=$((DOCS_ADDED + 1))
-    elif ! cmp -s "$doc_file" "$doc_dst"; then
-      if user_modified "$doc_dst"; then
-        if [ "$IS_UPGRADE" = true ]; then
-          if [ "$DRY_RUN" = false ]; then
-            cp "$doc_dst" "$doc_dst.user"
-            cp "$doc_file" "$doc_dst"
-          else
-            echo -e "    ${DIM}Would save${NC} $doc_dst.user (your edits), then refresh $doc_dst"
-          fi
-          DOCS_USER_SAVED=$((DOCS_USER_SAVED + 1))
-        else
-          DOCS_KEPT=$((DOCS_KEPT + 1))
-        fi
+      continue
+    fi
+    doc_disk=$(file_hash "$doc_dst")
+    if [ "$doc_disk" = "$doc_inc" ]; then
+      record_manifest "$doc_inc" "$doc_dst"
+      continue
+    fi
+    doc_base=$(manifest_hash "$doc_dst")
+    if [ -n "$doc_base" ] && [ "$doc_disk" = "$doc_base" ]; then
+      [ "$DRY_RUN" = false ] && cp "$doc_file" "$doc_dst"
+      record_manifest "$doc_inc" "$doc_dst"
+      DOCS_REFRESHED=$((DOCS_REFRESHED + 1))
+    elif [ -n "$doc_base" ] && [ "$doc_inc" = "$doc_base" ]; then
+      # You edited it and the template did not change it: keep yours.
+      record_manifest "$doc_base" "$doc_dst"
+      DOCS_KEPT=$((DOCS_KEPT + 1))
+    elif [ "$IS_UPGRADE" = true ]; then
+      doc_user="$doc_dst.user"
+      if [ "$DRY_RUN" = false ]; then
+        cp "$doc_dst" "$doc_user"
+        cp "$doc_file" "$doc_dst"
       else
-        if [ "$DRY_RUN" = false ]; then
-          cp "$doc_file" "$doc_dst"
-        fi
-        DOCS_REFRESHED=$((DOCS_REFRESHED + 1))
+        echo -e "    ${DIM}Would save${NC} $doc_user (your edits), then refresh $doc_dst"
       fi
+      record_manifest "$doc_inc" "$doc_dst"
+      DOCS_USER_SAVED=$((DOCS_USER_SAVED + 1))
+    else
+      record_manifest "${doc_base:-unknown}" "$doc_dst"
+      echo "$doc_dst" >> "$HELD_LOG"
+      DOCS_HELD=$((DOCS_HELD + 1))
     fi
   done < <(find "$SRC/.company-os/docs" -type f | sort)
   ADDED=$((ADDED + DOCS_ADDED))
   UPDATED=$((UPDATED + DOCS_REFRESHED + DOCS_USER_SAVED))
-  SKIPPED=$((SKIPPED + DOCS_KEPT))
+  SKIPPED=$((SKIPPED + DOCS_KEPT + DOCS_HELD))
+  KEPT_EDITS=$((KEPT_EDITS + DOCS_KEPT + DOCS_HELD))
   docs_verb="Updated"
   [ $((DOCS_REFRESHED + DOCS_USER_SAVED)) -eq 0 ] && docs_verb="Created"
   [ "$DRY_RUN" = true ] && docs_verb="Preview"
@@ -1150,7 +1240,10 @@ if [ -d "$SRC/.company-os/docs" ]; then
     echo -e "  ${YELLOW}Note${NC}     $DOCS_USER_SAVED doc(s) you edited were saved as <name>.user next to the new copy"
   fi
   if [ "$DOCS_KEPT" -gt 0 ]; then
-    echo -e "  ${DIM}Kept${NC}     $DOCS_KEPT edited doc(s) in .company-os/docs/ (rerun with --force to refresh them; your edits are kept as <name>.user)"
+    echo -e "  ${BLUE}Kept${NC}     $DOCS_KEPT doc(s) you edited in .company-os/docs/ (the template did not change them)"
+  fi
+  if [ "$DOCS_HELD" -gt 0 ]; then
+    echo -e "  ${DIM}Kept${NC}     $DOCS_HELD edited doc(s) in .company-os/docs/ (rerun with --force to refresh them; your edits are kept as <name>.user)"
   fi
 fi
 
@@ -1264,6 +1357,18 @@ if [ "$DRY_RUN" = false ] && [ "$INCOMING_VERSION" != "unknown" ]; then
   generate_manifest "$INCOMING_VERSION"
 fi
 
+# print_paths <log> <max>: list paths from a log, at most <max> of them.
+print_paths() {
+  local log="$1" max="$2" total
+  total=$(wc -l < "$log" | tr -d ' ')
+  head -n "$max" "$log" | while IFS= read -r line; do
+    echo -e "    ${DIM}$line${NC}"
+  done
+  if [ "$total" -gt "$max" ]; then
+    echo -e "    ${DIM}... and $((total - max)) more${NC}"
+  fi
+}
+
 # --- Summary ---
 echo ""
 echo -e "  ${DIM}─────────────────────────────────────${NC}"
@@ -1276,8 +1381,9 @@ if [ "$DRY_RUN" = true ]; then
     echo -e "  ${GREEN}Preview:${NC} Would create $CREATED, add $ADDED, merge $MERGED, update $UPDATED, skip $SKIPPED."
   fi
   if [ "$CONFLICTS" -gt 0 ]; then
-    echo -e "  ${YELLOW}Warning:${NC} $CONFLICTS file(s) modified by you AND changed in template."
-    echo -e "  ${DIM}These will be saved to .company-os/conflicts/ on upgrade.${NC}"
+    echo -e "  ${YELLOW}Warning:${NC} $CONFLICTS file(s) differ from the new template and may hold your edits."
+    echo -e "  ${DIM}Your copies would be saved first, at:${NC}"
+    print_paths "$CONFLICT_LOG" 15
   fi
   echo ""
   echo -e "  ${DIM}Run without --dry-run to apply these changes.${NC}"
@@ -1285,7 +1391,9 @@ else
   TOTAL=$((CREATED + ADDED + UPDATED + MERGED))
   if [ "$TOTAL" -eq 0 ] && [ "$SKIPPED" -gt 0 ]; then
     echo -e "  ${GREEN}Done!${NC} Already installed — $SKIPPED items unchanged."
-    echo -e "  ${DIM}Use --force to update Company OS files${NC}"
+    if [ -s "$HELD_LOG" ]; then
+      echo -e "  ${DIM}Use --force to update the files you edited (your copies are saved first)${NC}"
+    fi
   else
     if [ "$LOCAL_VERSION" != "unknown" ] && [ "$INCOMING_VERSION" != "unknown" ] && [ "$LOCAL_VERSION" != "$INCOMING_VERSION" ]; then
       echo -e "  ${GREEN}Done!${NC} Upgraded $LOCAL_VERSION → $INCOMING_VERSION"
@@ -1295,8 +1403,15 @@ else
   fi
   if [ "$CONFLICTS" -gt 0 ]; then
     echo ""
-    echo -e "  ${YELLOW}$CONFLICTS conflict(s) detected${NC} — your modified versions saved to .company-os/conflicts/"
+    echo -e "  ${YELLOW}$CONFLICTS conflict(s) detected${NC} — $CONFLICT_USER_COPIES copy(ies) of your edited files saved at .company-os/conflicts/:"
+    print_paths "$CONFLICT_LOG" 15
     echo -e "  ${DIM}Review the conflicts and merge manually.${NC}"
+  fi
+  if [ -s "$HELD_LOG" ]; then
+    echo ""
+    echo -e "  ${BLUE}Kept your edits${NC} in $(wc -l < "$HELD_LOG" | tr -d ' ') file(s) the template also changed:"
+    print_paths "$HELD_LOG" 15
+    echo -e "  ${DIM}To get the template version, rerun with --force (your copies are saved under .company-os/conflicts/ first).${NC}"
   fi
   if [ "$INCOMING_VERSION" != "unknown" ]; then
     echo ""
@@ -1317,7 +1432,7 @@ installed_paths() {
 }
 
 # --- Next steps (only on fresh install) ---
-if [ "$LOCAL_VERSION" = "unknown" ] && [ "$DRY_RUN" = false ]; then
+if [ "$IS_EXISTING_INSTALL" = false ] && [ "$DRY_RUN" = false ]; then
   echo -e "  ${BOLD}Next steps${NC} (one block per installed runtime):"
   echo ""
   SHOWN_RUNTIME=false
@@ -1379,7 +1494,7 @@ if [ "$LOCAL_VERSION" = "unknown" ] && [ "$DRY_RUN" = false ]; then
 fi
 
 # --- Upgrade next steps (on subsequent installs) ---
-if [ "$LOCAL_VERSION" != "unknown" ] && [ "$DRY_RUN" = false ]; then
+if [ "$IS_EXISTING_INSTALL" = true ] && [ "$DRY_RUN" = false ]; then
   TOTAL_CHANGES=$((CREATED + ADDED + UPDATED + MERGED))
   if [ "$TOTAL_CHANGES" -gt 0 ] || [ "$CONFLICTS" -gt 0 ]; then
     echo -e "  ${BOLD}Next steps:${NC}"
@@ -1389,7 +1504,8 @@ if [ "$LOCAL_VERSION" != "unknown" ] && [ "$DRY_RUN" = false ]; then
     # If conflicts exist, that's the top priority
     if [ "$CONFLICTS" -gt 0 ]; then
       echo -e "    ${BLUE}${STEP}.${NC} Review conflicts in ${BOLD}.company-os/conflicts/${NC}:"
-      echo -e "       ${DIM}Each conflict keeps its folder path (e.g. tools/qa/run.sh.user is yours, .new is the template)${NC}"
+      echo -e "       ${DIM}Each conflict keeps its folder path (e.g. tools/qa/run.sh.user is yours, .new is the template;${NC}"
+      echo -e "       ${DIM}with no .new, the file in place is the template copy).${NC}"
       echo -e "       ${DIM}Merge the changes you want to keep, then delete the conflict files.${NC}"
       STEP=$((STEP + 1))
       echo ""
@@ -1403,8 +1519,9 @@ if [ "$LOCAL_VERSION" != "unknown" ] && [ "$DRY_RUN" = false ]; then
 
     # Commit the upgrade
     if [ -d ".git" ]; then
+      commit_msg="chore: upgrade Company OS ${LOCAL_VERSION} → ${INCOMING_VERSION}"
       echo -e "    ${BLUE}${STEP}.${NC} Commit the upgrade:"
-      echo -e "       ${DIM}$ git add $(installed_paths) && git commit -m \"chore: upgrade Company OS ${LOCAL_VERSION} → ${INCOMING_VERSION}\"${NC}"
+      echo -e "       ${DIM}$ git add $(installed_paths) && git commit -m \"$commit_msg\"${NC}"
       STEP=$((STEP + 1))
       echo ""
     fi
