@@ -6,7 +6,7 @@ Please report security problems privately. Do not open a public issue.
 
 Use GitHub private vulnerability reporting: <https://github.com/vibbs/company-os/security/advisories/new>
 
-Private reporting is not enabled on the repository yet, so that link may not work. If it does not, open a GitHub issue titled "Security contact request". Put no details in it. A maintainer will reply with a private way to send your report.
+If you cannot use that form, open a GitHub issue titled "Security contact request". Put no details in it. A maintainer will reply with a private way to send your report.
 
 Include what you found, the steps to reproduce it, and which version you tested (`.company-os/version`). We will acknowledge your report, keep you updated while we fix it, and credit you in the release notes if you want.
 

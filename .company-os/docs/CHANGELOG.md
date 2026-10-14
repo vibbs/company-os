@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
-## [1.12.0] - 2026-10-14
+## [1.12.0] - 2026-10-15
 
 **Upgrade notes:**
 - **Commit or back up your project before upgrading.**
