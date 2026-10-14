@@ -39,9 +39,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - **Tool hardening**: every tool script answers `-h` / `--help`; `validate.sh --all` checks every artifact; config is read through one helper (`tools/lib/config.sh`, `cfg_get`); `setup.sh --help`
 - **Test suite and CI**: `bash tests/run.sh` runs seven test files (config, tool help, artifacts, build, diagrams, docs, install) under bash 3.2 or newer; `.github/workflows/ci.yml` runs strict validation, the diagram check and the suite on Linux and macOS
 - **Local-source install**: `COMPANY_OS_SOURCE=<dir or .tar.gz> bash install.sh` installs from a local checkout or archive, with no network
-- **Contributor docs**: `CONTRIBUTING.md`, `SECURITY.md` (private vulnerability reporting) and a pull request template
+- **Contributor docs**: `CONTRIBUTING.md`, `SECURITY.md` (how to report a vulnerability) and a pull request template
 - `build.sh --check --strict` fails on warnings; validators print ASCII markers when output is not a terminal
-- Review-first upgrade path and "When to use" blocks in six skills
+- Review-first upgrade path (download to a temporary folder, read, then run), and short "When to use" blocks placed before the metadata in six user-facing skills (`artifact-import`, `gtm-sprint`, `setup`, `ship`, `status`, `upgrade-company-os`); other skills already had one
 
 ### Changed
 - `SETUP.md` is now a short quickstart (prerequisites, install, pick your runtime, `/setup`, verify, first `/ship`); reference material moved to the new docs above
@@ -63,7 +63,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - Upgrade conflict copies are saved under `.company-os/conflicts/<relative path>`; before, files with the same name in different folders overwrote each other
 - The build's field lift and the validators handle CRLF line endings and commented keys
 - Help text for every tool now comes from its header comment (`tools/lib/usage.sh`), so `--help` cannot drift from the script
-- `link.sh` adds `children`/`depends_on` when the field is missing, and edits only the frontmatter block (a body line starting with `id:` is left alone)
+- `link.sh` adds `children`/`depends_on` when the field is missing, edits only the first frontmatter block for every change including setting `parent:` (body lines such as `id:` or `parent:` are left alone), and appends to block-style lists (`children:` then `  - ID`) in block style without duplicates
 - `render.js --help` prints usage instead of writing SVGs; the installer says so when a download fails
 - `/setup` and `setup.sh` no longer create `.claude/settings.json` for Cursor, Codex, Gemini or Aider installs; it is written only when `.claude/` exists (or with `setup.sh --claude`)
 - The skill field is now spelled `user-invocable`, the name Claude Code reads. With the old `user-invokable` spelling, the 18 helper skills marked `false` still showed in the `/` menu. The old spelling still works: the build writes it out as `user-invocable` and the validator warns

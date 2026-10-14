@@ -23,7 +23,7 @@ You need `bash`, `git`, `tar` and `node`. `python3` is optional; a few tests ski
 
 1. Edit or add the file under `os/skills/<name>/SKILL.md` or `os/agents/<name>.md`. The fields are described in [SKILL_SCHEMA.md](.company-os/docs/SKILL_SCHEMA.md).
 2. Run `bash tools/build/build.sh`. This regenerates every adapter. Commit the regenerated files with your change.
-3. If you added, removed or renamed a skill, agent or tool, run the `system-maintenance` procedure (`os/skills/system-maintenance/SKILL.md`) so counts and docs stay in sync.
+3. If you added, removed or renamed a skill, agent or tool, run the `system-maintenance` procedure (`os/skills/system-maintenance/SKILL.md`) so counts and docs stay in sync. Update the hard-coded counts in `tests/test_docs.sh` and `tests/test_tools_help.sh`, then run `node docs/diagrams/render.js` to redraw the diagrams. The Commands table in the README is copied by hand and no test checks it, so update its descriptions yourself.
 
 ## Check your work
 
@@ -35,7 +35,7 @@ node docs/diagrams/render.js                 # redraw the diagrams if numbers or
 node docs/diagrams/render.js --check         # confirm the SVGs are current
 ```
 
-CI runs the first, fourth and fifth commands plus the suite on Linux and macOS. Scripts must work in macOS bash 3.2: no `${var,,}`, no associative arrays, no `mapfile`.
+CI runs the first command, the last command and the test suite on Linux and macOS. Scripts must work in macOS bash 3.2: no `${var,,}`, no associative arrays, no `mapfile`.
 
 ## Commit style
 
