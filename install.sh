@@ -479,10 +479,16 @@ else
   echo -e "  ${DIM}Downloading from github.com/$REPO ($DOWNLOAD_REF)...${NC}"
   ARCHIVE_URL="https://github.com/$REPO/archive/$DOWNLOAD_REF.tar.gz"
 
+  DOWNLOAD_OK=true
   if command -v curl &>/dev/null; then
-    curl -fsSL "$ARCHIVE_URL" | tar -xz -C "$WORK_DIR"
+    curl -fsSL "$ARCHIVE_URL" | tar -xz -C "$WORK_DIR" || DOWNLOAD_OK=false
   else
-    wget -qO- "$ARCHIVE_URL" | tar -xz -C "$WORK_DIR"
+    wget -qO- "$ARCHIVE_URL" | tar -xz -C "$WORK_DIR" || DOWNLOAD_OK=false
+  fi
+  if [ "$DOWNLOAD_OK" = false ]; then
+    echo -e "${RED}Error:${NC} Download failed: $ARCHIVE_URL"
+    echo -e "  Check your connection and the --version or --branch value. Offline? See https://github.com/$REPO/blob/main/.company-os/docs/TROUBLESHOOTING.md#installing-offline"
+    exit 1
   fi
 
   SRC=$(find_extracted_src)
