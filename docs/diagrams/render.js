@@ -1331,7 +1331,17 @@ function renderAll() {
 }
 
 if (require.main === module) {
-  const check = process.argv.includes('--check');
+  const args = process.argv.slice(2);
+  if (args.includes('-h') || args.includes('--help')) {
+    console.log('Usage:\n  node docs/diagrams/render.js           # write all SVGs to .company-os/docs/diagrams/\n  node docs/diagrams/render.js --check   # exit 1 if any SVG on disk is stale');
+    process.exit(0);
+  }
+  const unknown = args.filter((a) => a !== '--check');
+  if (unknown.length) {
+    console.error(`Unknown option: ${unknown.join(' ')} (see --help)`);
+    process.exit(1);
+  }
+  const check = args.includes('--check');
   const out = renderAll();
   let stale = 0;
   if (!check) fs.mkdirSync(OUT_DIR, { recursive: true });
