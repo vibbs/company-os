@@ -15,8 +15,10 @@
 #   curl -fsSL https://raw.githubusercontent.com/vibbs/company-os/main/install.sh | bash -s -- --runtime claude,cursor
 #
 # Flags:
-#   --runtime    Runtimes to install adapters for: auto | all | core |
-#                claude | cursor | codex | gemini | aider (comma-separated list).
+#   --runtime    Runtimes to install adapters for: auto, all or core on its
+#                own, or a comma-separated list of claude, cursor, codex,
+#                gemini, aider (e.g. claude,cursor). Any other value stops the
+#                installer before it writes anything.
 #                Default: auto on a fresh install; on an upgrade, the adapters
 #                the project already has.
 #   --force      Also update files you edited (your copies are saved under
@@ -48,6 +50,7 @@ SHOW_CHANGELOG=false
 BACKUP=false
 TARGET_VERSION=""
 RUNTIME_SPEC=""        # raw value passed to --runtime; resolved below
+RUNTIME_GIVEN=false
 
 # --- Parse flags ---
 while [[ $# -gt 0 ]]; do
@@ -59,8 +62,8 @@ while [[ $# -gt 0 ]]; do
     --check)         CHECK_ONLY=true; shift ;;
     --changelog)     SHOW_CHANGELOG=true; shift ;;
     --backup)        BACKUP=true; shift ;;
-    --runtime=*)     RUNTIME_SPEC="${1#*=}"; shift ;;
-    --runtime)       [[ $# -ge 2 ]] || { echo "ERROR: --runtime requires a value" >&2; exit 1; }; RUNTIME_SPEC="$2"; shift 2 ;;
+    --runtime=*)     RUNTIME_SPEC="${1#*=}"; RUNTIME_GIVEN=true; shift ;;
+    --runtime)       [[ $# -ge 2 ]] || { echo "ERROR: --runtime requires a value" >&2; exit 1; }; RUNTIME_SPEC="$2"; RUNTIME_GIVEN=true; shift 2 ;;
     --help|-h)
       cat <<HELP
 Company OS installer and upgrader
@@ -73,12 +76,14 @@ Usage:
 Flags:
   --runtime <names>  Runtimes to install adapters for. Default: auto on a fresh
                      install; on an upgrade, the adapters the project already has.
-                     Values: claude | cursor | codex | gemini | aider | all | auto | core
-                     Combine with commas: --runtime claude,cursor (or --runtime=claude,cursor)
+                     Names: claude | cursor | codex | gemini | aider
+                     Combine names with commas: --runtime claude,cursor (or --runtime=claude,cursor)
+                     Or use one of these on its own (not in a list):
                        auto  → detect installed agent CLIs/dirs and install for those
                        all   → install every adapter
                        core  → shared files only (os/, tools/, AGENTS.md, CLAUDE.md, config);
                                no runtime-specific adapter
+                     Any other value is an error; nothing is written.
   --force            Also update Company OS files you edited; your copies are saved
                      under .company-os/conflicts/ (config and artifacts are never touched)
   --branch <name>    Use a specific branch (default: main)
@@ -121,6 +126,36 @@ HELP
     *) echo "ERROR: Unknown flag: $1" >&2; echo "Run with --help for usage." >&2; exit 1 ;;
   esac
 done
+
+# --- Validate --runtime before anything else runs ---
+# auto, all and core are valid only as the whole value; a comma-separated list
+# may hold only concrete runtime names. RUNTIME_LIST is the validated list.
+runtime_spec_error() {
+  echo "ERROR: $1" >&2
+  echo "Valid --runtime values: auto, all or core on its own, or a comma-separated list of" >&2
+  echo "claude, cursor, codex, gemini, aider (e.g. --runtime claude,cursor)." >&2
+  exit 1
+}
+RUNTIME_LIST=""
+if [ "$RUNTIME_GIVEN" = true ]; then
+  case "$RUNTIME_SPEC" in
+    auto|all|core) ;;
+    "") runtime_spec_error "--runtime requires a value" ;;
+    *)
+      rest="$RUNTIME_SPEC,"
+      while [ -n "$rest" ]; do
+        name="${rest%%,*}"
+        rest="${rest#*,}"
+        case "$name" in
+          claude|cursor|codex|gemini|aider) RUNTIME_LIST="$RUNTIME_LIST $name" ;;
+          "") runtime_spec_error "empty runtime name in --runtime $RUNTIME_SPEC" ;;
+          auto|all|core) runtime_spec_error "'$name' cannot be combined with other names; use --runtime $name on its own" ;;
+          *) runtime_spec_error "unknown runtime '$name' in --runtime $RUNTIME_SPEC" ;;
+        esac
+      done
+      ;;
+  esac
+fi
 
 # --- Existing install in this directory ---
 # Read before choosing runtimes: an upgrade keeps the adapters the project has.
@@ -247,8 +282,8 @@ case "${RUNTIME_SPEC:-}" in
     RUNTIME_MODE="core"
     ;;
   *)
-    # Comma- or space-separated list
-    RUNTIMES="$(echo "$RUNTIME_SPEC" | tr ',' ' ')"
+    # Comma-separated list of runtime names (validated above)
+    RUNTIMES="$RUNTIME_LIST"
     RUNTIME_MODE="custom"
     ;;
 esac

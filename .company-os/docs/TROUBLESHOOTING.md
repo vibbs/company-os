@@ -72,7 +72,7 @@ COMPANY_OS_SOURCE=/path/to/company-os.tar.gz bash /path/to/company-os-install.sh
 By default the installer installs files for every runtime it finds on your machine: a `claude`, `cursor`, `codex`, `gemini` or `aider` command, or a `~/.claude`, `~/.cursor`, `~/.codex` or `~/.gemini` folder. A leftover folder from a tool you no longer use counts too.
 
 - See what was detected and what is installed: `./tools/registry/list-runtimes.sh`
-- Add a missing runtime: `./tools/registry/install-runtime.sh cursor` (or `claude`, `codex`, `gemini`, `all`)
+- Add a missing runtime: `./tools/registry/install-runtime.sh cursor` (or `claude`, `codex`, `gemini`, `aider`, a comma-separated list such as `claude,cursor`, or `all`)
 - Install exactly what you want: re-run the installer with `--runtime`, for example `--runtime claude,cursor`
 - Remove an unwanted runtime: delete its files (see the [uninstall list](FAQ.md#how-do-i-uninstall-company-os)).
 

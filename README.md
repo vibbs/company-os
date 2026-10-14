@@ -298,7 +298,7 @@ Pass flags after `bash -s --` when piping, or after the script path (`bash "$tmp
 
 | Flag | What it does |
 |------|--------------|
-| `--runtime <names>` | Runtimes to install adapters for (default `auto`). Values: `claude`, `cursor`, `codex`, `gemini`, `aider`, `all`, `auto`, `core`. Combine with commas: `--runtime claude,cursor` (or `--runtime=claude,cursor`). `auto` detects installed runtimes; `all` installs every adapter; `core` installs shared files only. |
+| `--runtime <names>` | Runtimes to install adapters for (default `auto`). Names: `claude`, `cursor`, `codex`, `gemini`, `aider`; combine them with commas: `--runtime claude,cursor` (or `--runtime=claude,cursor`). Or use `auto`, `all` or `core` on its own: `auto` detects installed runtimes; `all` installs every adapter; `core` installs shared files only. Any other value stops the installer before it changes anything. |
 | `--force` | Update existing Company OS files (keeps your config and edits) |
 | `--branch <name>` | Use a specific branch (default `main`) |
 | `--version <X.Y.Z>` | Install a specific release, for example `--version 1.12.0` |

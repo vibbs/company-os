@@ -128,4 +128,20 @@ rm -f "$X/os/skills/ship/SKILL.md.bak"
 assert_exit 0 bash "$X/tools/build/build-codex.sh"
 assert_contains "$(cat "$X/AGENTS.md")" "Second edit of the ship description" "build-codex.sh refreshes AGENTS.md"
 
+# --- install-runtime.sh: names are checked before anything is built ---
+I="$(make_tmp)"
+cp -R "$G/." "$I/"
+rm -f "$I/AGENTS.md"
+assert_exit 1 bash "$I/tools/registry/install-runtime.sh" claud
+assert_contains "$OUT" "Unknown runtime: claud"
+assert_contains "$OUT" "claude, cursor, codex, gemini, aider"
+assert_exit 1 bash "$I/tools/registry/install-runtime.sh" claude,all
+assert_contains "$OUT" "'all' cannot be combined"
+assert_exit 1 bash "$I/tools/registry/install-runtime.sh" agents
+assert_file_missing "$I/AGENTS.md" "a rejected runtime builds nothing"
+assert_exit 0 bash "$I/tools/registry/install-runtime.sh" aider
+assert_file_exists "$I/AGENTS.md" "aider gets AGENTS.md"
+assert_exit 0 bash "$I/tools/registry/install-runtime.sh" --help
+assert_not_contains "$OUT" "does NOT touch"
+
 finish

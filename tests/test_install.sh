@@ -332,6 +332,20 @@ assert_exit 1 bash -c 'cd "$1" && COMPANY_OS_SOURCE="$1" bash "$2" --runtime cor
 assert_contains "$OUT" "points at this directory"
 assert_eq "" "$(ls -A "$P" | grep -v '^.git$' || true)" "failed local installs write nothing"
 
+# --runtime: every listed name must be a runtime; auto, all and core only on
+# their own. A bad value stops the installer before it writes anything.
+for bad in claud claude,all core,cursor claude, ""; do
+  assert_exit 1 bash -c 'cd "$1" && bash "$2" --runtime "$3" </dev/null' _ "$P" "$INSTALL" "$bad"
+  assert_contains "$OUT" "claude, cursor, codex, gemini, aider" "--runtime '$bad' lists the valid values"
+done
+assert_exit 1 bash -c 'cd "$1" && bash "$2" --runtime=claud </dev/null' _ "$P" "$INSTALL"
+assert_contains "$OUT" "unknown runtime 'claud'"
+assert_exit 1 bash -c 'cd "$1" && bash "$2" --runtime claude,all </dev/null' _ "$P" "$INSTALL"
+assert_contains "$OUT" "'all' cannot be combined"
+assert_eq "" "$(ls -A "$P" | grep -v '^.git$' || true)" "a bad --runtime writes nothing"
+assert_exit 0 bash "$INSTALL" --help
+assert_contains "$OUT" "Or use one of these on its own"
+
 # An empty COMPANY_OS_SOURCE is ignored: the installer goes to GitHub. A fake
 # curl that always fails stands in for the network.
 mkdir -p "$T/fakebin"
