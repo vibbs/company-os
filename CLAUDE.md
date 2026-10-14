@@ -54,6 +54,8 @@ Run `/upgrade-company-os` to check for updates, preview changes, upgrade, or rol
 
 ### Key Files
 - `company.config.yaml` — company-specific tech stack, API standards, conventions. **Read this first in every session.**
+- `tests/run.sh` — the test suite (config, tool help, artifacts, build, diagrams, docs, install). Run `bash tests/run.sh` (and `/bin/bash tests/run.sh` on macOS) before committing tool or installer changes. CI (`.github/workflows/ci.yml`) runs `build.sh --check --strict`, `render.js --check` and the suite on Linux and macOS.
+- `CONTRIBUTING.md`, `SECURITY.md` — contributor workflow and private vulnerability reporting
 - `setup.sh` — bash setup fallback for scaffolding directories and template config
 - `imports/` — **transient** staging for `/artifact-import` (files are classified, moved to `artifacts/`, then deleted)
 - `standards/` — **permanent** reference docs agents read continuously (stays in place after `/ingest`)
@@ -123,7 +125,7 @@ Always read `company.config.yaml` before making technical recommendations. If th
 - Never mark a task complete without proving it works
 - Diff behavior between main and your changes when relevant
 - Ask yourself: "Would a staff engineer approve this?"
-- Run tests, check logs, demonstrate correctness
+- Run tests, check logs, demonstrate correctness (`bash tests/run.sh`, `bash tools/build/build.sh --check --strict`)
 
 ### 5. Demand Elegance (Balanced)
 - For non-trivial changes: pause and ask "is there a more elegant way?"

@@ -407,6 +407,8 @@ Company OS adds an instruction file to every session (about 3,450 tokens in Clau
 | [Changelog](.company-os/docs/CHANGELOG.md) | You are upgrading |
 | [Skill schema](.company-os/docs/SKILL_SCHEMA.md) | You are writing a skill or agent |
 | [Diagrams](docs/diagrams/README.md) | You want to regenerate the diagrams on this page |
+| [Contributing](CONTRIBUTING.md) | You want to change Company OS itself |
+| [Security](SECURITY.md) | You found a vulnerability |
 
 Found a bug or have a question? [Open an issue](https://github.com/vibbs/company-os/issues).
 

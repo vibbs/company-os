@@ -21,3 +21,13 @@ Goal: make the repo clear and correct for first-time users.
 - [x] Lesson recorded: counts drift (see `tasks/lessons.md`)
 
 Verification: `bash tools/build/build.sh --check`, `./tools/registry/health-check.sh`, `./tools/artifact/validate.sh --all`, `node docs/diagrams/render.js --check`, Markdown link and image check.
+
+## Review: 1.12.0 release hardening (2026-10-14)
+
+- [x] Upgrade conflict copies under `.company-os/conflicts/<relative path>`; lift and validators handle CRLF and commented keys; `build.sh --check --strict`
+- [x] Test suite (`tests/run.sh`, 7 files, bash 3.2) and CI on Linux and macOS; local-source install (`COMPANY_OS_SOURCE`)
+- [x] Fixes: `link.sh` missing fields and frontmatter-only edits, `render.js --help`, installer download errors
+- [x] Contributor docs: `CONTRIBUTING.md`, `SECURITY.md`, PR template; README docs index links
+- [x] System-maintenance audit: 64 skills, 9 agents, 33 tool scripts match README, CONCEPTS and ROADMAP; health check 0 errors, 0 warnings; no drift found
+
+Verification: `bash tools/build/build.sh --check --strict`, `node docs/diagrams/render.js --check`, `bash tests/run.sh`, `/bin/bash tests/run.sh`.
