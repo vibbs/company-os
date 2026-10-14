@@ -140,6 +140,35 @@ assert_eq "1" "$(grep -c '^children:' artifacts/prds/PRD-004.md)" "children adde
 assert_eq "$(sed -n '/^```yaml/,$p' "$P/prd4.before")" "$(sed -n '/^```yaml/,$p' artifacts/prds/PRD-004.md)" "body is unchanged by linking"
 assert_eq "children: [RFC-003]" "$(sed -n '3p' artifacts/prds/PRD-004.md)" "children sits right after id"
 
+# Child whose body repeats `id:` and `parent:` lines: the frontmatter gets the parent, the body is untouched.
+printf -- '---\nid: PRD-005\ntype: prd\ntitle: P\nstatus: draft\ncreated: 2026-10-14\nauthor: test\n---\n\nBody.\n' > artifacts/prds/PRD-005.md
+printf -- '---\nid: RFC-004\ntype: rfc\ntitle: R\nstatus: draft\ncreated: 2026-10-14\nauthor: test\n---\n\nid: x\nparent: zz\n' > artifacts/rfcs/RFC-004.md
+assert_exit 0 bash tools/artifact/link.sh artifacts/prds/PRD-005.md artifacts/rfcs/RFC-004.md
+assert_eq "parent: PRD-005" "$(sed -n '1,/^---$/p' artifacts/rfcs/RFC-004.md | grep '^parent:')" "child parent set in the frontmatter"
+assert_eq "id: x
+parent: zz" "$(tail -n 2 artifacts/rfcs/RFC-004.md)" "child body keeps its id: and parent: lines"
+
+# Block-style YAML lists stay block-style, gain the new item once, and never turn into flow style.
+printf -- '---\nid: PRD-006\ntype: prd\ntitle: P\nstatus: draft\ncreated: 2026-10-14\nauthor: test\nchildren:\n  - RFC-009\n---\n\nBody.\n' > artifacts/prds/PRD-006.md
+printf -- '---\nid: RFC-005\ntype: rfc\ntitle: R\nstatus: draft\ncreated: 2026-10-14\nauthor: test\ndepends_on:\n  - SPEC-1\nowner: me\n---\n\nBody.\n' > artifacts/rfcs/RFC-005.md
+assert_exit 0 bash tools/artifact/link.sh artifacts/prds/PRD-006.md artifacts/rfcs/RFC-005.md
+assert_eq "children:
+  - RFC-009
+  - RFC-005" "$(sed -n '/^children:/,/^---$/p' artifacts/prds/PRD-006.md | sed '$d')" "children block list gets a block item"
+assert_eq "depends_on:
+  - SPEC-1
+  - PRD-006
+owner: me" "$(sed -n '/^depends_on:/,/^owner:/p' artifacts/rfcs/RFC-005.md)" "depends_on block list gets a block item before the next key"
+cp artifacts/prds/PRD-006.md "$P/prd6.before"; cp artifacts/rfcs/RFC-005.md "$P/rfc5.before"
+assert_exit 0 bash tools/artifact/link.sh artifacts/prds/PRD-006.md artifacts/rfcs/RFC-005.md
+assert_eq "$(cat "$P/prd6.before")" "$(cat artifacts/prds/PRD-006.md)" "block-list relink adds no duplicate (parent)"
+assert_eq "$(cat "$P/rfc5.before")" "$(cat artifacts/rfcs/RFC-005.md)" "block-list relink adds no duplicate (child)"
+# Inline lists still grow inline.
+printf -- '---\nid: PRD-007\ntype: prd\ntitle: P\nstatus: draft\ncreated: 2026-10-14\nauthor: test\nchildren: [RFC-009]\n---\n\nBody.\n' > artifacts/prds/PRD-007.md
+printf -- '---\nid: RFC-006\ntype: rfc\ntitle: R\nstatus: draft\ncreated: 2026-10-14\nauthor: test\n---\n\nBody.\n' > artifacts/rfcs/RFC-006.md
+assert_exit 0 bash tools/artifact/link.sh artifacts/prds/PRD-007.md artifacts/rfcs/RFC-006.md
+assert_contains "$(cat artifacts/prds/PRD-007.md)" "children: [RFC-009, RFC-006]" "inline list stays inline"
+
 # --- promote.sh ---
 assert_exit 1 bash tools/artifact/promote.sh "$PRD" approved
 assert_contains "$OUT" "Cannot promote from 'draft' to 'approved'"
