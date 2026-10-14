@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    env:
+      NO_COLOR: "1"
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Node (diagram check)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate skills and agents (strict)
+        run: bash tools/build/build.sh --check --strict
+
+      - name: Diagrams are up to date
+        run: node docs/diagrams/render.js --check
+
+      - name: Test suite
+        if: runner.os != 'macOS'
+        run: bash tests/run.sh
+
+      - name: Test suite (macOS bash 3.2)
+        if: runner.os == 'macOS'
+        run: |
+          /bin/bash --version | head -1
+          /bin/bash tests/run.sh
