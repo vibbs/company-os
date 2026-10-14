@@ -20,8 +20,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 **Upgrade notes:**
 - **Commit or back up your project before upgrading.**
 - **Upgrading from 1.11 or earlier:** those installs have no version stamp or manifest, so the installer cannot tell which files you edited. It always makes a backup first (`.company-os/backup/`). Without `--force` it only shows what would change. With `--force` it saves each file that differs from the new template to `.company-os/conflicts/<path>.user` (edited guides: `.company-os/docs/<name>.user`), then replaces it.
-- **Your edits from now on:** an upgrade keeps a file you edited when the template did not change it. When both changed, a plain upgrade keeps yours and lists it; `--force` saves `<path>.user` (yours) and `<path>.new` (template) under `.company-os/conflicts/` and installs the template copy. A copy is never overwritten: a later one gets a timestamp suffix.
-- Edit skills and agents in `os/`, then run `bash tools/build/build.sh`. The build replaces hand edits to generated `.claude/skills/` and `.claude/agents/` files. A skill or agent you created only under `.claude/` is kept, with a warning to move it to `os/`.
+- **Your edits from now on:** an upgrade keeps a file you edited when the template did not change it. When both changed, a plain upgrade keeps yours and lists it; `--force` saves `<path>.user` (yours) and `<path>.new` (template) under `.company-os/conflicts/` and installs the template copy. Symlinked files are never written through. A copy is never overwritten: a later one gets a timestamp suffix.
+- **Guides are the exception:** `.company-os/docs/` belongs to the template. On a version upgrade (with or without `--force`), a guide you edited that the template also changed is saved next to it as `.company-os/docs/<name>.user`, then replaced.
+- Edit skills and agents in `os/`, then run `bash tools/build/build.sh`. The build replaces hand edits to the `.claude/skills/` and `.claude/agents/` files it generates. Your own files are kept, with a notice: a skill or agent you created only under `.claude/` (move it to `os/`), and extra files inside a generated skill folder. In an installed project the build only rebuilds the adapters the project already has (`--runtime=all` builds every one).
 - Upgrades without `--runtime` keep the adapters the project already has. Installing Cursor, Codex, Gemini or Aider needs 1.12.0 or later.
 - `setup.sh` is now `.company-os/setup.sh` and is installed with Company OS.
 - Field rename: use `user-invocable`. The old `user-invokable` still works (the build writes the new name and the validator warns).
@@ -51,14 +52,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - `TOKEN_COSTS.md` re-measured for this release, with always-on cost per runtime; `ROADMAP.md` refreshed with a collapsed Shipped list
 - `install.sh` treats `.company-os/docs/` as template-owned: upgrades refresh it (recursively, including `diagrams/`), saving edited copies as `<name>.user`, and the manifest now records these files
 - `install.sh` merges file by file against a manifest of template hashes (three-way: your copy, the template copy you last got, the new template copy), so user edits are kept or saved, never overwritten silently. The Company OS section of `CLAUDE.md` gets the same check
-- `install.sh` upgrades without `--runtime` use the adapters already in the project, not the runtimes found on the machine
+- `install.sh` upgrades without `--runtime` use the adapters already in the project, not the runtimes found on the machine; `build.sh` without `--runtime` does the same in an installed project
+- `install.sh` adds `.company-os/backup/` and `.company-os/conflicts/` to the project `.gitignore`, and points to `.company-os/docs/SETUP.md` after a fresh install
 - `setup.sh` moved to `.company-os/setup.sh` and is installed with Company OS, so `bash .company-os/setup.sh` works in installed projects
 - `install.sh --help` lists `--runtime` in its header, adds examples and the docs link
 
 ### Fixed
 - Upgrading an install from 1.11 or earlier (no version stamp, no manifest) no longer overwrites edited files silently or stamps a version over old files: it backs up first, previews without `--force`, and saves `.user` copies with `--force`
 - The manifest records template hashes instead of the files on disk, so a plain re-run no longer makes a later `--force` overwrite your edits silently
-- `build.sh` no longer deletes skills or agents that exist only under `.claude/`; it removes only entries it generated itself (listed in `.claude/.generated-by-company-os`)
+- `build.sh` no longer deletes skills or agents that exist only under `.claude/`, or your files inside a generated skill folder; it removes only files it generated itself (listed in `.claude/.generated-by-company-os`)
+- A same-version re-install that changes nothing no longer rewrites `.claude/settings.json` or suggests committing an upgrade
 - Conflict and `.user` copies no longer overwrite an earlier copy you have not merged; the installer's temp-folder cleanup quotes its path; a same-version re-run suggests "re-install" instead of "upgrade x → x"
 - Upgrade conflict copies are saved under `.company-os/conflicts/<relative path>`; before, files with the same name in different folders overwrote each other
 - The build's field lift and the validators handle CRLF line endings and commented keys
