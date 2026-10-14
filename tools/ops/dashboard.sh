@@ -38,7 +38,11 @@ while [[ $# -gt 0 ]]; do
       OUT_FILE="$2"; shift 2 ;;
     --period)
       [[ $# -ge 2 ]] || { echo "ERROR: --period requires a value (monthly or all)" >&2; exit 1; }
-      PERIOD="$2"; shift 2 ;;
+      case "$2" in
+        monthly|all) PERIOD="$2" ;;
+        *) echo "ERROR: --period must be monthly or all (got: $2)" >&2; exit 1 ;;
+      esac
+      shift 2 ;;
     --help|-h) usage_print_header "${BASH_SOURCE[0]}"; exit 0 ;;
     *)
       echo "ERROR: Unknown flag: $1" >&2

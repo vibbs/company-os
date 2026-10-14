@@ -4,6 +4,18 @@
 # Usage: ./tools/qa/resilience-test.sh <url> [timeout_seconds]
 # Inputs: base URL (required), timeout in seconds (default: 5)
 # Outputs: resilience check results (pass/fail per check)
+#
+# Runs basic resilience checks against a deployed environment:
+#   1. Health endpoint reachability
+#   2. Dependency timeout behavior
+#   3. HTTP error handling (non-500 for bad paths)
+#   4. Connection refused handling
+#
+# Examples:
+#   ./tools/qa/resilience-test.sh http://localhost:3000
+#   ./tools/qa/resilience-test.sh https://staging.example.com 10
+#
+# Exit codes: 0 all checks passed, 1 a check failed or no URL was given.
 set -euo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/usage.sh"
 usage_help_if_requested "${BASH_SOURCE[0]}" "${1:-}"
@@ -14,16 +26,7 @@ PROJECT_ROOT="$SCRIPT_DIR/../.."
 # ─── Arguments ───────────────────────────────────────────────────────────────
 if [[ $# -lt 1 ]]; then
   echo "Usage: $0 <url> [timeout_seconds]" >&2
-  echo "" >&2
-  echo "Runs basic resilience checks against a deployed environment:" >&2
-  echo "  1. Health endpoint reachability" >&2
-  echo "  2. Dependency timeout behavior" >&2
-  echo "  3. HTTP error handling (non-500 for bad paths)" >&2
-  echo "  4. Connection refused handling" >&2
-  echo "" >&2
-  echo "Examples:" >&2
-  echo "  $0 http://localhost:3000" >&2
-  echo "  $0 https://staging.example.com 10" >&2
+  echo "Run with --help for the list of checks and examples." >&2
   exit 1
 fi
 
