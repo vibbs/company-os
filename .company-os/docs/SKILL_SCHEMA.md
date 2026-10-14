@@ -151,6 +151,21 @@ bash tools/build/validate-agent.sh path/to/agent.md
 
 Run automatically by `bash tools/build/build.sh --check`.
 
-A top-level field the schema does not list (for skills or agents) passes with a
-warning, because it is usually a typo such as `user-invocabel:`. `build.sh --check --strict`
-fails on it.
+Accepted top-level fields:
+
+- **Skills:** the schema fields above (`name`, `description`, `id`, `category`,
+  `inputs`, `outputs`, `tools_used`, `tags`, `runtimes`, `metadata`, `argument-hint`,
+  and the legacy `user-invocable` / `user-invokable`, `disable-model-invocation`,
+  `compatibility`, `license`), plus the fields Claude Code documents for skills:
+  `when_to_use`, `arguments`, `allowed-tools`, `disallowed-tools`, `model`, `effort`,
+  `context`, `agent`, `background`, `hooks`, `paths`, `shell`.
+- **Agents:** `name`, `description`, `tools`, `model`, `skills`, `memory`, `runtimes`,
+  plus the fields Claude Code documents for subagents: `disallowedTools`,
+  `permissionMode`, `maxTurns`, `autoCompactWindow`, `mcpServers`, `hooks`,
+  `background`, `omitClaudeMd`, `effort`, `isolation`, `color`, `initialPrompt`,
+  `experimental`.
+
+Fields only Claude Code reads are better placed under `runtimes.claude`, so other
+runtimes are not handed settings they cannot use. Any other top-level field passes
+with a warning, because it is usually a typo such as `user-invocabel:`.
+`build.sh --check --strict` fails on it.

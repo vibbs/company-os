@@ -129,6 +129,11 @@ assert_exit 1 bash tools/build/validate-skill.sh --strict tests/fixtures/skills/
 assert_exit 0 bash tools/build/validate-agent.sh tests/fixtures/agents/typo-agent.md
 assert_contains "$OUT" "[warn] tests/fixtures/agents/typo-agent.md: unknown top-level field 'modle'"
 assert_exit 1 bash tools/build/validate-agent.sh --strict tests/fixtures/agents/typo-agent.md
+# Top-level fields Claude Code documents are accepted without a warning.
+assert_exit 0 bash tools/build/validate-skill.sh --strict tests/fixtures/skills/claude-fields/SKILL.md
+assert_not_contains "$OUT" "[warn]" "documented Claude Code skill fields: no warning"
+assert_exit 0 bash tools/build/validate-agent.sh --strict tests/fixtures/agents/claude-agent.md
+assert_not_contains "$OUT" "[warn]" "documented Claude Code agent fields: no warning"
 # A legacy top-level user-invokable gets the deprecation warning only.
 assert_exit 0 bash tools/build/validate-skill.sh "$B/os/skills/legacy-top/SKILL.md"
 assert_contains "$OUT" "valid with 1 warning(s)" "legacy-top: deprecation warning only"

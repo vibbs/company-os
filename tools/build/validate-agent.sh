@@ -29,9 +29,12 @@ source tools/build/lib-frontmatter.sh
 source tools/build/lib-markers.sh
 source tools/build/lib-agent-index.sh
 
-# Fields the schema defines. Any other top-level key is allowed but warned
-# (usually a typo), so --strict fails on it.
-KNOWN_FIELDS="name description tools model skills memory runtimes"
+# Fields the schema defines, plus the top-level fields Claude Code documents
+# for subagents (https://code.claude.com/docs/en/sub-agents). Any other
+# top-level key is allowed but warned (usually a typo), so --strict fails on it.
+SCHEMA_FIELDS="name description tools model skills memory runtimes"
+CLAUDE_CODE_FIELDS="disallowedTools permissionMode maxTurns autoCompactWindow mcpServers hooks background omitClaudeMd effort isolation color initialPrompt experimental"
+KNOWN_FIELDS="$SCHEMA_FIELDS $CLAUDE_CODE_FIELDS"
 
 LAST_WARNINGS=0
 

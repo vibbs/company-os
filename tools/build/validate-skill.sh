@@ -30,9 +30,13 @@ source tools/build/lib-frontmatter.sh
 source tools/build/lib-markers.sh
 source tools/build/lib-skill-index.sh
 
-# Fields the schema defines. Any other top-level key is allowed but warned
-# (usually a typo), so --strict fails on it.
-KNOWN_FIELDS="name description id category argument-hint inputs outputs tools_used tags runtimes user-invocable user-invokable disable-model-invocation compatibility license metadata"
+# Fields the schema defines, plus the top-level fields Claude Code documents
+# for SKILL.md (https://code.claude.com/docs/en/skills). Any other top-level
+# key is allowed but warned (usually a typo), so --strict fails on it.
+# Claude-only fields belong under runtimes.claude, but are accepted here too.
+SCHEMA_FIELDS="name description id category argument-hint inputs outputs tools_used tags runtimes user-invocable user-invokable disable-model-invocation compatibility license metadata"
+CLAUDE_CODE_FIELDS="when_to_use arguments allowed-tools disallowed-tools model effort context agent background hooks paths shell"
+KNOWN_FIELDS="$SCHEMA_FIELDS $CLAUDE_CODE_FIELDS"
 
 LAST_WARNINGS=0
 
