@@ -17,6 +17,12 @@
 # Hooks (.claude/hooks/) and settings (.claude/settings.json) are
 # Claude-specific and are NOT generated — they live directly under .claude/.
 #
+# The build records what it wrote in .claude/.generated-by-company-os. A later
+# build removes only entries on that list whose os/ source is gone. Any other
+# skill or agent under .claude/ (one you made by hand) is left in place with
+# a warning to move it to os/. With no list yet (first build after an
+# upgrade), nothing is removed.
+#
 # Usage:
 #   bash tools/build/build-claude.sh
 # ============================================================================
@@ -68,20 +74,28 @@ lift_claude_fields() {
   rm -f "$tmp"
 }
 
-# Wipe + regenerate skills and agents only; preserve hooks/settings/agent-memory.
+# Regenerate skills and agents only; preserve hooks/settings/agent-memory.
 mkdir -p .claude/skills .claude/agents
 
+GENERATED_LIST=".claude/.generated-by-company-os"
+was_generated() {  # was_generated <skills/name | agents/name.md>
+  [ -f "$GENERATED_LIST" ] && grep -qxF "$1" "$GENERATED_LIST"
+}
+
 # --- Skills ---
-# Delete .claude/skills entries that no longer exist in os/skills, then mirror.
-if [ -d .claude/skills ]; then
-  for existing in .claude/skills/*/; do
-    [ -d "$existing" ] || continue
-    name="$(basename "$existing")"
-    if [ ! -d "os/skills/$name" ]; then
-      rm -rf "$existing"
-    fi
-  done
-fi
+# Remove skills this build generated before whose os/skills source is gone;
+# keep (and warn about) skills it did not generate.
+for existing in .claude/skills/*/; do
+  [ -d "$existing" ] || continue
+  name="$(basename "$existing")"
+  [ -d "os/skills/$name" ] && continue
+  if was_generated "skills/$name"; then
+    rm -rf "$existing"
+    echo "  removed stale generated skill .claude/skills/$name (no longer in os/skills/)"
+  else
+    echo "⚠ custom skill .claude/skills/$name is not in os/ — move it to os/skills/$name/ to keep it across runtimes" >&2
+  fi
+done
 
 # Copy each skill directory wholesale (preserves SKILL.md + any sidecars)
 for src in os/skills/*/; do
@@ -99,21 +113,35 @@ for src in os/skills/*/; do
 done
 
 # --- Agents ---
-if [ -d .claude/agents ]; then
-  for existing in .claude/agents/*.md; do
-    [ -f "$existing" ] || continue
-    name="$(basename "$existing" .md)"
-    if [ ! -f "os/agents/$name.md" ]; then
-      rm -f "$existing"
-    fi
-  done
-fi
+for existing in .claude/agents/*.md; do
+  [ -f "$existing" ] || continue
+  name="$(basename "$existing" .md)"
+  [ -f "os/agents/$name.md" ] && continue
+  if was_generated "agents/$name.md"; then
+    rm -f "$existing"
+    echo "  removed stale generated agent .claude/agents/$name.md (no longer in os/agents/)"
+  else
+    echo "⚠ custom agent .claude/agents/$name.md is not in os/ — move it to os/agents/$name.md to keep it across runtimes" >&2
+  fi
+done
 
 for src in os/agents/*.md; do
   [ -f "$src" ] || continue
   name="$(basename "$src")"
   cp "$src" ".claude/agents/$name"
 done
+
+# --- Record what this build generated ---
+{
+  echo "# Written by tools/build/build-claude.sh: the skills and agents it generated"
+  echo "# from os/. The next build removes only entries here whose os/ source is gone."
+  for src in os/skills/*/; do
+    if [ -d "$src" ]; then echo "skills/$(basename "$src")"; fi
+  done
+  for src in os/agents/*.md; do
+    if [ -f "$src" ]; then echo "agents/$(basename "$src")"; fi
+  done
+} > "$GENERATED_LIST"
 
 SKILL_COUNT=$(find os/skills -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ')
 AGENT_COUNT=$(find os/agents -mindepth 1 -maxdepth 1 -type f -name "*.md" | wc -l | tr -d ' ')
