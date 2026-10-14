@@ -12,9 +12,12 @@
 # ============================================================================
 
 # Extracts everything between the first two `---` lines.
+# Tolerates CRLF line endings (a trailing CR is dropped) and `---` followed by spaces.
 fm_extract() {
   awk '
     BEGIN { in_fm = 0; count = 0 }
+    { sub(/\r$/, "") }
+    /^---[ \t]*$/ { sub(/[ \t]+$/, "") }
     /^---$/ { count++; if (count == 1) { in_fm = 1; next } else if (count == 2) { exit } }
     in_fm { print }
   ' "$1"
@@ -27,6 +30,7 @@ fm_field() {
     | awk -v k="$key" '
         $0 ~ "^"k":" {
           sub("^"k": *", "")
+          sub(/[ \t]+$/, "")
           gsub(/^"|"$/, "")
           gsub(/^'\''|'\''$/, "")
           print
@@ -54,6 +58,8 @@ fm_list() {
 fm_body() {
   awk '
     BEGIN { count = 0; print_now = 0 }
+    { sub(/\r$/, "") }
+    /^---[ \t]*$/ { sub(/[ \t]+$/, "") }
     /^---$/ { count++; if (count == 2) { print_now = 1; next } }
     print_now { print }
   ' "$1"

@@ -36,6 +36,8 @@ fi
 
 # Rewrites the frontmatter of $1 in place: keys nested under
 # `runtimes: > claude:` become top-level keys. No-op when there is no such block.
+# Tolerates CRLF line endings (the file is rewritten with LF) and a trailing
+# comment or extra spaces after `runtimes:` and `claude:`.
 lift_claude_fields() {
   local file="$1" tmp
   tmp="$(mktemp)"
@@ -45,18 +47,20 @@ lift_claude_fields() {
       if (nr > 0) { print "runtimes:"; for (i = 1; i <= nr; i++) print rest[i] }
       nl = 0; nr = 0; inrt = 0; inclaude = 0
     }
+    { sub(/\r$/, "") }
+    /^---[ \t]*$/ { $0 = "---" }
     /^---$/ { c++; if (c == 2 && inrt) flush_runtimes(); print; next }
     c != 1 { print; next }
     inrt {
       if ($0 ~ /^[^ \t]/) { flush_runtimes() }
       else {
-        if ($0 ~ /^  claude:[ \t]*$/) { inclaude = 1; next }
-        if (inclaude && $0 ~ /^    /) { line = $0; sub(/^    /, "", line); sub(/^user-invokable:/, "user-invocable:", line); lifted[++nl] = line; next }
+        if ($0 ~ /^  claude[ \t]*:[ \t]*(#.*)?$/) { inclaude = 1; next }
+        if (inclaude && $0 ~ /^    /) { line = $0; sub(/^    /, "", line); sub(/^user-invokable[ \t]*:/, "user-invocable:", line); sub(/[ \t]+$/, "", line); lifted[++nl] = line; next }
         if ($0 ~ /^  [^ ]/) inclaude = 0
         rest[++nr] = $0; next
       }
     }
-    /^runtimes:[ \t]*$/ { inrt = 1; next }
+    /^runtimes[ \t]*:[ \t]*(#.*)?$/ { inrt = 1; next }
     /^user-invokable:/ { sub(/^user-invokable:/, "user-invocable:") }
     { print }
   ' "$file" > "$tmp"
