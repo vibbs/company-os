@@ -361,6 +361,21 @@ generate_manifest() {
   mv "$tmp" .company-os/manifest
 }
 
+# Where a conflict or .user copy goes: <path> itself, or, when an earlier copy
+# is still there (not merged yet), <path>.<YYYYmmdd-HHMMSS> so it is never
+# overwritten.
+RUN_STAMP=$(date +%Y%m%d-%H%M%S)
+unique_copy_path() {
+  local p="$1" cand n=1
+  if [ ! -e "$p" ]; then echo "$p"; return; fi
+  cand="$p.$RUN_STAMP"
+  while [ -e "$cand" ]; do
+    n=$((n + 1))
+    cand="$p.$RUN_STAMP-$n"
+  done
+  echo "$cand"
+}
+
 # ============================================================================
 # Changelog Functions
 # ============================================================================
@@ -483,7 +498,7 @@ fi
 
 # --- Download ---
 WORK_DIR=$(mktemp -d)
-trap "rm -rf $WORK_DIR" EXIT
+trap 'rm -rf "$WORK_DIR"' EXIT
 MANIFEST_NEW="$WORK_DIR/manifest.new"
 : > "$MANIFEST_NEW"
 
@@ -682,7 +697,7 @@ CONFLICT_USER_COPIES=0
 
 save_conflict_copies() {  # save_conflict_copies <src_file> <dst_file> <with_new:true|false>
   local src="$1" dst="$2" with_new="$3" cbase=".company-os/conflicts/$2" ucopy ncopy
-  ucopy="$cbase.user"
+  ucopy=$(unique_copy_path "$cbase.user")
   if [ "$DRY_RUN" = false ]; then
     mkdir -p "$(dirname "$cbase")"
     cp "$dst" "$ucopy"
@@ -690,8 +705,11 @@ save_conflict_copies() {  # save_conflict_copies <src_file> <dst_file> <with_new
   echo "$ucopy" >> "$CONFLICT_LOG"
   CONFLICT_USER_COPIES=$((CONFLICT_USER_COPIES + 1))
   if [ "$with_new" = true ]; then
-    ncopy="$cbase.new"
+    ncopy=$(unique_copy_path "$cbase.new")
     [ "$DRY_RUN" = false ] && cp "$src" "$ncopy"
+  fi
+  if [ "$ucopy" != "$cbase.user" ]; then
+    echo -e "    ${YELLOW}Saved${NC}    $ucopy ${DIM}(an earlier copy you have not merged is still at $cbase.user)${NC}"
   fi
 }
 
@@ -1172,7 +1190,8 @@ fi
 # --- .company-os/docs/ (template-owned user guides, diagrams, skill schema) ---
 # These docs belong to the template, so an upgrade refreshes them, using the
 # same three-way rules as merge_template_file. A copy you edited is saved next
-# to it as <name>.user before the new version replaces it. Without a manifest
+# to it as <name>.user (or <name>.user.<timestamp> when an earlier .user copy
+# is still there) before the new version replaces it. Without a manifest
 # entry to compare against, a doc that differs counts as edited.
 # VERSION is NOT copied — it would conflict with the user's app version file.
 DOCS_ADDED=0 DOCS_REFRESHED=0 DOCS_USER_SAVED=0 DOCS_KEPT=0 DOCS_HELD=0
@@ -1209,12 +1228,15 @@ if [ -d "$SRC/.company-os/docs" ]; then
       record_manifest "$doc_base" "$doc_dst"
       DOCS_KEPT=$((DOCS_KEPT + 1))
     elif [ "$IS_UPGRADE" = true ]; then
-      doc_user="$doc_dst.user"
+      doc_user=$(unique_copy_path "$doc_dst.user")
       if [ "$DRY_RUN" = false ]; then
         cp "$doc_dst" "$doc_user"
         cp "$doc_file" "$doc_dst"
       else
         echo -e "    ${DIM}Would save${NC} $doc_user (your edits), then refresh $doc_dst"
+      fi
+      if [ "$doc_user" != "$doc_dst.user" ] && [ "$DRY_RUN" = false ]; then
+        echo -e "    ${YELLOW}Saved${NC}    $doc_user ${DIM}(an earlier copy you have not merged is still at $doc_dst.user)${NC}"
       fi
       record_manifest "$doc_inc" "$doc_dst"
       DOCS_USER_SAVED=$((DOCS_USER_SAVED + 1))
@@ -1505,7 +1527,7 @@ if [ "$IS_EXISTING_INSTALL" = true ] && [ "$DRY_RUN" = false ]; then
     if [ "$CONFLICTS" -gt 0 ]; then
       echo -e "    ${BLUE}${STEP}.${NC} Review conflicts in ${BOLD}.company-os/conflicts/${NC}:"
       echo -e "       ${DIM}Each conflict keeps its folder path (e.g. tools/qa/run.sh.user is yours, .new is the template;${NC}"
-      echo -e "       ${DIM}with no .new, the file in place is the template copy).${NC}"
+      echo -e "       ${DIM}with no .new, the file in place is the template copy). Later copies get a timestamp suffix.${NC}"
       echo -e "       ${DIM}Merge the changes you want to keep, then delete the conflict files.${NC}"
       STEP=$((STEP + 1))
       echo ""
@@ -1519,7 +1541,11 @@ if [ "$IS_EXISTING_INSTALL" = true ] && [ "$DRY_RUN" = false ]; then
 
     # Commit the upgrade
     if [ -d ".git" ]; then
-      commit_msg="chore: upgrade Company OS ${LOCAL_VERSION} → ${INCOMING_VERSION}"
+      if [ "$LOCAL_VERSION" = "$INCOMING_VERSION" ]; then
+        commit_msg="chore: re-install Company OS ${INCOMING_VERSION}"
+      else
+        commit_msg="chore: upgrade Company OS ${LOCAL_VERSION} → ${INCOMING_VERSION}"
+      fi
       echo -e "    ${BLUE}${STEP}.${NC} Commit the upgrade:"
       echo -e "       ${DIM}$ git add $(installed_paths) && git commit -m \"$commit_msg\"${NC}"
       STEP=$((STEP + 1))
