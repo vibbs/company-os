@@ -13,6 +13,13 @@ assert_not_contains "$OUT" "[warn]"
 assert_exit 1 bash tools/build/build.sh --strict
 assert_contains "$OUT" "--strict only applies to --check"
 
+# --- AGENTS.md names its real source and lists only runnable tools ---
+AGENTS_MD="$(cat AGENTS.md)"
+assert_contains "$AGENTS_MD" "Source: os/ + CLAUDE.md"
+assert_not_contains "$AGENTS_MD" "Source: .claude/"
+assert_eq "" "$(grep -E '^- `tools/(lib/|build/lib-)' AGENTS.md || true)" "sourced helpers are not listed as runnable tools"
+assert_contains "$AGENTS_MD" "Shared helpers, sourced by the scripts above (do not run them): \`tools/build/lib-agent-index.sh\`"
+
 # --- Fresh build into a temporary copy matches the committed adapters ---
 B="$(make_tmp)"
 mkdir -p "$B/.claude"
