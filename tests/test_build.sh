@@ -114,6 +114,17 @@ assert_contains "$OUT" "valid with 1 warning(s)" "spaced-comments: exactly one w
 assert_contains "$OUT" "[warn] tests/fixtures/skills/spaced-comments/SKILL.md: 'user-invokable' is a deprecated spelling"
 assert_exit 1 bash tools/build/validate-skill.sh --strict tests/fixtures/skills/spaced-comments/SKILL.md
 assert_exit 2 bash tools/build/validate-skill.sh tests/fixtures/skills/missing/SKILL.md
+# An unknown top-level field (a typo) is a warning, so --strict fails on it.
+assert_exit 0 bash tools/build/validate-skill.sh tests/fixtures/skills/typo-field/SKILL.md
+assert_contains "$OUT" "[warn] tests/fixtures/skills/typo-field/SKILL.md: unknown top-level field 'user-invocabel'"
+assert_contains "$OUT" "valid with 1 warning(s)" "typo-field: exactly one warning"
+assert_exit 1 bash tools/build/validate-skill.sh --strict tests/fixtures/skills/typo-field/SKILL.md
+assert_exit 0 bash tools/build/validate-agent.sh tests/fixtures/agents/typo-agent.md
+assert_contains "$OUT" "[warn] tests/fixtures/agents/typo-agent.md: unknown top-level field 'modle'"
+assert_exit 1 bash tools/build/validate-agent.sh --strict tests/fixtures/agents/typo-agent.md
+# A legacy top-level user-invokable gets the deprecation warning only.
+assert_exit 0 bash tools/build/validate-skill.sh "$B/os/skills/legacy-top/SKILL.md"
+assert_contains "$OUT" "valid with 1 warning(s)" "legacy-top: deprecation warning only"
 
 # --- Gemini and Codex builds regenerate AGENTS.md first, so a changed skill
 # reaches GEMINI.md even when only that adapter is built ---

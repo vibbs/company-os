@@ -29,6 +29,10 @@ source tools/build/lib-frontmatter.sh
 source tools/build/lib-markers.sh
 source tools/build/lib-agent-index.sh
 
+# Fields the schema defines. Any other top-level key is allowed but warned
+# (usually a typo), so --strict fails on it.
+KNOWN_FIELDS="name description tools model skills memory runtimes"
+
 LAST_WARNINGS=0
 
 validate_one() {
@@ -104,6 +108,18 @@ validate_one() {
         ;;
     esac
   fi
+
+  # Unknown top-level fields
+  local key
+  while IFS= read -r key; do
+    case " $KNOWN_FIELDS " in
+      *" $key "*) ;;
+      *)
+        echo "$MARK_WARN $file: unknown top-level field '$key' (a typo? see .company-os/docs/SKILL_SCHEMA.md)" >&2
+        warnings=$((warnings + 1))
+        ;;
+    esac
+  done < <(fm_top_keys "$file")
 
   # Body must exist
   local body

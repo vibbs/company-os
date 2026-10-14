@@ -150,3 +150,7 @@ bash tools/build/validate-agent.sh path/to/agent.md
 ```
 
 Run automatically by `bash tools/build/build.sh --check`.
+
+A top-level field the schema does not list (for skills or agents) passes with a
+warning, because it is usually a typo such as `user-invocabel:`. `build.sh --check --strict`
+fails on it.
