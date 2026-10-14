@@ -115,4 +115,17 @@ assert_contains "$OUT" "[warn] tests/fixtures/skills/spaced-comments/SKILL.md: '
 assert_exit 1 bash tools/build/validate-skill.sh --strict tests/fixtures/skills/spaced-comments/SKILL.md
 assert_exit 2 bash tools/build/validate-skill.sh tests/fixtures/skills/missing/SKILL.md
 
+# --- Gemini and Codex builds regenerate AGENTS.md first, so a changed skill
+# reaches GEMINI.md even when only that adapter is built ---
+X="$(make_tmp)"
+cp -R "$G/." "$X/"
+sed -i.bak 's/^description: .*/description: Freshly edited ship description for the build test./' "$X/os/skills/ship/SKILL.md"
+rm -f "$X/os/skills/ship/SKILL.md.bak"
+assert_exit 0 bash "$X/tools/build/build.sh" --runtime=gemini
+assert_contains "$(cat "$X/GEMINI.md")" "Freshly edited ship description" "build.sh --runtime=gemini picks up an os/ skill change"
+sed -i.bak 's/^description: .*/description: Second edit of the ship description for the codex build./' "$X/os/skills/ship/SKILL.md"
+rm -f "$X/os/skills/ship/SKILL.md.bak"
+assert_exit 0 bash "$X/tools/build/build-codex.sh"
+assert_contains "$(cat "$X/AGENTS.md")" "Second edit of the ship description" "build-codex.sh refreshes AGENTS.md"
+
 finish

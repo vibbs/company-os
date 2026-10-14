@@ -11,8 +11,8 @@
 #   bash tools/build/build.sh --runtime=all       # build every adapter
 #   bash tools/build/build.sh --runtime=cursor    # build only the cursor adapter
 #   bash tools/build/build.sh --runtime=agents    # build only AGENTS.md
-#   bash tools/build/build.sh --runtime=gemini    # build only GEMINI.md
-#   bash tools/build/build.sh --runtime=codex     # build only Codex adapter
+#   bash tools/build/build.sh --runtime=gemini    # build GEMINI.md (rebuilds AGENTS.md first)
+#   bash tools/build/build.sh --runtime=codex     # build the Codex adapter (rebuilds AGENTS.md first)
 #   bash tools/build/build.sh --check             # validate without writing
 #   bash tools/build/build.sh --check --strict    # also fail on warnings
 #
