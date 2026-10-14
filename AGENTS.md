@@ -382,6 +382,7 @@ Deterministic shell scripts. Safe to invoke directly. All live under `tools/`.
 - `tools/build/build.sh` — Regenerates every runtime adapter (Claude Code, Cursor, Codex, Gemini,
 - `tools/build/lib-agent-index.sh` — Source this file. Provides:
 - `tools/build/lib-frontmatter.sh` — Source this file; do not execute directly.
+- `tools/build/lib-markers.sh` — Source this file; do not execute directly.
 - `tools/build/lib-skill-index.sh` — Source this file. Provides:
 - `tools/build/validate-agent.sh` — Usage:
 - `tools/build/validate-skill.sh` — Usage:

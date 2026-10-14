@@ -3,8 +3,18 @@
 # validate-agent.sh — Validate a single agent file against the neutral schema
 # ============================================================================
 # Usage:
-#   bash tools/build/validate-agent.sh path/to/agent.md
-#   bash tools/build/validate-agent.sh --all
+#   bash tools/build/validate-agent.sh [--strict] path/to/agent.md
+#   bash tools/build/validate-agent.sh [--strict] --all
+# Options:
+#   --strict   treat warnings as failures (exit 1 when any file has a warning)
+#
+# Output uses ASCII markers ([ok], [warn], [fail]) when stdout is not a terminal
+# or NO_COLOR is set.
+#
+# Exit codes:
+#   0 - valid (and, with --strict, no warnings)
+#   1 - invalid, or warnings under --strict
+#   2 - file not found
 # ============================================================================
 
 set -euo pipefail
@@ -16,7 +26,10 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 
 source tools/build/lib-frontmatter.sh
+source tools/build/lib-markers.sh
 source tools/build/lib-agent-index.sh
+
+LAST_WARNINGS=0
 
 validate_one() {
   local file="$1"
@@ -24,14 +37,14 @@ validate_one() {
   local warnings=0
 
   if [ ! -f "$file" ]; then
-    echo "✗ $file: not found" >&2
+    echo "$MARK_FAIL $file: not found" >&2
     return 2
   fi
 
   local fm
   fm="$(fm_extract "$file")"
   if [ -z "$fm" ]; then
-    echo "✗ $file: no YAML frontmatter found" >&2
+    echo "$MARK_FAIL $file: no YAML frontmatter found" >&2
     return 1
   fi
 
@@ -39,18 +52,18 @@ validate_one() {
   local name
   name="$(fm_field "$file" "name")"
   if [ -z "$name" ]; then
-    echo "✗ $file: missing required field 'name'" >&2
+    echo "$MARK_FAIL $file: missing required field 'name'" >&2
     errors=$((errors + 1))
   else
     if ! echo "$name" | grep -qE '^[a-z][a-z0-9-]*$'; then
-      echo "✗ $file: 'name' must be kebab-case, got: $name" >&2
+      echo "$MARK_FAIL $file: 'name' must be kebab-case, got: $name" >&2
       errors=$((errors + 1))
     fi
     # name must match file
     local file_name
     file_name="$(basename "$file" .md)"
     if [ "$file_name" != "$name" ]; then
-      echo "✗ $file: 'name' ($name) does not match filename ($file_name)" >&2
+      echo "$MARK_FAIL $file: 'name' ($name) does not match filename ($file_name)" >&2
       errors=$((errors + 1))
     fi
   fi
@@ -59,10 +72,10 @@ validate_one() {
   local desc
   desc="$(fm_field "$file" "description")"
   if [ -z "$desc" ]; then
-    echo "✗ $file: missing required field 'description'" >&2
+    echo "$MARK_FAIL $file: missing required field 'description'" >&2
     errors=$((errors + 1))
   elif [ "${#desc}" -lt 10 ]; then
-    echo "✗ $file: 'description' too short" >&2
+    echo "$MARK_FAIL $file: 'description' too short" >&2
     errors=$((errors + 1))
   fi
 
@@ -73,7 +86,7 @@ validate_one() {
     case "$model" in
       opus|sonnet|haiku) ;;
       *)
-        echo "⚠ $file: 'model' should be opus|sonnet|haiku, got: $model" >&2
+        echo "$MARK_WARN $file: 'model' should be opus|sonnet|haiku, got: $model" >&2
         warnings=$((warnings + 1))
         ;;
     esac
@@ -86,7 +99,7 @@ validate_one() {
     case "$memory" in
       user|project|local) ;;
       *)
-        echo "⚠ $file: 'memory' should be user|project|local, got: $memory" >&2
+        echo "$MARK_WARN $file: 'memory' should be user|project|local, got: $memory" >&2
         warnings=$((warnings + 1))
         ;;
     esac
@@ -96,22 +109,33 @@ validate_one() {
   local body
   body="$(fm_body "$file")"
   if [ -z "$body" ]; then
-    echo "⚠ $file: empty body — agent has no persona description" >&2
+    echo "$MARK_WARN $file: empty body — agent has no persona description" >&2
     warnings=$((warnings + 1))
   fi
 
+  LAST_WARNINGS="$warnings"
   if [ "$errors" -gt 0 ]; then
     return 1
   fi
   if [ "$warnings" -gt 0 ]; then
-    echo "⚠ $file: valid with $warnings warning(s)"
+    echo "$MARK_WARN $file: valid with $warnings warning(s)"
     return 0
   fi
-  echo "✓ $file"
+  echo "$MARK_OK $file"
   return 0
 }
 
-if [ "${1:-}" = "--all" ]; then
+STRICT=false
+TARGET=""
+for arg in "$@"; do
+  case "$arg" in
+    --strict) STRICT=true ;;
+    -h|--help) usage_print_header "${BASH_SOURCE[0]}"; exit 0 ;;
+    *) TARGET="${TARGET:-$arg}" ;;
+  esac
+done
+
+if [ "$TARGET" = "--all" ]; then
   src="$(agent_source_dir)"
   total=0
   fail=0
@@ -120,10 +144,11 @@ if [ "${1:-}" = "--all" ]; then
     [ -z "$agent" ] && continue
     total=$((total + 1))
     file="$(agent_file "$agent")"
+    LAST_WARNINGS=0
     if ! validate_one "$file" >/tmp/validate-agent-out.$$ 2>&1; then
       fail=$((fail + 1))
     fi
-    if grep -q "^⚠" /tmp/validate-agent-out.$$ 2>/dev/null; then
+    if [ "$LAST_WARNINGS" -gt 0 ]; then
       warn=$((warn + 1))
     fi
     cat /tmp/validate-agent-out.$$
@@ -131,10 +156,14 @@ if [ "${1:-}" = "--all" ]; then
   rm -f /tmp/validate-agent-out.$$
   echo ""
   echo "Agents: $total | Failed: $fail | With warnings: $warn"
-  [ "$fail" -eq 0 ]
-elif [ -n "${1:-}" ]; then
-  validate_one "$1"
+  [ "$fail" -eq 0 ] || exit 1
+  if [ "$STRICT" = true ] && [ "$warn" -gt 0 ]; then exit 1; fi
+elif [ -n "$TARGET" ]; then
+  rc=0
+  validate_one "$TARGET" || rc=$?
+  if [ "$rc" -eq 0 ] && [ "$STRICT" = true ] && [ "$LAST_WARNINGS" -gt 0 ]; then rc=1; fi
+  exit "$rc"
 else
-  echo "Usage: bash tools/build/validate-agent.sh <file> | --all"
+  echo "Usage: bash tools/build/validate-agent.sh [--strict] <file> | --all"
   exit 1
 fi

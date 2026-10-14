@@ -13,6 +13,17 @@
 #   bash tools/build/build.sh --runtime=gemini    # build only GEMINI.md
 #   bash tools/build/build.sh --runtime=codex     # build only Codex adapter
 #   bash tools/build/build.sh --check             # validate without writing
+#   bash tools/build/build.sh --check --strict    # also fail on warnings
+#
+# Options:
+#   --runtime=<name>   all (default), claude, cursor, agents, gemini or codex
+#   --check            run the skill and agent validators; write nothing
+#   --strict           with --check, exit 1 when any validator reports a warning
+#   -h, --help         show this help
+#
+# Exit codes:
+#   0 - success (--check: no failures)
+#   1 - bad flag, build error, validation failure, or warnings under --strict
 # ============================================================================
 
 set -euo pipefail
@@ -24,6 +35,7 @@ cd "$ROOT"
 
 RUNTIME="all"
 CHECK=false
+STRICT=false
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -32,6 +44,7 @@ while [[ $# -gt 0 ]]; do
       [[ $# -ge 2 ]] || { echo "ERROR: --runtime requires a value (all, claude, cursor, agents, gemini, codex)" >&2; exit 1; }
       RUNTIME="$2"; shift 2 ;;
     --check)     CHECK=true; shift ;;
+    --strict)    STRICT=true; shift ;;
     -h|--help)
       usage_print_header "${BASH_SOURCE[0]}"
       exit 0
@@ -40,25 +53,40 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+if [ "$STRICT" = true ] && [ "$CHECK" != true ]; then
+  echo "ERROR: --strict only applies to --check" >&2
+  exit 1
+fi
+
 if [ "$CHECK" = true ]; then
-  echo "→ Validating source..."
+  source tools/build/lib-markers.sh
+  echo "$MARK_ARROW Validating source..."
   source tools/build/lib-skill-index.sh
   source tools/build/lib-agent-index.sh
   SRC="$(skill_source_dir || true)"
   if [ -z "$SRC" ]; then
-    echo "✗ No skill source directory found (.claude/skills/ or os/skills/)"
+    echo "$MARK_FAIL No skill source directory found (.claude/skills/ or os/skills/)"
     exit 1
   fi
   echo "  Source dir: $SRC"
   echo "  Skills: $(skill_list | wc -l | tr -d ' ')"
   echo "  Agents: $(agent_list | wc -l | tr -d ' ')"
-  echo ""
-  echo "→ Running skill validator..."
-  bash tools/build/validate-skill.sh --all 2>&1 | tail -3
-  echo ""
-  echo "→ Running agent validator..."
-  bash tools/build/validate-agent.sh --all 2>&1 | tail -3
-  exit 0
+  STRICT_FLAG=""
+  [ "$STRICT" = true ] && STRICT_FLAG="--strict"
+  CHECK_RC=0
+  for kind in skill agent; do
+    echo ""
+    echo "$MARK_ARROW Running $kind validator..."
+    rc=0
+    out="$(bash "tools/build/validate-$kind.sh" ${STRICT_FLAG:+"$STRICT_FLAG"} --all 2>&1)" || rc=$?
+    if [ "$rc" -eq 0 ]; then
+      printf '%s\n' "$out" | tail -3
+    else
+      printf '%s\n' "$out"
+      CHECK_RC=1
+    fi
+  done
+  exit "$CHECK_RC"
 fi
 
 run() {
