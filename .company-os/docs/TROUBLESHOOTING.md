@@ -50,7 +50,7 @@ The script goes to a temporary folder, so it never replaces a file in your proje
 
 To pin a release instead of the latest, add `--version 1.12.0`. The same steps work for upgrades: use `--force --dry-run`, then `--force`.
 
-An upgrade compares each file you edited with the template copy you last received. If the template did not change that file, your edit stays. If you both changed it, a plain upgrade keeps your file and lists it. With `--force` it saves both versions under `.company-os/conflicts/` in the same folder path (for example `.company-os/conflicts/tools/qa/run.sh.user` and `run.sh.new`) and installs the template copy. Merge what you want, then delete the pair. Installs from 1.11 or earlier have no record of the old template, so the first upgrade makes a backup, previews only, and with `--force` saves every differing file as `.user`.
+An upgrade compares each file you edited with the template copy you last received. If the template did not change that file, your edit stays. If you both changed it, a plain upgrade keeps your file and lists it. With `--force` it saves both versions under `.company-os/conflicts/` in the same folder path (for example `.company-os/conflicts/tools/qa/run.sh.user` and `run.sh.new`) and installs the template copy. Merge what you want, then delete the pair. Installs from 1.11 or earlier have no record of the old template, so the installer compares each file with every version Company OS has shipped: a file that matches one is updated without a copy. The first upgrade makes a backup, previews only, and with `--force` saves each file that matches no shipped version (your edits) as `.user`.
 
 ## Installing offline
 

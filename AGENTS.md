@@ -3,7 +3,7 @@
 <!-- GENERATED FILE — do not edit by hand. Source: os/ + CLAUDE.md -->
 <!-- Regenerate with: bash tools/build/build-agents-md.sh -->
 
-This file is the runtime-neutral instruction layer for **Company OS** v1.12.0.
+This file is the runtime-neutral instruction layer for **Company OS** v1.12.1.
 It is intended for AI coding agents that follow the [AGENTS.md](https://agents.md/)
 convention — Codex CLI, Aider, and any agent without its own instruction file.
 

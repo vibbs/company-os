@@ -35,7 +35,7 @@ Check if an update is available:
    bash "$tmp/install.sh" --check
    ```
    Inside an AI tool `less` is not interactive. Show the user only the header and version lines (`head -n 20 "$tmp/install.sh"`) and the path, and ask them to review the whole file in their own terminal.
-3. If `.company-os/version` doesn't exist, inform the user this is a pre-versioning install (1.11 or earlier). The installer backs up first. A run without `--force` only previews. `--force` saves every file that differs from the new template as `.company-os/conflicts/<path>.user`, then replaces it, because there is no manifest to tell the user's edits from template changes
+3. If `.company-os/version` doesn't exist, inform the user this is a pre-versioning install (1.11 or earlier). The installer backs up first. A run without `--force` only previews. With no manifest, the installer compares each file with every version Company OS has shipped (`.company-os/known-hashes.txt` in the release): a file that matches one is an unedited copy and is updated. `--force` saves each file that matches no shipped version (the user's edits) as `.company-os/conflicts/<path>.user`, then replaces it
 
 What you will see:
 

@@ -35,7 +35,13 @@ node docs/diagrams/render.js                 # redraw the diagrams if numbers or
 node docs/diagrams/render.js --check         # confirm the SVGs are current
 ```
 
-CI runs the first command, the last command and the test suite on Linux and macOS. Scripts must work in macOS bash 3.2: no `${var,,}`, no associative arrays, no `mapfile`.
+CI runs the first command, the last command and the test suite on Linux and macOS, with full git history (`build.sh --check` needs it for the next section).
+
+## Known template hashes
+
+`.company-os/known-hashes.txt` lists the sha256 of every version of every template file the installer manages, built from the git history by `tools/build/known-hashes.sh`. The installer uses it to recognise unedited copies in installs that have no manifest (1.11 and earlier), so an upgrade does not save them as `.user` copies. A full `bash tools/build/build.sh` in this repo refreshes it, and `build.sh --check` fails when it is stale.
+
+Commit it with the change that made it stale. At release, after the last template change is committed (including the CHANGELOG), run `bash tools/build/known-hashes.sh`, commit the file if it changed, and confirm `bash tools/build/known-hashes.sh --check` passes before tagging. The script needs the full history: in a shallow clone or a release archive it skips with a message. Scripts must work in macOS bash 3.2: no `${var,,}`, no associative arrays, no `mapfile`.
 
 ## Commit style
 
@@ -43,7 +49,7 @@ Use conventional commits: `feat:`, `fix:`, `docs:`, `test:`, `ci:`, `refactor:`,
 
 ## Version and changelog
 
-Every user-visible change needs a line in [CHANGELOG.md](.company-os/docs/CHANGELOG.md) under `[Unreleased]`. Maintainers bump `.company-os/version` when they release: MINOR for new features, PATCH for fixes, MAJOR for breaking changes.
+Every user-visible change needs a line in [CHANGELOG.md](.company-os/docs/CHANGELOG.md) under `[Unreleased]`. Maintainers bump `.company-os/version` when they release: MINOR for new features, PATCH for fixes, MAJOR for breaking changes. Then they regenerate `.company-os/known-hashes.txt` (see above).
 
 ## Pull request checklist
 

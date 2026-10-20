@@ -15,6 +15,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [1.12.1] - 2026-10-20
+
+**Upgrade notes:**
+- **Upgrading from 1.11 or earlier is much quieter.** Those installs have no manifest, so 1.12.0 treated every file that differed from the new template as edited and, with `--force`, saved a `.user` copy of almost all of them. Now the installer compares each file with every version Company OS has shipped. A file that matches one is updated like any unedited file. Only the files you really changed are saved under `.company-os/conflicts/`. The backup is still made first.
+
+### Fixed
+- An upgrade now says what it did: "Upgraded 1.12.0 → 1.12.1: N updated, M added, K kept with your edits", even when every changed file held your edits and nothing else was written. Before, such an upgrade printed "Already installed — 215 items unchanged" while it stamped the new version. "Already installed — nothing changed" now appears only when the version is the same and nothing was written.
+- Re-running the installer at the same version no longer rewrites `.company-os/manifest` just to update its timestamp, so `git status` stays clean.
+- The first `bash tools/build/build.sh` after an install no longer leaves `.claude/.generated-by-company-os` as a new untracked file. The installer now writes that list itself, so a build right after you commit the install changes nothing.
+- An upgrade with `--force` from an install without a manifest (1.9 to 1.11) saves `.user` copies of only the files you edited. A real 1.11 install with two edited files got 105 copies; it now gets 2. Guides and the Company OS section of `CLAUDE.md` follow the same rule.
+
+### Added
+- `tools/build/known-hashes.sh` builds `.company-os/known-hashes.txt`, the sha256 of every version of each template file, from the git history. Releases ship it for the installer; `build.sh --check` fails when it is stale.
+
+---
+
 ## [1.12.0] - 2026-10-15
 
 **Upgrade notes:**

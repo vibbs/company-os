@@ -432,6 +432,7 @@ f2fa7d4e42b3479db1c80013f366b43ff03c77a5d2bda898f7ca083eaeaefd4f  .claude/skills
 68321457435d4080e92f41d8eb3b53b7950dfee35bd7b83faa5871e88dda74cb  .claude/skills/upgrade-company-os/SKILL.md
 7f3a91bb9cba065ccaf60a75771e72bb5b14e015a6f4532476850af34f66a52a  .claude/skills/upgrade-company-os/SKILL.md
 920cbcfb8b2d00e51f70bf0dcbf058286b551156aa624ea41e144ed768d0265e  .claude/skills/upgrade-company-os/SKILL.md
+95e44c1275f031f44145423088654d333d2e18629e7faa67d7e9dc5555a5229e  .claude/skills/upgrade-company-os/SKILL.md
 9e05a06ce1e83d68d190f92381064f559bafc3138ecd7134239dcaf75581e380  .claude/skills/upgrade-company-os/SKILL.md
 a79645e014309d6ca329d198b00b651ca99900ba6e88a5637bb199336d05675c  .claude/skills/upgrade-company-os/SKILL.md
 c356efdff88876c2999c7ac2eea1c487ed6cd0f1e5bb4aff19022e121e0ec6ac  .claude/skills/upgrade-company-os/SKILL.md
@@ -488,6 +489,7 @@ eeb1879f5ee274512cfaaba522b44862515569e5b2dc79b819c4c065edfa222e  .company-os/do
 f1f025e12f32b214fc03472f33d729693a5b42391c838da9b268b43264956fe9  .company-os/docs/CHANGELOG.md
 f4c76a4127aa7a697a63f771637e83041d60429745334329b9d638929caee7c8  .company-os/docs/CHANGELOG.md
 f639edcc83e1132a392c016381c24e3af3d3a7de71e210b40e7c76b7a7f28988  .company-os/docs/CHANGELOG.md
+f69732c322b607d685a9847546b3accff390a4ac540c93ae8976b76d70fe236d  .company-os/docs/CHANGELOG.md
 f76044f743b9cdbdabcdf784fda87e218c9f503e8afdd384cdbbb946aa6bc404  .company-os/docs/CHANGELOG.md
 5bcb49ff130f2fc7184eca302187db201f43d7c18e1c390e752861244a404a6c  .company-os/docs/CONCEPTS.md
 5e4731f0b46a5ee22e20891f5c4de11b3ebbe60a271ad22e2c24fbbb23168411  .company-os/docs/CONCEPTS.md
@@ -507,6 +509,7 @@ bab8615d673f3eedf7248c75f74c8c8d7023ca8b273426de3b9bb4a49e675dbd  .company-os/do
 0423439b4dc4fc497b636e5dd5ca099cabc786c5da6220ba6745d7908882e561  .company-os/docs/FAQ.md
 338cfb226a791bb5de34aa95443a193023d3476e8c455a30bc2b1c75e4574283  .company-os/docs/FAQ.md
 54464df623d209af17afff1be784c767691f035156f42b22504c97b3b88aa617  .company-os/docs/FAQ.md
+6a58886ba881c2c9dc09d10daacd9f4f70d134dc8934916e4e71d42c5ee919a8  .company-os/docs/FAQ.md
 88106aa75f94bdac741f3397f742b2d44489faf5a862346ba0b2b91d3548dac2  .company-os/docs/FAQ.md
 8a8e64b69dd3408c2e8e511f44d5cb0a846a209fc808273969484174ead03e87  .company-os/docs/FAQ.md
 8d5ace7ed80b85800ad289c4f61f7a30dfcdd5381bb16cb239a71437ebce0208  .company-os/docs/FAQ.md
@@ -548,12 +551,14 @@ e44e92876a2b5b45e0d835eca1699eaaa889523efbd87e0da38b29f69335ad6c  .company-os/do
 3cae75f5e71aedf9d06a1886c603b42d70daad33db12838e4978400ea7bc69ef  .company-os/docs/TROUBLESHOOTING.md
 94e958f52ae68af806ab1109dbb75f59fb117a265ab28b9930f5645a0889e5b2  .company-os/docs/TROUBLESHOOTING.md
 ae645f831d0aba4892006bbf4f7b447bb3dc875e69fa0442d8426de9d69f2f87  .company-os/docs/TROUBLESHOOTING.md
+c6db9d6e720a140c6aed4c84e5316e346a4638c8e8a001dbd037c580066097d6  .company-os/docs/TROUBLESHOOTING.md
 f294814eafe156db416bfc5a27e55d5a69a791c94d691979878ce419ba0651ef  .company-os/docs/TROUBLESHOOTING.md
 fe4e333059a445f3eaa41b3caa369cb71c943c3f4bdc0c8260e99fc2636fef71  .company-os/docs/TROUBLESHOOTING.md
 a61c1b710c8d153353e6c5a3764e2c04464141c89ea92eebcf1ecf75ff375029  .company-os/docs/diagrams/agent-org.svg
 90754c0bc33d997b6d18e474a35cd90506f1deebca45a23050a15ab4df75b5dd  .company-os/docs/diagrams/artifact-lineage.svg
 122afe351c76baa12d540897992f9c60a01475a95804766aa9f9f792bd1a70ad  .company-os/docs/diagrams/install-upgrade.svg
 b50b22b9c4f471f3e7cf9b105564a2b3d067311856d78959ab8c3a9ba0bc460d  .company-os/docs/diagrams/install-upgrade.svg
+bba47b04f309552eccde79bc5ab1fac223eee2dc246c17ef7c887e7874765d02  .company-os/docs/diagrams/install-upgrade.svg
 1fc497b01cc3576ee588ed8429faa78b8facb4d013bbe78d3850cd706133a337  .company-os/docs/diagrams/multi-runtime-build.svg
 8e6ebc8a4971e2dc23d1b63decff907cc4a51260f1c476554e20a6b1cfdb681f  .company-os/docs/diagrams/ship-flow.svg
 aa0c22bf699c56a49f259d5b0c5837d421ef7ec93c3204e488f3683cb281282f  .company-os/docs/diagrams/ship-flow.svg
@@ -594,6 +599,7 @@ bf339845932d8804e6dd0bbcefbdbed5da79f92704ce6ccb80065d0d06560150  .cursor/rules/
 4d02303283308e3fef23283c3bb3aba201a361b2fa9fa1292031be157b6c212c  AGENTS.md
 54f83a763ae829c36434f7ec1bce4b613c3a963bd8d0c012bb6214f84d2ebc7e  AGENTS.md
 5a876e534f0cb84acc41e70bf3fca4908032e17089121af3c51930f28b49db3c  AGENTS.md
+6240caa9f76c8dc57c4cc4f6ef506eb3cc78040623b9d2d807b210ae309c5301  AGENTS.md
 6f268d0d72729ffb98c02b898e88f02fe181a943f632d698275c0e84a7549ee9  AGENTS.md
 a146c0a186149ba0036bee851c663eadd137659a2c08c25c594fb666daeb8a92  AGENTS.md
 aba9612aba0e61dbe2b63f29956462e67ad63a9b53f63366334d09caf9e179c5  AGENTS.md
@@ -925,6 +931,7 @@ db2da9e10a1b74014a131199311fa9cfb6d0dabeeec41a943b1f5e6a16125274  os/skills/tos-
 738f8f98cb56de3a5adf77ac3f93846180fe6c49046cb42c269021e1e0bbf41f  os/skills/upgrade-company-os/SKILL.md
 8ee90b1baf3fa893c3ae2cd9da78073f9ea3b97502d2bdc758db7e60b7f15626  os/skills/upgrade-company-os/SKILL.md
 c3d90549f1368c49ad704c74c87b60b37f67b8f97fba364dcd8fa5071cda727c  os/skills/upgrade-company-os/SKILL.md
+d1a1e41a04c246215805978f1235b49c768140a876e12150087a45628a0e01f9  os/skills/upgrade-company-os/SKILL.md
 ea35a8cb72f175569208656ae0b92b6d30db7d3edc563d6f3eec15b24fcc110d  os/skills/upgrade-company-os/SKILL.md
 f784a038afbb36b689080811ddd7aa642c4578e257410d4279114d179f134de6  os/skills/upgrade-company-os/SKILL.md
 6840826f39c08f88491fc1f48aac513d1e7cd6119bd9c2ce23bd4652e9bfb693  os/skills/user-docs/SKILL.md
