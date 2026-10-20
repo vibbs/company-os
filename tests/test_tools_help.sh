@@ -56,6 +56,10 @@ assert_exit 0 bash tools/qa/resilience-test.sh --help
 assert_contains "$OUT" "Health endpoint reachability" "resilience-test.sh --help lists the checks"
 assert_contains "$OUT" "Examples:" "resilience-test.sh --help shows examples"
 
+# Runnable scripts are committed executable (sourced helpers need not be).
+NOT_EXEC="$(git ls-files -s -- $SCRIPTS install.sh .company-os/setup.sh | awk '$1 != "100755" { print $4 }')"
+assert_eq "" "$NOT_EXEC" "runnable scripts committed with mode 100755"
+
 assert_eq "$BEFORE" "$(git_state)" "help output must not change the working tree"
 
 finish
