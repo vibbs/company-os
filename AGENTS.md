@@ -3,7 +3,7 @@
 <!-- GENERATED FILE — do not edit by hand. Source: os/ + CLAUDE.md -->
 <!-- Regenerate with: bash tools/build/build-agents-md.sh -->
 
-This file is the runtime-neutral instruction layer for **Company OS** v1.12.0.
+This file is the runtime-neutral instruction layer for **Company OS** v1.12.1.
 It is intended for AI coding agents that follow the [AGENTS.md](https://agents.md/)
 convention — Codex CLI, Aider, and any agent without its own instruction file.
 
@@ -380,6 +380,7 @@ Deterministic shell scripts. Safe to invoke directly. All live under `tools/`.
 - `tools/build/build-cursor.sh` — Emits:
 - `tools/build/build-gemini.sh` — Gemini CLI reads GEMINI.md (its own convention) — same payload as AGENTS.md
 - `tools/build/build.sh` — Regenerates every runtime adapter (Claude Code, Cursor, Codex, Gemini,
+- `tools/build/known-hashes.sh` — Writes .company-os/known-hashes.txt: for each template file the installer
 - `tools/build/validate-agent.sh` — Usage:
 - `tools/build/validate-skill.sh` — Usage:
 - `tools/ci/lint-format.sh` — Tool: T-CI-02 Lint/Format

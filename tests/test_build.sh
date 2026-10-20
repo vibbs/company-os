@@ -86,6 +86,34 @@ cp "$G/os/skills/ship/SKILL.md" "$G/.claude/skills/unlisted/SKILL.md"
 assert_exit 0 bash "$G/tools/build/build-claude.sh"
 assert_file_exists "$G/.claude/skills/unlisted/SKILL.md" "first build without a list prunes nothing"
 
+# --- known-hashes.txt: fresh in the repo, stale after a template change, and
+# skipped where there is no history to build it from ---
+sha() {
+  if command -v shasum >/dev/null 2>&1; then shasum -a 256 "$1" | awk '{print $1}'; else sha256sum "$1" | awk '{print $1}'; fi
+}
+assert_exit 0 bash tools/build/build.sh --check
+assert_contains "$OUT" "known-hashes.txt"
+if [ "$(git rev-parse --is-shallow-repository 2>/dev/null)" = false ]; then
+  assert_contains "$OUT" "known-hashes: .company-os/known-hashes.txt is up to date"
+  KH="$(make_tmp)/repo"
+  git clone -q "$REPO_ROOT" "$KH"
+  OLD_SHIP="$(sha "$KH/os/skills/ship/SKILL.md")"
+  printf '\nA template change.\n' >> "$KH/os/skills/ship/SKILL.md"
+  assert_exit 1 bash "$KH/tools/build/known-hashes.sh" --check
+  assert_contains "$OUT" "is stale; run bash tools/build/known-hashes.sh"
+  assert_exit 0 bash "$KH/tools/build/known-hashes.sh"
+  KNOWN="$(cat "$KH/.company-os/known-hashes.txt")"
+  assert_contains "$KNOWN" "$(sha "$KH/os/skills/ship/SKILL.md")  os/skills/ship/SKILL.md" "the new content is listed"
+  assert_contains "$KNOWN" "$OLD_SHIP  os/skills/ship/SKILL.md" "earlier contents stay listed"
+  assert_eq "" "$(grep -v '^#' "$KH/.company-os/known-hashes.txt" | grep -Ev '^[0-9a-f]{64}  [^ ]+$' || true)" "every line is <sha256>  <path>"
+else
+  echo "  note: shallow clone; known-hashes freshness is not checked here"
+fi
+NH="$(make_tmp)"
+git archive HEAD | tar -x -C "$NH"
+assert_exit 0 bash "$NH/tools/build/known-hashes.sh" --check
+assert_contains "$OUT" "skipped (no git history here"
+
 # --- Lift edge cases (fixtures) ---
 cp -R tests/fixtures/skills/crlf-comments tests/fixtures/skills/spaced-comments "$B/os/skills/"
 mkdir -p "$B/os/skills/legacy-top"

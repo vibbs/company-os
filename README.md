@@ -366,7 +366,7 @@ Upgrades keep your config, permissions, artifacts, agent memory and the adapters
 - If you edited a file and the template did not change it, your file stays.
 - If you both changed it, a plain upgrade keeps yours and lists it. With `--force`, it saves your copy (`.user`) and the new one (`.new`) under `.company-os/conflicts/` in the same folder path (for example `.company-os/conflicts/tools/qa/run.sh.user` and `run.sh.new`), then installs the new one. Merge them by hand. An earlier copy is never overwritten: a later one gets a timestamp suffix.
 - The guides in `.company-os/docs/` belong to the template and are refreshed; if you edited one, your copy is kept next to it as `<name>.user`.
-- Installs from 1.11 or earlier have no manifest, so the installer cannot tell your edits from template changes. It makes a backup first. Without `--force` it only previews. With `--force` it saves every differing file as `.user` before replacing it.
+- Installs from 1.11 or earlier have no manifest. The installer compares each file with every version Company OS has shipped: a file that matches one is unedited and is updated. It makes a backup first. Without `--force` it only previews. With `--force` it saves each file that matches no shipped version (your edits) as `.user` before replacing it.
 
 Major upgrades, installs with no manifest, and runs with `--backup` save a backup in `.company-os/backup/` first.
 

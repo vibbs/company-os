@@ -206,9 +206,10 @@ if [ -d "os/skills" ] || [ -f "tools/artifact/validate.sh" ] || [ -d ".company-o
   COS_PRESENT=true
 fi
 
-# Upgrading an install that has no usable manifest: nothing tells us which
-# files the user edited, so every file that differs is treated as edited and a
-# backup is always taken. LEGACY = the same with no version stamp either (every
+# Upgrading an install that has no usable manifest: only the release's list of
+# known template hashes tells which files are unedited copies of a Company OS
+# release. Every other file that differs is treated as edited, and a backup is
+# always taken. LEGACY = the same with no version stamp either (every
 # install made from main between 1.9.0 and 1.11.x).
 NO_MANIFEST_UPGRADE=false
 LEGACY=false
@@ -414,6 +415,17 @@ manifest_hash() {
   ' "$MANIFEST_FILE"
 }
 
+# Hashes of every template copy Company OS has shipped, per installed path
+# (.company-os/known-hashes.txt in the release, built from the git history by
+# tools/build/known-hashes.sh). Used only when there is no trusted manifest:
+# a file whose content Company OS shipped at that path is an unedited
+# template copy, so it is updated like any unedited file. Set after download.
+KNOWN_HASHES=""
+known_template_copy() {  # known_template_copy <hash> <path>: 0 if Company OS shipped it
+  [ -z "$MANIFEST_FILE" ] && [ -n "$KNOWN_HASHES" ] && [ -n "$1" ] \
+    && grep -qxF "$1  $2" "$KNOWN_HASHES"
+}
+
 # The new manifest records, for every template-owned file, the hash of the
 # TEMPLATE copy that file is based on, never the hash of whatever is on disk.
 # A file the user edited therefore still reads as edited on the next upgrade.
@@ -426,6 +438,8 @@ record_manifest() {  # record_manifest <hash> <path>
 # Write .company-os/manifest from the recorded lines. Entries of the old
 # manifest that this run did not touch (for example an adapter left out with
 # --runtime) are kept when the file still exists and is a template file.
+# When only the "# Generated:" line would change, the file is left as it is,
+# so a re-run that changes nothing leaves git status clean.
 generate_manifest() {
   local version="$1" tmp=".company-os/manifest.tmp" path
   mkdir -p .company-os
@@ -443,6 +457,11 @@ generate_manifest() {
         done
     fi
   } > "$tmp"
+  if [ -f .company-os/manifest ] \
+     && [ "$(grep -v '^# Generated: ' .company-os/manifest || true)" = "$(grep -v '^# Generated: ' "$tmp" || true)" ]; then
+    rm -f "$tmp"
+    return
+  fi
   mv "$tmp" .company-os/manifest
 }
 
@@ -565,16 +584,18 @@ if [ "$HAS_CLAUDE_DIR" = true ] || [ "$HAS_CLAUDE_MD" = true ]; then
 fi
 if [ "$LEGACY" = true ]; then
   echo -e "  ${YELLOW}Existing Company OS install without a version stamp${NC} (detected version: $LEGACY_VERSION)"
-  echo -e "  ${DIM}It has no version stamp or manifest (installs from 1.9 to 1.11 recorded neither), so the${NC}"
-  echo -e "  ${DIM}installer cannot tell which files you edited. It treats every file that differs as edited.${NC}"
+  echo -e "  ${DIM}It has no version stamp or manifest (installs from 1.9 to 1.11 recorded neither). A file that${NC}"
+  echo -e "  ${DIM}matches a version Company OS shipped is updated; any other file that differs counts as edited.${NC}"
   echo ""
 elif [ "$NO_MANIFEST_UPGRADE" = true ] && [ -n "$OLD_MANIFEST" ]; then
   echo -e "  ${YELLOW}Existing Company OS install with a manifest from an older installer${NC} ($OLD_MANIFEST)"
-  echo -e "  ${DIM}That manifest may record your edits as template files, so it is not used: files that${NC}"
-  echo -e "  ${DIM}differ are treated as edited, and a backup is made first.${NC}"
+  echo -e "  ${DIM}That manifest may record your edits as template files, so it is not used. Files that match a${NC}"
+  echo -e "  ${DIM}version Company OS shipped are updated, other files that differ count as edited, and a backup${NC}"
+  echo -e "  ${DIM}is made first.${NC}"
   echo ""
 elif [ "$NO_MANIFEST_UPGRADE" = true ]; then
-  echo -e "  ${YELLOW}Existing Company OS install without a manifest${NC} — files that differ are treated as edited"
+  echo -e "  ${YELLOW}Existing Company OS install without a manifest${NC} — files that differ from every version"
+  echo -e "  ${DIM}Company OS shipped are treated as edited${NC}"
   echo ""
 fi
 
@@ -676,6 +697,7 @@ if [ -f "$SRC/.company-os/version" ]; then
 elif [ -f "$SRC/VERSION" ]; then
   INCOMING_VERSION=$(cat "$SRC/VERSION" | tr -d '[:space:]')
 fi
+[ -f "$SRC/.company-os/known-hashes.txt" ] && KNOWN_HASHES="$SRC/.company-os/known-hashes.txt"
 INCOMING_CHANGELOG=""
 if [ -f "$SRC/.company-os/docs/CHANGELOG.md" ]; then
   INCOMING_CHANGELOG="$SRC/.company-os/docs/CHANGELOG.md"
@@ -833,6 +855,10 @@ fi
 #                   .company-os/conflicts/, then install the template copy
 #     no --force -> keep the user's file and report it
 #
+# With no trusted manifest, the base is the file's own hash when that content
+# is a template copy Company OS shipped (known_template_copy); otherwise there
+# is no base and a file that differs counts as edited.
+#
 # Sets MERGE_RESULT to: added | current | updated | kept | conflict | held.
 # Paths saved in conflicts/ are appended to $CONFLICT_LOG.
 CONFLICT_LOG="$WORK_DIR/conflicts.log"
@@ -893,6 +919,7 @@ merge_template_file() {  # merge_template_file <src_file> <dst_file>
     return
   fi
   base=$(manifest_hash "$dst")
+  if [ -z "$base" ] && known_template_copy "$disk" "$dst"; then base="$disk"; fi
   if [ -n "$base" ] && [ "$disk" = "$base" ]; then
     [ "$DRY_RUN" = false ] && cp "$src" "$dst"
     record_manifest "$inc" "$dst"
@@ -1116,6 +1143,51 @@ PYEOF
   fi
 }
 
+# write_claude_generated_list: writes .claude/.generated-by-company-os, the
+# list of files tools/build/build-claude.sh generates from os/, with the same
+# header and order the build uses. Without it the first build in a fresh
+# install would create it as a new untracked file. Entries of the old list
+# whose os/ source is gone stay listed so the next build still removes those
+# generated files. Written only when its content changes.
+CLAUDE_GENERATED_LIST=".claude/.generated-by-company-os"
+write_claude_generated_list() {
+  local tmp="$WORK_DIR/generated-list" d name f existed=false
+  {
+    echo "# Written by tools/build/build-claude.sh: the files it generated from os/."
+    echo "# The next build removes or overwrites only files listed here."
+    for d in os/skills/*/; do
+      [ -d "$d" ] || continue
+      name="$(basename "$d")"
+      find "os/skills/$name" -type f | sort | while IFS= read -r f; do
+        echo "skills/$name/${f#os/skills/$name/}"
+      done
+    done
+    for f in os/agents/*.md; do
+      [ -f "$f" ] || continue
+      echo "agents/$(basename "$f")"
+    done
+    if [ -f "$CLAUDE_GENERATED_LIST" ]; then
+      grep -v '^#' "$CLAUDE_GENERATED_LIST" | while IFS= read -r f; do
+        [ -n "$f" ] || continue
+        if [ ! -f "os/$f" ] && [ -f ".claude/$f" ]; then echo "$f"; fi
+      done
+    fi
+  } > "$tmp"
+  [ -f "$CLAUDE_GENERATED_LIST" ] && existed=true
+  if [ "$existed" = true ] && cmp -s "$tmp" "$CLAUDE_GENERATED_LIST"; then
+    return
+  fi
+  mkdir -p .claude
+  cp "$tmp" "$CLAUDE_GENERATED_LIST"
+  if [ "$existed" = true ]; then
+    echo -e "  ${GREEN}Updated${NC}  $CLAUDE_GENERATED_LIST (files the build generates from os/)"
+    UPDATED=$((UPDATED + 1))
+  else
+    echo -e "  ${GREEN}Created${NC}  $CLAUDE_GENERATED_LIST (files the build generates from os/)"
+    ADDED=$((ADDED + 1))
+  fi
+}
+
 # merge_claude_md: Appends Company OS section to existing CLAUDE.md.
 # Detects the "## Company OS Overview" marker to avoid double-appending.
 # The Company OS section runs from that marker to the end of the file. Its
@@ -1152,6 +1224,7 @@ merge_claude_md() {
     local disk_section base
     disk_section=$(claude_section_hash "$dst_file")
     base=$(manifest_hash "$CLAUDE_MD_KEY")
+    if [ -z "$base" ] && known_template_copy "$disk_section" "$CLAUDE_MD_KEY"; then base="$disk_section"; fi
     if [ "$disk_section" = "$inc_section" ]; then
       record_manifest "$inc_section" "$CLAUDE_MD_KEY"
       echo -e "  ${DIM}Exists${NC}   CLAUDE.md (Company OS section up to date)"
@@ -1286,6 +1359,7 @@ if should_install_runtime claude; then
   merge_directory "$SRC/.claude/skills"  ".claude/skills"  ".claude/skills/"
   merge_directory "$SRC/.claude/hooks"   ".claude/hooks"   ".claude/hooks/"
   merge_settings_json "$SRC/.claude/settings.json" ".claude/settings.json"
+  [ "$DRY_RUN" = true ] || write_claude_generated_list
 fi
 
 # --- AGENTS.md (universal runtime-neutral instruction file — always installed) ---
@@ -1354,7 +1428,8 @@ fi
 # same three-way rules as merge_template_file. A copy you edited is saved next
 # to it as <name>.user (or <name>.user.<timestamp> when an earlier .user copy
 # is still there) before the new version replaces it. Without a manifest
-# entry to compare against, a doc that differs counts as edited.
+# entry to compare against, a doc that differs counts as edited unless it is a
+# copy Company OS shipped (known_template_copy).
 # VERSION is NOT copied — it would conflict with the user's app version file.
 DOCS_ADDED=0 DOCS_REFRESHED=0 DOCS_USER_SAVED=0 DOCS_KEPT=0 DOCS_HELD=0
 IS_UPGRADE=false
@@ -1386,6 +1461,7 @@ if [ -d "$SRC/.company-os/docs" ]; then
       continue
     fi
     doc_base=$(manifest_hash "$doc_dst")
+    if [ -z "$doc_base" ] && known_template_copy "$doc_disk" "$doc_dst"; then doc_base="$doc_disk"; fi
     if [ -n "$doc_base" ] && [ "$doc_disk" = "$doc_base" ]; then
       [ "$DRY_RUN" = false ] && cp "$doc_file" "$doc_dst"
       record_manifest "$doc_inc" "$doc_dst"
@@ -1445,6 +1521,7 @@ elif [ -f "$SRC/setup.sh" ]; then
 fi
 
 # --- Scaffold directories (create if missing, never overwrite) ---
+GITIGNORE_ADDED=0   # lines this run added to .gitignore (also read by the git hint)
 if [ "$DRY_RUN" = false ]; then
   # Copy reference standards that skills and agents read (design archetypes,
   # UX baseline, SOPs, security posture, ...) only when absent. They become
@@ -1484,7 +1561,6 @@ if [ "$DRY_RUN" = false ]; then
   done
 
   # Keep upgrade backups and conflict copies out of commits (idempotent).
-  GITIGNORE_ADDED=0
   for ignore_line in ".company-os/backup/" ".company-os/conflicts/"; do
     if [ ! -f .gitignore ] || ! grep -qxF "$ignore_line" .gitignore; then
       if [ -s .gitignore ] && [ -n "$(tail -c 1 .gitignore)" ]; then echo "" >> .gitignore; fi
@@ -1495,6 +1571,7 @@ if [ "$DRY_RUN" = false ]; then
   done
   if [ "$GITIGNORE_ADDED" -gt 0 ]; then
     echo -e "  ${GREEN}Updated${NC}  .gitignore (ignores .company-os/backup/ and .company-os/conflicts/)"
+    MERGED=$((MERGED + 1))
   fi
 
   # Create tasks files if missing
@@ -1568,6 +1645,14 @@ if [ "$DRY_RUN" = false ] && [ "$INCOMING_VERSION" != "unknown" ]; then
   generate_manifest "$INCOMING_VERSION"
 fi
 
+# Did this run move the installed version (an upgrade, or a downgrade)?
+VERSION_CHANGED=false
+if [ "$DRY_RUN" = false ] && [ "$INCOMING_VERSION" != "unknown" ]; then
+  if [ "$LEGACY" = true ] || { [ "$LOCAL_VERSION" != "unknown" ] && [ "$LOCAL_VERSION" != "$INCOMING_VERSION" ]; }; then
+    VERSION_CHANGED=true
+  fi
+fi
+
 # print_paths <log> <max>: list paths from a log, at most <max> of them.
 print_paths() {
   local log="$1" max="$2" total
@@ -1613,19 +1698,20 @@ if [ "$DRY_RUN" = true ]; then
   fi
 else
   TOTAL=$((CREATED + ADDED + UPDATED + MERGED))
-  if [ "$TOTAL" -eq 0 ] && [ "$SKIPPED" -gt 0 ]; then
-    echo -e "  ${GREEN}Done!${NC} Already installed — $SKIPPED items unchanged."
+  # A version change is reported as an upgrade even when no file was written
+  # (every changed file held your edits): the version stamp still moved.
+  if [ "$VERSION_CHANGED" = true ]; then
+    from_label="$LOCAL_VERSION" verb="Upgraded"
+    [ "$LEGACY" = true ] && from_label="$LEGACY_VERSION (no version stamp)"
+    if [ "$LEGACY" = false ] && version_gt "$LOCAL_VERSION" "$INCOMING_VERSION"; then verb="Downgraded"; fi
+    echo -e "  ${GREEN}Done!${NC} $verb $from_label → $INCOMING_VERSION: $((UPDATED + MERGED)) updated, $((ADDED + CREATED)) added, $KEPT_EDITS kept with your edits."
+  elif [ "$TOTAL" -eq 0 ]; then
+    echo -e "  ${GREEN}Done!${NC} Already installed — nothing changed."
     if [ -s "$HELD_LOG" ]; then
       echo -e "  ${DIM}Use --force to update the files you edited (your copies are saved first)${NC}"
     fi
   else
-    if [ "$LEGACY" = true ] && [ "$INCOMING_VERSION" != "unknown" ]; then
-      echo -e "  ${GREEN}Done!${NC} Upgraded $LEGACY_VERSION (no version stamp) → $INCOMING_VERSION: $UPDATED files updated, $ADDED added."
-    elif [ "$LOCAL_VERSION" != "unknown" ] && [ "$INCOMING_VERSION" != "unknown" ] && [ "$LOCAL_VERSION" != "$INCOMING_VERSION" ]; then
-      echo -e "  ${GREEN}Done!${NC} Upgraded $LOCAL_VERSION → $INCOMING_VERSION"
-    else
-      echo -e "  ${GREEN}Done!${NC} Created $CREATED, added $ADDED, merged $MERGED, updated $UPDATED, skipped $SKIPPED."
-    fi
+    echo -e "  ${GREEN}Done!${NC} Created $CREATED, added $ADDED, merged $MERGED, updated $UPDATED, skipped $SKIPPED."
   fi
   if [ "$CONFLICTS" -gt 0 ]; then
     echo ""
@@ -1654,6 +1740,8 @@ installed_paths() {
            artifacts standards imports tasks seeds; do
     [ -e "$p" ] && out="$out $p"
   done
+  # The .gitignore lines this run added (backups and conflict copies).
+  [ "$GITIGNORE_ADDED" -gt 0 ] && [ -f .gitignore ] && out="$out .gitignore"
   echo "${out# }"
 }
 
@@ -1723,7 +1811,7 @@ fi
 # --- Upgrade next steps (on subsequent installs) ---
 if [ "$IS_EXISTING_INSTALL" = true ] && [ "$DRY_RUN" = false ]; then
   TOTAL_CHANGES=$((CREATED + ADDED + UPDATED + MERGED))
-  if [ "$TOTAL_CHANGES" -gt 0 ] || [ "$CONFLICTS" -gt 0 ]; then
+  if [ "$TOTAL_CHANGES" -gt 0 ] || [ "$CONFLICTS" -gt 0 ] || [ "$VERSION_CHANGED" = true ]; then
     echo -e "  ${BOLD}Next steps:${NC}"
     echo ""
     STEP=1
@@ -1744,16 +1832,22 @@ if [ "$IS_EXISTING_INSTALL" = true ] && [ "$DRY_RUN" = false ]; then
     STEP=$((STEP + 1))
     echo ""
 
-    # Commit the upgrade
+    # Commit the upgrade (or re-install, or downgrade)
     if [ -d ".git" ]; then
       if [ "$LOCAL_VERSION" = "$INCOMING_VERSION" ]; then
+        commit_kind="re-install"
         commit_msg="chore: re-install Company OS ${INCOMING_VERSION}"
       elif [ "$LEGACY" = true ]; then
+        commit_kind="upgrade"
         commit_msg="chore: upgrade Company OS ${LEGACY_VERSION} → ${INCOMING_VERSION}"
+      elif version_gt "$LOCAL_VERSION" "$INCOMING_VERSION"; then
+        commit_kind="downgrade"
+        commit_msg="chore: downgrade Company OS ${LOCAL_VERSION} → ${INCOMING_VERSION}"
       else
+        commit_kind="upgrade"
         commit_msg="chore: upgrade Company OS ${LOCAL_VERSION} → ${INCOMING_VERSION}"
       fi
-      echo -e "    ${BLUE}${STEP}.${NC} Commit the upgrade:"
+      echo -e "    ${BLUE}${STEP}.${NC} Commit the ${commit_kind}:"
       echo -e "       ${DIM}$ git add $(installed_paths) && git commit -m \"$commit_msg\"${NC}"
       STEP=$((STEP + 1))
       echo ""

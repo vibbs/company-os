@@ -21,7 +21,9 @@
 # A later build removes only listed files whose os/ source is gone. Any other
 # skill or agent under .claude/ (one you made by hand), and any file of yours
 # inside a generated skill folder, is left in place with a notice. With no
-# list yet (first build after an upgrade), nothing is removed.
+# list yet, nothing is removed. install.sh writes the same list (same header
+# and order) when it installs or updates this adapter, so the first build
+# after an install leaves it unchanged; keep the two in step.
 #
 # Usage:
 #   bash tools/build/build-claude.sh

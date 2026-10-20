@@ -23,10 +23,10 @@ for script in $SCRIPTS install.sh .company-os/setup.sh; do
   done
 done
 
-# 33 runnable tools + 6 build scripts + 2 validators, plus install.sh and .company-os/setup.sh.
+# 33 runnable tools + 7 build scripts + 2 validators, plus install.sh and .company-os/setup.sh.
 RUNNABLE="$(find tools -name '*.sh' -type f -not -path 'tools/lib/*' -not -path 'tools/build/*' | wc -l | tr -d ' ')"
 assert_eq "33" "$RUNNABLE" "runnable tool script count (excluding tools/build, tools/lib)"
-assert_eq "43" "$COUNT" "scripts checked for --help"
+assert_eq "44" "$COUNT" "scripts checked for --help"
 
 # -h / --help count anywhere in the arguments, but only as a whole argument.
 assert_exit 0 bash tools/ops/status-check.sh https://example.invalid --help
@@ -55,6 +55,10 @@ assert_exit 64 bash tools/ops/status-check.sh --timeout
 assert_exit 0 bash tools/qa/resilience-test.sh --help
 assert_contains "$OUT" "Health endpoint reachability" "resilience-test.sh --help lists the checks"
 assert_contains "$OUT" "Examples:" "resilience-test.sh --help shows examples"
+
+# Runnable scripts are committed executable (sourced helpers need not be).
+NOT_EXEC="$(git ls-files -s -- $SCRIPTS install.sh .company-os/setup.sh | awk '$1 != "100755" { print $4 }')"
+assert_eq "" "$NOT_EXEC" "runnable scripts committed with mode 100755"
 
 assert_eq "$BEFORE" "$(git_state)" "help output must not change the working tree"
 

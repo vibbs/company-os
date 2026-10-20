@@ -45,6 +45,21 @@ new_project() {  # new_project <name>: an empty git repo
   echo "$T/$1"
 }
 
+commit_all() {  # commit_all <project> <message>: what the installer's git hint does
+  git -C "$1" add -A >/dev/null
+  git -C "$1" -c user.name=test -c user.email=test@example.invalid commit -qm "$2" >/dev/null
+}
+git_hint() {  # git_hint: the "git add ... && git commit ..." line the last install printed
+  printf '%s\n' "$OUT" | grep '\$ git add ' | head -1 | sed 's/^ *\$ //'
+}
+run_git_hint() {  # run_git_hint <project> <hint>: run the printed command as the user would
+  (cd "$1" && GIT_AUTHOR_NAME=test GIT_AUTHOR_EMAIL=test@example.invalid \
+    GIT_COMMITTER_NAME=test GIT_COMMITTER_EMAIL=test@example.invalid eval "$2" >/dev/null)
+}
+git_dirty() {  # git_dirty <project>: modified or untracked paths (empty = clean)
+  git -C "$1" status --porcelain --untracked-files=all
+}
+
 run_install() {  # run_install <dir> [flags...]: sets OUT and RC
   local dir="$1"
   shift
@@ -62,6 +77,7 @@ tree_state() {
 # --- Fresh install: Claude Code ---
 P="$(new_project claude)"
 run_install "$P" --runtime claude
+P_HINT="$(git_hint)"
 assert_contains "$OUT" "Using local archive (COMPANY_OS_SOURCE): $T/src.tgz"
 assert_not_contains "$OUT" "Downloading from github.com"
 assert_contains "$OUT" "Created  AGENTS.md"
@@ -97,17 +113,28 @@ assert_eq "" "$DOCS_BROKEN" "broken links in installed .company-os/docs"
 assert_eq "1" "$(grep -cxF '.company-os/backup/' "$P/.gitignore" 2>/dev/null || true)" ".gitignore ignores backups"
 assert_eq "1" "$(grep -cxF '.company-os/conflicts/' "$P/.gitignore" 2>/dev/null || true)" ".gitignore ignores conflict copies"
 
-# A same-version re-run that changes nothing suggests no commit.
+# The installer writes the build's list of generated files, so committing as
+# the hint says and then building leaves nothing new or changed.
+assert_file_exists "$P/.claude/.generated-by-company-os" "install writes the generated-files list"
+assert_contains "$P_HINT" "git commit -m \"Add Company OS\"" "fresh install prints a commit hint"
+run_git_hint "$P" "$P_HINT"
+assert_eq "" "$(git_dirty "$P")" "committing exactly as the hint says leaves nothing out"
+
+# A same-version re-run that changes nothing suggests no commit and rewrites
+# nothing: not even the manifest's timestamp.
 SETTINGS_BEFORE="$(cksum < "$P/.claude/settings.json")"
 run_install "$P"
-assert_contains "$OUT" "Already installed"
+assert_contains "$OUT" "Already installed — nothing changed."
+assert_not_contains "$OUT" "Upgraded"
 assert_not_contains "$OUT" "Commit the upgrade"
 assert_eq "$SETTINGS_BEFORE" "$(cksum < "$P/.claude/settings.json")" "settings.json not rewritten when nothing is added"
 assert_eq "1" "$(grep -cxF '.company-os/backup/' "$P/.gitignore" 2>/dev/null || true)" ".gitignore lines not duplicated"
+assert_eq "" "$(git_dirty "$P")" "a same-version re-run leaves git status clean"
 
 # build.sh in an installed project rebuilds only the adapters it has.
 assert_exit 0 bash -c 'cd "$1" && bash tools/build/build.sh' _ "$P"
 assert_contains "$OUT" "Building the adapters this project has"
+assert_eq "" "$(git_dirty "$P")" "the first build after a committed install changes nothing"
 for f in .cursor .cursorrules GEMINI.md .codex; do
   assert_file_missing "$P/$f" "build.sh adds no adapter the project did not have ($f)"
 done
@@ -125,6 +152,46 @@ D="$(new_project dry)"
 run_install "$D" --runtime claude --dry-run
 assert_contains "$OUT" "Preview — no changes will be made"
 assert_eq "" "$(ls -A "$D" | grep -v '^.git$' || true)" "--dry-run on a fresh folder writes nothing"
+
+# --- An upgrade that writes no file still reports the upgrade ---
+# The only template change is in a file the user edited, so a plain upgrade
+# keeps it and writes nothing else; the summary must still say "Upgraded".
+K="$(new_project kept-only)"
+run_install "$K" --runtime claude
+printf '\nmy growth edit\n' >> "$K/os/agents/growth.md"
+commit_all "$K" "Add Company OS"
+cp -R "$BASE_SRC" "$T/next-kept"
+echo "${VERSION%%.*}.97.0" > "$T/next-kept/.company-os/version"
+printf '\ntemplate change\n' >> "$T/next-kept/os/agents/growth.md"
+COMPANY_OS_SOURCE="$T/next-kept" run_install "$K"
+assert_contains "$OUT" "Done! Upgraded $VERSION → ${VERSION%%.*}.97.0: 0 updated, 0 added, 1 kept with your edits."
+assert_not_contains "$OUT" "Already installed"
+assert_contains "$OUT" "Kept your edits in 1 file(s) the template also changed:"
+assert_contains "$OUT" "Commit the upgrade"
+assert_eq "${VERSION%%.*}.97.0" "$(cat "$K/.company-os/version")" "version stamped"
+assert_contains "$(cat "$K/os/agents/growth.md")" "my growth edit" "edit kept"
+# Going back to an older release is not called an upgrade.
+run_install "$K"
+assert_contains "$OUT" "Done! Downgraded ${VERSION%%.*}.97.0 → $VERSION:"
+assert_contains "$OUT" "Commit the downgrade:"
+assert_contains "$OUT" "chore: downgrade Company OS ${VERSION%%.*}.97.0 → $VERSION"
+assert_not_contains "$OUT" "Commit the upgrade"
+
+# --- An installed project with its own install.sh: the build never makes,
+# rewrites or requires .company-os/known-hashes.txt (only the Company OS
+# source repo keeps one) ---
+U="$(new_project own-installer)"
+run_install "$U" --runtime all
+printf '#!/bin/sh\n# my app installer\necho installing my app\n' > "$U/install.sh"
+commit_all "$U" "Add Company OS and my installer"
+assert_exit 0 bash -c 'cd "$1" && bash tools/build/build.sh --check' _ "$U"
+assert_not_contains "$OUT" "is missing"
+assert_exit 0 bash -c 'cd "$1" && bash tools/build/build.sh --runtime=all' _ "$U"
+assert_file_missing "$U/.company-os/known-hashes.txt" "build.sh --runtime=all writes no hash list in a user project"
+assert_eq "" "$(git_dirty "$U")" "build in a project with its own install.sh leaves git status clean"
+rm -f "$U/.company-os/manifest"   # a legacy-style project (no manifest) defaults to --runtime=all
+assert_exit 0 bash -c 'cd "$1" && bash tools/build/build.sh' _ "$U"
+assert_file_missing "$U/.company-os/known-hashes.txt" "no hash list without a manifest either"
 
 # --- Three-way merge: an edit is kept when the template did not change the file ---
 printf '\nmy local note\n' >> "$P/.company-os/docs/FAQ.md"
@@ -288,6 +355,46 @@ assert_eq "" "$(cmp "$L/os/skills/ship/SKILL.md" "$BASE_SRC/os/skills/ship/SKILL
 assert_eq "$VERSION" "$(cat "$L/.company-os/version" 2>/dev/null)" "stamped after the forced upgrade"
 assert_contains "$OUT" "conflict(s) detected"
 assert_contains "$(ls "$L/.company-os/backup/"*legacy*/os/skills/ship/SKILL.md 2>/dev/null | head -1 | xargs cat 2>/dev/null)" "legacy skill edit" "backup holds the user's file"
+
+# --- A real 1.11 install (commit 15f3eed, installed by its own install.sh
+# from a fake GitHub) with two edits: --force saves copies of exactly the two
+# edited files. Every other file matches a version Company OS shipped
+# (.company-os/known-hashes.txt), so it is updated without a .user copy. ---
+assert_file_exists "$BASE_SRC/.company-os/known-hashes.txt" "the release ships known-hashes.txt"
+if git -C "$REPO_ROOT" cat-file -e '15f3eed^{commit}' 2>/dev/null; then
+  git -C "$REPO_ROOT" archive --format=tar.gz --prefix=company-os-main/ -o "$T/v111.tgz" 15f3eed
+  git -C "$REPO_ROOT" show 15f3eed:install.sh > "$T/install-1.11.sh"
+  mkdir -p "$T/fake111"
+  printf '#!/bin/sh\ncase "$*" in *api.github.com*) exit 22 ;; *archive*) cat "%s"; exit 0 ;; esac\nexit 22\n' \
+    "$T/v111.tgz" > "$T/fake111/curl"
+  chmod +x "$T/fake111/curl"
+  V="$(new_project real-1.11)"
+  assert_exit 0 bash -c 'cd "$1" && PATH="$2:$PATH" bash "$3" </dev/null' _ "$V" "$T/fake111" "$T/install-1.11.sh"
+  assert_file_missing "$V/.company-os/version" "a 1.11 install has no version stamp"
+  commit_all "$V" "Add Company OS 1.11"
+  printf 'my prd edit\n' >> "$V/.claude/skills/prd-writer/SKILL.md"
+  printf '# my tool edit\n' >> "$V/tools/artifact/validate.sh"
+  commit_all "$V" "my edits"
+  run_install "$V"
+  assert_contains "$OUT" "Not upgraded yet."
+  assert_contains "$OUT" "Warning: 2 file(s) differ from the new template"
+  run_install "$V" --force
+  VC="$V/.company-os/conflicts"
+  assert_eq ".company-os/conflicts/.claude/skills/prd-writer/SKILL.md.user
+.company-os/conflicts/tools/artifact/validate.sh.user" \
+    "$(cd "$V" && find .company-os/conflicts -type f | LC_ALL=C sort)" "--force saves copies of exactly the edited files"
+  assert_contains "$(cat "$VC/.claude/skills/prd-writer/SKILL.md.user" 2>/dev/null)" "my prd edit"
+  assert_contains "$(cat "$VC/tools/artifact/validate.sh.user" 2>/dev/null)" "my tool edit"
+  assert_eq "" "$(find "$V/.company-os/docs" -name '*.user*')" "unedited guides are refreshed without .user copies"
+  assert_eq "" "$(cmp "$V/.claude/skills/ship/SKILL.md" "$BASE_SRC/.claude/skills/ship/SKILL.md" 2>&1 || echo differs)" "unedited 1.11 skill updated"
+  assert_eq "" "$(cmp "$V/tools/artifact/validate.sh" "$BASE_SRC/tools/artifact/validate.sh" 2>&1 || echo differs)" "edited tool replaced by the template"
+  assert_contains "$OUT" "Done! Upgraded 1.11.0 (no version stamp) → $VERSION:"
+  assert_contains "$OUT" "2 conflict(s) detected — 2 copy(ies)"
+  assert_eq "2" "$(ls "$V/.company-os/backup" 2>/dev/null | grep -c 'legacy' || true)" "a backup on the preview and one before the forced upgrade"
+  assert_contains "$(cat "$V/.company-os/backup/"*legacy*/tools/artifact/validate.sh 2>/dev/null)" "my tool edit" "backup holds the edited file"
+else
+  echo "  note: commit 15f3eed not in this clone; the real 1.11 upgrade check is skipped"
+fi
 
 # --- Fresh install: Cursor ---
 P="$(new_project cursor)"
