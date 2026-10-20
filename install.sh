@@ -1521,6 +1521,7 @@ elif [ -f "$SRC/setup.sh" ]; then
 fi
 
 # --- Scaffold directories (create if missing, never overwrite) ---
+GITIGNORE_ADDED=0   # lines this run added to .gitignore (also read by the git hint)
 if [ "$DRY_RUN" = false ]; then
   # Copy reference standards that skills and agents read (design archetypes,
   # UX baseline, SOPs, security posture, ...) only when absent. They become
@@ -1560,7 +1561,6 @@ if [ "$DRY_RUN" = false ]; then
   done
 
   # Keep upgrade backups and conflict copies out of commits (idempotent).
-  GITIGNORE_ADDED=0
   for ignore_line in ".company-os/backup/" ".company-os/conflicts/"; do
     if [ ! -f .gitignore ] || ! grep -qxF "$ignore_line" .gitignore; then
       if [ -s .gitignore ] && [ -n "$(tail -c 1 .gitignore)" ]; then echo "" >> .gitignore; fi
@@ -1740,6 +1740,8 @@ installed_paths() {
            artifacts standards imports tasks seeds; do
     [ -e "$p" ] && out="$out $p"
   done
+  # The .gitignore lines this run added (backups and conflict copies).
+  [ "$GITIGNORE_ADDED" -gt 0 ] && [ -f .gitignore ] && out="$out .gitignore"
   echo "${out# }"
 }
 

@@ -49,6 +49,13 @@ commit_all() {  # commit_all <project> <message>: what the installer's git hint 
   git -C "$1" add -A >/dev/null
   git -C "$1" -c user.name=test -c user.email=test@example.invalid commit -qm "$2" >/dev/null
 }
+git_hint() {  # git_hint: the "git add ... && git commit ..." line the last install printed
+  printf '%s\n' "$OUT" | grep '\$ git add ' | head -1 | sed 's/^ *\$ //'
+}
+run_git_hint() {  # run_git_hint <project> <hint>: run the printed command as the user would
+  (cd "$1" && GIT_AUTHOR_NAME=test GIT_AUTHOR_EMAIL=test@example.invalid \
+    GIT_COMMITTER_NAME=test GIT_COMMITTER_EMAIL=test@example.invalid eval "$2" >/dev/null)
+}
 git_dirty() {  # git_dirty <project>: modified or untracked paths (empty = clean)
   git -C "$1" status --porcelain --untracked-files=all
 }
@@ -70,6 +77,7 @@ tree_state() {
 # --- Fresh install: Claude Code ---
 P="$(new_project claude)"
 run_install "$P" --runtime claude
+P_HINT="$(git_hint)"
 assert_contains "$OUT" "Using local archive (COMPANY_OS_SOURCE): $T/src.tgz"
 assert_not_contains "$OUT" "Downloading from github.com"
 assert_contains "$OUT" "Created  AGENTS.md"
@@ -108,7 +116,9 @@ assert_eq "1" "$(grep -cxF '.company-os/conflicts/' "$P/.gitignore" 2>/dev/null 
 # The installer writes the build's list of generated files, so committing as
 # the hint says and then building leaves nothing new or changed.
 assert_file_exists "$P/.claude/.generated-by-company-os" "install writes the generated-files list"
-commit_all "$P" "Add Company OS"
+assert_contains "$P_HINT" "git commit -m \"Add Company OS\"" "fresh install prints a commit hint"
+run_git_hint "$P" "$P_HINT"
+assert_eq "" "$(git_dirty "$P")" "committing exactly as the hint says leaves nothing out"
 
 # A same-version re-run that changes nothing suggests no commit and rewrites
 # nothing: not even the manifest's timestamp.
@@ -179,7 +189,6 @@ assert_eq "" "$(git_dirty "$U")" "build in a project with its own install.sh lea
 rm -f "$U/.company-os/manifest"   # a legacy-style project (no manifest) defaults to --runtime=all
 assert_exit 0 bash -c 'cd "$1" && bash tools/build/build.sh' _ "$U"
 assert_file_missing "$U/.company-os/known-hashes.txt" "no hash list without a manifest either"
-
 
 # --- Three-way merge: an edit is kept when the template did not change the file ---
 printf '\nmy local note\n' >> "$P/.company-os/docs/FAQ.md"
