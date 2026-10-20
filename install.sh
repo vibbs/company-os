@@ -426,6 +426,8 @@ record_manifest() {  # record_manifest <hash> <path>
 # Write .company-os/manifest from the recorded lines. Entries of the old
 # manifest that this run did not touch (for example an adapter left out with
 # --runtime) are kept when the file still exists and is a template file.
+# When only the "# Generated:" line would change, the file is left as it is,
+# so a re-run that changes nothing leaves git status clean.
 generate_manifest() {
   local version="$1" tmp=".company-os/manifest.tmp" path
   mkdir -p .company-os
@@ -443,6 +445,11 @@ generate_manifest() {
         done
     fi
   } > "$tmp"
+  if [ -f .company-os/manifest ] \
+     && [ "$(grep -v '^# Generated: ' .company-os/manifest || true)" = "$(grep -v '^# Generated: ' "$tmp" || true)" ]; then
+    rm -f "$tmp"
+    return
+  fi
   mv "$tmp" .company-os/manifest
 }
 

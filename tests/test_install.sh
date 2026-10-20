@@ -105,7 +105,11 @@ assert_eq "" "$DOCS_BROKEN" "broken links in installed .company-os/docs"
 assert_eq "1" "$(grep -cxF '.company-os/backup/' "$P/.gitignore" 2>/dev/null || true)" ".gitignore ignores backups"
 assert_eq "1" "$(grep -cxF '.company-os/conflicts/' "$P/.gitignore" 2>/dev/null || true)" ".gitignore ignores conflict copies"
 
-# A same-version re-run that changes nothing suggests no commit.
+# Commit the install, as the installer's hint says.
+commit_all "$P" "Add Company OS"
+
+# A same-version re-run that changes nothing suggests no commit and rewrites
+# nothing: not even the manifest's timestamp.
 SETTINGS_BEFORE="$(cksum < "$P/.claude/settings.json")"
 run_install "$P"
 assert_contains "$OUT" "Already installed — nothing changed."
@@ -113,6 +117,7 @@ assert_not_contains "$OUT" "Upgraded"
 assert_not_contains "$OUT" "Commit the upgrade"
 assert_eq "$SETTINGS_BEFORE" "$(cksum < "$P/.claude/settings.json")" "settings.json not rewritten when nothing is added"
 assert_eq "1" "$(grep -cxF '.company-os/backup/' "$P/.gitignore" 2>/dev/null || true)" ".gitignore lines not duplicated"
+assert_eq "" "$(git_dirty "$P")" "a same-version re-run leaves git status clean"
 
 # build.sh in an installed project rebuilds only the adapters it has.
 assert_exit 0 bash -c 'cd "$1" && bash tools/build/build.sh' _ "$P"
