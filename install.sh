@@ -1123,6 +1123,51 @@ PYEOF
   fi
 }
 
+# write_claude_generated_list: writes .claude/.generated-by-company-os, the
+# list of files tools/build/build-claude.sh generates from os/, with the same
+# header and order the build uses. Without it the first build in a fresh
+# install would create it as a new untracked file. Entries of the old list
+# whose os/ source is gone stay listed so the next build still removes those
+# generated files. Written only when its content changes.
+CLAUDE_GENERATED_LIST=".claude/.generated-by-company-os"
+write_claude_generated_list() {
+  local tmp="$WORK_DIR/generated-list" d name f existed=false
+  {
+    echo "# Written by tools/build/build-claude.sh: the files it generated from os/."
+    echo "# The next build removes or overwrites only files listed here."
+    for d in os/skills/*/; do
+      [ -d "$d" ] || continue
+      name="$(basename "$d")"
+      find "os/skills/$name" -type f | sort | while IFS= read -r f; do
+        echo "skills/$name/${f#os/skills/$name/}"
+      done
+    done
+    for f in os/agents/*.md; do
+      [ -f "$f" ] || continue
+      echo "agents/$(basename "$f")"
+    done
+    if [ -f "$CLAUDE_GENERATED_LIST" ]; then
+      grep -v '^#' "$CLAUDE_GENERATED_LIST" | while IFS= read -r f; do
+        [ -n "$f" ] || continue
+        if [ ! -f "os/$f" ] && [ -f ".claude/$f" ]; then echo "$f"; fi
+      done
+    fi
+  } > "$tmp"
+  [ -f "$CLAUDE_GENERATED_LIST" ] && existed=true
+  if [ "$existed" = true ] && cmp -s "$tmp" "$CLAUDE_GENERATED_LIST"; then
+    return
+  fi
+  mkdir -p .claude
+  cp "$tmp" "$CLAUDE_GENERATED_LIST"
+  if [ "$existed" = true ]; then
+    echo -e "  ${GREEN}Updated${NC}  $CLAUDE_GENERATED_LIST (files the build generates from os/)"
+    UPDATED=$((UPDATED + 1))
+  else
+    echo -e "  ${GREEN}Created${NC}  $CLAUDE_GENERATED_LIST (files the build generates from os/)"
+    ADDED=$((ADDED + 1))
+  fi
+}
+
 # merge_claude_md: Appends Company OS section to existing CLAUDE.md.
 # Detects the "## Company OS Overview" marker to avoid double-appending.
 # The Company OS section runs from that marker to the end of the file. Its
@@ -1293,6 +1338,7 @@ if should_install_runtime claude; then
   merge_directory "$SRC/.claude/skills"  ".claude/skills"  ".claude/skills/"
   merge_directory "$SRC/.claude/hooks"   ".claude/hooks"   ".claude/hooks/"
   merge_settings_json "$SRC/.claude/settings.json" ".claude/settings.json"
+  [ "$DRY_RUN" = true ] || write_claude_generated_list
 fi
 
 # --- AGENTS.md (universal runtime-neutral instruction file — always installed) ---

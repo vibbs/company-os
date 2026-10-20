@@ -105,7 +105,9 @@ assert_eq "" "$DOCS_BROKEN" "broken links in installed .company-os/docs"
 assert_eq "1" "$(grep -cxF '.company-os/backup/' "$P/.gitignore" 2>/dev/null || true)" ".gitignore ignores backups"
 assert_eq "1" "$(grep -cxF '.company-os/conflicts/' "$P/.gitignore" 2>/dev/null || true)" ".gitignore ignores conflict copies"
 
-# Commit the install, as the installer's hint says.
+# The installer writes the build's list of generated files, so committing as
+# the hint says and then building leaves nothing new or changed.
+assert_file_exists "$P/.claude/.generated-by-company-os" "install writes the generated-files list"
 commit_all "$P" "Add Company OS"
 
 # A same-version re-run that changes nothing suggests no commit and rewrites
@@ -122,6 +124,7 @@ assert_eq "" "$(git_dirty "$P")" "a same-version re-run leaves git status clean"
 # build.sh in an installed project rebuilds only the adapters it has.
 assert_exit 0 bash -c 'cd "$1" && bash tools/build/build.sh' _ "$P"
 assert_contains "$OUT" "Building the adapters this project has"
+assert_eq "" "$(git_dirty "$P")" "the first build after a committed install changes nothing"
 for f in .cursor .cursorrules GEMINI.md .codex; do
   assert_file_missing "$P/$f" "build.sh adds no adapter the project did not have ($f)"
 done
