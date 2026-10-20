@@ -324,6 +324,46 @@ assert_eq "$VERSION" "$(cat "$L/.company-os/version" 2>/dev/null)" "stamped afte
 assert_contains "$OUT" "conflict(s) detected"
 assert_contains "$(ls "$L/.company-os/backup/"*legacy*/os/skills/ship/SKILL.md 2>/dev/null | head -1 | xargs cat 2>/dev/null)" "legacy skill edit" "backup holds the user's file"
 
+# --- A real 1.11 install (commit 15f3eed, installed by its own install.sh
+# from a fake GitHub) with two edits: --force saves copies of exactly the two
+# edited files. Every other file matches a version Company OS shipped
+# (.company-os/known-hashes.txt), so it is updated without a .user copy. ---
+assert_file_exists "$BASE_SRC/.company-os/known-hashes.txt" "the release ships known-hashes.txt"
+if git -C "$REPO_ROOT" cat-file -e '15f3eed^{commit}' 2>/dev/null; then
+  git -C "$REPO_ROOT" archive --format=tar.gz --prefix=company-os-main/ -o "$T/v111.tgz" 15f3eed
+  git -C "$REPO_ROOT" show 15f3eed:install.sh > "$T/install-1.11.sh"
+  mkdir -p "$T/fake111"
+  printf '#!/bin/sh\ncase "$*" in *api.github.com*) exit 22 ;; *archive*) cat "%s"; exit 0 ;; esac\nexit 22\n' \
+    "$T/v111.tgz" > "$T/fake111/curl"
+  chmod +x "$T/fake111/curl"
+  V="$(new_project real-1.11)"
+  assert_exit 0 bash -c 'cd "$1" && PATH="$2:$PATH" bash "$3" </dev/null' _ "$V" "$T/fake111" "$T/install-1.11.sh"
+  assert_file_missing "$V/.company-os/version" "a 1.11 install has no version stamp"
+  commit_all "$V" "Add Company OS 1.11"
+  printf 'my prd edit\n' >> "$V/.claude/skills/prd-writer/SKILL.md"
+  printf '# my tool edit\n' >> "$V/tools/artifact/validate.sh"
+  commit_all "$V" "my edits"
+  run_install "$V"
+  assert_contains "$OUT" "Not upgraded yet."
+  assert_contains "$OUT" "Warning: 2 file(s) differ from the new template"
+  run_install "$V" --force
+  VC="$V/.company-os/conflicts"
+  assert_eq ".company-os/conflicts/.claude/skills/prd-writer/SKILL.md.user
+.company-os/conflicts/tools/artifact/validate.sh.user" \
+    "$(cd "$V" && find .company-os/conflicts -type f | LC_ALL=C sort)" "--force saves copies of exactly the edited files"
+  assert_contains "$(cat "$VC/.claude/skills/prd-writer/SKILL.md.user" 2>/dev/null)" "my prd edit"
+  assert_contains "$(cat "$VC/tools/artifact/validate.sh.user" 2>/dev/null)" "my tool edit"
+  assert_eq "" "$(find "$V/.company-os/docs" -name '*.user*')" "unedited guides are refreshed without .user copies"
+  assert_eq "" "$(cmp "$V/.claude/skills/ship/SKILL.md" "$BASE_SRC/.claude/skills/ship/SKILL.md" 2>&1 || echo differs)" "unedited 1.11 skill updated"
+  assert_eq "" "$(cmp "$V/tools/artifact/validate.sh" "$BASE_SRC/tools/artifact/validate.sh" 2>&1 || echo differs)" "edited tool replaced by the template"
+  assert_contains "$OUT" "Done! Upgraded 1.11.0 (no version stamp) → $VERSION:"
+  assert_contains "$OUT" "2 conflict(s) detected — 2 copy(ies)"
+  assert_eq "2" "$(ls "$V/.company-os/backup" 2>/dev/null | grep -c 'legacy' || true)" "a backup on the preview and one before the forced upgrade"
+  assert_contains "$(cat "$V/.company-os/backup/"*legacy*/tools/artifact/validate.sh 2>/dev/null)" "my tool edit" "backup holds the edited file"
+else
+  echo "  note: commit 15f3eed not in this clone; the real 1.11 upgrade check is skipped"
+fi
+
 # --- Fresh install: Cursor ---
 P="$(new_project cursor)"
 run_install "$P" --runtime cursor

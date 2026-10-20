@@ -206,9 +206,10 @@ if [ -d "os/skills" ] || [ -f "tools/artifact/validate.sh" ] || [ -d ".company-o
   COS_PRESENT=true
 fi
 
-# Upgrading an install that has no usable manifest: nothing tells us which
-# files the user edited, so every file that differs is treated as edited and a
-# backup is always taken. LEGACY = the same with no version stamp either (every
+# Upgrading an install that has no usable manifest: only the release's list of
+# known template hashes tells which files are unedited copies of a Company OS
+# release. Every other file that differs is treated as edited, and a backup is
+# always taken. LEGACY = the same with no version stamp either (every
 # install made from main between 1.9.0 and 1.11.x).
 NO_MANIFEST_UPGRADE=false
 LEGACY=false
@@ -414,6 +415,17 @@ manifest_hash() {
   ' "$MANIFEST_FILE"
 }
 
+# Hashes of every template copy Company OS has shipped, per installed path
+# (.company-os/known-hashes.txt in the release, built from the git history by
+# tools/build/known-hashes.sh). Used only when there is no trusted manifest:
+# a file whose content Company OS shipped at that path is an unedited
+# template copy, so it is updated like any unedited file. Set after download.
+KNOWN_HASHES=""
+known_template_copy() {  # known_template_copy <hash> <path>: 0 if Company OS shipped it
+  [ -z "$MANIFEST_FILE" ] && [ -n "$KNOWN_HASHES" ] && [ -n "$1" ] \
+    && grep -qxF "$1  $2" "$KNOWN_HASHES"
+}
+
 # The new manifest records, for every template-owned file, the hash of the
 # TEMPLATE copy that file is based on, never the hash of whatever is on disk.
 # A file the user edited therefore still reads as edited on the next upgrade.
@@ -572,16 +584,18 @@ if [ "$HAS_CLAUDE_DIR" = true ] || [ "$HAS_CLAUDE_MD" = true ]; then
 fi
 if [ "$LEGACY" = true ]; then
   echo -e "  ${YELLOW}Existing Company OS install without a version stamp${NC} (detected version: $LEGACY_VERSION)"
-  echo -e "  ${DIM}It has no version stamp or manifest (installs from 1.9 to 1.11 recorded neither), so the${NC}"
-  echo -e "  ${DIM}installer cannot tell which files you edited. It treats every file that differs as edited.${NC}"
+  echo -e "  ${DIM}It has no version stamp or manifest (installs from 1.9 to 1.11 recorded neither). A file that${NC}"
+  echo -e "  ${DIM}matches a version Company OS shipped is updated; any other file that differs counts as edited.${NC}"
   echo ""
 elif [ "$NO_MANIFEST_UPGRADE" = true ] && [ -n "$OLD_MANIFEST" ]; then
   echo -e "  ${YELLOW}Existing Company OS install with a manifest from an older installer${NC} ($OLD_MANIFEST)"
-  echo -e "  ${DIM}That manifest may record your edits as template files, so it is not used: files that${NC}"
-  echo -e "  ${DIM}differ are treated as edited, and a backup is made first.${NC}"
+  echo -e "  ${DIM}That manifest may record your edits as template files, so it is not used. Files that match a${NC}"
+  echo -e "  ${DIM}version Company OS shipped are updated, other files that differ count as edited, and a backup${NC}"
+  echo -e "  ${DIM}is made first.${NC}"
   echo ""
 elif [ "$NO_MANIFEST_UPGRADE" = true ]; then
-  echo -e "  ${YELLOW}Existing Company OS install without a manifest${NC} — files that differ are treated as edited"
+  echo -e "  ${YELLOW}Existing Company OS install without a manifest${NC} — files that differ from every version"
+  echo -e "  ${DIM}Company OS shipped are treated as edited${NC}"
   echo ""
 fi
 
@@ -683,6 +697,7 @@ if [ -f "$SRC/.company-os/version" ]; then
 elif [ -f "$SRC/VERSION" ]; then
   INCOMING_VERSION=$(cat "$SRC/VERSION" | tr -d '[:space:]')
 fi
+[ -f "$SRC/.company-os/known-hashes.txt" ] && KNOWN_HASHES="$SRC/.company-os/known-hashes.txt"
 INCOMING_CHANGELOG=""
 if [ -f "$SRC/.company-os/docs/CHANGELOG.md" ]; then
   INCOMING_CHANGELOG="$SRC/.company-os/docs/CHANGELOG.md"
@@ -840,6 +855,10 @@ fi
 #                   .company-os/conflicts/, then install the template copy
 #     no --force -> keep the user's file and report it
 #
+# With no trusted manifest, the base is the file's own hash when that content
+# is a template copy Company OS shipped (known_template_copy); otherwise there
+# is no base and a file that differs counts as edited.
+#
 # Sets MERGE_RESULT to: added | current | updated | kept | conflict | held.
 # Paths saved in conflicts/ are appended to $CONFLICT_LOG.
 CONFLICT_LOG="$WORK_DIR/conflicts.log"
@@ -900,6 +919,7 @@ merge_template_file() {  # merge_template_file <src_file> <dst_file>
     return
   fi
   base=$(manifest_hash "$dst")
+  if [ -z "$base" ] && known_template_copy "$disk" "$dst"; then base="$disk"; fi
   if [ -n "$base" ] && [ "$disk" = "$base" ]; then
     [ "$DRY_RUN" = false ] && cp "$src" "$dst"
     record_manifest "$inc" "$dst"
@@ -1204,6 +1224,7 @@ merge_claude_md() {
     local disk_section base
     disk_section=$(claude_section_hash "$dst_file")
     base=$(manifest_hash "$CLAUDE_MD_KEY")
+    if [ -z "$base" ] && known_template_copy "$disk_section" "$CLAUDE_MD_KEY"; then base="$disk_section"; fi
     if [ "$disk_section" = "$inc_section" ]; then
       record_manifest "$inc_section" "$CLAUDE_MD_KEY"
       echo -e "  ${DIM}Exists${NC}   CLAUDE.md (Company OS section up to date)"
@@ -1407,7 +1428,8 @@ fi
 # same three-way rules as merge_template_file. A copy you edited is saved next
 # to it as <name>.user (or <name>.user.<timestamp> when an earlier .user copy
 # is still there) before the new version replaces it. Without a manifest
-# entry to compare against, a doc that differs counts as edited.
+# entry to compare against, a doc that differs counts as edited unless it is a
+# copy Company OS shipped (known_template_copy).
 # VERSION is NOT copied — it would conflict with the user's app version file.
 DOCS_ADDED=0 DOCS_REFRESHED=0 DOCS_USER_SAVED=0 DOCS_KEPT=0 DOCS_HELD=0
 IS_UPGRADE=false
@@ -1439,6 +1461,7 @@ if [ -d "$SRC/.company-os/docs" ]; then
       continue
     fi
     doc_base=$(manifest_hash "$doc_dst")
+    if [ -z "$doc_base" ] && known_template_copy "$doc_disk" "$doc_dst"; then doc_base="$doc_disk"; fi
     if [ -n "$doc_base" ] && [ "$doc_disk" = "$doc_base" ]; then
       [ "$DRY_RUN" = false ] && cp "$doc_file" "$doc_dst"
       record_manifest "$doc_inc" "$doc_dst"
