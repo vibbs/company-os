@@ -20,13 +20,18 @@
 # Format: a comment header, then "<sha256>  <path>" lines sorted by path,
 # then hash. No timestamp, so the same history always gives the same file.
 #
+# Regenerating only adds: the file becomes the union of its existing entries
+# and what the available history gives, so a short history (a fork made from a
+# release archive) never drops older releases. --check passes while the file
+# lists every hash the available history gives; extra entries are fine.
+#
 # Runs only in the Company OS source repository (install.sh at the root and a
 # full git history). In an installed project, a git archive or a shallow clone
 # it prints why it skipped and exits 0.
 #
 # Usage:
-#   bash tools/build/known-hashes.sh            # regenerate the file
-#   bash tools/build/known-hashes.sh --check    # exit 1 if the file is stale
+#   bash tools/build/known-hashes.sh            # add new hashes to the file
+#   bash tools/build/known-hashes.sh --check    # exit 1 if a hash is missing from the file
 #
 # Exit codes:
 #   0 - written, fresh, or skipped (not the source repo, no history)
@@ -177,24 +182,38 @@ done
     | LC_ALL=C sort -u | LC_ALL=C sort -k2,2 -k1,1
 } > "$TMP/known"
 
+# Entries the history and working tree give, without the comment header.
+grep -v '^#' "$TMP/known" > "$TMP/found" || true
+
 if [ "$CHECK" = true ]; then
   if [ ! -f "$OUT_FILE" ]; then
     echo "known-hashes: $OUT_FILE is missing; run bash tools/build/known-hashes.sh" >&2
     exit 1
   fi
-  if ! cmp -s "$TMP/known" "$OUT_FILE"; then
+  # Fresh when the file lists everything the available history gives. Extra
+  # entries (older releases a shorter history cannot show) are fine.
+  grep -vxFf "$OUT_FILE" "$TMP/found" > "$TMP/missing" || true
+  if [ -s "$TMP/missing" ]; then
     echo "known-hashes: $OUT_FILE is stale; run bash tools/build/known-hashes.sh and commit it" >&2
-    diff "$OUT_FILE" "$TMP/known" | grep '^[<>]' | head -5 >&2 || true
+    head -5 "$TMP/missing" | sed 's/^/> /' >&2
     exit 1
   fi
   echo "known-hashes: $OUT_FILE is up to date ($(grep -vc '^#' "$OUT_FILE" || true) hashes)"
   exit 0
 fi
 
+# Regenerating only adds: the new file is the union of the entries already in
+# it and the ones found now, so a short history never drops older releases.
+{
+  grep '^#' "$TMP/known" || true
+  { grep -v '^#' "$OUT_FILE" 2>/dev/null || true; cat "$TMP/found"; } \
+    | LC_ALL=C sort -u | LC_ALL=C sort -k2,2 -k1,1
+} > "$TMP/merged"
+
 mkdir -p .company-os
-if [ -f "$OUT_FILE" ] && cmp -s "$TMP/known" "$OUT_FILE"; then
+if [ -f "$OUT_FILE" ] && cmp -s "$TMP/merged" "$OUT_FILE"; then
   echo "known-hashes: $OUT_FILE unchanged"
 else
-  cp "$TMP/known" "$OUT_FILE"
+  cp "$TMP/merged" "$OUT_FILE"
   echo "known-hashes: wrote $OUT_FILE ($(grep -vc '^#' "$OUT_FILE" || true) hashes)"
 fi
