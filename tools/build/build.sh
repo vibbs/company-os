@@ -4,7 +4,9 @@
 # ============================================================================
 # Regenerates every runtime adapter (Claude Code, Cursor, Codex, Gemini,
 # AGENTS.md) from os/ (skills and agents) and CLAUDE.md. Edit os/, then run
-# this script; do not edit the generated adapters by hand.
+# this script; do not edit the generated adapters by hand. In the Company OS
+# repo (install.sh at the root) a full build also refreshes
+# .company-os/known-hashes.txt (see known-hashes.sh).
 #
 # Usage:
 #   bash tools/build/build.sh                     # build the adapters this project uses
@@ -22,7 +24,9 @@
 #                      has hashes), the adapters already present (.claude/,
 #                      .cursor/ or .cursorrules, .codex/, GEMINI.md) plus
 #                      AGENTS.md; in the Company OS repo itself, all
-#   --check            run the skill and agent validators; write nothing
+#   --check            run the skill and agent validators and, in the Company OS
+#                      repo, check that .company-os/known-hashes.txt is fresh;
+#                      write nothing
 #   --strict           with --check, exit 1 when any validator reports a warning
 #   -h, --help         show this help
 #
@@ -91,6 +95,13 @@ if [ "$CHECK" = true ]; then
       CHECK_RC=1
     fi
   done
+  # The Company OS repo ships the template-hash list install.sh uses for
+  # installs without a manifest; it must match the history.
+  if [ -f install.sh ] && [ -f tools/build/known-hashes.sh ]; then
+    echo ""
+    echo "$MARK_ARROW Checking .company-os/known-hashes.txt..."
+    bash tools/build/known-hashes.sh --check || CHECK_RC=1
+  fi
   exit "$CHECK_RC"
 fi
 
@@ -117,6 +128,9 @@ case "$RUNTIME" in
     run tools/build/build-gemini.sh
     run tools/build/build-cursor.sh
     run tools/build/build-codex.sh
+    if [ -f install.sh ] && [ -f tools/build/known-hashes.sh ]; then
+      run tools/build/known-hashes.sh
+    fi
     ;;
   project)
     echo "Building the adapters this project has (use --runtime=all for every adapter)"

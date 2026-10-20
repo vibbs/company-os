@@ -23,10 +23,10 @@ for script in $SCRIPTS install.sh .company-os/setup.sh; do
   done
 done
 
-# 33 runnable tools + 6 build scripts + 2 validators, plus install.sh and .company-os/setup.sh.
+# 33 runnable tools + 7 build scripts + 2 validators, plus install.sh and .company-os/setup.sh.
 RUNNABLE="$(find tools -name '*.sh' -type f -not -path 'tools/lib/*' -not -path 'tools/build/*' | wc -l | tr -d ' ')"
 assert_eq "33" "$RUNNABLE" "runnable tool script count (excluding tools/build, tools/lib)"
-assert_eq "43" "$COUNT" "scripts checked for --help"
+assert_eq "44" "$COUNT" "scripts checked for --help"
 
 # -h / --help count anywhere in the arguments, but only as a whole argument.
 assert_exit 0 bash tools/ops/status-check.sh https://example.invalid --help
