@@ -43,6 +43,19 @@ for f in os/skills/*/SKILL.md; do
 done
 assert_eq "true" "$SKILLS_OK" "every generated .claude/skills/*/SKILL.md matches a fresh build"
 
+# --- Output does not depend on the locale: sorted lists use byte order ---
+if locale -a 2>/dev/null | grep -qix 'en_US.UTF-8\|en_US.utf8'; then
+  LOC_ALT="$(locale -a | grep -ix 'en_US.UTF-8\|en_US.utf8' | head -n 1)"
+  L1="$(make_tmp)"; L2="$(make_tmp)"
+  cp -R "$B/." "$L1/"; cp -R "$B/." "$L2/"
+  assert_exit 0 env LC_ALL=C bash "$L1/tools/build/build.sh" --runtime=all
+  assert_exit 0 env LC_ALL="$LOC_ALT" bash "$L2/tools/build/build.sh" --runtime=all
+  assert_exit 0 diff -r "$L1" "$L2"
+  assert_exit 0 diff -r "$L1/.claude" "$B/.claude"
+else
+  echo "  note: no en_US.UTF-8 locale; locale independence is not checked here"
+fi
+
 # --- The build removes only what it generated ---
 # A skill or agent made by hand under .claude/ (no os/ source) survives with a
 # warning; a generated one whose os/ source is gone is removed. With no
@@ -113,6 +126,31 @@ NH="$(make_tmp)"
 git archive HEAD | tar -x -C "$NH"
 assert_exit 0 bash "$NH/tools/build/known-hashes.sh" --check
 assert_contains "$OUT" "skipped (no git history here"
+
+# A repository made from a release archive (one commit, no history: what
+# "Use this template" produces) keeps the shipped list. Checking passes, a
+# plain build leaves the file untouched, and a template change makes it stale
+# until regenerated, which adds the new hash and drops none.
+OC="$(make_tmp)/repo"
+mkdir -p "$OC"
+git archive HEAD | tar -x -C "$OC"
+git -C "$OC" init -q
+git -C "$OC" add -A
+git -C "$OC" -c user.name=t -c user.email=t@example.com -c commit.gpgsign=false commit -q -m "Initial commit"
+assert_exit 0 bash "$OC/tools/build/build.sh" --check --strict
+assert_contains "$OUT" "known-hashes: .company-os/known-hashes.txt is up to date"
+assert_exit 0 bash "$OC/tools/build/build.sh"
+assert_eq "" "$(git -C "$OC" status --porcelain)" "a build in a one-commit repo leaves the repository clean"
+OC_OLD_SHIP="$(sha "$OC/os/skills/ship/SKILL.md")"
+cp "$OC/.company-os/known-hashes.txt" "$OC/../before.txt"
+printf '\nA template change.\n' >> "$OC/os/skills/ship/SKILL.md"
+assert_exit 1 bash "$OC/tools/build/known-hashes.sh" --check
+assert_contains "$OUT" "is stale; run bash tools/build/known-hashes.sh"
+assert_exit 0 bash "$OC/tools/build/known-hashes.sh"
+OC_KNOWN="$(cat "$OC/.company-os/known-hashes.txt")"
+assert_contains "$OC_KNOWN" "$(sha "$OC/os/skills/ship/SKILL.md")  os/skills/ship/SKILL.md" "the new content is added"
+assert_contains "$OC_KNOWN" "$OC_OLD_SHIP  os/skills/ship/SKILL.md" "the unchanged content stays listed"
+assert_eq "" "$(grep -vxFf "$OC/.company-os/known-hashes.txt" "$OC/../before.txt" || true)" "no earlier entry is dropped"
 
 # --- Lift edge cases (fixtures) ---
 cp -R tests/fixtures/skills/crlf-comments tests/fixtures/skills/spaced-comments "$B/os/skills/"

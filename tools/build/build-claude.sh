@@ -107,7 +107,7 @@ remove_listed_stale() {
     if [ ! -f "os/skills/$name/$rel" ]; then
       echo "  kept $f (your file; the build does not manage it)"
     fi
-  done < <(find ".claude/skills/$name" -type f 2>/dev/null | sort)
+  done < <(find ".claude/skills/$name" -type f 2>/dev/null | LC_ALL=C sort)
 }
 
 # --- Skills ---
@@ -139,7 +139,7 @@ for src in os/skills/*/; do
     mkdir -p "$(dirname "$dst/$rel")"
     cp "$f" "$dst/$rel"
     echo "skills/$name/$rel" >> "$NEW_LIST"
-  done < <(find "os/skills/$name" -type f | sort)
+  done < <(find "os/skills/$name" -type f | LC_ALL=C sort)
   lift_claude_fields "$dst/SKILL.md"
   remove_listed_stale "$name"
 done

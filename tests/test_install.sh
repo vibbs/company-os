@@ -116,6 +116,12 @@ assert_eq "1" "$(grep -cxF '.company-os/conflicts/' "$P/.gitignore" 2>/dev/null 
 # The installer writes the build's list of generated files, so committing as
 # the hint says and then building leaves nothing new or changed.
 assert_file_exists "$P/.claude/.generated-by-company-os" "install writes the generated-files list"
+if locale -a 2>/dev/null | grep -qix 'en_US.UTF-8\|en_US.utf8'; then
+  LOC_ALT="$(locale -a | grep -ix 'en_US.UTF-8\|en_US.utf8' | head -n 1)"
+  cp "$P/.claude/.generated-by-company-os" "$T/generated-list.installed"
+  LC_ALL="$LOC_ALT" bash "$P/tools/build/build-claude.sh" >/dev/null 2>&1 || true
+  assert_exit 0 cmp "$P/.claude/.generated-by-company-os" "$T/generated-list.installed"
+fi
 assert_contains "$P_HINT" "git commit -m \"Add Company OS\"" "fresh install prints a commit hint"
 run_git_hint "$P" "$P_HINT"
 assert_eq "" "$(git_dirty "$P")" "committing exactly as the hint says leaves nothing out"

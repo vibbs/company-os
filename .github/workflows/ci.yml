@@ -35,6 +35,15 @@ jobs:
       - name: Validate skills and agents (strict)
         run: bash tools/build/build.sh --check --strict
 
+      - name: Generated files are up to date
+        run: |
+          bash tools/build/build.sh --runtime=all
+          if ! git diff --exit-code || [ -n "$(git status --porcelain)" ]; then
+            echo "Generated files are out of date: run bash tools/build/build.sh and commit" >&2
+            git status --short >&2
+            exit 1
+          fi
+
       - name: Diagrams are up to date
         run: node docs/diagrams/render.js --check
 

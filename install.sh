@@ -976,7 +976,7 @@ merge_directory() {
       conflict) conflict=$((conflict + 1)) ;;
       held)     held=$((held + 1)) ;;
     esac
-  done < <(find "$src_dir" -type f 2>/dev/null | sort)
+  done < <(find "$src_dir" -type f 2>/dev/null | LC_ALL=C sort)
 
   ADDED=$((ADDED + added))
   UPDATED=$((UPDATED + updated + conflict))
@@ -1158,7 +1158,7 @@ write_claude_generated_list() {
     for d in os/skills/*/; do
       [ -d "$d" ] || continue
       name="$(basename "$d")"
-      find "os/skills/$name" -type f | sort | while IFS= read -r f; do
+      find "os/skills/$name" -type f | LC_ALL=C sort | while IFS= read -r f; do
         echo "skills/$name/${f#os/skills/$name/}"
       done
     done
@@ -1488,7 +1488,7 @@ if [ -d "$SRC/.company-os/docs" ]; then
       echo "$doc_dst" >> "$HELD_LOG"
       DOCS_HELD=$((DOCS_HELD + 1))
     fi
-  done < <(find "$SRC/.company-os/docs" -type f | sort)
+  done < <(find "$SRC/.company-os/docs" -type f | LC_ALL=C sort)
   ADDED=$((ADDED + DOCS_ADDED))
   UPDATED=$((UPDATED + DOCS_REFRESHED + DOCS_USER_SAVED))
   SKIPPED=$((SKIPPED + DOCS_KEPT + DOCS_HELD))
@@ -1536,7 +1536,7 @@ if [ "$DRY_RUN" = false ]; then
         cp "$std_file" "$std_rel"
         STANDARDS_ADDED=$((STANDARDS_ADDED + 1))
       fi
-    done < <(find "$SRC/standards" -type f -name '*.md' -not -name 'example-*' | sort)
+    done < <(find "$SRC/standards" -type f -name '*.md' -not -name 'example-*' | LC_ALL=C sort)
   fi
   if [ "$STANDARDS_ADDED" -gt 0 ]; then
     echo -e "  ${GREEN}Added${NC}    standards/ ($STANDARDS_ADDED reference docs; existing files kept)"

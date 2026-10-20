@@ -41,9 +41,9 @@ CI runs the first command, the last command and the test suite on Linux and macO
 
 `.company-os/known-hashes.txt` lists the sha256 of every version of every template file the installer manages, built from the git history by `tools/build/known-hashes.sh`. The installer uses it to recognise unedited copies in installs that have no manifest (1.11 and earlier), so an upgrade does not save them as `.user` copies. A full `bash tools/build/build.sh` in this repo refreshes it, and `build.sh --check` fails when it is stale.
 
-Commit it with the change that made it stale. At release, after the last template change is committed (including the CHANGELOG), run `bash tools/build/known-hashes.sh`, commit the file if it changed, and confirm `bash tools/build/known-hashes.sh --check` passes before tagging. The script needs the full history: in a shallow clone or a release archive it skips with a message. It runs only in the Company OS source repo; in an installed project (even one with its own `install.sh`) it skips and never writes the file.
+Commit it with the change that made it stale. At release, after the last template change is committed (including the CHANGELOG), run `bash tools/build/known-hashes.sh`, commit the file if it changed, and confirm `bash tools/build/known-hashes.sh --check` passes before tagging. Regenerating only adds: the file keeps every entry it has and gains the hashes the available history gives, so a fork made from a release archive (one commit) never loses older releases. `--check` fails only when a hash from the available history is missing from the file. The script needs the full history: in a shallow clone or a release archive it skips with a message. It runs only in the Company OS source repo; in an installed project (even one with its own `install.sh`) it skips and never writes the file.
 
-If CI reports `known-hashes.txt` as stale on your pull request, usually because `main` moved on after you branched: merge or rebase onto the latest `main`, run `bash tools/build/known-hashes.sh` (or `bash tools/build/build.sh`), and commit the updated `.company-os/known-hashes.txt`. If git shows a conflict in that file, take either side and run the script again: it rebuilds the whole file from the history, so the result is the same whichever side you took. Scripts must work in macOS bash 3.2: no `${var,,}`, no associative arrays, no `mapfile`.
+If CI reports `known-hashes.txt` as stale on your pull request, usually because `main` moved on after you branched: merge or rebase onto the latest `main`, run `bash tools/build/known-hashes.sh` (or `bash tools/build/build.sh`), and commit the updated `.company-os/known-hashes.txt`. If git shows a conflict in that file, take either side and run the script again: it adds any missing hashes to whichever side you took, so the result has all of them. Scripts must work in macOS bash 3.2: no `${var,,}`, no associative arrays, no `mapfile`.
 
 ## Commit style
 
@@ -55,7 +55,7 @@ Every user-visible change needs a line in [CHANGELOG.md](.company-os/docs/CHANGE
 
 ## Pull request checklist
 
-- [ ] `bash tools/build/build.sh --check --strict` passes, and adapters are rebuilt and committed
+- [ ] `bash tools/build/build.sh --check --strict` passes, and adapters are rebuilt and committed (CI runs `bash tools/build/build.sh --runtime=all` and fails if that changes any file)
 - [ ] `bash tests/run.sh` passes
 - [ ] New behavior has a test
 - [ ] CHANGELOG entry added
