@@ -1701,9 +1701,10 @@ else
   # A version change is reported as an upgrade even when no file was written
   # (every changed file held your edits): the version stamp still moved.
   if [ "$VERSION_CHANGED" = true ]; then
-    from_label="$LOCAL_VERSION"
+    from_label="$LOCAL_VERSION" verb="Upgraded"
     [ "$LEGACY" = true ] && from_label="$LEGACY_VERSION (no version stamp)"
-    echo -e "  ${GREEN}Done!${NC} Upgraded $from_label → $INCOMING_VERSION: $((UPDATED + MERGED)) updated, $((ADDED + CREATED)) added, $KEPT_EDITS kept with your edits."
+    if [ "$LEGACY" = false ] && version_gt "$LOCAL_VERSION" "$INCOMING_VERSION"; then verb="Downgraded"; fi
+    echo -e "  ${GREEN}Done!${NC} $verb $from_label → $INCOMING_VERSION: $((UPDATED + MERGED)) updated, $((ADDED + CREATED)) added, $KEPT_EDITS kept with your edits."
   elif [ "$TOTAL" -eq 0 ]; then
     echo -e "  ${GREEN}Done!${NC} Already installed — nothing changed."
     if [ -s "$HELD_LOG" ]; then

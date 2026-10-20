@@ -160,6 +160,9 @@ assert_contains "$OUT" "Kept your edits in 1 file(s) the template also changed:"
 assert_contains "$OUT" "Commit the upgrade"
 assert_eq "${VERSION%%.*}.97.0" "$(cat "$K/.company-os/version")" "version stamped"
 assert_contains "$(cat "$K/os/agents/growth.md")" "my growth edit" "edit kept"
+# Going back to an older release is not called an upgrade.
+run_install "$K"
+assert_contains "$OUT" "Done! Downgraded ${VERSION%%.*}.97.0 → $VERSION:"
 
 # --- Three-way merge: an edit is kept when the template did not change the file ---
 printf '\nmy local note\n' >> "$P/.company-os/docs/FAQ.md"
