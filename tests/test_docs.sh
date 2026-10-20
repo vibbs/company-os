@@ -104,4 +104,9 @@ assert_contains "$README" "\`os/agents/\` ($AGENT_COUNT agents)"
 assert_contains "$README" "\`os/skills/\` ($SKILL_COUNT skills)"
 assert_contains "$README" "\`tools/\` ($TOOL_COUNT scripts)"
 
+# CONTRIBUTING tells a PR author how to fix a stale known-hashes.txt.
+CONTRIB="$(cat CONTRIBUTING.md)"
+assert_contains "$CONTRIB" "If CI reports \`known-hashes.txt\` as stale"
+assert_contains "$CONTRIB" "bash tools/build/known-hashes.sh"
+
 finish
