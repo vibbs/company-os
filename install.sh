@@ -1832,16 +1832,22 @@ if [ "$IS_EXISTING_INSTALL" = true ] && [ "$DRY_RUN" = false ]; then
     STEP=$((STEP + 1))
     echo ""
 
-    # Commit the upgrade
+    # Commit the upgrade (or re-install, or downgrade)
     if [ -d ".git" ]; then
       if [ "$LOCAL_VERSION" = "$INCOMING_VERSION" ]; then
+        commit_kind="re-install"
         commit_msg="chore: re-install Company OS ${INCOMING_VERSION}"
       elif [ "$LEGACY" = true ]; then
+        commit_kind="upgrade"
         commit_msg="chore: upgrade Company OS ${LEGACY_VERSION} → ${INCOMING_VERSION}"
+      elif version_gt "$LOCAL_VERSION" "$INCOMING_VERSION"; then
+        commit_kind="downgrade"
+        commit_msg="chore: downgrade Company OS ${LOCAL_VERSION} → ${INCOMING_VERSION}"
       else
+        commit_kind="upgrade"
         commit_msg="chore: upgrade Company OS ${LOCAL_VERSION} → ${INCOMING_VERSION}"
       fi
-      echo -e "    ${BLUE}${STEP}.${NC} Commit the upgrade:"
+      echo -e "    ${BLUE}${STEP}.${NC} Commit the ${commit_kind}:"
       echo -e "       ${DIM}$ git add $(installed_paths) && git commit -m \"$commit_msg\"${NC}"
       STEP=$((STEP + 1))
       echo ""

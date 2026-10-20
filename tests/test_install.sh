@@ -173,6 +173,9 @@ assert_contains "$(cat "$K/os/agents/growth.md")" "my growth edit" "edit kept"
 # Going back to an older release is not called an upgrade.
 run_install "$K"
 assert_contains "$OUT" "Done! Downgraded ${VERSION%%.*}.97.0 → $VERSION:"
+assert_contains "$OUT" "Commit the downgrade:"
+assert_contains "$OUT" "chore: downgrade Company OS ${VERSION%%.*}.97.0 → $VERSION"
+assert_not_contains "$OUT" "Commit the upgrade"
 
 # --- An installed project with its own install.sh: the build never makes,
 # rewrites or requires .company-os/known-hashes.txt (only the Company OS
