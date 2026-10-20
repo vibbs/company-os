@@ -45,6 +45,14 @@ new_project() {  # new_project <name>: an empty git repo
   echo "$T/$1"
 }
 
+commit_all() {  # commit_all <project> <message>: what the installer's git hint does
+  git -C "$1" add -A >/dev/null
+  git -C "$1" -c user.name=test -c user.email=test@example.invalid commit -qm "$2" >/dev/null
+}
+git_dirty() {  # git_dirty <project>: modified or untracked paths (empty = clean)
+  git -C "$1" status --porcelain --untracked-files=all
+}
+
 run_install() {  # run_install <dir> [flags...]: sets OUT and RC
   local dir="$1"
   shift
@@ -100,7 +108,8 @@ assert_eq "1" "$(grep -cxF '.company-os/conflicts/' "$P/.gitignore" 2>/dev/null 
 # A same-version re-run that changes nothing suggests no commit.
 SETTINGS_BEFORE="$(cksum < "$P/.claude/settings.json")"
 run_install "$P"
-assert_contains "$OUT" "Already installed"
+assert_contains "$OUT" "Already installed — nothing changed."
+assert_not_contains "$OUT" "Upgraded"
 assert_not_contains "$OUT" "Commit the upgrade"
 assert_eq "$SETTINGS_BEFORE" "$(cksum < "$P/.claude/settings.json")" "settings.json not rewritten when nothing is added"
 assert_eq "1" "$(grep -cxF '.company-os/backup/' "$P/.gitignore" 2>/dev/null || true)" ".gitignore lines not duplicated"
@@ -125,6 +134,24 @@ D="$(new_project dry)"
 run_install "$D" --runtime claude --dry-run
 assert_contains "$OUT" "Preview — no changes will be made"
 assert_eq "" "$(ls -A "$D" | grep -v '^.git$' || true)" "--dry-run on a fresh folder writes nothing"
+
+# --- An upgrade that writes no file still reports the upgrade ---
+# The only template change is in a file the user edited, so a plain upgrade
+# keeps it and writes nothing else; the summary must still say "Upgraded".
+K="$(new_project kept-only)"
+run_install "$K" --runtime claude
+printf '\nmy growth edit\n' >> "$K/os/agents/growth.md"
+commit_all "$K" "Add Company OS"
+cp -R "$BASE_SRC" "$T/next-kept"
+echo "${VERSION%%.*}.97.0" > "$T/next-kept/.company-os/version"
+printf '\ntemplate change\n' >> "$T/next-kept/os/agents/growth.md"
+COMPANY_OS_SOURCE="$T/next-kept" run_install "$K"
+assert_contains "$OUT" "Done! Upgraded $VERSION → ${VERSION%%.*}.97.0: 0 updated, 0 added, 1 kept with your edits."
+assert_not_contains "$OUT" "Already installed"
+assert_contains "$OUT" "Kept your edits in 1 file(s) the template also changed:"
+assert_contains "$OUT" "Commit the upgrade"
+assert_eq "${VERSION%%.*}.97.0" "$(cat "$K/.company-os/version")" "version stamped"
+assert_contains "$(cat "$K/os/agents/growth.md")" "my growth edit" "edit kept"
 
 # --- Three-way merge: an edit is kept when the template did not change the file ---
 printf '\nmy local note\n' >> "$P/.company-os/docs/FAQ.md"

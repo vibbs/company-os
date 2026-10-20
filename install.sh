@@ -1495,6 +1495,7 @@ if [ "$DRY_RUN" = false ]; then
   done
   if [ "$GITIGNORE_ADDED" -gt 0 ]; then
     echo -e "  ${GREEN}Updated${NC}  .gitignore (ignores .company-os/backup/ and .company-os/conflicts/)"
+    MERGED=$((MERGED + 1))
   fi
 
   # Create tasks files if missing
@@ -1568,6 +1569,14 @@ if [ "$DRY_RUN" = false ] && [ "$INCOMING_VERSION" != "unknown" ]; then
   generate_manifest "$INCOMING_VERSION"
 fi
 
+# Did this run move the installed version (an upgrade, or a downgrade)?
+VERSION_CHANGED=false
+if [ "$DRY_RUN" = false ] && [ "$INCOMING_VERSION" != "unknown" ]; then
+  if [ "$LEGACY" = true ] || { [ "$LOCAL_VERSION" != "unknown" ] && [ "$LOCAL_VERSION" != "$INCOMING_VERSION" ]; }; then
+    VERSION_CHANGED=true
+  fi
+fi
+
 # print_paths <log> <max>: list paths from a log, at most <max> of them.
 print_paths() {
   local log="$1" max="$2" total
@@ -1613,19 +1622,19 @@ if [ "$DRY_RUN" = true ]; then
   fi
 else
   TOTAL=$((CREATED + ADDED + UPDATED + MERGED))
-  if [ "$TOTAL" -eq 0 ] && [ "$SKIPPED" -gt 0 ]; then
-    echo -e "  ${GREEN}Done!${NC} Already installed — $SKIPPED items unchanged."
+  # A version change is reported as an upgrade even when no file was written
+  # (every changed file held your edits): the version stamp still moved.
+  if [ "$VERSION_CHANGED" = true ]; then
+    from_label="$LOCAL_VERSION"
+    [ "$LEGACY" = true ] && from_label="$LEGACY_VERSION (no version stamp)"
+    echo -e "  ${GREEN}Done!${NC} Upgraded $from_label → $INCOMING_VERSION: $((UPDATED + MERGED)) updated, $((ADDED + CREATED)) added, $KEPT_EDITS kept with your edits."
+  elif [ "$TOTAL" -eq 0 ]; then
+    echo -e "  ${GREEN}Done!${NC} Already installed — nothing changed."
     if [ -s "$HELD_LOG" ]; then
       echo -e "  ${DIM}Use --force to update the files you edited (your copies are saved first)${NC}"
     fi
   else
-    if [ "$LEGACY" = true ] && [ "$INCOMING_VERSION" != "unknown" ]; then
-      echo -e "  ${GREEN}Done!${NC} Upgraded $LEGACY_VERSION (no version stamp) → $INCOMING_VERSION: $UPDATED files updated, $ADDED added."
-    elif [ "$LOCAL_VERSION" != "unknown" ] && [ "$INCOMING_VERSION" != "unknown" ] && [ "$LOCAL_VERSION" != "$INCOMING_VERSION" ]; then
-      echo -e "  ${GREEN}Done!${NC} Upgraded $LOCAL_VERSION → $INCOMING_VERSION"
-    else
-      echo -e "  ${GREEN}Done!${NC} Created $CREATED, added $ADDED, merged $MERGED, updated $UPDATED, skipped $SKIPPED."
-    fi
+    echo -e "  ${GREEN}Done!${NC} Created $CREATED, added $ADDED, merged $MERGED, updated $UPDATED, skipped $SKIPPED."
   fi
   if [ "$CONFLICTS" -gt 0 ]; then
     echo ""
@@ -1723,7 +1732,7 @@ fi
 # --- Upgrade next steps (on subsequent installs) ---
 if [ "$IS_EXISTING_INSTALL" = true ] && [ "$DRY_RUN" = false ]; then
   TOTAL_CHANGES=$((CREATED + ADDED + UPDATED + MERGED))
-  if [ "$TOTAL_CHANGES" -gt 0 ] || [ "$CONFLICTS" -gt 0 ]; then
+  if [ "$TOTAL_CHANGES" -gt 0 ] || [ "$CONFLICTS" -gt 0 ] || [ "$VERSION_CHANGED" = true ]; then
     echo -e "  ${BOLD}Next steps:${NC}"
     echo ""
     STEP=1
