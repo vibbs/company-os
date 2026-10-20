@@ -51,8 +51,21 @@ done
 
 OUT_FILE=".company-os/known-hashes.txt"
 
-# Only the source repository has the history this list is built from.
-if [ ! -f install.sh ] || [ ! -d os ]; then
+# Only the source repository has the history this list is built from. It is
+# the source repo when its install.sh is the Company OS installer (it defines
+# the manifest marker) and it is not itself an installed project (no
+# .company-os/manifest written by that installer). A project with its own
+# install.sh, or any installed project, never gets, keeps or needs the list.
+MANIFEST_MARKER="manifest (hashes of the template copies)"
+is_company_os_source() {
+  [ -d os ] && [ -f install.sh ] \
+    && grep -qF "MANIFEST_MARKER=\"$MANIFEST_MARKER\"" install.sh 2>/dev/null || return 1
+  if [ -f .company-os/manifest ]; then
+    case "$(head -n 1 .company-os/manifest)" in *"$MANIFEST_MARKER"*) return 1 ;; esac
+  fi
+  return 0
+}
+if ! is_company_os_source; then
   echo "known-hashes: skipped (not the Company OS source repository)"
   exit 0
 fi

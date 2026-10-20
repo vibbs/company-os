@@ -164,6 +164,23 @@ assert_contains "$(cat "$K/os/agents/growth.md")" "my growth edit" "edit kept"
 run_install "$K"
 assert_contains "$OUT" "Done! Downgraded ${VERSION%%.*}.97.0 → $VERSION:"
 
+# --- An installed project with its own install.sh: the build never makes,
+# rewrites or requires .company-os/known-hashes.txt (only the Company OS
+# source repo keeps one) ---
+U="$(new_project own-installer)"
+run_install "$U" --runtime all
+printf '#!/bin/sh\n# my app installer\necho installing my app\n' > "$U/install.sh"
+commit_all "$U" "Add Company OS and my installer"
+assert_exit 0 bash -c 'cd "$1" && bash tools/build/build.sh --check' _ "$U"
+assert_not_contains "$OUT" "is missing"
+assert_exit 0 bash -c 'cd "$1" && bash tools/build/build.sh --runtime=all' _ "$U"
+assert_file_missing "$U/.company-os/known-hashes.txt" "build.sh --runtime=all writes no hash list in a user project"
+assert_eq "" "$(git_dirty "$U")" "build in a project with its own install.sh leaves git status clean"
+rm -f "$U/.company-os/manifest"   # a legacy-style project (no manifest) defaults to --runtime=all
+assert_exit 0 bash -c 'cd "$1" && bash tools/build/build.sh' _ "$U"
+assert_file_missing "$U/.company-os/known-hashes.txt" "no hash list without a manifest either"
+
+
 # --- Three-way merge: an edit is kept when the template did not change the file ---
 printf '\nmy local note\n' >> "$P/.company-os/docs/FAQ.md"
 printf '\nmy growth edit\n' >> "$P/os/agents/growth.md"

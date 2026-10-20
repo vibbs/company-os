@@ -5,8 +5,8 @@
 # Regenerates every runtime adapter (Claude Code, Cursor, Codex, Gemini,
 # AGENTS.md) from os/ (skills and agents) and CLAUDE.md. Edit os/, then run
 # this script; do not edit the generated adapters by hand. In the Company OS
-# repo (install.sh at the root) a full build also refreshes
-# .company-os/known-hashes.txt (see known-hashes.sh).
+# source repo a full build also refreshes .company-os/known-hashes.txt;
+# known-hashes.sh decides what counts as the source repo and skips elsewhere.
 #
 # Usage:
 #   bash tools/build/build.sh                     # build the adapters this project uses
@@ -25,7 +25,7 @@
 #                      .cursor/ or .cursorrules, .codex/, GEMINI.md) plus
 #                      AGENTS.md; in the Company OS repo itself, all
 #   --check            run the skill and agent validators and, in the Company OS
-#                      repo, check that .company-os/known-hashes.txt is fresh;
+#                      source repo, check that .company-os/known-hashes.txt is fresh;
 #                      write nothing
 #   --strict           with --check, exit 1 when any validator reports a warning
 #   -h, --help         show this help
@@ -96,10 +96,10 @@ if [ "$CHECK" = true ]; then
     fi
   done
   # The Company OS repo ships the template-hash list install.sh uses for
-  # installs without a manifest; it must match the history.
-  if [ -f install.sh ] && [ -f tools/build/known-hashes.sh ]; then
+  # installs without a manifest; it must match the history. known-hashes.sh
+  # skips with a one-line note anywhere else (an installed project).
+  if [ -f tools/build/known-hashes.sh ]; then
     echo ""
-    echo "$MARK_ARROW Checking .company-os/known-hashes.txt..."
     bash tools/build/known-hashes.sh --check || CHECK_RC=1
   fi
   exit "$CHECK_RC"
@@ -128,7 +128,7 @@ case "$RUNTIME" in
     run tools/build/build-gemini.sh
     run tools/build/build-cursor.sh
     run tools/build/build-codex.sh
-    if [ -f install.sh ] && [ -f tools/build/known-hashes.sh ]; then
+    if [ -f tools/build/known-hashes.sh ]; then
       run tools/build/known-hashes.sh
     fi
     ;;
