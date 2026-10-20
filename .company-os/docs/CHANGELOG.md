@@ -20,6 +20,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 ### Fixed
 - `build.sh --check` no longer reports `.company-os/known-hashes.txt` as stale in a repository made from a release archive (for example "Use this template", which has a single commit). Regenerating the list now only adds hashes and never drops older ones, and the check passes when the file lists every hash the available history gives.
 
+### Added
+- CI now rebuilds every generated adapter and fails when that changes any file, so stale generated files cannot ship.
+
 ---
 
 ## [1.12.1] - 2026-10-20

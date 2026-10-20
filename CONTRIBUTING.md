@@ -55,7 +55,7 @@ Every user-visible change needs a line in [CHANGELOG.md](.company-os/docs/CHANGE
 
 ## Pull request checklist
 
-- [ ] `bash tools/build/build.sh --check --strict` passes, and adapters are rebuilt and committed
+- [ ] `bash tools/build/build.sh --check --strict` passes, and adapters are rebuilt and committed (CI runs `bash tools/build/build.sh --runtime=all` and fails if that changes any file)
 - [ ] `bash tests/run.sh` passes
 - [ ] New behavior has a test
 - [ ] CHANGELOG entry added
