@@ -43,6 +43,19 @@ for f in os/skills/*/SKILL.md; do
 done
 assert_eq "true" "$SKILLS_OK" "every generated .claude/skills/*/SKILL.md matches a fresh build"
 
+# --- Output does not depend on the locale: sorted lists use byte order ---
+if locale -a 2>/dev/null | grep -qix 'en_US.UTF-8\|en_US.utf8'; then
+  LOC_ALT="$(locale -a | grep -ix 'en_US.UTF-8\|en_US.utf8' | head -n 1)"
+  L1="$(make_tmp)"; L2="$(make_tmp)"
+  cp -R "$B/." "$L1/"; cp -R "$B/." "$L2/"
+  assert_exit 0 env LC_ALL=C bash "$L1/tools/build/build.sh" --runtime=all
+  assert_exit 0 env LC_ALL="$LOC_ALT" bash "$L2/tools/build/build.sh" --runtime=all
+  assert_exit 0 diff -r "$L1" "$L2"
+  assert_exit 0 diff -r "$L1/.claude" "$B/.claude"
+else
+  echo "  note: no en_US.UTF-8 locale; locale independence is not checked here"
+fi
+
 # --- The build removes only what it generated ---
 # A skill or agent made by hand under .claude/ (no os/ source) survives with a
 # warning; a generated one whose os/ source is gone is removed. With no

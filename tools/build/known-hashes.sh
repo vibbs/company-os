@@ -122,7 +122,7 @@ git log -m --format= --raw --no-abbrev --no-renames HEAD -- $PATHSPECS \
 #    process per blob took several seconds). Any file whose size does not
 #    match (a binary blob awk cannot pass through) is rewritten directly.
 mkdir -p "$TMP/blobs"
-cut -f1 "$TMP/pairs" | sort -u | sed 's#^blobs/##' > "$TMP/blob-ids"
+cut -f1 "$TMP/pairs" | LC_ALL=C sort -u | sed 's#^blobs/##' > "$TMP/blob-ids"
 git cat-file --batch < "$TMP/blob-ids" | LC_ALL=C awk -v dir="$TMP/blobs" '
   function start(   n, h) {
     n = split($0, h, " ")
@@ -159,7 +159,7 @@ git ls-files -z -- $PATHSPECS | while IFS= read -r -d '' f; do
 done
 
 # 4. CLAUDE.md is hashed by its Company OS section, as install.sh does.
-awk -F'\t' '$2 == "CLAUDE.md" { print $1 }' "$TMP/pairs" | sort -u | while IFS= read -r c; do
+awk -F'\t' '$2 == "CLAUDE.md" { print $1 }' "$TMP/pairs" | LC_ALL=C sort -u | while IFS= read -r c; do
   sed -n '/## Company OS Overview/,$p' "$TMP/$c" > "$TMP/$c.section"
 done
 

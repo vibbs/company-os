@@ -23,7 +23,7 @@ agent_list() {
   dir="$(agent_source_dir)" || return 0
   find "$dir" -mindepth 1 -maxdepth 1 -type f -name "*.md" 2>/dev/null \
     | sed "s|$dir/||; s|\.md$||" \
-    | sort
+    | LC_ALL=C sort
 }
 
 agent_file() {

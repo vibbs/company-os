@@ -198,7 +198,7 @@ while IFS= read -r tool; do
   desc="$(grep -m1 -E '^# [A-Z]' "$tool" 2>/dev/null | sed 's/^# *//' || true)"
   if [ -z "$desc" ]; then desc="(no description)"; fi
   echo "- \`$tool\` — $desc" >> "$TMP"
-done < <(find tools -mindepth 2 -maxdepth 3 -type f -name "*.sh" 2>/dev/null | sort)
+done < <(find tools -mindepth 2 -maxdepth 3 -type f -name "*.sh" 2>/dev/null | LC_ALL=C sort)
 if [ -n "$HELPERS" ]; then
   printf '\nShared helpers, sourced by the scripts above (do not run them): %s\n' "${HELPERS#, }" >> "$TMP"
 fi

@@ -26,7 +26,7 @@ skill_list() {
   # one entry per top-level subdirectory
   find "$dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null \
     | sed "s|$dir/||" \
-    | sort
+    | LC_ALL=C sort
 }
 
 skill_file() {

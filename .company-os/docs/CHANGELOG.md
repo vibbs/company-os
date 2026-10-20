@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Fixed
 - `build.sh --check` no longer reports `.company-os/known-hashes.txt` as stale in a repository made from a release archive (for example "Use this template", which has a single commit). Regenerating the list now only adds hashes and never drops older ones, and the check passes when the file lists every hash the available history gives.
+- Generated and ordered lists (`.claude/.generated-by-company-os`, the AGENTS.md catalogs, the installer's file lists) are now sorted in byte order, so they come out identical on every machine whatever its locale. Before, a Mac and a CI runner could order the same files differently and leave `git status` dirty.
 
 ### Added
 - CI now rebuilds every generated adapter and fails when that changes any file, so stale generated files cannot ship.
